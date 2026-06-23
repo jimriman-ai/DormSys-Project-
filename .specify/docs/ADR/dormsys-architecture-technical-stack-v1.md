@@ -6,7 +6,7 @@
 
 ## 1. Decision Summary
 
-**Final Stack:** Laravel 12 + Livewire 3 + PostgreSQL 17
+**Final Stack:** Laravel 13+ Livewire 3 + PostgreSQL 17
 
 This decision has been made based on the Why → Problem → Need → Solution → Stack chain; not based on technology hype.
 
@@ -18,7 +18,7 @@ DormSys is an **Enterprise Workflow Application** with 10 to 50 users. It is not
 
 | Field | Content |
 |---|---|
-| Title | Choosing Laravel 12 + Livewire as the Main Stack |
+| Title | Choosing Laravel 13+ Livewire as the Main Stack |
 | Status | Accepted |
 | Date | 1405/03/31 |
 | Decision Maker | Tech Lead + Product Owner |
@@ -61,7 +61,7 @@ Laravel 12 + Livewire 3 + PostgreSQL 17
 ┌─────────────────────────────────────────────────────────────┐
 │                    Application Layer                         │
 ├─────────────────────────────────────────────────────────────┤
-│  Laravel 12 (PHP 8.4)                                       │
+│  Laravel 13(PHP 8.4)                                       │
 │  ├─ Route → Controller → Service → Repository               │
 │  ├─ Form Requests (Validation)                              │
 │  ├─ Policies + Gates (Authorization)                        │
@@ -121,7 +121,7 @@ Laravel 12 + Livewire 3 + PostgreSQL 17
 
 | Technology | Version | Purpose | Description |
 |---|---|---|---|
-| Blade | Laravel 12 built-in | Template Engine | Server-side rendering, Layout, Component |
+| Blade | Laravel 13built-in | Template Engine | Server-side rendering, Layout, Component |
 | Livewire | 3.x | Reactive UI | Dynamic forms, tables, modals, real-time validation |
 | Alpine.js | 3.x | Micro-interactivity | Dropdown, Toggle, Conditional Show, simple interactions |
 | Tailwind CSS | 4.x | Styling | Utility-first, RTL Support, Dark Mode ready |
@@ -678,7 +678,7 @@ CheckIn/Out Operator Interface, management reports, Excel/PDF export
 | Section | Choice |
 |---|---|
 | Language | PHP 8.4 |
-| Framework | Laravel 12 |
+| Framework | Laravel 13|
 | UI Layer | Blade + Livewire 3 |
 | Micro-interactivity | Alpine.js 3 |
 | Styling | Tailwind CSS 4 |

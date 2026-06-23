@@ -6,13 +6,13 @@
 
 **Status**: Draft
 
-**Input**: Bootstrap the Laravel 12 project foundation for DormSys with modular monolith architecture, establish core modules structure, configure PostgreSQL 17 and Redis, install platform packages, set up testing with Pest PHP, prepare Docker Sail environment, and establish minimal CI foundation.
+**Input**: Bootstrap the Laravel 13project foundation for DormSys with modular monolith architecture, establish core modules structure, configure PostgreSQL 17 and Redis, install platform packages, set up testing with Pest PHP, prepare Docker Sail environment, and establish minimal CI foundation.
 
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Project Bootstrap & Environment Setup (Priority: P1)
 
-As a developer, I need to bootstrap the Laravel 12 project with all required dependencies and configurations so that I have a working development environment ready for feature implementation.
+As a developer, I need to bootstrap the Laravel 13project with all required dependencies and configurations so that I have a working development environment ready for feature implementation.
 
 **Why this priority**: Without a properly configured development environment, no feature development can begin. This is the absolute foundation that everything else depends on.
 
@@ -20,7 +20,7 @@ As a developer, I need to bootstrap the Laravel 12 project with all required dep
 
 **Acceptance Scenarios**:
 
-1. **Given** a fresh project directory, **When** Laravel 12 is installed with all dependencies, **Then** the application boots successfully with no errors
+1. **Given** a fresh project directory, **When** Laravel 13is installed with all dependencies, **Then** the application boots successfully with no errors
 2. **Given** Docker Sail is configured, **When** `sail up` is executed, **Then** PostgreSQL 17, Redis, and the Laravel application start successfully
 3. **Given** the application is running, **When** database connection is tested, **Then** PostgreSQL connection succeeds with UUID extension enabled
 4. **Given** the application is running, **When** cache is tested, **Then** Redis connection succeeds
@@ -87,7 +87,7 @@ As a developer, I need minimal CI configuration so that automated checks can val
 
 ### Functional Requirements
 
-- **FR-001**: System MUST bootstrap Laravel 12 with all required Composer dependencies
+- **FR-001**: System MUST bootstrap Laravel 13with all required Composer dependencies
 - **FR-002**: System MUST configure PostgreSQL 17 as the primary database with UUID extension enabled
 - **FR-003**: System MUST configure Redis for cache and queue backends
 - **FR-004**: System MUST establish modular monolith structure under `app/Modules/` with 10 core modules: Identity, Employee, Request, Approval, Dormitory, Allocation, Lottery, Voucher, Notification, Audit

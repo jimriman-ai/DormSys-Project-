@@ -29,7 +29,7 @@ php artisan key:generate
 
 **Expected outcome**:
 - Exit code 0
-- `vendor/` populated with Laravel 12 and platform packages
+- `vendor/` populated with Laravel 13and platform packages
 - `.env` contains `DB_CONNECTION=pgsql`, `CACHE_STORE=redis`, `QUEUE_CONNECTION=redis`
 
 **Maps to**: SC-001, FR-001, FR-016

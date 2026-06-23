@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-DormSys is a greenfield Laravel 12 enterprise application for employee dormitory request, allocation, lottery, and lifecycle management. It follows a **Modular Monolith + Clean Architecture + DDD Lite** pattern. The authoritative governance document is `.specify/memory/constitution.md`.
+DormSys is a greenfield Laravel 13 enterprise application for employee dormitory request, allocation, lottery, and lifecycle management. It follows a **Modular Monolith + Clean Architecture + DDD Lite** pattern. The authoritative governance document is `.specify/memory/constitution.md`.
 
 ## Project Structure & Module Organization
 

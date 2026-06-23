@@ -2,11 +2,11 @@
 
 **Branch**: `001-technical-foundation` | **Date**: 2026-06-22 | **Spec**: [spec.md](./spec.md)
 
-**Input**: Bootstrap Laravel 12 modular monolith foundation with PostgreSQL 17, Redis, platform packages, Pest testing, Sail dev environment, and minimal CI.
+**Input**: Bootstrap Laravel 13modular monolith foundation with PostgreSQL 17, Redis, platform packages, Pest testing, Sail dev environment, and minimal CI.
 
 ## Summary
 
-Spec01 establishes a greenfield Laravel 12 application skeleton for DormSys — an internal government administrative accommodation management system. The deliverable is not business features but a constitution-compliant platform: modular monolith directory structure (10 bounded contexts), shared kernel abstractions, PostgreSQL/Redis wiring, platform package installation, Pest test harness with architecture enforcement, PHPStan/Pint quality gates, Sail-based local development, and GitHub Actions CI.
+Spec01 establishes a greenfield Laravel 13application skeleton for DormSys — an internal government administrative accommodation management system. The deliverable is not business features but a constitution-compliant platform: modular monolith directory structure (10 bounded contexts), shared kernel abstractions, PostgreSQL/Redis wiring, platform package installation, Pest test harness with architecture enforcement, PHPStan/Pint quality gates, Sail-based local development, and GitHub Actions CI.
 
 All decisions trace to Constitution v2.0.0, Spec01, and ADR-001. Unspecified versions are planning assumptions documented in [research.md](./research.md).
 
@@ -73,7 +73,7 @@ All decisions trace to Constitution v2.0.0, Spec01, and ADR-001. Unspecified ver
 | Component | Proposed Baseline | Rationale |
 |-----------|-------------------|-----------|
 | PHP | 8.4 | ADR-001 |
-| Node.js | 20 LTS | Vite 6 / Laravel 12 frontend build |
+| Node.js | 20 LTS | Vite 6 / Laravel 13frontend build |
 | Alpine.js | 3.14+ | Bundled with Livewire |
 | Larastan | ^3.0 | PHPStan Laravel integration |
 | Laravel Pint | ^1.0 | Constitution DoD |

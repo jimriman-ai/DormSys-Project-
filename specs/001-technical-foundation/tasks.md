@@ -15,7 +15,7 @@
 |-------|------------|--------------|------------------|
 | P0 | 4 | 6h (1M + 3S) | ADRs, migration stub, pre-commit config |
 | P1 | 6 | 10h | Sail, PostgreSQL 17, Redis 7, `.env` scaffold |
-| P2 | 5 | 8h | Laravel 12 app, connectivity tests, routing |
+| P2 | 5 | 8h | Laravel 13app, connectivity tests, routing |
 | P3 | 10 | 14h | Spatie packages, Horizon, Telescope, Livewire, Jalali |
 | P4 | 13 | 12h | 10 module scaffolds, providers, READMEs |
 | P5 | 8 | 16h | Shared kernel contracts, VOs, events, exceptions, DTOs |
@@ -119,10 +119,10 @@
 
 ---
 
-## P2: Laravel 12 Bootstrap *(execute before P1)*
+## P2: Laravel 13Bootstrap *(execute before P1)*
 
 - [x] **TASK-F01-005** | Effort: M | Deps: P0 complete | AP-01  
-  **Title**: Create Laravel 12 project in repository root  
+  **Title**: Create Laravel 13 project in repository root  
   **Files**: `composer.json`, `artisan`, `bootstrap/app.php`, `public/index.php`  
   **AC**: `php artisan --version` shows Laravel 13.x; `APP_NAME=DormSys`; `.gitignore` excludes `.env`, `vendor/`, `node_modules/`  
   **Note**: Installed Laravel 13 skeleton (latest `laravel/laravel`); pin to ^12.0 in follow-up if required.
@@ -361,7 +361,7 @@
   **Files**: `app/Shared/Infrastructure/Persistence/Concerns/HasUuidV7PrimaryKey.php`  
   **AC**: Auto-assigns UUIDv7 on `creating`; `$incrementing = false`; `$keyType = 'string'`
 
-- [ ] **TASK-F01-049** | Effort: M | Deps: F01-048 | NFR-08, FR-019  
+- [x] **TASK-F01-049** | Effort: M | Deps: F01-048 | NFR-08, FR-019  
   **Title**: Implement `BaseModel` abstract Eloquent model  
   **Files**: `app/Shared/Infrastructure/Persistence/BaseModel.php`  
   **AC**: Uses `HasUuidV7PrimaryKey`; `SoftDeletes`; `$casts` for UTC datetimes; `created_by`/`updated_by` UUID nullable
@@ -376,7 +376,7 @@
   **Files**: `database/migrations/foundation/0002_create_tbl_settings_table.php`  
   **AC**: Table `tbl_settings`; UUIDv7 PK; `key` unique string; `value` jsonb; audit columns; `tbl_` prefix
 
-- [ ] **TASK-F01-052** | Effort: S | Deps: F01-038 | R-17  
+- [x] **TASK-F01-052** | Effort: S | Deps: F01-038 | R-17  
   **Title**: Wire per-module migration paths in service providers  
   **Files**: `app/Modules/*/…ServiceProvider.php`  
   **AC**: Each provider calls `loadMigrationsFrom()` for `database/migrations/{module}/`
@@ -390,12 +390,12 @@
 
 ## P7: Architecture Tests (Constitutional Enforcement)
 
-- [ ] **TASK-F01-054** | Effort: M | Deps: F01-038, F01-039, P8 Pest setup | AP-03, TASK-F01-002  
+- [x] **TASK-F01-054** | Effort: M | Deps: F01-038, F01-039, P8 Pest setup | AP-03, TASK-F01-002  
   **Title**: Layer dependency architecture tests  
   **Files**: `tests/Architecture/LayerDependencyTest.php`  
   **AC**: Domain cannot use Infrastructure/Presentation/Eloquent; ARCH-01–04 enforced
 
-- [ ] **TASK-F01-055** | Effort: M | Deps: F01-038 | AP-02, AP-04  
+- [x] **TASK-F01-055** | Effort: M | Deps: F01-038 | AP-02, AP-04  
   **Title**: Module boundary architecture tests  
   **Files**: `tests/Architecture/ModuleBoundaryTest.php`  
   **AC**: No cross-module Infrastructure imports; Shared Domain cannot import Modules
@@ -410,7 +410,7 @@
   **Files**: `tests/Architecture/UuidPrimaryKeyTest.php`  
   **AC**: All classes extending `BaseModel` use non-incrementing string keys
 
-- [ ] **TASK-F01-058** | Effort: S | Deps: F01-038 | AP-02, TASK-F01-001  
+- [x] **TASK-F01-058** | Effort: S | Deps: F01-038 | AP-02, TASK-F01-001  
   **Title**: Service provider registration test  
   **Files**: `tests/Architecture/ServiceProviderRegistrationTest.php`  
   **AC**: Asserts all 10 module providers registered and bootable
@@ -424,22 +424,22 @@
 
 ## P8: Code Quality & CI
 
-- [ ] **TASK-F01-060** | Effort: M | Deps: F01-005 | FR-009, NFR-04  
+- [x] **TASK-F01-060** | Effort: M | Deps: F01-005 | FR-009, NFR-04  
   **Title**: Configure Pest 3 with Laravel plugin  
   **Files**: `tests/Pest.php`, `pest.php`, `composer.json`  
   **AC**: `sail artisan test` runs Pest; `tests/Architecture/` and `tests/Feature/Foundation/` discovered
 
-- [ ] **TASK-F01-061** | Effort: M | Deps: F01-060 | NFR-04  
+- [x] **TASK-F01-061** | Effort: M | Deps: F01-060 | NFR-04  
   **Title**: Install `pest-plugin-arch` for architecture tests  
   **Files**: `composer.json`, `tests/Pest.php`  
   **AC**: `arch()` expectations available; F01-054/055 use plugin
 
-- [ ] **TASK-F01-062** | Effort: M | Deps: F01-005 | DoD §15  
+- [x] **TASK-F01-062** | Effort: M | Deps: F01-005 | DoD §15  
   **Title**: Configure PHPStan Level 8 + Larastan  
   **Files**: `phpstan.neon`, `composer.json`  
   **AC**: `composer run phpstan` passes at level 8 on foundation code
 
-- [ ] **TASK-F01-063** | Effort: S | Deps: F01-005 | DoD §15  
+- [x] **TASK-F01-063** | Effort: S | Deps: F01-005 | DoD §15  
   **Title**: Configure Laravel Pint  
   **Files**: `pint.json` (optional overrides), `composer.json` scripts  
   **AC**: `composer run pint -- --test` passes
@@ -449,7 +449,7 @@
   **Files**: `scripts/git-hooks/pre-commit`, `composer.json` (`hooks:install`)  
   **AC**: `composer run hooks:install` copies hook to `.git/hooks/pre-commit`
 
-- [ ] **TASK-F01-065** | Effort: M | Deps: F01-060–063 | FR-014, US4  
+- [x] **TASK-F01-065** | Effort: M | Deps: F01-060–063 | FR-014, US4  
   **Title**: GitHub Actions CI workflow  
   **Files**: `.github/workflows/ci.yml`  
   **AC**: Matches `contracts/ci-pipeline.md`; PG 17 + Redis services; pint, phpstan, test steps

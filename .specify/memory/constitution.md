@@ -14,7 +14,7 @@
 
 ### Change Summary (1.2.0 → 1.3.0)
 
-- Aligned technology stack with ADR-001 (Laravel 12, PHP 8.4, Livewire 3, Tailwind CSS 4, Alpine.js 3)
+- Aligned technology stack with ADR-001 (Laravel 13, PHP 8.4, Livewire 3, Tailwind CSS 4, Alpine.js 3)
 - Added MinIO (S3-compatible) to the infrastructure stack
 - Added Laravel Horizon, Laravel Pulse, and Sentry to the platform layer
 - Expanded module boundary table to include CheckIn, Report, and Voucher modules

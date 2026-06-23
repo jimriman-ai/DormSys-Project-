@@ -9,7 +9,7 @@ This document resolves planning unknowns for the DormSys foundation setup. Decis
 ## R-01: PHP Runtime Version
 
 - **Decision**: PHP **8.4** as the minimum runtime for local development and CI.
-- **Rationale**: ADR-001 specifies PHP 8.4 with JIT and property hooks. Laravel 12 supports PHP 8.2+; 8.4 is the ADR baseline and aligns with long-term support expectations.
+- **Rationale**: ADR-001 specifies PHP 8.4 with JIT and property hooks. Laravel 13supports PHP 8.2+; 8.4 is the ADR baseline and aligns with long-term support expectations.
 - **Alternatives considered**: PHP 8.3 (broader hosting compatibility) — rejected for greenfield project where ADR already committed to 8.4.
 
 ---
@@ -166,7 +166,7 @@ This document resolves planning unknowns for the DormSys foundation setup. Decis
 ## R-18: Service Provider Organization
 
 - **Decision**: Each module has `{Module}ServiceProvider` extending `ModuleServiceProvider` base. Central `bootstrap/providers.php` registers all module providers. Shared infrastructure in `App\Shared\Infrastructure\SharedServiceProvider`.
-- **Rationale**: Spec01 Key Entities include `ModuleServiceProvider`; Laravel 12 uses `bootstrap/providers.php`.
+- **Rationale**: Spec01 Key Entities include `ModuleServiceProvider`; Laravel 13uses `bootstrap/providers.php`.
 - **Alternatives considered**: Auto-discovery via package — rejected; explicit registration aids architecture tests.
 
 ---
@@ -174,7 +174,7 @@ This document resolves planning unknowns for the DormSys foundation setup. Decis
 ## R-19: Health Check Endpoint
 
 - **Decision**: Implement `/up` (Laravel 12 built-in) plus optional `/api/health` returning JSON with DB and Redis connectivity status (foundation stub).
-- **Rationale**: Constitution NFR-05 references `/api/health`. Laravel 12 provides `/up` natively.
+- **Rationale**: Constitution NFR-05 references `/api/health`. Laravel 13provides `/up` natively.
 - **Alternatives considered**: Custom health only — use both; `/up` for load balancers, `/api/health` for detailed checks in later phases.
 
 ---

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**DormSys** is a greenfield enterprise Laravel 12 application for employee dormitory request, allocation, lottery, and lifecycle management. It follows a **Modular Monolith + Clean Architecture + DDD Lite** pattern. The authoritative governance document is `.specify/memory/constitution.md`.
+**DormSys** is a greenfield enterprise Laravel 13application for employee dormitory request, allocation, lottery, and lifecycle management. It follows a **Modular Monolith + Clean Architecture + DDD Lite** pattern. The authoritative governance document is `.specify/memory/constitution.md`.
 
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
