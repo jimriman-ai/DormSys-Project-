@@ -676,6 +676,24 @@ dormsys/
 
 ---
 
+## Implementation Alignment Notes (Post–Hard Freeze)
+
+These notes clarify **spec01 code** against frozen boundary decisions. They do not amend `catalog-decisions.md` CD entries.
+
+### `BaseModel::getId()` ↔ CD-012 (OQ-01)
+
+CD-012 assigns `identity_id` at **Employee creation** (creation-time / first-linkage), not at a post-persist-only moment.
+
+`App\Support\Models\BaseModel::getId()` therefore:
+
+- throws when the UUID primary key is **not yet assigned**;
+- returns a valid UUID after the Eloquent `creating` event (`HasUuid`), even before `save()`;
+- does **not** require `$model->exists`.
+
+A persist-only `getId()` would conflict with CD-012 creation-time semantics and is prohibited.
+
+---
+
 ## Generated Artifacts
 
 | Artifact | Path | Status |

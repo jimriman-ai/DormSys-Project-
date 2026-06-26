@@ -22,7 +22,7 @@
 | P6 | 7 | 14h | Extensions, UUIDv7, BaseModel trait, `tbl_settings` |
 | P7 | 6 | 12h | Architecture + naming + UUID + provider tests |
 | P8 | 8 | 16h | Pest, PHPStan L8, Pint, pre-commit, GitHub Actions |
-| P9 | 6 | 10h | `/health`, docs, ADR index, quickstart |
+| P9 | 6 | 10h | `/api/health`, docs, ADR index, quickstart |
 | **Total** | **73** | **~118h (~20 days @ 6h/day)** | Foundation ready for Spec02 |
 
 ---
@@ -468,8 +468,8 @@
 
 ## P9: Health Check & Documentation
 
-- [ ] **TASK-F01-068** | Effort: M | Deps: F01-013, F01-014, F01-046 | NFR-05, R-19  
-  **Title**: Implement `GET /health` JSON endpoint  
+- [x] **TASK-F01-068** | Effort: M | Deps: F01-013, F01-014, F01-046 | NFR-05, R-19  
+  **Title**: Implement `GET /api/health` JSON endpoint  
   **Files**: `routes/api.php`, `app/Http/Controllers/HealthController.php`  
   **AC**: Returns 200 when PG+Redis ok; 503 when degraded; JSON per `contracts/health-endpoints.md`
 

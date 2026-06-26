@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+// These rules are verified by ArchTestCanaryTest to prevent vacuous passes.
+
 arch('domain layer does not depend on eloquent')
     ->expect('App\Modules\*\Domain')
     ->not->toUse('Illuminate\Database\Eloquent\*');

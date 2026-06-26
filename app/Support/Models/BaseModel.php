@@ -49,9 +49,24 @@ abstract class BaseModel extends Model implements Identifiable
         ];
     }
 
+    /**
+     * Return the persisted entity identifier once its UUID primary key has been assigned.
+     *
+     * UUID assignment occurs on the Eloquent `creating` event (see HasUuid), which may
+     * precede database persistence. This matches creation-time linkage semantics such as
+     * CD-012 `identity_id` assignment at Employee creation — not post-persist-only access.
+     *
+     * @throws \LogicException when the UUID has not yet been assigned
+     */
     public function getId(): string
     {
-        return (string) $this->getKey();
+        $key = $this->getKey();
+
+        if ($key === null || $key === '') {
+            throw new \LogicException('Model UUID not yet assigned.');
+        }
+
+        return (string) $key;
     }
 
     /**

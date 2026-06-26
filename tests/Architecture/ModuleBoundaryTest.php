@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+// These rules are verified by ArchTestCanaryTest to prevent vacuous passes.
+
 foreach (architectureModuleNames() as $module) {
     foreach (architectureForeignModuleNamespaces($module) as $foreignModule) {
         arch("{$module} domain is isolated from {$foreignModule}")

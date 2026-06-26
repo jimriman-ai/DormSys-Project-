@@ -10,6 +10,8 @@ use App\Support\Traits\HasJalaliDates;
 use App\Support\Traits\HasUuid;
 use App\Support\Traits\RecordsActivity;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\Attributes\Test;
 use Ramsey\Uuid\Uuid;
 use ReflectionMethod;
@@ -17,6 +19,24 @@ use Tests\TestCase;
 
 class BaseModelTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        if (! extension_loaded('pdo_sqlite')) {
+            return;
+        }
+
+        config(['database.default' => 'sqlite']);
+        config(['database.connections.sqlite.database' => ':memory:']);
+
+        Schema::create('support_base_test_models', function (Blueprint $table): void {
+            $table->uuid('id')->primary();
+            $table->timestamps();
+            $table->softDeletes();
+        });
+    }
+
     #[Test]
     public function it_configures_uuid_primary_key_and_audit_traits(): void
     {
@@ -40,13 +60,38 @@ class BaseModelTest extends TestCase
     }
 
     #[Test]
-    public function it_assigns_uuidv7_when_creating(): void
+    public function it_throws_when_uuid_not_yet_assigned(): void
+    {
+        $model = new SupportBaseTestModel;
+
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Model UUID not yet assigned.');
+
+        $model->getId();
+    }
+
+    #[Test]
+    public function it_returns_uuid_after_save(): void
+    {
+        if (! extension_loaded('pdo_sqlite')) {
+            $this->markTestSkipped('SQLite driver is not available.');
+        }
+
+        $model = new SupportBaseTestModel;
+        $model->save();
+
+        $this->assertTrue(Uuid::isValid($model->getId()));
+    }
+
+    #[Test]
+    public function it_returns_uuid_via_get_id_after_creating_event_before_save(): void
     {
         $model = new SupportBaseTestModel;
 
         $method = new ReflectionMethod(BaseModel::class, 'fireModelEvent');
         $method->invoke($model, 'creating');
 
+        $this->assertFalse($model->exists);
         $this->assertTrue(Uuid::isValid($model->getId()));
     }
 }
