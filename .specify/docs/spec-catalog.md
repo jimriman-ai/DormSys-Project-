@@ -1,6 +1,6 @@
 # DormSys Spec Catalog
 
-**Version:** 1.0.4 (Wave 1B completion)  
+**Version:** 1.0.5 (spec04 planning authorization)  
 **Status:** Hard Freeze — Operational  
 **Last Updated:** 1405/04/02 | 2026/06/23  
 **Related Documents:** [`catalog-decisions.md`](catalog-decisions.md), [`context-map.md`](context-map.md), [`playbook/specification-playbook.md`](playbook/specification-playbook.md)
@@ -98,6 +98,7 @@ OQ-03 through OQ-05 were closed before Hard Freeze (CD-010, CD-011, CD-014). CON
 | ---- | ------------------- |
 | `spec02` Identity & Access | **Frozen — Wave 1A Complete** (2026-06-26) |
 | `spec03` Employee Context | **MVP Implemented — Wave 1A** (US1 / T001–T026a) · **Wave 1B Completed (US2)** (T027–T034) |
+| `spec04` Accommodation Resource | **Planning Authorized** (implementation not authorized) |
 
 ### Out of scope for this freeze (not blockers)
 
@@ -117,7 +118,7 @@ Any change to a closed OQ or bounded-context boundary requires a new entry in `c
 | `spec01` | **Foundation** | Bootstrap Laravel 13 application, modular monolith structure, shared kernel, database baseline, testing, quality gates, local environment, and CI foundation | Platform Foundation | None | Approved | Explicit | None |
 | `spec02` | **Identity & Access** | Identity accounts, roles, permissions, and access-control baseline for the platform | `Identity` | `spec01` | **Frozen — Wave 1A Complete** | Explicit | OA-02-01 auth UX deferred. **Delivered:** User lifecycle, RBAC, `IdentityUserReadContract`, boundary tests. Livewire admin deferred. |
 | `spec03` | **Employee Context** | Employee profiles, departments, and dependent records as an organizational domain context | `Employee` | `spec01`, `spec02` | **MVP Implemented — Wave 1A**; **Wave 1B Completed (US2)** (T027–T034; US3+ hold) | Explicit | **Delivered (US1):** Employee create, `identity_id` CD-012 boundary, `IdentityUserReadContract` consumer, BT-01–BT-05. **Delivered (US2):** Department create/deactivate, employee assignment, R-17 inactive guard. **Hold:** US3, US4, T035+. |
-| `spec04` | **Accommodation Resource** | Dormitories, buildings, rooms, beds, and physical accommodation capacity/availability structures | `Dormitory` | `spec01` | Planned | Explicit | Should building/floor hierarchy be modeled inside the same context from the start, or introduced only when needed by operations? **Decided (CD-014):** owns physical room/bed occupancy state; Allocation drives updates via events. |
+| `spec04` | **Accommodation Resource** | Dormitories, buildings, rooms, beds, and physical accommodation capacity/availability structures | `Dormitory` | `spec01` | **Planning Authorized** | Explicit | **Open (planning):** building/floor hierarchy — resolve during spec04 authoring. **Decided (CD-014):** owns physical room/bed occupancy state; Allocation drives updates via events. **Hold:** implementation until separate authorization. |
 | `spec05` | **Request Management** | Accommodation request submission, request lifecycle, and request-level approval state/history | `Request` | `spec01`, `spec02`, `spec03` | Planned | Explicit + Inferred | **Decided (CD-010):** owns `RequestApproval` state and history; Workflow (deferred) owns transition rules when activated. **Decided (CD-013):** enforces eligibility invariant at submission (Recorded Assumption). |
 | `spec06` | **Lottery Selection** | Lottery programs, registrations, draw execution, scoring, and result production | `Lottery` | `spec01`, `spec05` | Planned | Explicit + Inferred | **Decided (CD-011):** Lottery owns all lottery rules, lifecycle, and results; emits proposed allocations to Allocation. |
 | `spec07` | **Allocation & Occupancy** | Assign rooms/beds (Allocation BC); coordinate physical occupancy (Dormitory) and operational stay transitions (CheckIn/CheckOut) | `Allocation` (+ coordination with `Dormitory`, candidate `CheckIn/CheckOut`) | `spec01`, `spec04`, `spec05`, `spec06` | Planned | Explicit + Inferred | **Decided (CD-014):** Allocation owns assignment authority; Dormitory owns physical state; occupancy is cross-cutting. **Open (OQ-06):** Is CheckIn/CheckOut a separate module within this delivery spec, or folded into Allocation? |
@@ -199,6 +200,11 @@ This catalog is the controlling operational reference for downstream `spec.md`, 
 
 ---
 ## Change Log
+
+### 1.0.5 — 2026-06-23 (spec04 planning authorization)
+
+- **spec04 planning authorized** — specify/plan/tasks only; see [`handoff/spec04-planning-authorization.md`](handoff/spec04-planning-authorization.md).
+- spec03 Wave 1B completion unchanged; US3/US4 remain on hold; spec05 implementation not authorized.
 
 ### 1.0.4 — 2026-06-23 (Wave 1B completion)
 
