@@ -588,7 +588,7 @@ APP_KEY=
 APP_DEBUG=true
 APP_URL=http://localhost:8080
 APP_LOCALE=fa
-APP_TIMEZONE=Asia/Tehran
+APP_TIMEZONE=UTC
 
 DB_CONNECTION=pgsql
 DB_HOST=postgres

@@ -140,7 +140,7 @@ Create a **comprehensive, extensible, and scalable system** enabling the organiz
 ## Architecture
 
 **Style:** Modular Monolith  
-**Backend:** Laravel 13 (PHP 8.3+)  
+**Backend:** Laravel 13 (PHP 8.4+)  
 **Frontend:** Livewire 3 + Alpine.js  
 **Database:** PostgreSQL 17  
 **Cache/Queue:** Redis  

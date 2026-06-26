@@ -47,7 +47,7 @@ The project constitution must be updated to reflect this decision. All subsequen
 
 ```text
 DormSys — Modular Monolith Architecture
-Laravel 12 + Livewire 3 + PostgreSQL 17
+Laravel 13 + Livewire 3 + PostgreSQL 17
 
 ┌─────────────────────────────────────────────────────────────┐
 │                    Presentation Layer                        │
@@ -588,7 +588,7 @@ APP_KEY=
 APP_DEBUG=true
 APP_URL=http://localhost:8080
 APP_LOCALE=fa
-APP_TIMEZONE=Asia/Tehran
+APP_TIMEZONE=UTC
 
 DB_CONNECTION=pgsql
 DB_HOST=postgres
@@ -624,7 +624,7 @@ SENTRY_LARAVEL_DSN=
 {
   "require": {
     "php": "^8.4",
-    "laravel/framework": "^12.0",
+    "laravel/framework": "^13.0",
     "laravel/fortify": "^1.0",
     "laravel/sanctum": "^4.0",
     "laravel/horizon": "^5.0",
