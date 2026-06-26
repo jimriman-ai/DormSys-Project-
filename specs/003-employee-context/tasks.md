@@ -144,6 +144,10 @@ Run after T026a; **do not proceed to US2** until all green:
 | Pint | `vendor/bin/pint app/Modules/Employee` |
 | Migration from scratch | `migrate:fresh` + seed Identity user + `employee:create` smoke |
 
+**Post-MVP checkpoint (2026-06-26):** **PASS** — see [`.specify/docs/handoff/spec03-post-mvp-authorization.md`](../../.specify/docs/handoff/spec03-post-mvp-authorization.md).
+
+**US2 authorization:** **Not authorized** — T030+ on hold until explicit go-ahead.
+
 ---
 
 ## Phase 4: User Story 2 — Department & Organizational Structure (Priority: P2)

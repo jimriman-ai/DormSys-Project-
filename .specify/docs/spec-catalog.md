@@ -200,6 +200,8 @@ This catalog is the controlling operational reference for downstream `spec.md`, 
 ---
 ## Change Log
 
+- **US2 authorization (2026-06-26):** **Hold** — not authorized for T030+; see [`handoff/spec03-post-mvp-authorization.md`](handoff/spec03-post-mvp-authorization.md).
+
 ### 1.0.2 — 2026-06-26 (Post-MVP checkpoint)
 
 - **spec03 MVP implemented** — PR #4 + PR #2 merged into `spec02-baseline`; US1 (T001–T026a) delivered; US2 (T030+) remains on hold pending explicit authorization.
