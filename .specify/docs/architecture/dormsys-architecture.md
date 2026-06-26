@@ -474,6 +474,8 @@ dormsys/
 
 ## ۷. Docker Compose (محیط توسعه)
 
+> **مرجع عملیاتی local dev:** از `compose.yaml` (Laravel Sail) و `.env.example` در ریشه مخزن استفاده کنید. نمونهٔ زیر یک **topology مرجع قدیمی** است (nginx + PHP image سفارشی + MinIO) و baseline عملیاتی نیست. متغیرهای محیطی در §۸ با Sail هم‌راستا هستند (`DB_HOST=pgsql`, `DB_USERNAME=sail`, `DB_PASSWORD=password`, `REDIS_PASSWORD` خالی).
+
 ```yaml
 # docker-compose.yml
 services:
@@ -586,23 +588,23 @@ APP_NAME=DormSys
 APP_ENV=local
 APP_KEY=
 APP_DEBUG=true
-APP_URL=http://localhost:8080
+APP_URL=http://localhost
 APP_LOCALE=fa
 APP_TIMEZONE=UTC
 
 DB_CONNECTION=pgsql
-DB_HOST=postgres
+DB_HOST=pgsql
 DB_PORT=5432
 DB_DATABASE=dormsys
-DB_USERNAME=dormsys_user
-DB_PASSWORD=secret
+DB_USERNAME=sail
+DB_PASSWORD=password
 
 CACHE_STORE=redis
 SESSION_DRIVER=redis
 QUEUE_CONNECTION=redis
 
 REDIS_HOST=redis
-REDIS_PASSWORD=secret
+REDIS_PASSWORD=
 REDIS_PORT=6379
 
 FILESYSTEM_DISK=minio

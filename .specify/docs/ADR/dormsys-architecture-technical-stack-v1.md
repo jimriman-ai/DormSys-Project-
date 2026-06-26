@@ -474,6 +474,8 @@ Lottery execution, Allocation, and Approval must be idempotent or must explicitl
 
 ## 7. Docker Compose (Development Environment)
 
+> **Authoritative local dev:** Use repository root `compose.yaml` (Laravel Sail) and `.env.example`. The sample below is a **legacy reference topology** (nginx + custom PHP image + MinIO) and is not the operational baseline. Environment variables in §8 match Sail (`DB_HOST=pgsql`, `DB_USERNAME=sail`, `DB_PASSWORD=password`, empty `REDIS_PASSWORD`).
+
 ```yaml
 # docker-compose.yml
 services:
@@ -586,23 +588,23 @@ APP_NAME=DormSys
 APP_ENV=local
 APP_KEY=
 APP_DEBUG=true
-APP_URL=http://localhost:8080
+APP_URL=http://localhost
 APP_LOCALE=fa
 APP_TIMEZONE=UTC
 
 DB_CONNECTION=pgsql
-DB_HOST=postgres
+DB_HOST=pgsql
 DB_PORT=5432
 DB_DATABASE=dormsys
-DB_USERNAME=dormsys_user
-DB_PASSWORD=secret
+DB_USERNAME=sail
+DB_PASSWORD=password
 
 CACHE_STORE=redis
 SESSION_DRIVER=redis
 QUEUE_CONNECTION=redis
 
 REDIS_HOST=redis
-REDIS_PASSWORD=secret
+REDIS_PASSWORD=
 REDIS_PORT=6379
 
 FILESYSTEM_DISK=minio
