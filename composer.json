@@ -26,6 +26,7 @@
         "laravel/sail": "^1.62",
         "laravel/telescope": "5.20.0",
         "mockery/mockery": "^1.6",
+        "mrpunyapal/peststan": "^0.2.10",
         "nunomaduro/collision": "^8.6",
         "pestphp/pest": "^4.0",
         "pestphp/pest-plugin-arch": "^4.0",

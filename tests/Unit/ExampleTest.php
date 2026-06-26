@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use App\Support\Models\BaseModel;
 use PHPUnit\Framework\TestCase;
 
 class ExampleTest extends TestCase
 {
-    /**
-     * A basic test example.
-     */
-    public function test_that_true_is_true(): void
+    public function test_support_kernel_base_model_is_available(): void
     {
-        $this->assertTrue(true);
+        $this->assertTrue(class_exists(BaseModel::class));
     }
 }

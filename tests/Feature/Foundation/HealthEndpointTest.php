@@ -95,8 +95,10 @@ class HealthEndpointTest extends TestCase
 
     private function mockHealthyDatabase(): void
     {
+        $pdo = Mockery::mock(PDO::class);
         $databaseConnection = Mockery::mock();
-        $databaseConnection->shouldReceive('getPdo')->andReturn(Mockery::mock(PDO::class));
+        /** @phpstan-ignore method.notFound */
+        $databaseConnection->shouldReceive('getPdo')->andReturn($pdo);
 
         DB::shouldReceive('connection')->andReturn($databaseConnection);
     }

@@ -4,7 +4,7 @@
 
 **Created**: 2026-06-26
 
-**Status**: Draft — Wave 1A
+**Status**: Wave 1A — **MVP complete (T001–T026a)** — stopped before US2
 
 **Catalog**: spec03 — **Authorized — Wave 1A** (Hard Freeze v1.0.0)
 

@@ -28,9 +28,12 @@ abstract class BaseEvent implements JsonSerializable
      * Create a new event occurrence for the given aggregate.
      *
      * @param  array<string, mixed>  $payload
+     *
+     * @phpstan-return static
      */
     public static function raise(string $aggregateId, array $payload = []): static
     {
+        /** @phpstan-ignore new.static */
         return new static(
             eventId: Uuid::uuid7()->toString(),
             occurredAt: new DateTimeImmutable('now', new DateTimeZone('UTC')),

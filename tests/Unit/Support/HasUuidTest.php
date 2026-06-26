@@ -25,7 +25,7 @@ class HasUuidTest extends TestCase
 
         $this->assertIsString($id);
         $this->assertTrue(Uuid::isValid((string) $id));
-        $this->assertSame(7, Uuid::fromString((string) $id)->getFields()->getVersion());
+        $this->assertSame(7, Uuid::fromString((string) $id)->getVersion());
         $this->assertFalse($model->getIncrementing());
         $this->assertSame('string', $model->getKeyType());
     }

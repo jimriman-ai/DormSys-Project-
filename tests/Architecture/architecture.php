@@ -48,12 +48,17 @@ function architectureForeignModuleNamespaces(string $module): array
 }
 
 /**
- * @return list<string>
+ * @return list<class-string>
  */
 function architectureModuleServiceProviders(): array
 {
-    return array_map(
-        static fn (string $module): string => "App\\Modules\\{$module}\\Infrastructure\\Providers\\{$module}ServiceProvider",
+    return array_values(array_map(
+        static function (string $module): string {
+            /** @var class-string $providerClass */
+            $providerClass = "App\\Modules\\{$module}\\Infrastructure\\Providers\\{$module}ServiceProvider";
+
+            return $providerClass;
+        },
         architectureModuleNames()
-    );
+    ));
 }

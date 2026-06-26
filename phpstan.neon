@@ -1,5 +1,7 @@
 includes:
     - vendor/larastan/larastan/extension.neon
+    - vendor/pestphp/pest/phpstan-pest-extension.neon
+    - vendor/mrpunyapal/peststan/extension.neon
 
 parameters:
     paths:
@@ -7,6 +9,11 @@ parameters:
         - tests
 
     level: 8
+
+    peststan:
+        testCaseClass: Tests\TestCase
+        pestConfigFiles:
+            - tests/Pest.php
 
     checkOctaneCompatibility: true
 

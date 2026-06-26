@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Modules\Identity\Application\Contracts\UserRepositoryContract;
 use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Identity\Application\Services\DeactivateUserAction;
+use App\Modules\Identity\Domain\Entities\User;
 use App\Modules\Identity\Domain\Enums\UserStatus;
 
 it('creates and disables a user through the application layer', function (): void {
@@ -12,12 +13,13 @@ it('creates and disables a user through the application layer', function (): voi
 
     expect($created->isActive())->toBeTrue();
 
-    $deactivated = app(DeactivateUserAction::class)->execute($created->id);
+    $deactivated = app(DeactivateUserAction::class)->execute($created->requireId());
 
     expect($deactivated->status)->toBe(UserStatus::Disabled);
 
-    $loaded = app(UserRepositoryContract::class)->findById($created->id);
+    $loaded = app(UserRepositoryContract::class)->findById($created->requireId());
 
-    expect($loaded)->not->toBeNull()
-        ->and($loaded->isActive())->toBeFalse();
+    expect($loaded)->not->toBeNull();
+    assert($loaded instanceof User);
+    expect($loaded->isActive())->toBeFalse();
 });

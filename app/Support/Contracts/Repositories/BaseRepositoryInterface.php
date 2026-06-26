@@ -62,7 +62,7 @@ interface BaseRepositoryInterface
      *
      * @param  int  $perPage  Number of items per page
      * @param  array<string>  $columns  The columns to retrieve
-     * @return LengthAwarePaginator Paginated results
+     * @return LengthAwarePaginator<int, Model> Paginated results
      */
     public function paginate(int $perPage = 15, array $columns = ['*']): LengthAwarePaginator;
 }
