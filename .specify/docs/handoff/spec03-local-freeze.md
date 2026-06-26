@@ -1,10 +1,13 @@
-# spec03 Local Freeze — GitHub Handoff (do not push until ready)
+# spec03 Local Freeze — Handoff & Publication
 
 **Frozen:** 2026-06-26  
-**Phase:** **HOLD** — state valid; no feature work until publish or explicit US2 authorization.  
-**Status:** MVP complete (T001–T026a), stopped before US2. No remote configured.
+**Phase:** **PUBLICATION** — remote live; PR topology correction in progress.  
+**Remote:** `https://github.com/jimriman-ai/DormSys-Project-.git`  
+**Status:** MVP complete (T001–T026a), stopped before US2.
 
-> **Freeze scope:** This is a **local engineering freeze** (recoverable state + scope lock). It is **not** a catalog hard freeze or global governance lifecycle closure.
+> **Freeze scope:** Local engineering freeze (recoverable + scope lock). Not a catalog hard freeze.
+
+---
 
 ## Backup tags
 
@@ -15,95 +18,172 @@
 
 Recover: `git checkout backup/spec03-mvp` or `git checkout backup/spec03-governance`
 
-## Branches
+---
+
+## Branches (published)
 
 | Branch | Commit | Role |
 |--------|--------|------|
-| `spec02-baseline` | `83c1771` | PR-1 base (spec02 complete) |
+| `spec02-baseline` | `83c1771` | PR-1 base |
 | `docs/spec03-governance-alignment` | `73f0291` | PR-1 head |
-| `feat/spec03-employee-mvp` | `2dbe327` | PR-2 head (stacked on PR-1) |
-| `001-technical-foundation` | `0427182`+ | local integration branch (includes handoff commits only) |
+| `feat/spec03-employee-mvp` | `2dbe327` | PR-2 head (stacked) |
+| `001-technical-foundation` | `47a84e5`+ | reference only — **not** in merge plan |
 
-### `0427182` — local coordination only
+### Local coordination commits (not PR-1/PR-2 scope)
 
-Commit `0427182` (`docs: add spec03 local freeze handoff`) and any follow-up handoff edits are **local coordination / publication helpers**. They are **not** part of PR-1 or PR-2 product scope.
+`0427182`, `d52922b`, `47a84e5` and later handoff edits on `001-technical-foundation` only.
 
-On publish:
-- **Omit** from PR-1 and PR-2 diffs (PR tips remain `73f0291` and `2dbe327`)
-- **Or** include in a separate internal/docs PR after MVP merges
-- **Do not** rebase PR branches onto handoff commits
+---
 
 ## Canonical PR mapping (do not change)
 
-| PR | Base | Head |
-|----|------|------|
-| PR-1 | `spec02-baseline` (`83c1771`) | `docs/spec03-governance-alignment` (`73f0291`) |
-| PR-2 | `docs/spec03-governance-alignment` (`73f0291`) | `feat/spec03-employee-mvp` (`2dbe327`) |
+| Role | GitHub | Base | Head |
+|------|--------|------|------|
+| **PR-1** | [#2](https://github.com/jimriman-ai/DormSys-Project-/pull/2) | `spec02-baseline` | `docs/spec03-governance-alignment` |
+| **PR-2** | *open stacked PR* | `docs/spec03-governance-alignment` | `feat/spec03-employee-mvp` |
 
 | PR | Title |
 |----|-------|
 | PR-1 | `docs: align governance for spec03 (ADR-006, Dependent ownership, agent docs)` |
 | PR-2 | `feat(employee): spec03 MVP through T026a (CD-012 boundary)` |
 
-## Roadmap (single path)
+### Invalid PRs — close
 
-| Step | When | Action |
-|------|------|--------|
-| **1** | Now (done) | Handoff + canonical mapping + `0427182` clarification |
-| **2** | Remote ready | Publish per push order below; PR-1 → merge → PR-2 → merge |
-| **3** | After PR-2 merge | **Post-MVP authorization checkpoint** (before T027) |
-| **4** | Explicit go-ahead only | US2 (`T027+`) via `/speckit-implement` |
+| PR | Why |
+|----|-----|
+| [#1](https://github.com/jimriman-ai/DormSys-Project-/pull/1) | `001-technical-foundation` — out of plan |
+| [#3](https://github.com/jimriman-ai/DormSys-Project-/pull/3) | wrong base (`spec02-baseline` → feat) |
 
-### Step 3 — Post-MVP authorization checkpoint (before T027)
+**Stacked PR compare link:**  
+https://github.com/jimriman-ai/DormSys-Project-/compare/docs/spec03-governance-alignment...feat/spec03-employee-mvp
 
-- [ ] Refresh `spec-catalog.md`: spec03 → MVP implemented (Wave 1A), not hard freeze
-- [ ] Confirm distinction: local freeze ≠ catalog hard freeze
-- [ ] US2 scope sanity: Department stays simple aggregate (no eligibility/read-contract creep)
-- [ ] Record explicit **US2 authorized** decision
+---
 
-## When ready to publish (Step 2)
+## Publication update (2026-06-26)
 
-### 1. Add remote (replace URL)
+Published refs on `jimriman-ai/DormSys-Project-`:
 
-```bash
-git remote add origin <GITHUB_REPO_URL>
-```
+- `spec02-baseline`, `docs/spec03-governance-alignment`, `feat/spec03-employee-mvp`
+- `001-technical-foundation` (reference)
+- `backup/spec03-governance`, `backup/spec03-mvp`
 
-### 2. Push order
+PR topology correction required:
 
-```bash
-git push -u origin spec02-baseline
-git push -u origin docs/spec03-governance-alignment
-git push -u origin feat/spec03-employee-mvp
-```
+- Close PR #1 and PR #3
+- Open canonical stacked PR-2 (link above)
+- Merge order: **PR #2 → stacked PR-2**
 
-Optional: `git push -u origin 001-technical-foundation` after PRs merge.
+Constraints unchanged: **no T027+, no US2** until post-MVP authorization checkpoint.
 
-### PR-1 summary
+---
 
-- Constitution: Dependent ownership → Employee
-- ADR-006: `{module}_{entity}` table naming
-- Agent docs: Laravel 13, `app/Support/`, CheckIn candidate
-- FREEZE-LOG: RequestApproval → CD-010
-- spec03 boundary stub: active obligations
+## Roadmap
 
-### PR-2 body
+| Step | Status | Action |
+|------|--------|--------|
+| 1 | done | Local freeze + handoff |
+| 2 | in progress | Publish + correct PR topology |
+| 3 | pending | Merge PR-1 (#2) → merge PR-2 (stacked) |
+| 4 | pending | **Post-MVP authorization checkpoint** |
+| 5 | blocked | US2 / T027+ only with explicit go-ahead |
 
-> Governance alignment was completed in a prior docs-only PR. This PR implements spec03 MVP strictly within CD-012 boundary constraints and stops at the approved MVP Gate (T026a), before US2.
+---
 
-### PR-2 test plan
+## Post-MVP authorization checkpoint (after PR-2 merge)
+
+- [ ] Refresh `spec-catalog.md`: spec03 → MVP implemented (Wave 1A)
+- [ ] Confirm local freeze ≠ catalog hard freeze
+- [ ] US2 scope sanity (Department simple aggregate)
+- [ ] Record explicit **US2 authorized** or **spec04 planning** decision
+
+### Interim decision (recommended)
+
+Pause at checkpoint after PR merges. Run validation/consistency review (handoff, docs, implementation). Defer T027+, US2, and forward scope until explicit authorization.
+
+---
+
+## PR-2 test plan
 
 ```bash
 docker compose exec laravel.test php artisan test tests/Feature/Modules/Employee tests/Unit/Modules/Employee tests/Architecture/EmployeeSupplierBoundaryTest.php
 docker compose exec laravel.test vendor/bin/phpstan analyse app/Modules/Employee
 ```
 
-Boundary checks: BT-01–BT-05, `identity_id` no FK, no `Identity\Infrastructure` imports.
+Boundary: BT-01–BT-05, `identity_id` no FK, no `Identity\Infrastructure` imports.
 
-## HOLD rules (until Step 2 or Step 4 authorization)
+---
+
+## Copy-paste: close PR #1
+
+```markdown
+Closing this PR because it is outside the current canonical publication / merge plan for spec03.
+
+The planned review path is limited to:
+1. governance alignment PR (#2)
+2. stacked employee MVP PR
+
+The `001-technical-foundation` branch remains published for reference but is not part of the PR-1 / PR-2 merge sequence.
+```
+
+---
+
+## Copy-paste: close PR #3
+
+```markdown
+Closing this PR because it was opened against the wrong base branch.
+
+Correct topology:
+- PR-1: `spec02-baseline` <- `docs/spec03-governance-alignment`
+- PR-2: `docs/spec03-governance-alignment` <- `feat/spec03-employee-mvp`
+
+A corrected stacked PR replaces this one.
+```
+
+---
+
+## Copy-paste: merge comment PR-1 (#2)
+
+```markdown
+Merging PR-1 as the canonical governance-alignment step for spec03.
+
+This establishes the documentation/governance baseline before reviewing the stacked employee MVP PR.
+
+Next: merge stacked PR-2, then post-MVP authorization checkpoint. No T027+ / US2 yet.
+```
+
+---
+
+## Copy-paste: merge comment PR-2 (stacked)
+
+```markdown
+Merging PR-2 as the stacked spec03 employee MVP through T026a.
+
+PR-1 handled governance; this PR completes the implementation layer only.
+
+Next: post-MVP authorization checkpoint. No T027+ / US2 yet.
+```
+
+---
+
+## Pre-merge checklists
+
+### PR-1 (#2)
+
+- [ ] Base `spec02-baseline`, head `docs/spec03-governance-alignment`
+- [ ] Diff is governance/docs only (ADR-006, Dependent ownership, agents, FREEZE-LOG, boundary stub)
+- [ ] No implementation / env runtime in diff
+
+### PR-2 (stacked)
+
+- [ ] Base `docs/spec03-governance-alignment`, head `feat/spec03-employee-mvp`
+- [ ] MVP only (T001–T026a), CD-012 boundary
+- [ ] No governance re-diff; no US2 / T027+
+
+---
+
+## HOLD rules (until checkpoint authorization)
 
 - No feature work on spec03
 - No US2 (`T027+`)
-- No push / rebase / squash / branch topology changes
-- No amend of `73f0291` or `2dbe327` (use new commits for fixups)
-- Keep backup tags and this handoff as canonical truth
+- No amend of `73f0291` or `2dbe327`
+- No branch topology surgery
