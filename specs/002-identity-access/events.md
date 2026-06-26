@@ -66,8 +66,8 @@
 
 ---
 
-## Implementation notes (deferred to plan.md)
+## Implementation notes (Wave 1A — locked in plan.md §8)
 
-- Transport: Laravel domain events / queue — TBD in plan
-- Persistence: optional `domain_events` or Spatie activity — TBD
-- Idempotency: required for any async consumer (future)
+- **Transport:** Synchronous Laravel events from Application Actions (R-07)
+- **Persistence:** No dedicated event store; audit via `RecordsActivity` on `UserModel`
+- **Async / queue:** Out of scope for Wave 1A
