@@ -6,6 +6,7 @@ use App\Modules\Allocation\Infrastructure\Providers\AllocationServiceProvider;
 use App\Modules\Audit\Infrastructure\Providers\AuditServiceProvider;
 use App\Modules\Dormitory\Infrastructure\Providers\DormitoryServiceProvider;
 use App\Modules\Employee\Infrastructure\Providers\EmployeeServiceProvider;
+use App\Modules\Employee\Presentation\Providers\EmployeePresentationServiceProvider;
 use App\Modules\Identity\Infrastructure\Providers\IdentityServiceProvider;
 use App\Modules\Identity\Presentation\Providers\IdentityPresentationServiceProvider;
 use App\Modules\Lottery\Infrastructure\Providers\LotteryServiceProvider;
@@ -23,6 +24,7 @@ return [
     IdentityServiceProvider::class,
     IdentityPresentationServiceProvider::class,
     EmployeeServiceProvider::class,
+    EmployeePresentationServiceProvider::class,
     RequestServiceProvider::class,
     WorkflowServiceProvider::class,
     DormitoryServiceProvider::class,

@@ -15,10 +15,13 @@ use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\Attributes\Test;
 use Ramsey\Uuid\Uuid;
 use ReflectionMethod;
+use Tests\Concerns\CreatesActivityLogTable;
 use Tests\TestCase;
 
 class BaseModelTest extends TestCase
 {
+    use CreatesActivityLogTable;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -35,6 +38,8 @@ class BaseModelTest extends TestCase
             $table->timestamps();
             $table->softDeletes();
         });
+
+        $this->createActivityLogTable();
     }
 
     #[Test]

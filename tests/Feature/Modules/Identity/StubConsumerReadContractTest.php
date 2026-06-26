@@ -10,6 +10,6 @@ it('allows stub consumer to use only the read contract surface', function (): vo
 
     $consumer = app(StubEmployeeConsumer::class);
 
-    expect($consumer->canReferenceUser($created->id))->toBeTrue()
-        ->and($consumer->labelFor($created->id))->toBe('Consumer User');
+    expect($consumer->canReferenceUser($created->requireId()))->toBeTrue()
+        ->and($consumer->labelFor($created->requireId()))->toBe('Consumer User');
 });

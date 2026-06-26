@@ -22,7 +22,7 @@ use Tests\TestCase;
 class ModuleMigrationPathsTest extends TestCase
 {
     /**
-     * @return array<string, array{0: class-string, 1: string}>
+     * @return array<string, array{class-string, string}>
      */
     public static function moduleProviderPaths(): array
     {
@@ -45,12 +45,21 @@ class ModuleMigrationPathsTest extends TestCase
     #[DataProvider('moduleProviderPaths')]
     public function it_registers_module_owned_migration_directories(string $providerClass, string $module): void
     {
+        /** @var class-string $providerClass */
         $expected = database_path('migrations/modules/'.$module);
 
         $this->assertDirectoryExists($expected);
+        $this->assertTrue(class_exists($providerClass));
+        $reflection = new \ReflectionClass($providerClass);
+        $fileName = $reflection->getFileName();
+
+        $this->assertNotFalse($fileName);
+        $contents = file_get_contents($fileName);
+
+        $this->assertNotFalse($contents);
         $this->assertStringContainsString(
             "loadMigrationsFrom(database_path('migrations/modules/{$module}'))",
-            (string) file_get_contents((new \ReflectionClass($providerClass))->getFileName())
+            $contents
         );
     }
 

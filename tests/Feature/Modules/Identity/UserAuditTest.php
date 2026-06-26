@@ -12,15 +12,15 @@ it('records activity log entries on user create and disable', function (): void 
 
     expect(Activity::query()
         ->where('subject_type', UserModel::class)
-        ->where('subject_id', $created->id->value)
+        ->where('subject_id', $created->requireId()->value)
         ->where('event', 'created')
         ->exists())->toBeTrue();
 
-    app(DeactivateUserAction::class)->execute($created->id);
+    app(DeactivateUserAction::class)->execute($created->requireId());
 
     expect(Activity::query()
         ->where('subject_type', UserModel::class)
-        ->where('subject_id', $created->id->value)
+        ->where('subject_id', $created->requireId()->value)
         ->where('event', 'updated')
         ->exists())->toBeTrue();
 });

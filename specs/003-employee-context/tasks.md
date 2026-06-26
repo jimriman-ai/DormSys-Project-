@@ -12,7 +12,7 @@
 - **CD-013:** Eligibility computation in Employee; BR-01 allocation/request via **stub ports** until spec05/spec07
 - **No** Request, Allocation, or login UI tasks
 
-**Status**: Wave 1A — ready for `/speckit-implement`
+**Status**: Wave 1A — **MVP complete (T001–T026a)** — stop before US2
 
 ---
 
@@ -22,14 +22,14 @@
 |-------|---------|----------|------|
 | 1 — Setup | Module paths, provider wiring | T001–T004 | Yes |
 | 2 — Foundational | VOs, enums, exceptions, core migrations | T005–T014 | Yes |
-| 3 — US1 (P1) | Employee + `identity_id` boundary | T015–T026 | Yes |
+| 3 — US1 (P1) | Employee + `identity_id` boundary + MVP gate | T015–T026a | Yes |
 | 4 — US2 (P2) | Department CRUD + assignment | T027–T034 | No |
 | 5 — US3 (P2) | Dependent CRUD (CD-009) | T035–T040 | No |
 | 6 — US4 (P3) | Eligibility supplier + stub ports | T041–T048 | No |
 | 7 — Supplier read | `EmployeeReadContract` | T049–T052 | No |
 | 8 — Polish | BT-05 arch, PHPStan, quickstart | T053–T058 | Yes (quality) |
 
-**Total tasks:** 58
+**Total tasks:** 60 (MVP: T001–T026a)
 
 ---
 
@@ -42,7 +42,7 @@
 | US3 — Dependent Records | P2 | 5 | Add/list/update dependents under employee |
 | US4 — Eligibility Computation | P3 | 6 | `EmployeeEligibilityContract` — active vs inactive; mock port blocking |
 
-**Suggested MVP:** Phases 1–3 (T001–T026) — Employee aggregate with CD-012 boundary compliance.
+**Suggested MVP:** Phases 1–3 (T001–T026a) — Employee aggregate with CD-012 boundary compliance + MVP Gate.
 
 ---
 
@@ -66,10 +66,10 @@ Phase 8 (Polish) — after US1 minimum; full suite after US4
 
 **Purpose**: Employee module migration path and DI scaffolding — depends on spec02 `IdentityUserReadContract` (frozen).
 
-- [ ] T001 Verify `app/Modules/Employee/Infrastructure/Providers/EmployeeServiceProvider.php` loads migrations from `database/migrations/modules/employee/` per plan.md §2
-- [ ] T002 [P] Ensure `database/migrations/modules/employee/` directory exists and is empty-ready for module migrations
-- [ ] T003 [P] Add `EmployeePresentationServiceProvider` in `app/Modules/Employee/Presentation/Providers/EmployeePresentationServiceProvider.php` for Artisan commands (mirror Identity pattern) and register in `bootstrap/providers.php`
-- [ ] T004 [P] Document spec02 prerequisite in `app/Modules/Employee/README.md` stub — Identity user must exist before `employee:create`
+- [x] T001 Verify `app/Modules/Employee/Infrastructure/Providers/EmployeeServiceProvider.php` loads migrations from `database/migrations/modules/employee/` per plan.md §2
+- [x] T002 [P] Ensure `database/migrations/modules/employee/` directory exists and is empty-ready for module migrations
+- [x] T003 [P] Add `EmployeePresentationServiceProvider` in `app/Modules/Employee/Presentation/Providers/EmployeePresentationServiceProvider.php` for Artisan commands (mirror Identity pattern) and register in `bootstrap/providers.php`
+- [x] T004 [P] Document spec02 prerequisite in `app/Modules/Employee/README.md` stub — Identity user must exist before `employee:create`
 
 **Checkpoint**: Module boots; migrations path wired; no cross-module Infrastructure imports yet.
 
@@ -81,16 +81,16 @@ Phase 8 (Polish) — after US1 minimum; full suite after US4
 
 **⚠️ CRITICAL**: No user story work until this phase is complete.
 
-- [ ] T005 Create `EmployeeId` value object in `app/Modules/Employee/Domain/ValueObjects/EmployeeId.php` with `fromString()` validation
-- [ ] T006 [P] Create `DepartmentId` value object in `app/Modules/Employee/Domain/ValueObjects/DepartmentId.php`
-- [ ] T007 [P] Create `DependentId` value object in `app/Modules/Employee/Domain/ValueObjects/DependentId.php`
-- [ ] T008 [P] Create enums in `app/Modules/Employee/Domain/Enums/` — `EmployeeStatus.php`, `DepartmentStatus.php`, `DependentRelationship.php` per `data-model.md`
-- [ ] T009 [P] Create domain exceptions in `app/Modules/Employee/Domain/Exceptions/` — `IdentityIdImmutableException`, `EmployeeNotFoundException`, `DuplicateIdentityIdException`, `UnknownIdentityUserException`, `InactiveDepartmentAssignmentException`
-- [ ] T010 Create migration `database/migrations/modules/employee/*_create_employee_departments_table.php` per `data-model.md` (UUID PK, code unique, manager_id/parent_id self-FKs nullable, status, audit columns)
-- [ ] T011 Create migration `database/migrations/modules/employee/*_create_employee_employees_table.php` — `identity_id` UUID **unique**, **no FK** to Identity; `department_id` nullable FK → `employee_departments`; `national_code` unique; `employee_code` unique
-- [ ] T012 Create pure PHP `Employee` entity in `app/Modules/Employee/Domain/Entities/Employee.php` with `identityId` set-once invariant and `EmployeeStatus` transitions per `data-model.md`
-- [ ] T013 Create `EmployeeModel` in `app/Modules/Employee/Infrastructure/Persistence/Models/EmployeeModel.php` extending `App\Support\Models\BaseModel` with `HasUuid`, `RecordsActivity`; table `employee_employees`; **guard** `identity_id` from mass-assignment updates after create
-- [ ] T014 Create `EmployeeRepositoryContract` in `app/Modules/Employee/Application/Contracts/EmployeeRepositoryContract.php` and Eloquent `EmployeeRepository` in `app/Modules/Employee/Infrastructure/Repositories/EmployeeRepository.php` with `save()`, `findById()`, `findByIdentityId()`, `assertIdentityIdImmutable()` for BT-02
+- [x] T005 Create `EmployeeId` value object in `app/Modules/Employee/Domain/ValueObjects/EmployeeId.php` with `fromString()` validation
+- [x] T006 [P] Create `DepartmentId` value object in `app/Modules/Employee/Domain/ValueObjects/DepartmentId.php`
+- [x] T007 [P] Create `DependentId` value object in `app/Modules/Employee/Domain/ValueObjects/DependentId.php`
+- [x] T008 [P] Create enums in `app/Modules/Employee/Domain/Enums/` — `EmployeeStatus.php`, `DepartmentStatus.php`, `DependentRelationship.php` per `data-model.md`
+- [x] T009 [P] Create domain exceptions in `app/Modules/Employee/Domain/Exceptions/` — `IdentityIdImmutableException`, `EmployeeNotFoundException`, `DuplicateIdentityIdException`, `UnknownIdentityUserException`, `InactiveDepartmentAssignmentException`
+- [x] T010 Create migration `database/migrations/modules/employee/*_create_employee_departments_table.php` per `data-model.md` (UUID PK, code unique, manager_id/parent_id self-FKs nullable, status, audit columns)
+- [x] T011 Create migration `database/migrations/modules/employee/*_create_employee_employees_table.php` — `identity_id` UUID **unique**, **no FK** to Identity; `department_id` nullable FK → `employee_departments`; `national_code` unique; `employee_code` unique
+- [x] T012 Create pure PHP `Employee` entity in `app/Modules/Employee/Domain/Entities/Employee.php` with `identityId` set-once invariant and `EmployeeStatus` transitions per `data-model.md`
+- [x] T013 Create `EmployeeModel` in `app/Modules/Employee/Infrastructure/Persistence/Models/EmployeeModel.php` extending `App\Support\Models\BaseModel` with `HasUuid`, `RecordsActivity`; table `employee_employees`; **guard** `identity_id` from mass-assignment updates after create
+- [x] T014 Create `EmployeeRepositoryContract` in `app/Modules/Employee/Application/Contracts/EmployeeRepositoryContract.php` and Eloquent `EmployeeRepository` in `app/Modules/Employee/Infrastructure/Repositories/EmployeeRepository.php` with `save()`, `findById()`, `findByIdentityId()`, `assertIdentityIdImmutable()` for BT-02
 
 **Checkpoint**: `employee_departments` + `employee_employees` migrate; repository persists Employee — Identity contract not wired yet.
 
@@ -104,29 +104,45 @@ Phase 8 (Polish) — after US1 minimum; full suite after US4
 
 ### Domain event
 
-- [ ] T015 [US1] Create `EmployeeCreated` event in `app/Modules/Employee/Domain/Events/EmployeeCreated.php` with payload per `events.md` (`employeeId`, `identityId`, `occurredAt`)
+- [x] T015 [US1] Create `EmployeeCreated` event in `app/Modules/Employee/Domain/Events/EmployeeCreated.php` with payload per `events.md` (`employeeId`, `identityId`, `occurredAt`)
 
 ### Application action
 
-- [ ] T016 [US1] Implement `CreateEmployeeAction` in `app/Modules/Employee/Application/Services/CreateEmployeeAction.php` — inject `IdentityUserReadContract`; call `userExists` only (not `isUserActive`); persist via `EmployeeRepository`; dispatch `EmployeeCreated` synchronously
-- [ ] T017 [P] [US1] Create Artisan command `app/Modules/Employee/Presentation/Console/CreateEmployeeCommand.php` (`employee:create`) for dev/quickstart per `quickstart.md` Scenario 1
+- [x] T016 [US1] Implement `CreateEmployeeAction` in `app/Modules/Employee/Application/Services/CreateEmployeeAction.php` — inject `IdentityUserReadContract`; call `userExists` only (not `isUserActive`); persist via `EmployeeRepository`; dispatch `EmployeeCreated` synchronously
+- [x] T017 [P] [US1] Create Artisan command `app/Modules/Employee/Presentation/Console/CreateEmployeeCommand.php` (`employee:create`) for dev/quickstart per `quickstart.md` Scenario 1
 
 ### Boundary tests (BT-01–BT-03)
 
-- [ ] T018 [US1] Feature test `tests/Feature/Modules/Employee/EmployeeIdentityBoundaryTest.php` — **BT-01**: create with valid `identity_id` succeeds and is immutable on reload
-- [ ] T019 [US1] Extend `tests/Feature/Modules/Employee/EmployeeIdentityBoundaryTest.php` — **BT-02**: attempt `identity_id` update via repository/model throws `IdentityIdImmutableException`
-- [ ] T020 [US1] Extend `tests/Feature/Modules/Employee/EmployeeIdentityBoundaryTest.php` — **BT-03**: create with unknown UUID rejected; no row persisted
-- [ ] T021 [P] [US1] Extend `tests/Feature/Modules/Employee/EmployeeIdentityBoundaryTest.php` — **OA-03-02**: create succeeds when Identity user is disabled (`userExists` true, `isUserActive` false)
+- [x] T018 [US1] Feature test `tests/Feature/Modules/Employee/EmployeeIdentityBoundaryTest.php` — **BT-01**: create with valid `identity_id` succeeds and is immutable on reload
+- [x] T019 [US1] Extend `tests/Feature/Modules/Employee/EmployeeIdentityBoundaryTest.php` — **BT-02**: attempt `identity_id` update via repository/model throws `IdentityIdImmutableException`
+- [x] T020 [US1] Extend `tests/Feature/Modules/Employee/EmployeeIdentityBoundaryTest.php` — **BT-03**: create with unknown UUID rejected; no row persisted
+- [x] T021 [P] [US1] Extend `tests/Feature/Modules/Employee/EmployeeIdentityBoundaryTest.php` — **OA-03-02 / BT-04 (create path)**: create succeeds when Identity user is disabled (`userExists` true, `isUserActive` false)
+- [x] T021a [P] [US1] Extend `tests/Feature/Modules/Employee/EmployeeIdentityBoundaryTest.php` — **BT-04 (post-deactivate path)**: create employee with active Identity user → deactivate user via Identity action → assert Employee row unchanged (no automatic Employee state change; OA-02-02 deferred)
 
 ### Unit & audit tests
 
-- [ ] T022 [P] [US1] Unit test `tests/Unit/Modules/Employee/Domain/EmployeeTest.php` — identity immutability, status transitions
-- [ ] T023 [P] [US1] Unit test `tests/Unit/Modules/Employee/Application/CreateEmployeeActionTest.php` — mocks `IdentityUserReadContract`; asserts `EmployeeCreated` dispatched
-- [ ] T024 [US1] Feature test `tests/Feature/Modules/Employee/EmployeeAuditTest.php` — `RecordsActivity` on employee create
-- [ ] T025 [P] [US1] Feature test `tests/Feature/Modules/Employee/DuplicateIdentityIdTest.php` — second employee with same `identity_id` fails unique constraint
-- [ ] T026 [US1] Bind `EmployeeRepositoryContract` in `app/Modules/Employee/Infrastructure/Providers/EmployeeServiceProvider.php`
+- [x] T022 [P] [US1] Unit test `tests/Unit/Modules/Employee/Domain/EmployeeTest.php` — identity immutability, status transitions
+- [x] T023 [P] [US1] Unit test `tests/Unit/Modules/Employee/Application/CreateEmployeeActionTest.php` — mocks `IdentityUserReadContract`; asserts `EmployeeCreated` dispatched
+- [x] T024 [US1] Feature test `tests/Feature/Modules/Employee/EmployeeAuditTest.php` — `RecordsActivity` on employee create
+- [x] T025 [P] [US1] Feature test `tests/Feature/Modules/Employee/DuplicateIdentityIdTest.php` — second employee with same `identity_id` fails unique constraint
+- [x] T026 [US1] Bind `EmployeeRepositoryContract` in `app/Modules/Employee/Infrastructure/Providers/EmployeeServiceProvider.php`
+- [x] T026a [US1] Architecture test `tests/Architecture/EmployeeSupplierBoundaryTest.php` — **BT-05**: Employee module must not import `App\Modules\Identity\Infrastructure\*` (MVP gate; full scope audit in T058)
 
 **Checkpoint**: US1 acceptance scenarios 1–4 pass; quickstart Scenarios 1–4 pass; SC-001, SC-003 satisfied.
+
+### MVP Gate (stop here — before US2)
+
+Run after T026a; **do not proceed to US2** until all green:
+
+| Gate | Command / criterion |
+|------|---------------------|
+| PHPUnit (Employee + Architecture) | `php artisan test tests/Feature/Modules/Employee tests/Unit/Modules/Employee tests/Architecture/EmployeeSupplierBoundaryTest.php` |
+| BT-01–BT-03 | T018–T020 |
+| BT-04 | T021 + T021a |
+| BT-05 | T026a |
+| PHPStan | `vendor/bin/phpstan analyse app/Modules/Employee` |
+| Pint | `vendor/bin/pint app/Modules/Employee` |
+| Migration from scratch | `migrate:fresh` + seed Identity user + `employee:create` smoke |
 
 ---
 
@@ -136,9 +152,9 @@ Phase 8 (Polish) — after US1 minimum; full suite after US4
 
 **Independent Test**: Create department → assign to employee → query employee with `departmentId`; inactive department blocks new assignment.
 
-- [ ] T027 [US2] Create `Department` entity in `app/Modules/Employee/Domain/Entities/Department.php` per `data-model.md`
-- [ ] T028 [US2] Create `DepartmentModel` in `app/Modules/Employee/Infrastructure/Persistence/Models/DepartmentModel.php` with `HasUuid`, `RecordsActivity`; add `belongsTo`/`hasMany` relations to `EmployeeModel` in `app/Modules/Employee/Infrastructure/Persistence/Models/EmployeeModel.php` (`department()`, `employees()`)
-- [ ] T029 [US2] Create `DepartmentRepositoryContract` in `app/Modules/Employee/Application/Contracts/DepartmentRepositoryContract.php` and `DepartmentRepository` in `app/Modules/Employee/Infrastructure/Repositories/DepartmentRepository.php`
+- [x] T027 [US2] Create `Department` entity in `app/Modules/Employee/Domain/Entities/Department.php` per `data-model.md`
+- [x] T028 [US2] Create `DepartmentModel` in `app/Modules/Employee/Infrastructure/Persistence/Models/DepartmentModel.php` with `HasUuid`, `RecordsActivity`; add `belongsTo`/`hasMany` relations to `EmployeeModel` in `app/Modules/Employee/Infrastructure/Persistence/Models/EmployeeModel.php` (`department()`, `employees()`)
+- [x] T029 [US2] Create `DepartmentRepositoryContract` in `app/Modules/Employee/Application/Contracts/DepartmentRepositoryContract.php` and `DepartmentRepository` in `app/Modules/Employee/Infrastructure/Repositories/DepartmentRepository.php`
 - [ ] T030 [US2] Implement `CreateDepartmentAction` in `app/Modules/Employee/Application/Services/CreateDepartmentAction.php` and `DeactivateDepartmentAction` in `app/Modules/Employee/Application/Services/DeactivateDepartmentAction.php`
 - [ ] T031 [US2] Implement `AssignDepartmentToEmployeeAction` in `app/Modules/Employee/Application/Services/AssignDepartmentToEmployeeAction.php` — reject inactive department (R-17)
 - [ ] T032 [P] [US2] Create Artisan commands `app/Modules/Employee/Presentation/Console/CreateDepartmentCommand.php` and `AssignDepartmentCommand.php`
@@ -215,7 +231,7 @@ Phase 8 (Polish) — after US1 minimum; full suite after US4
 
 **Purpose**: Architecture boundary BT-05, PHPStan, documentation, quickstart validation. **Livewire HR admin deferred** (plan §Phase F).
 
-- [ ] T053 [P] Architecture test `tests/Architecture/EmployeeSupplierBoundaryTest.php` — **BT-05**: Employee module must not import `App\Modules\Identity\Infrastructure\*` or query `identity_users` via Eloquent
+- [ ] T053 [P] Re-run / extend `tests/Architecture/EmployeeSupplierBoundaryTest.php` if new Employee files added after MVP — **BT-05** regression (duplicate of T026a scope check)
 - [ ] T054 Update `app/Modules/Employee/README.md` with module boundaries, contract usage, stub port strategy, and CD-012/CD-013 traceability
 - [ ] T055 Run `docker compose exec laravel.test vendor/bin/pint` and fix formatting across Employee module
 - [ ] T056 Run `docker compose exec laravel.test vendor/bin/phpstan analyse --memory-limit=1G app/Modules/Employee` — zero errors (SC-005)
@@ -265,7 +281,7 @@ Phase 7 read contract can parallel US4 tests after T047.
 
 ## Implementation Strategy
 
-1. **MVP first**: Phases 1–3 (T001–T026) — Employee + `identity_id` boundary; unblocks spec05 Request `employee_id` references.
+1. **MVP first**: Phases 1–3 (T001–T026a) — Employee + `identity_id` boundary; **stop at MVP Gate** before US2.
 2. **Incremental**: US2 Department → US3 Dependent → US4 Eligibility → read contract → polish.
 3. **Defer**: Livewire admin, real allocation/request port adapters, `AuditService` central integration.
 4. **Validate early**: Run BT-01–BT-03 after T026 before declaring MVP complete; BT-05 after T053.

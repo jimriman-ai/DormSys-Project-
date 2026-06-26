@@ -16,9 +16,11 @@ app/Modules/{Module}/
 └── Presentation/    # Livewire Components, Controllers, Blade Views, Form Requests
 ```
 
-**Core modules:** `Identity`, `Employee`, `Request`, `Workflow`, `Dormitory`, `Allocation`, `Lottery`, `CheckIn`, `Notification`, `Audit`, `Report`.
+**Core modules:** `Identity`, `Employee`, `Request`, `Workflow` (deferred orchestration), `Dormitory`, `Allocation`, `Lottery`, `Notification`, `Audit`, `Reporting`.
 
-**Shared abstractions** (`BaseEntity`, `BaseValueObject`, `BaseDomainEvent`, `BaseRepository`) live in `app/Shared/`.
+**Candidate contexts (not active modules):** `CheckIn` / `CheckOut` — OQ-06; resolved at `spec07` planning.
+
+**Shared kernel** (`BaseModel`, `HasUuid`, repository contracts, value objects) lives in `app/Support/`.
 
 Feature specs are organized under `specs/{###-feature-name}/` with `spec.md`, `plan.md`, and `tasks.md`.
 

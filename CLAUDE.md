@@ -14,7 +14,7 @@ at specs/003-employee-context/plan.md
 
 ## Tech Stack
 
-- **Backend:** Laravel 12, PHP
+- **Backend:** Laravel 13, PHP 8.4
 - **Frontend:** Livewire 3 (server-first), Alpine.js (micro-interactions only), Tailwind CSS (RTL/Persian)
 - **Database:** PostgreSQL 17 (UUID primary keys, exclusion constraints for overlap prevention)
 - **Cache/Queue:** Redis (Laravel Queue + Horizon)
@@ -62,9 +62,11 @@ app/Modules/{Module}/
 └── Presentation/    # Livewire Components, Controllers, Blade Views, Form Requests
 ```
 
-**Core modules:** `Identity`, `Employee`, `Request`, `Workflow`, `Dormitory`, `Allocation`, `Lottery`, `CheckIn`, `Notification`, `Audit`, `Report`
+**Core modules:** `Identity`, `Employee`, `Request`, `Workflow` (deferred orchestration), `Dormitory`, `Allocation`, `Lottery`, `Notification`, `Audit`, `Reporting`
 
-**Shared abstractions** live in `app/Shared/` — `BaseEntity`, `BaseValueObject`, `BaseDomainEvent`, `BaseRepository` interface.
+**Candidate contexts (not active modules):** `CheckIn` / `CheckOut` — see OQ-06, `spec07` planning
+
+**Shared kernel** lives in `app/Support/` — `BaseModel`, `HasUuid`, `RecordsActivity`, value objects, and repository contracts.
 
 ## Critical Architecture Rules
 

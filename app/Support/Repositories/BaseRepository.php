@@ -61,7 +61,10 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
     public function paginate(int $perPage = 15, array $columns = ['*']): LengthAwarePaginator
     {
-        return $this->query()->paginate($perPage, $columns);
+        /** @var LengthAwarePaginator<int, Model> $paginator */
+        $paginator = $this->query()->paginate($perPage, $columns);
+
+        return $paginator;
     }
 
     public function findOrFail(string $id): Model
@@ -109,10 +112,11 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
     /**
-     * @return Builder<Model>
+     * @return Builder<TModel>
      */
     public function query(): Builder
     {
+        /** @var Builder<TModel> */
         return $this->model->newQuery();
     }
 
@@ -120,7 +124,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
     {
         $this->assertSoftDeletes();
 
-        $model = $this->query()->withTrashed()->find($id);
+        $query = $this->query();
+        /** @phpstan-ignore method.notFound */
+        $model = $query->withTrashed()->find($id);
 
         if ($model === null) {
             throw new NotFoundException(sprintf(
@@ -137,7 +143,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
     {
         $this->assertSoftDeletes();
 
-        $model = $this->query()->withTrashed()->find($id);
+        $query = $this->query();
+        /** @phpstan-ignore method.notFound */
+        $model = $query->withTrashed()->find($id);
 
         if ($model === null) {
             throw new NotFoundException(sprintf(
@@ -151,19 +159,23 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
     /**
+     * @param  array<string>  $columns
      * @return Collection<int, Model>
      */
     public function onlyTrashed(array $columns = ['*']): Collection
     {
         $this->assertSoftDeletes();
 
-        return $this->query()->onlyTrashed()->get($columns);
+        $query = $this->query();
+
+        /** @phpstan-ignore method.notFound */
+        return $query->onlyTrashed()->get($columns);
     }
 
     /**
      * @param  array<string, mixed>  $criteria
-     * @param  Builder<Model>  $query
-     * @return Builder<Model>
+     * @param  Builder<TModel>  $query
+     * @return Builder<TModel>
      */
     protected function applyCriteria(Builder $query, array $criteria): Builder
     {

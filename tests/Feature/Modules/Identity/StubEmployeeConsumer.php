@@ -18,12 +18,12 @@ final class StubEmployeeConsumer
 
     public function canReferenceUser(UserId $identityId): bool
     {
-        return $this->identity->userExists($identityId)
-            && $this->identity->isUserActive($identityId);
+        return $this->identity->userExists($identityId->value)
+            && $this->identity->isUserActive($identityId->value);
     }
 
     public function labelFor(UserId $identityId): ?string
     {
-        return $this->identity->findUserSummary($identityId)?->displayName;
+        return $this->identity->findUserSummary($identityId->value)?->displayName;
     }
 }

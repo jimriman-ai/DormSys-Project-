@@ -8,9 +8,9 @@ use App\Modules\Identity\Application\Contracts\UserRepositoryContract;
 use App\Modules\Identity\Domain\Entities\User;
 use App\Modules\Identity\Domain\Exceptions\RoleNotFoundException;
 use App\Modules\Identity\Domain\Exceptions\UserNotFoundException;
+use App\Modules\Identity\Domain\PlatformRoles;
 use App\Modules\Identity\Domain\ValueObjects\UserId;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
-use App\Modules\Identity\Domain\PlatformRoles;
 use Spatie\Permission\Models\Role;
 
 class UserRepository implements UserRepositoryContract

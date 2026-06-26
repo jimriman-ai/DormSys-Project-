@@ -11,10 +11,13 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\Attributes\Test;
 use Ramsey\Uuid\Uuid;
+use Tests\Concerns\CreatesActivityLogTable;
 use Tests\TestCase;
 
 class BaseRepositoryTest extends TestCase
 {
+    use CreatesActivityLogTable;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -35,6 +38,8 @@ class BaseRepositoryTest extends TestCase
             $table->uuid('updated_by')->nullable();
             $table->uuid('deleted_by')->nullable();
         });
+
+        $this->createActivityLogTable();
     }
 
     #[Test]
@@ -42,17 +47,21 @@ class BaseRepositoryTest extends TestCase
     {
         $repository = new SupportTestRepository(new SupportRepositoryTestModel);
 
+        /** @var SupportRepositoryTestModel $created */
         $created = $repository->create(['name' => 'alpha']);
         $this->assertSame('alpha', $created->name);
         $this->assertTrue(Uuid::isValid((string) $created->getKey()));
 
         $found = $repository->find((string) $created->getKey());
         $this->assertNotNull($found);
+        /** @var SupportRepositoryTestModel $found */
         $this->assertTrue($repository->exists((string) $created->getKey()));
         $this->assertSame(1, $repository->count());
 
         $this->assertTrue($repository->update((string) $created->getKey(), ['name' => 'beta']));
-        $this->assertSame('beta', $repository->findOrFail((string) $created->getKey())->name);
+        /** @var SupportRepositoryTestModel $updated */
+        $updated = $repository->findOrFail((string) $created->getKey());
+        $this->assertSame('beta', $updated->name);
 
         $this->assertTrue($repository->delete((string) $created->getKey()));
         $this->assertNull($repository->find((string) $created->getKey()));
@@ -72,8 +81,14 @@ class BaseRepositoryTest extends TestCase
         $matches = $repository->findBy(['name' => 'second']);
 
         $this->assertCount(1, $matches);
-        $this->assertSame('second', $matches->first()?->name);
-        $this->assertSame('second', $repository->firstWhere(['name' => 'second'])?->name);
+        /** @var SupportRepositoryTestModel $firstMatch */
+        $firstMatch = $matches->first();
+        $this->assertNotNull($firstMatch);
+        $this->assertSame('second', $firstMatch->name);
+        /** @var SupportRepositoryTestModel|null $firstWhere */
+        $firstWhere = $repository->firstWhere(['name' => 'second']);
+        $this->assertNotNull($firstWhere);
+        $this->assertSame('second', $firstWhere->name);
     }
 
     #[Test]
@@ -87,6 +102,9 @@ class BaseRepositoryTest extends TestCase
     }
 }
 
+/**
+ * @property string $name
+ */
 class SupportRepositoryTestModel extends BaseModel
 {
     protected $table = 'support_repository_test_models';
@@ -94,4 +112,7 @@ class SupportRepositoryTestModel extends BaseModel
     protected $guarded = [];
 }
 
+/**
+ * @extends BaseRepository<SupportRepositoryTestModel>
+ */
 class SupportTestRepository extends BaseRepository {}

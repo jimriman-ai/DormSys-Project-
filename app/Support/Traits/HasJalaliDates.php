@@ -10,6 +10,8 @@ use DateTimeInterface;
 
 /**
  * Exposes Jalali date value objects for configured Eloquent date attributes.
+ *
+ * @property array<int, string>|null $jalaliDates
  */
 trait HasJalaliDates
 {
@@ -18,10 +20,6 @@ trait HasJalaliDates
      */
     protected function jalaliDateAttributes(): array
     {
-        if (! property_exists($this, 'jalaliDates')) {
-            return ['created_at', 'updated_at'];
-        }
-
         /** @var array<int, string> $attributes */
         $attributes = $this->jalaliDates;
 
