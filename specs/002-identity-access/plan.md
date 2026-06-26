@@ -302,3 +302,21 @@ specs/002-identity-access/
 | Read service contract | `specs/002-identity-access/contracts/identity-read-service.md` | ✅ Complete |
 | Quickstart | `specs/002-identity-access/quickstart.md` | ✅ Complete |
 | spec03 boundary stub | `specs/003-employee-context/contracts/identity-employee-boundary.md` | ✅ Pointer only |
+
+---
+
+## Freeze Record (Wave 1A Complete)
+
+**Frozen:** 2026-06-26  
+**Status:** Feature frozen — implementation complete for Wave 1A scope.
+
+| Deliverable | Status |
+|-------------|--------|
+| US1 User lifecycle + events | ✅ |
+| US2 RBAC baseline | ✅ |
+| US3 `IdentityUserReadContract` (FR-008) | ✅ |
+| PHPStan `app/Modules/Identity` | ✅ 0 errors |
+| Tests (Feature + Architecture) | ✅ |
+| Livewire admin (T035–T037) | ⏸ Deferred |
+
+**Reopen policy:** Unfreeze requires catalog decision + amendment to frozen artifacts. OA-02-01 auth remains deferred.

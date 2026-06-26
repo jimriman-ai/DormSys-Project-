@@ -10,7 +10,7 @@ Validation scenarios for Wave 1A Identity module after implementation. Prerequis
 
 - Docker Sail up: `./vendor/bin/sail up -d`
 - Migrations including Identity module: `./vendor/bin/sail artisan migrate`
-- Identity seed (roles): `./vendor/bin/sail artisan db:seed --class=IdentityRoleSeeder` *(class name TBD in tasks)*
+- Identity seed (roles): `./vendor/bin/sail artisan db:seed --class=IdentityRoleSeeder`
 
 ---
 
@@ -18,7 +18,7 @@ Validation scenarios for Wave 1A Identity module after implementation. Prerequis
 
 **Proves:** FR-002, HasUuid kernel, SC-001
 
-1. Run Identity user create command or admin action (TBD in tasks)
+1. Run `php artisan identity:user-create "Display Name" --email=user@example.com`
 2. Capture returned user id
 3. Assert UUID version 7 format (regex / Ramsey validate)
 4. Query `identity_users` — single row, `status = active`
@@ -60,9 +60,9 @@ $contract->findUserSummary($unknownId);    // null
 
 **Proves:** FR-006/007, SC-002
 
-1. Assign `SystemAdministrator` role to user
-2. `$user->hasPermissionTo('identity.users.manage')` (exact permission name from seeder)
-3. Revoke role — permission check fails
+1. Assign role via `AssignRoleToUserAction` or test suite (`RoleAssignmentTest`)
+2. Assert `hasPermissionTo('identity.users.manage')` on `UserModel`
+3. Revoke via `RevokeRoleFromUserAction` — permission check fails
 
 ---
 

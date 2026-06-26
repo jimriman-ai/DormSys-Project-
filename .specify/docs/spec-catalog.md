@@ -96,8 +96,8 @@ OQ-03 through OQ-05 were closed before Hard Freeze (CD-010, CD-011, CD-014). CON
 
 | Spec | Status after freeze |
 | ---- | ------------------- |
-| `spec02` Identity & Access | **Authorized — Wave 1A** |
-| `spec03` Employee Context | **Authorized — Wave 1A** |
+| `spec02` Identity & Access | **Frozen — Wave 1A Complete** (2026-06-26) |
+| `spec03` Employee Context | **Authorized — Wave 1A** (authoring) |
 
 ### Out of scope for this freeze (not blockers)
 
@@ -115,7 +115,7 @@ Any change to a closed OQ or bounded-context boundary requires a new entry in `c
 | Spec ID | Name | Purpose | Bounded Context / Capability | Dependencies | Status | Evidence Basis | Open Questions |
 | ------- | ---- | ------- | ---------------------------- | ------------ | ------ | -------------- | -------------- |
 | `spec01` | **Foundation** | Bootstrap Laravel 13 application, modular monolith structure, shared kernel, database baseline, testing, quality gates, local environment, and CI foundation | Platform Foundation | None | Approved | Explicit | None |
-| `spec02` | **Identity & Access** | Identity accounts, roles, permissions, and access-control baseline for the platform | `Identity` | `spec01` | **Authorized — Wave 1A** | Explicit | Should authentication behavior be specified in this spec directly, or deferred until real entry flows are defined? **Boundary decided (CD-012):** separate context from Employee; provides immutable user identity referenced by Employee. |
+| `spec02` | **Identity & Access** | Identity accounts, roles, permissions, and access-control baseline for the platform | `Identity` | `spec01` | **Frozen — Wave 1A Complete** | Explicit | OA-02-01 auth UX deferred. **Delivered:** User lifecycle, RBAC, `IdentityUserReadContract`, boundary tests. Livewire admin deferred. |
 | `spec03` | **Employee Context** | Employee profiles, departments, and dependent records as an organizational domain context | `Employee` | `spec01`, `spec02` | **Authorized — Wave 1A** | Explicit | **Decided (CD-009):** Dependent ∈ Employee; Request holds snapshots/references only. **Decided (CD-012):** attaches to Identity via immutable UUID, no FK. **Decided (CD-013):** owns eligibility computation consumed by Request. |
 | `spec04` | **Accommodation Resource** | Dormitories, buildings, rooms, beds, and physical accommodation capacity/availability structures | `Dormitory` | `spec01` | Planned | Explicit | Should building/floor hierarchy be modeled inside the same context from the start, or introduced only when needed by operations? **Decided (CD-014):** owns physical room/bed occupancy state; Allocation drives updates via events. |
 | `spec05` | **Request Management** | Accommodation request submission, request lifecycle, and request-level approval state/history | `Request` | `spec01`, `spec02`, `spec03` | Planned | Explicit + Inferred | **Decided (CD-010):** owns `RequestApproval` state and history; Workflow (deferred) owns transition rules when activated. **Decided (CD-013):** enforces eligibility invariant at submission (Recorded Assumption). |
@@ -199,6 +199,11 @@ This catalog is the controlling operational reference for downstream `spec.md`, 
 
 ---
 ## Change Log
+
+### 1.0.1 — 2026-06-26
+
+- **spec02 frozen** — Wave 1A implementation complete; status → Frozen — Wave 1A Complete.
+- **spec03 authoring** — Wave 1A partner context; depends on frozen spec02 supplier surface.
 
 ### 1.0.0 (Hard Freeze) — 2026-06-26
 

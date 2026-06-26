@@ -1,0 +1,51 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Modules\Identity\Application\Contracts\IdentityUserReadContract;
+use App\Modules\Identity\Application\DTOs\UserSummaryDTO;
+use App\Modules\Identity\Application\Services\CreateUserAction;
+use App\Modules\Identity\Application\Services\DeactivateUserAction;
+use App\Modules\Identity\Domain\ValueObjects\UserId;
+use App\Support\Exceptions\ValidationException;
+use Ramsey\Uuid\Uuid;
+
+it('answers existence and active status per contract', function (): void {
+    $contract = app(IdentityUserReadContract::class);
+
+    $created = app(CreateUserAction::class)->execute('Read Contract User', 'read@example.com');
+    $userId = UserId::fromString($created->id->value);
+
+    expect($contract->userExists($userId))->toBeTrue()
+        ->and($contract->isUserActive($userId))->toBeTrue();
+
+    $summary = $contract->findUserSummary($userId);
+
+    expect($summary)->toBeInstanceOf(UserSummaryDTO::class)
+        ->and($summary->id)->toBe($created->id->value)
+        ->and($summary->status)->toBe('active')
+        ->and($summary->displayName)->toBe('Read Contract User');
+
+    app(DeactivateUserAction::class)->execute($userId);
+
+    expect($contract->userExists($userId))->toBeTrue()
+        ->and($contract->isUserActive($userId))->toBeFalse();
+
+    $disabledSummary = $contract->findUserSummary($userId);
+
+    expect($disabledSummary?->status)->toBe('disabled');
+});
+
+it('returns false and null for unknown identifiers without leaking errors', function (): void {
+    $contract = app(IdentityUserReadContract::class);
+    $unknownId = UserId::fromString(Uuid::uuid7()->toString());
+
+    expect($contract->userExists($unknownId))->toBeFalse()
+        ->and($contract->isUserActive($unknownId))->toBeFalse()
+        ->and($contract->findUserSummary($unknownId))->toBeNull();
+});
+
+it('rejects malformed identifiers at UserId validation', function (): void {
+    expect(fn () => UserId::fromString('not-a-uuid'))
+        ->toThrow(ValidationException::class);
+});

@@ -7,6 +7,7 @@ use App\Modules\Audit\Infrastructure\Providers\AuditServiceProvider;
 use App\Modules\Dormitory\Infrastructure\Providers\DormitoryServiceProvider;
 use App\Modules\Employee\Infrastructure\Providers\EmployeeServiceProvider;
 use App\Modules\Identity\Infrastructure\Providers\IdentityServiceProvider;
+use App\Modules\Identity\Presentation\Providers\IdentityPresentationServiceProvider;
 use App\Modules\Lottery\Infrastructure\Providers\LotteryServiceProvider;
 use App\Modules\Notification\Infrastructure\Providers\NotificationServiceProvider;
 use App\Modules\Reporting\Infrastructure\Providers\ReportingServiceProvider;
@@ -20,6 +21,7 @@ return [
     AppServiceProvider::class,
     HorizonServiceProvider::class,
     IdentityServiceProvider::class,
+    IdentityPresentationServiceProvider::class,
     EmployeeServiceProvider::class,
     RequestServiceProvider::class,
     WorkflowServiceProvider::class,

@@ -78,7 +78,7 @@ Reporting    ← read-only projections from all contexts
 | Direction | Upstream (Identity supplies users, roles, permissions) |
 | Integration | Application Service or Domain Event — direct repository access forbidden |
 | Attachment | **DECIDED (CD-012):** immutable UUID reference on Employee; no FK, no shared table |
-| Implementation | Deferred to `spec02` (Identity) and `spec03` (Employee) |
+| Implementation | spec02 **frozen**; spec03 **in progress** |
 | Open Question | **OQ-01 — CLOSED (CD-012)** |
 
 ### R2 — Employee → Request

@@ -4,9 +4,11 @@
 
 **Created**: 2026-06-26
 
-**Status**: Draft — Wave 1A
+**Status**: **Frozen — Wave 1A Complete** (2026-06-26)
 
-**Catalog**: spec02 — **Authorized — Wave 1A** (Hard Freeze v1.0.0)
+**Frozen artifacts**: `spec.md`, `plan.md`, `tasks.md` (T001–T034, T038–T042), `contracts/`, `events.md`, `data-model.md`, `quickstart.md`. **Deferred**: T035–T037 Livewire admin (plan §Phase E); OA-02-01 auth UX.
+
+**Catalog**: spec02 — **Frozen — Wave 1A Complete** (2026-06-26)
 
 **Depends on**: spec01 Foundation (Approved)
 
