@@ -635,23 +635,27 @@ Lottery execution, allocation creation, and approval operations must be **idempo
 
 DormSys is logically partitioned into the following bounded contexts. Each module has exclusive ownership of its domain logic and database tables.
 
-| Module | Responsibility | Owned Tables (prefix: `tbl_`) |
+**Table naming:** Physical tables use the `{module_prefix}_{entity}` convention per **ADR-006** (e.g. `identity_users`, `employee_employees`). The legacy `tbl_` prefix in early foundation drafts is superseded for module-owned tables.
+
+| Module | Responsibility | Owned Tables (ADR-006 naming) |
 |---|---|---|
-| **Identity** | User accounts, authentication, roles, permissions | `Users`, `Roles`, `Permissions`, `RoleUser`, `PermissionRole` |
-| **Employee** | Employee profiles, departments, dependents | `Employees`, `Departments` |
-| **Request** | Accommodation request lifecycle and members | `Requests`, `RequestMembers`, `Dependents` |
-| **Workflow** | Four-stage approval process and decision records | `WorkflowInstances`, `ApprovalLogs` |
-| **Dormitory** | Dormitory buildings, rooms, beds, physical status | `Dormitories`, `Rooms`, `Beds` |
-| **Allocation** | Bed/room assignments and occupancy records | `Allocations`, `AllocationItems` |
-| **Lottery** | Lottery programs, registrations, draws, results | `LotteryPrograms`, `LotteryRegistrations`, `LotteryResults` |
-| **Voucher** | Voucher generation and tracking for external dormitories | `Vouchers` |
-| **CheckIn** | Check-in and check-out event records | `CheckInOutEvents` |
-| **Notification** | In-app notification records and delivery status | `Notifications` |
-| **Audit** | Centralized, immutable, append-only event log | `AuditLog` (activity_log) |
-| **Report** | Read-only reporting projections (cross-module reads only) | none (projections only) |
+| **Identity** | User accounts, authentication, roles, permissions | `identity_users`, Spatie permission tables |
+| **Employee** | Employee profiles, departments, dependents (**CD-009**) | `employee_employees`, `employee_departments`, `employee_dependents` |
+| **Request** | Accommodation request lifecycle and members | `request_*` (Request, RequestMembers; Dependent snapshots/references only — **not** aggregate ownership) |
+| **Workflow** | Four-stage approval process and decision records (**deferred capability** — CD-010) | `workflow_*` when activated |
+| **Dormitory** | Dormitory buildings, rooms, beds, physical status | `dormitory_*` |
+| **Allocation** | Bed/room assignments and occupancy records | `allocation_*` |
+| **Lottery** | Lottery programs, registrations, draws, results | `lottery_*` |
+| **Voucher** | Voucher generation and tracking for external dormitories | `voucher_*` |
+| **CheckIn** | Check-in and check-out event records (**candidate context** — OQ-06) | TBD at `spec07` planning |
+| **Notification** | In-app notification records and delivery status | `notification_*` |
+| **Audit** | Centralized, immutable, append-only event log | `activity_log` (Spatie activitylog) |
+| **Reporting** | Read-only reporting projections (cross-module reads only) | none (projections only) |
 
 ### Module Ownership Invariant
-No module may write to another module's tables. The Report module is the only module permitted to read across module boundaries, and must never write.
+No module may write to another module's tables. The **Reporting** module is the only module permitted to read across module boundaries, and must never write.
+
+**Dependent ownership (CD-009):** The `Dependent` aggregate is owned by the **Employee** module. Request may store snapshots or references at submission time; it does not own the Dependent table or lifecycle.
 
 ---
 

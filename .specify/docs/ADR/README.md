@@ -22,7 +22,8 @@ An ADR documents an important architectural decision made along with its context
 | [002](002-module-boundary-enforcement.md) | Module Boundary Enforcement Mechanism | Accepted | 2026-06-22 |
 | [003](003-migration-template-standards.md) | Migration Template Standards | Accepted | 2026-06-22 |
 | [004](004-pre-commit-hooks.md) | Pre-Commit Hook Configuration | Accepted | 2026-06-22 |
-| 005 | Laravel Version Selection | Accepted | 2026-06-22 |
+| [005](005-laravel-version-selection.md) | Laravel Version Selection | Accepted | 2026-06-22 |
+| [006](006-module-table-naming-convention.md) | Module-Scoped Table Naming Convention | Accepted | 2026-06-26 |
 
 ---
 
