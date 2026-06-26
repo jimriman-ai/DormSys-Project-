@@ -3,7 +3,7 @@
 **Recorded:** 2026-06-26  
 **Branch baseline:** `spec02-baseline` @ `cc03df6`+ (PR #2 + PR #4 merged)  
 **Checkpoint commit:** `52f1220` — governance alignment after MVP  
-**Authority:** Product / Tech governance (Wave 1A)
+**Authority:** Product / Tech governance (Wave 1A / Wave 1B)
 
 ---
 
@@ -18,37 +18,62 @@
 
 ---
 
-## Authorization decision — US2 / T030+
+## Authorization decision — US2 / Wave 1B
 
-**Decision:** US2 is **not yet authorized** for implementation.
+**Decision:** spec03 **Wave 1B (US2)** is **authorized** for implementation.
+
+**Scope authorized:** T027–T034 only (Department aggregate CRUD + employee department assignment).
+
+**Explicitly not authorized:** T035+ (US3 Dependent), T041+ (US4 Eligibility), spec04, spec05, Workflow activation.
 
 **Rationale:**
 
-- MVP checkpoint is closed after spec03 documentation alignment.
-- US2 / T030+ requires explicit authorization before implementation.
-- No technical blocker exists, but scope must remain frozen until approval.
+- Post-MVP checkpoint closed; MVP (T001–T026a) frozen.
+- Department ∈ Employee bounded context (`spec.md` US2; `context-map.md`).
+- Persistence scaffold (T028) complete; remaining US2 tasks are bounded and testable.
+- Org structure supports downstream Request planning per `spec.md` US2 rationale.
 
 **Status:**
 
 | Scope | State |
 |-------|--------|
-| spec03 MVP (US1) | **Closed** |
-| US2 / T030+ (Department CRUD, assignment) | **Hold** |
+| spec03 MVP (US1) | **Closed — Frozen** |
+| spec03 Wave 1B (US2 / T027–T034) | **Complete** |
+| US3 / US4 / T035+ | **Hold** |
+| spec04 / spec05 | **Not authorized** |
 
-**Effective until:** A separate written authorization replaces this record (e.g. catalog amendment or signed go-ahead naming US2 / T030+).
+**Effective:** 2026-06-23 (authorization) · **Completed:** 2026-06-23 (implementation verified)
+
+**Supersedes:** US2 hold recorded 2026-06-26.
+
+---
+
+## Wave 1B completion checkpoint
+
+**Recorded:** 2026-06-23
+
+| Item | Status |
+|------|--------|
+| T027–T034 (US2 Department) | **Complete — Implemented** |
+| PHPStan `app/Modules/Employee` | **PASS** |
+| Pint `app/Modules/Employee` | **PASS** |
+| `EmployeeSupplierBoundaryTest` | **PASS** |
+| `DepartmentTest` | **PASS** (Sail) |
+| US3 / US4 / T035+ | **Hold** |
+| spec04 / spec05 | **Not authorized** |
 
 ---
 
 ## Implementation hold (mandatory)
 
-- Do **not** start T030, T031, T032, T033, T034, or US3+.
-- Do **not** expand Employee scope beyond MVP without authorization.
-- T027 (Department entity) and T029 (Department repository) remain **open**; T028 (persistence scaffold) is **done**.
+- Wave 1B (T027–T034) is **closed**.
+- Do **not** start T035+ (US3), T041+ (US4), or Polish beyond US2 checkpoint without separate authorization.
+- Do **not** start spec04 or spec05 implementation.
 
 ---
 
 ## References
 
-- `spec-catalog.md` v1.0.2 — spec03 MVP Implemented
-- `specs/003-employee-context/tasks.md` — Phase 4 gated
+- `spec-catalog.md` v1.0.4 — spec03 Wave 1B completed
+- `specs/003-employee-context/tasks.md` — Phase 4 complete
 - `catalog-decisions.md` CD-009, CD-012 — boundary decisions unchanged

@@ -12,7 +12,7 @@
 - **CD-013:** Eligibility computation in Employee; BR-01 allocation/request via **stub ports** until spec05/spec07
 - **No** Request, Allocation, or login UI tasks
 
-**Status**: Wave 1A — **MVP complete (T001–T026a)** — stop before US2
+**Status**: Wave 1A — **MVP complete (T001–T026a)** — Wave 1B — **complete (T027–T034)** · US3+ on hold
 
 ---
 
@@ -23,7 +23,7 @@
 | 1 — Setup | Module paths, provider wiring | T001–T004 | Yes |
 | 2 — Foundational | VOs, enums, exceptions, core migrations | T005–T014 | Yes |
 | 3 — US1 (P1) | Employee + `identity_id` boundary + MVP gate | T015–T026a | Yes |
-| 4 — US2 (P2) | Department CRUD + assignment | T027–T034 | No |
+| 4 — US2 (P2) | Department CRUD + assignment | T027–T034 | **Wave 1B — Complete** |
 | 5 — US3 (P2) | Dependent CRUD (CD-009) | T035–T040 | No |
 | 6 — US4 (P3) | Eligibility supplier + stub ports | T041–T048 | No |
 | 7 — Supplier read | `EmployeeReadContract` | T049–T052 | No |
@@ -130,9 +130,9 @@ Phase 8 (Polish) — after US1 minimum; full suite after US4
 
 **Checkpoint**: US1 acceptance scenarios 1–4 pass; quickstart Scenarios 1–4 pass; SC-001, SC-003 satisfied.
 
-### MVP Gate (stop here — before US2)
+### MVP Gate (Wave 1A — passed; Wave 1B authorized 2026-06-23)
 
-Run after T026a; **do not proceed to US2** until all green:
+Run after T026a before starting Wave 1B; gate **passed** at post-MVP checkpoint:
 
 | Gate | Command / criterion |
 |------|---------------------|
@@ -146,24 +146,24 @@ Run after T026a; **do not proceed to US2** until all green:
 
 **Post-MVP checkpoint (2026-06-26):** **PASS** — see [`.specify/docs/handoff/spec03-post-mvp-authorization.md`](../../.specify/docs/handoff/spec03-post-mvp-authorization.md).
 
-**US2 authorization:** **Not authorized** — T030+ on hold until explicit go-ahead.
+**US2 / Wave 1B (2026-06-23):** **Complete** — T027–T034 implemented and verified (PHPStan, Pint, `EmployeeSupplierBoundaryTest`, `DepartmentTest`). US3+ (T035+), spec04, and spec05 remain on hold.
 
 ---
 
-## Phase 4: User Story 2 — Department & Organizational Structure (Priority: P2)
+## Phase 4: User Story 2 — Department & Organizational Structure (Priority: P2) — Wave 1B Complete
 
 **Goal**: Department aggregate CRUD and employee department assignment.
 
 **Independent Test**: Create department → assign to employee → query employee with `departmentId`; inactive department blocks new assignment.
 
-- [ ] T027 [US2] Create `Department` entity in `app/Modules/Employee/Domain/Entities/Department.php` per `data-model.md`
+- [x] T027 [US2] Create `Department` entity in `app/Modules/Employee/Domain/Entities/Department.php` per `data-model.md`
 - [x] T028 [US2] Create `DepartmentModel` in `app/Modules/Employee/Infrastructure/Persistence/Models/DepartmentModel.php` with `HasUuid`, `RecordsActivity`; add `belongsTo`/`hasMany` relations to `EmployeeModel` in `app/Modules/Employee/Infrastructure/Persistence/Models/EmployeeModel.php` (`department()`, `employees()`)
-- [ ] T029 [US2] Create `DepartmentRepositoryContract` in `app/Modules/Employee/Application/Contracts/DepartmentRepositoryContract.php` and `DepartmentRepository` in `app/Modules/Employee/Infrastructure/Repositories/DepartmentRepository.php`
-- [ ] T030 [US2] Implement `CreateDepartmentAction` in `app/Modules/Employee/Application/Services/CreateDepartmentAction.php` and `DeactivateDepartmentAction` in `app/Modules/Employee/Application/Services/DeactivateDepartmentAction.php`
-- [ ] T031 [US2] Implement `AssignDepartmentToEmployeeAction` in `app/Modules/Employee/Application/Services/AssignDepartmentToEmployeeAction.php` — reject inactive department (R-17)
-- [ ] T032 [P] [US2] Create Artisan commands `app/Modules/Employee/Presentation/Console/CreateDepartmentCommand.php` and `AssignDepartmentCommand.php`
-- [ ] T033 [P] [US2] Feature test `tests/Feature/Modules/Employee/DepartmentTest.php` — CRUD, assignment, inactive department rejection
-- [ ] T034 [US2] Bind `DepartmentRepositoryContract` in `app/Modules/Employee/Infrastructure/Providers/EmployeeServiceProvider.php`
+- [x] T029 [US2] Create `DepartmentRepositoryContract` in `app/Modules/Employee/Application/Contracts/DepartmentRepositoryContract.php` and `DepartmentRepository` in `app/Modules/Employee/Infrastructure/Repositories/DepartmentRepository.php`
+- [x] T030 [US2] Implement `CreateDepartmentAction` in `app/Modules/Employee/Application/Services/CreateDepartmentAction.php` and `DeactivateDepartmentAction` in `app/Modules/Employee/Application/Services/DeactivateDepartmentAction.php`
+- [x] T031 [US2] Implement `AssignDepartmentToEmployeeAction` in `app/Modules/Employee/Application/Services/AssignDepartmentToEmployeeAction.php` — reject inactive department (R-17)
+- [x] T032 [P] [US2] Create Artisan commands `app/Modules/Employee/Presentation/Console/CreateDepartmentCommand.php` and `AssignDepartmentCommand.php`
+- [x] T033 [P] [US2] Feature test `tests/Feature/Modules/Employee/DepartmentTest.php` — create, assign, deactivate, inactive department rejection (Wave 1B scope; no department update action)
+- [x] T034 [US2] Bind `DepartmentRepositoryContract` in `app/Modules/Employee/Infrastructure/Providers/EmployeeServiceProvider.php`
 
 **Checkpoint**: US2 acceptance scenarios pass; quickstart Scenario 5 pass.
 
@@ -285,8 +285,8 @@ Phase 7 read contract can parallel US4 tests after T047.
 
 ## Implementation Strategy
 
-1. **MVP first**: Phases 1–3 (T001–T026a) — Employee + `identity_id` boundary; **stop at MVP Gate** before US2.
-2. **Incremental**: US2 Department → US3 Dependent → US4 Eligibility → read contract → polish.
+1. **MVP first**: Phases 1–3 (T001–T026a) — complete; Wave 1B (T027–T034) complete.
+2. **Incremental**: US2 Department → US3 Dependent (hold) → US4 Eligibility (hold) → read contract → polish.
 3. **Defer**: Livewire admin, real allocation/request port adapters, `AuditService` central integration.
 4. **Validate early**: Run BT-01–BT-03 after T026 before declaring MVP complete; BT-05 after T053.
 

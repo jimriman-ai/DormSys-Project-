@@ -64,6 +64,22 @@ final class Employee
         );
     }
 
+    public function assignDepartment(DepartmentId $departmentId): self
+    {
+        return new self(
+            id: $this->id,
+            identityId: $this->identityId,
+            employeeCode: $this->employeeCode,
+            firstName: $this->firstName,
+            lastName: $this->lastName,
+            nationalCode: $this->nationalCode,
+            departmentId: $departmentId,
+            hireDate: $this->hireDate,
+            baseLotteryScore: $this->baseLotteryScore,
+            status: $this->status,
+        );
+    }
+
     public function deactivate(): void
     {
         $this->status = EmployeeStatus::Inactive;

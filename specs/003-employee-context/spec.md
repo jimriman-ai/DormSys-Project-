@@ -4,7 +4,7 @@
 
 **Created**: 2026-06-26
 
-**Status**: Wave 1A — **MVP complete (T001–T026a)** — stopped before US2
+**Status**: Wave 1A (MVP) complete · US2 authorized (T027–T034) · US3+ not authorized
 
 **Catalog**: spec03 — **Authorized — Wave 1A** (Hard Freeze v1.0.0)
 
