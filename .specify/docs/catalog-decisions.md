@@ -111,7 +111,7 @@ Request retains **snapshots or references** to Dependent data at submission time
 
 ### Impact
 
-- **Constitution v1.3.0.md:642** must be corrected to reflect Employee ownership.
+- **Constitution §11** aligned — Employee owns `employee_dependents`; Request holds snapshots/references only (governance pass PR #2, 2026-06-26).
 - Employee BC owns Dependent CRUD.
 - Request BC consumes Dependent data via Application Service or Event (read-only or snapshot).
 

@@ -152,9 +152,9 @@ Run after T026a; **do not proceed to US2** until all green:
 
 **Independent Test**: Create department → assign to employee → query employee with `departmentId`; inactive department blocks new assignment.
 
-- [x] T027 [US2] Create `Department` entity in `app/Modules/Employee/Domain/Entities/Department.php` per `data-model.md`
+- [ ] T027 [US2] Create `Department` entity in `app/Modules/Employee/Domain/Entities/Department.php` per `data-model.md`
 - [x] T028 [US2] Create `DepartmentModel` in `app/Modules/Employee/Infrastructure/Persistence/Models/DepartmentModel.php` with `HasUuid`, `RecordsActivity`; add `belongsTo`/`hasMany` relations to `EmployeeModel` in `app/Modules/Employee/Infrastructure/Persistence/Models/EmployeeModel.php` (`department()`, `employees()`)
-- [x] T029 [US2] Create `DepartmentRepositoryContract` in `app/Modules/Employee/Application/Contracts/DepartmentRepositoryContract.php` and `DepartmentRepository` in `app/Modules/Employee/Infrastructure/Repositories/DepartmentRepository.php`
+- [ ] T029 [US2] Create `DepartmentRepositoryContract` in `app/Modules/Employee/Application/Contracts/DepartmentRepositoryContract.php` and `DepartmentRepository` in `app/Modules/Employee/Infrastructure/Repositories/DepartmentRepository.php`
 - [ ] T030 [US2] Implement `CreateDepartmentAction` in `app/Modules/Employee/Application/Services/CreateDepartmentAction.php` and `DeactivateDepartmentAction` in `app/Modules/Employee/Application/Services/DeactivateDepartmentAction.php`
 - [ ] T031 [US2] Implement `AssignDepartmentToEmployeeAction` in `app/Modules/Employee/Application/Services/AssignDepartmentToEmployeeAction.php` — reject inactive department (R-17)
 - [ ] T032 [P] [US2] Create Artisan commands `app/Modules/Employee/Presentation/Console/CreateDepartmentCommand.php` and `AssignDepartmentCommand.php`

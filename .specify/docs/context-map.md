@@ -202,7 +202,7 @@ Reporting    ← read-only projections from all contexts
 | -- | ----------- | ---------- |
 | D1 | Workflow is an independent module in source docs but a deferred capability in the spec catalog | Recorded in catalog-decisions; **CD-010** defines split ownership when Workflow is activated |
 | D2 | CheckIn appears as an independent module in source docs; catalog groups it under Allocation & Occupancy spec | **OQ-06 OPEN** — **CD-014** split assignment from occupancy but does not resolve CheckIn module promotion |
-| D3 | Constitution line 642 assigns Dependents table to Request; architecture assigns Dependent to Employee | **RESOLVED (CD-009):** Dependent ∈ Employee; Constitution correction required |
+| D3 | Constitution line 642 historically assigned Dependents table to Request; architecture assigns Dependent to Employee | **RESOLVED (CD-009):** Dependent ∈ Employee; Constitution §11 aligned in v1.3.0 governance pass (PR #2, 2026-06-26) |
 
 ---
 
