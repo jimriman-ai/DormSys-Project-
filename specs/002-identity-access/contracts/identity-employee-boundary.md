@@ -72,11 +72,13 @@ If a future need arises for Identity to track linkage, that requires a **new cat
 
 ### Application services exposed to other contexts (read/query)
 
-| Operation | Purpose | Notes |
-| --------- | ------- | ----- |
-| `userExists(userId: string): bool` | Validate reference before Employee create | No Employee data required |
-| `isUserActive(userId: string): bool` | Optional gate at Employee create | CD-012: error handling when deactivated — **deferred** |
-| `findUserSummary(userId: string): ?UserSummaryDTO` | Read-only projection for cross-context display | No Eloquent leak across modules |
+**Canonical contract:** [`identity-read-service.md`](./identity-read-service.md) — signatures MUST NOT drift.
+
+| Operation | Signature | Purpose |
+| --------- | --------- | ------- |
+| `userExists` | `userExists(UserId $id): bool` | Validate reference before Employee create |
+| `isUserActive` | `isUserActive(UserId $id): bool` | Optional gate at Employee create (deactivated handling deferred) |
+| `findUserSummary` | `findUserSummary(UserId $id): ?UserSummaryDTO` | Read-only projection; `null` if not found |
 
 ### Out of scope for spec02
 

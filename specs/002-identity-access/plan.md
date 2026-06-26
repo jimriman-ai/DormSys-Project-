@@ -34,19 +34,25 @@ Wave 1A delivers: User CRUD (admin), disable lifecycle, Spatie roles/permissions
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-checked after Phase 1 design.*
+*GATE: Must pass before implementation. Principles per Constitution v1.3.0. Re-checked after Phase 1 design.*
 
 | Principle | Compliance | Notes |
 |-----------|------------|-------|
+| AP-01 Technology Stack | ✅ PASS | PHP 8.4, Laravel 13, PostgreSQL 17, `spatie/laravel-permission`, Pest; Livewire for admin (Phase E) |
+| AP-01 Presentation (no SPA) | ✅ PASS | Livewire 3 admin UI; Alpine micro-interactions only; no React/Vue |
 | AP-02 Modular Monolith | ✅ PASS | `app/Modules/Identity/` four layers |
 | AP-03 Clean Architecture | ✅ PASS | Domain pure PHP; Eloquent in Infrastructure only |
-| AP-04 Module Ownership / No cross-module FK | ✅ PASS | `users` owned by Identity; consumers store UUID refs only |
-| AP-06 Audit | ✅ PASS | User create/disable via `RecordsActivity` + audit pipeline |
-| AP-07 Server-First | ✅ PASS | Admin UI via Livewire (Phase implementation) |
+| AP-04 Shared DB / Module Ownership | ✅ PASS | `identity_users` owned by Identity; consumers store UUID refs only; FR-008 via Application contract |
+| AP-05 Explicit State Machines | ⬜ N/A | User lifecycle is `UserStatus` enum + `disable()` — not listed in AP-05 entities; no `spatie/laravel-model-states` for User in Wave 1A |
+| AP-06 Audit Everything | ⚠️ CONDITIONAL PASS | `RecordsActivity` on `UserModel` for create/disable (FR-012); central `AuditService` integration deferred until Audit module implementation |
+| AP-07 Background Processing | ⬜ N/A | Lifecycle events synchronous (R-07); no new Horizon jobs in spec02 |
+| AP-08 Configuration Over Hardcoding | ⬜ N/A | Wave 1A role/permission names in `IdentityRoleSeeder` baseline — no lottery/scoring settings |
+| 10.7 Localization | ⚠️ DEFERRED | Persian RTL Livewire admin in Phase E (optional tail); core MVP (T001–T021) testable without UI |
+| 10.4 Maintainability / DoD | ✅ PASS | PHPStan L8, Pint, Pest — tasks T039–T040 |
 | CD-012 / FR-009–011 | ✅ PASS | Supplier-only; read contract; no consumer refs in Identity |
-| OA-02-01 Auth deferred | ✅ PASS | No Fortify/session in Wave 1A |
+| OA-02-01 Auth deferred | ✅ PASS | No Fortify/session/login in Wave 1A (plan §8.1) |
 
-**Post-design re-check**: No violations. Complexity Tracking not required.
+**Post-design re-check**: No constitution violations requiring ADR. Conditional items (AP-06, 10.7) documented; do not block MVP T001–T021.
 
 ---
 

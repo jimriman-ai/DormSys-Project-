@@ -68,11 +68,29 @@ interface IdentityUserReadContract
 
 ## FR-008 mapping
 
-| Requirement | Method |
-|-------------|--------|
-| Verify user exists | `userExists` |
-| Verify user is active | `isUserActive` |
-| Minimal summary | `findUserSummary` |
+| Requirement | Method | Signature |
+|-------------|--------|-----------|
+| Verify user exists | `userExists` | `userExists(UserId $id): bool` |
+| Verify user is active | `isUserActive` | `isUserActive(UserId $id): bool` |
+| Minimal summary | `findUserSummary` | `findUserSummary(UserId $id): ?UserSummaryDTO` |
+
+**Canonical interface** (identical in spec.md FR-008 and plan.md FR-008 table):
+
+```php
+public function userExists(UserId $id): bool;
+public function isUserActive(UserId $id): bool;
+public function findUserSummary(UserId $id): ?UserSummaryDTO;
+```
+
+### `UserSummaryDTO` (nullable contract return type)
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `id` | `string` | UUID |
+| `status` | `string` | `active` \| `disabled` |
+| `displayName` | `string` | Non-sensitive label |
+
+`findUserSummary` returns `null` when user does not exist (not an exception).
 
 ---
 

@@ -92,7 +92,17 @@ As a downstream bounded context (external consumer), I need read-only ways to ve
 - **FR-005**: System MUST emit auditable lifecycle signals when a User account is created and when it is deactivated (see `events.md`)
 - **FR-006**: System MUST provide **Role** and **Permission** constructs and support assigning roles to users for authorization baseline
 - **FR-007**: System MUST allow authorized administrators to create users, assign/revoke roles, and disable users
-- **FR-008**: System MUST expose **read-only** cross-context operations: verify user exists by identifier, verify user is active by identifier, and retrieve a minimal user summary for display (identifier + status + non-sensitive labels only)
+- **FR-008**: System MUST expose **read-only** cross-context operations via `IdentityUserReadContract` (canonical signatures below — must match [`contracts/identity-read-service.md`](./contracts/identity-read-service.md) and [plan.md](./plan.md) FR-008 mapping):
+
+```php
+// App\Modules\Identity\Application\Contracts\IdentityUserReadContract
+public function userExists(UserId $id): bool;
+public function isUserActive(UserId $id): bool;
+public function findUserSummary(UserId $id): ?UserSummaryDTO;
+```
+
+- `UserId` — value object in `Domain\ValueObjects\UserId`; malformed UUID rejected at `UserId::fromString()` before service call
+- `UserSummaryDTO` — nullable return on `findUserSummary` when user not found; fields: `id` (string UUID), `status` (string), `displayName` (string) — no credentials
 - **FR-009**: Identity MUST NOT persist references to downstream consumer records (no consumer aggregate identifiers, no linkage tables owned by Identity)
 - **FR-010**: Identity MUST NOT provide APIs that mutate data owned by downstream consumer contexts
 - **FR-011**: Cross-context access MUST comply with modular monolith rules: no direct cross-module data store access by consumers; Identity exposes application-level read contracts only
