@@ -7,6 +7,7 @@ use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\Exceptions\IdentityIdImmutableException;
 use App\Modules\Employee\Domain\Exceptions\UnknownIdentityUserException;
+use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Modules\Employee\Infrastructure\Persistence\Models\EmployeeModel;
 use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Identity\Application\Services\DeactivateUserAction;
@@ -14,15 +15,15 @@ use App\Modules\Identity\Domain\ValueObjects\UserId;
 use App\Support\ValueObjects\Identity\NationalCode;
 use Ramsey\Uuid\Uuid;
 
-function createIdentityUser(string $name = 'Boundary User', ?string $email = null): UserId
+function createIdentityUser(string $name = 'Boundary User', ?string $email = null): IdentityUserId
 {
     $email ??= strtolower(str_replace(' ', '.', $name)).'@example.com';
     $user = app(CreateUserAction::class)->execute($name, $email);
 
-    return UserId::fromString($user->requireId()->value);
+    return IdentityUserId::fromString($user->requireId()->value);
 }
 
-function createEmployeeForIdentity(UserId $identityId, string $code = 'EMP001'): Employee
+function createEmployeeForIdentity(IdentityUserId $identityId, string $code = 'EMP001'): Employee
 {
     return app(CreateEmployeeAction::class)->execute(
         identityId: $identityId,
@@ -40,8 +41,9 @@ it('BT-01 creates employee with valid identity_id and keeps it immutable on relo
 
     $loaded = app(EmployeeRepositoryContract::class)->findById($employee->requireId());
 
-    expect($loaded)->not->toBeNull()
-        ->and($loaded->identityId->value)->toBe($identityId->value);
+    expect($loaded)->not->toBeNull();
+    assert($loaded instanceof Employee);
+    expect($loaded->identityId->value)->toBe($identityId->value);
 
     $model = EmployeeModel::query()->find($employee->requireId()->value);
 
@@ -59,7 +61,7 @@ it('BT-02 rejects identity_id mutation after assignment', function (): void {
 });
 
 it('BT-03 rejects employee create when identity user is unknown', function (): void {
-    $unknownId = UserId::fromString(Uuid::uuid7()->toString());
+    $unknownId = IdentityUserId::fromString(Uuid::uuid7()->toString());
 
     expect(fn () => createEmployeeForIdentity($unknownId, 'EMP003'))
         ->toThrow(UnknownIdentityUserException::class);
@@ -70,7 +72,7 @@ it('BT-03 rejects employee create when identity user is unknown', function (): v
 it('OA-03-02 allows create when identity user is disabled', function (): void {
     $identityId = createIdentityUser('Disabled Identity User', 'disabled.identity@example.com');
 
-    app(DeactivateUserAction::class)->execute($identityId);
+    app(DeactivateUserAction::class)->execute(UserId::fromString($identityId->value));
 
     $employee = createEmployeeForIdentity($identityId, 'EMP004');
 
@@ -81,11 +83,12 @@ it('BT-04 keeps employee unchanged when identity user is deactivated after creat
     $identityId = createIdentityUser('BT04 User', 'bt04@example.com');
     $employee = createEmployeeForIdentity($identityId, 'EMP005');
 
-    app(DeactivateUserAction::class)->execute($identityId);
+    app(DeactivateUserAction::class)->execute(UserId::fromString($identityId->value));
 
     $reloaded = app(EmployeeRepositoryContract::class)->findById($employee->requireId());
 
-    expect($reloaded)->not->toBeNull()
-        ->and($reloaded->isActive())->toBeTrue()
+    expect($reloaded)->not->toBeNull();
+    assert($reloaded instanceof Employee);
+    expect($reloaded->isActive())->toBeTrue()
         ->and($reloaded->identityId->value)->toBe($identityId->value);
 });

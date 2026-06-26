@@ -89,7 +89,7 @@ class SupportKernelTest extends TestCase
         );
 
         $this->assertTrue(Uuid::isValid($event->eventId));
-        $this->assertSame(7, Uuid::fromString($event->eventId)->getFields()->getVersion());
+        $this->assertSame(7, Uuid::fromString($event->eventId)->getVersion());
         $this->assertSame(['ping' => true], $event->payload);
         $this->assertArrayHasKey('event_type', $event->jsonSerialize());
     }

@@ -7,7 +7,7 @@ namespace Tests\Unit\Modules\Employee\Domain;
 use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\Enums\EmployeeStatus;
 use App\Modules\Employee\Domain\ValueObjects\EmployeeId;
-use App\Modules\Identity\Domain\ValueObjects\UserId;
+use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Support\ValueObjects\Identity\NationalCode;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
@@ -17,7 +17,7 @@ final class EmployeeTest extends TestCase
 {
     public function test_identity_id_remains_immutable_on_assign_id(): void
     {
-        $identityId = UserId::fromString(Uuid::uuid7()->toString());
+        $identityId = IdentityUserId::fromString(Uuid::uuid7()->toString());
         $employee = Employee::createNew(
             identityId: $identityId,
             employeeCode: 'EMP-UNIT',
@@ -50,7 +50,7 @@ final class EmployeeTest extends TestCase
     private function makeEmployee(): Employee
     {
         return Employee::createNew(
-            identityId: UserId::fromString(Uuid::uuid7()->toString()),
+            identityId: IdentityUserId::fromString(Uuid::uuid7()->toString()),
             employeeCode: 'EMP-STATUS',
             firstName: 'Status',
             lastName: 'Test',

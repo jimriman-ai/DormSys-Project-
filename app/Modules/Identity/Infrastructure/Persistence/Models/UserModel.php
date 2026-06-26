@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Identity\Infrastructure\Persistence\Models;
 
 use App\Modules\Identity\Domain\Enums\UserStatus;
-use App\Support\Models\BaseModel;
 use App\Modules\Identity\Domain\PlatformRoles;
+use App\Support\Models\BaseModel;
 use Illuminate\Database\Eloquent\Builder;
 use Spatie\Permission\Traits\HasRoles;
 

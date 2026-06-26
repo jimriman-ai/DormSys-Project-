@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Employee\Presentation\Console;
 
 use App\Modules\Employee\Application\Services\CreateEmployeeAction;
-use App\Modules\Identity\Domain\ValueObjects\UserId;
+use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Support\ValueObjects\Identity\NationalCode;
 use DateTimeImmutable;
 use Illuminate\Console\Command;
@@ -25,7 +25,7 @@ class CreateEmployeeCommand extends Command
     public function handle(CreateEmployeeAction $action): int
     {
         $employee = $action->execute(
-            identityId: UserId::fromString((string) $this->argument('identity_id')),
+            identityId: IdentityUserId::fromString((string) $this->argument('identity_id')),
             employeeCode: (string) $this->option('code'),
             firstName: (string) $this->option('first-name'),
             lastName: (string) $this->option('last-name'),

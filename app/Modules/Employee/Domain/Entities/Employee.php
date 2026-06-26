@@ -7,7 +7,7 @@ namespace App\Modules\Employee\Domain\Entities;
 use App\Modules\Employee\Domain\Enums\EmployeeStatus;
 use App\Modules\Employee\Domain\ValueObjects\DepartmentId;
 use App\Modules\Employee\Domain\ValueObjects\EmployeeId;
-use App\Modules\Identity\Domain\ValueObjects\UserId;
+use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Support\ValueObjects\Identity\NationalCode;
 use DateTimeImmutable;
 
@@ -15,7 +15,7 @@ final class Employee
 {
     public function __construct(
         public readonly ?EmployeeId $id,
-        public readonly UserId $identityId,
+        public readonly IdentityUserId $identityId,
         public string $employeeCode,
         public string $firstName,
         public string $lastName,
@@ -27,7 +27,7 @@ final class Employee
     ) {}
 
     public static function createNew(
-        UserId $identityId,
+        IdentityUserId $identityId,
         string $employeeCode,
         string $firstName,
         string $lastName,

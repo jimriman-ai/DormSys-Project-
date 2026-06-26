@@ -10,8 +10,8 @@ use App\Modules\Employee\Domain\Exceptions\EmployeeNotFoundException;
 use App\Modules\Employee\Domain\Exceptions\IdentityIdImmutableException;
 use App\Modules\Employee\Domain\ValueObjects\DepartmentId;
 use App\Modules\Employee\Domain\ValueObjects\EmployeeId;
+use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Modules\Employee\Infrastructure\Persistence\Models\EmployeeModel;
-use App\Modules\Identity\Domain\ValueObjects\UserId;
 use App\Support\ValueObjects\Identity\NationalCode;
 use DateTimeImmutable;
 
@@ -66,7 +66,7 @@ class EmployeeRepository implements EmployeeRepositoryContract
         return $model === null ? null : $this->toDomain($model);
     }
 
-    public function findByIdentityId(UserId $identityId): ?Employee
+    public function findByIdentityId(IdentityUserId $identityId): ?Employee
     {
         $model = EmployeeModel::query()
             ->where('identity_id', $identityId->value)
@@ -75,14 +75,14 @@ class EmployeeRepository implements EmployeeRepositoryContract
         return $model === null ? null : $this->toDomain($model);
     }
 
-    public function existsByIdentityId(UserId $identityId): bool
+    public function existsByIdentityId(IdentityUserId $identityId): bool
     {
         return EmployeeModel::query()
             ->where('identity_id', $identityId->value)
             ->exists();
     }
 
-    public function assertIdentityIdImmutable(EmployeeModel $model, UserId $identityId): void
+    public function assertIdentityIdImmutable(EmployeeModel $model, IdentityUserId $identityId): void
     {
         if ($model->identity_id !== $identityId->value) {
             throw new IdentityIdImmutableException('identity_id cannot be changed after assignment.');
@@ -93,7 +93,7 @@ class EmployeeRepository implements EmployeeRepositoryContract
     {
         return new Employee(
             id: EmployeeId::fromString($model->getId()),
-            identityId: UserId::fromString($model->identity_id),
+            identityId: IdentityUserId::fromString($model->identity_id),
             employeeCode: $model->employee_code,
             firstName: $model->first_name,
             lastName: $model->last_name,

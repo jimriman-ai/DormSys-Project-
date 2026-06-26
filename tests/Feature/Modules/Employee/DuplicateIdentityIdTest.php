@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\Exceptions\DuplicateIdentityIdException;
+use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Modules\Identity\Application\Services\CreateUserAction;
-use App\Modules\Identity\Domain\ValueObjects\UserId;
 use App\Support\ValueObjects\Identity\NationalCode;
 
 it('rejects a second employee for the same identity_id', function (): void {
     $user = app(CreateUserAction::class)->execute('Duplicate Identity User', 'dup.identity@example.com');
-    $identityId = UserId::fromString($user->requireId()->value);
+    $identityId = IdentityUserId::fromString($user->requireId()->value);
 
     app(CreateEmployeeAction::class)->execute(
         identityId: $identityId,

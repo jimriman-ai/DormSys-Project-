@@ -9,8 +9,8 @@ use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\Events\EmployeeCreated;
 use App\Modules\Employee\Domain\Exceptions\DuplicateIdentityIdException;
 use App\Modules\Employee\Domain\Exceptions\UnknownIdentityUserException;
+use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Modules\Identity\Application\Contracts\IdentityUserReadContract;
-use App\Modules\Identity\Domain\ValueObjects\UserId;
 use App\Support\ValueObjects\Identity\NationalCode;
 use DateTimeImmutable;
 use Illuminate\Support\Facades\DB;
@@ -24,14 +24,14 @@ final class CreateEmployeeAction
     ) {}
 
     public function execute(
-        UserId $identityId,
+        IdentityUserId $identityId,
         string $employeeCode,
         string $firstName,
         string $lastName,
         NationalCode $nationalCode,
         DateTimeImmutable $hireDate,
     ): Employee {
-        if (! $this->identityRead->userExists($identityId)) {
+        if (! $this->identityRead->userExists($identityId->value)) {
             throw new UnknownIdentityUserException('Identity user does not exist.');
         }
 

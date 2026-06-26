@@ -15,21 +15,21 @@ class IdentityUserReadService implements IdentityUserReadContract
         private readonly UserRepositoryContract $users,
     ) {}
 
-    public function userExists(UserId $id): bool
+    public function userExists(string $id): bool
     {
-        return $this->users->findById($id) !== null;
+        return $this->users->findById(UserId::fromString($id)) !== null;
     }
 
-    public function isUserActive(UserId $id): bool
+    public function isUserActive(string $id): bool
     {
-        $user = $this->users->findById($id);
+        $user = $this->users->findById(UserId::fromString($id));
 
         return $user !== null && $user->isActive();
     }
 
-    public function findUserSummary(UserId $id): ?UserSummaryDTO
+    public function findUserSummary(string $id): ?UserSummaryDTO
     {
-        $user = $this->users->findById($id);
+        $user = $this->users->findById(UserId::fromString($id));
 
         if ($user === null) {
             return null;

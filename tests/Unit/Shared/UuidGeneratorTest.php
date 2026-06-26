@@ -17,6 +17,6 @@ class UuidGeneratorTest extends TestCase
         $id = UuidGenerator::uuid7();
 
         $this->assertTrue(Uuid::isValid($id));
-        $this->assertSame(7, Uuid::fromString($id)->getFields()->getVersion());
+        $this->assertSame(7, Uuid::fromString($id)->getVersion());
     }
 }

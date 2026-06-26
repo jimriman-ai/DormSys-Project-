@@ -9,8 +9,8 @@ use App\Modules\Identity\Domain\Entities\User;
 use App\Modules\Identity\Domain\Events\UserDeactivated;
 use App\Modules\Identity\Domain\Exceptions\CannotDeactivateLastAdministratorException;
 use App\Modules\Identity\Domain\Exceptions\UserNotFoundException;
-use App\Modules\Identity\Domain\ValueObjects\UserId;
 use App\Modules\Identity\Domain\PlatformRoles;
+use App\Modules\Identity\Domain\ValueObjects\UserId;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 

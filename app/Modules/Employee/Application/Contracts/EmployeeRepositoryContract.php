@@ -6,7 +6,7 @@ namespace App\Modules\Employee\Application\Contracts;
 
 use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\EmployeeId;
-use App\Modules\Identity\Domain\ValueObjects\UserId;
+use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 
 interface EmployeeRepositoryContract
 {
@@ -14,7 +14,7 @@ interface EmployeeRepositoryContract
 
     public function findById(EmployeeId $id): ?Employee;
 
-    public function findByIdentityId(UserId $identityId): ?Employee;
+    public function findByIdentityId(IdentityUserId $identityId): ?Employee;
 
-    public function existsByIdentityId(UserId $identityId): bool;
+    public function existsByIdentityId(IdentityUserId $identityId): bool;
 }
