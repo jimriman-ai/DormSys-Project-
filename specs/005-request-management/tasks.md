@@ -178,9 +178,9 @@ Phase 1 (Setup)
 
 **Goal**: `RequestMember` + BR-04 validation.
 
-- [ ] T040 [US5] Implement `CreateMissionRequestAction` with `request_members` + `request_mission_details`
-- [ ] T041 [P] [US5] Enforce 2–20 members, exactly one leader, leader in member set (BR-04)
-- [ ] T042 [US5] Feature test `tests/Feature/Modules/Request/MissionRequestTest.php` — BT-R07
+- [x] T040 [US5] Implement `CreateMissionRequestAction` with `request_members` + `request_mission_details`
+- [x] T041 [P] [US5] Enforce 2–20 members, exactly one leader, leader in member set (BR-04)
+- [x] T042 [US5] Feature test `tests/Feature/Modules/Request/MissionRequestTest.php` — BT-R07
 
 **Checkpoint**: US5 acceptance scenarios pass; quickstart Scenario 8.
 
@@ -190,8 +190,8 @@ Phase 1 (Setup)
 
 **Goal**: LotteryRegistration type without lottery rules (CD-011 → spec06).
 
-- [ ] T043 [US6] Extend create flow for `LotteryRegistration` type (same shape as Personal)
-- [ ] T044 [US6] Feature test `tests/Feature/Modules/Request/LotteryRegistrationRequestTest.php` — quickstart Scenario 9
+- [x] T043 [US6] Extend create flow for `LotteryRegistration` type (same shape as Personal)
+- [x] T044 [US6] Feature test `tests/Feature/Modules/Request/LotteryRegistrationRequestTest.php` — quickstart Scenario 9
 
 **Checkpoint**: US6 acceptance scenarios pass.
 

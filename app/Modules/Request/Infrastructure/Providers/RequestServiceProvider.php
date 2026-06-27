@@ -11,19 +11,24 @@ use App\Modules\Request\Application\Contracts\DormitoryReadContract;
 use App\Modules\Request\Application\Contracts\Internal\PendingRequestQueryPort;
 use App\Modules\Request\Application\Contracts\Internal\RequestEligibilityGatewayContract;
 use App\Modules\Request\Application\Contracts\Internal\RequestReadQueryPort;
+use App\Modules\Request\Application\Contracts\MissionDetailsRepositoryContract;
 use App\Modules\Request\Application\Contracts\RequestApprovalRepositoryContract;
+use App\Modules\Request\Application\Contracts\RequestMemberRepositoryContract;
 use App\Modules\Request\Application\Contracts\RequestReadContract;
 use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
 use App\Modules\Request\Application\Services\ApproveRequestStageAction;
 use App\Modules\Request\Application\Services\AutoApprovalSettingsReader;
 use App\Modules\Request\Application\Services\CancelRequestAction;
 use App\Modules\Request\Application\Services\CreateFamilyDirectRequestAction;
+use App\Modules\Request\Application\Services\CreateLotteryRegistrationRequestAction;
+use App\Modules\Request\Application\Services\CreateMissionRequestAction;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Application\Services\RejectRequestAction;
 use App\Modules\Request\Application\Services\RequestCodeGenerator;
 use App\Modules\Request\Application\Services\RequestReadService;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
 use App\Modules\Request\Domain\Services\ApprovalStageResolver;
+use App\Modules\Request\Domain\Services\MissionGroupValidator;
 use App\Modules\Request\Infrastructure\Adapters\DependentSnapshotSourceStub;
 use App\Modules\Request\Infrastructure\Adapters\EmployeeEligibilityGateway;
 use App\Modules\Request\Infrastructure\Adapters\NullDormitoryReadAdapter;
@@ -31,7 +36,9 @@ use App\Modules\Request\Infrastructure\Adapters\PendingRequestReadAdapter;
 use App\Modules\Request\Infrastructure\Queries\PendingRequestQuery;
 use App\Modules\Request\Infrastructure\Queries\RequestReadQuery;
 use App\Modules\Request\Infrastructure\Repositories\DependentSnapshotRepository;
+use App\Modules\Request\Infrastructure\Repositories\MissionDetailsRepository;
 use App\Modules\Request\Infrastructure\Repositories\RequestApprovalRepository;
+use App\Modules\Request\Infrastructure\Repositories\RequestMemberRepository;
 use App\Modules\Request\Infrastructure\Repositories\RequestRepository;
 use Illuminate\Support\ServiceProvider;
 
@@ -40,6 +47,9 @@ class RequestServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(DependentSnapshotRepositoryContract::class, DependentSnapshotRepository::class);
+        $this->app->singleton(RequestMemberRepositoryContract::class, RequestMemberRepository::class);
+        $this->app->singleton(MissionDetailsRepositoryContract::class, MissionDetailsRepository::class);
+        $this->app->singleton(MissionGroupValidator::class);
         $this->app->singleton(DependentSnapshotSourceStub::class);
         $this->app->singleton(DependentSnapshotSourceContract::class, DependentSnapshotSourceStub::class);
         $this->app->singleton(RequestRepositoryContract::class, RequestRepository::class);
@@ -55,6 +65,8 @@ class RequestServiceProvider extends ServiceProvider
         $this->app->singleton(DormitoryReadContract::class, NullDormitoryReadAdapter::class);
         $this->app->singleton(CreatePersonalRequestAction::class);
         $this->app->singleton(CreateFamilyDirectRequestAction::class);
+        $this->app->singleton(CreateMissionRequestAction::class);
+        $this->app->singleton(CreateLotteryRegistrationRequestAction::class);
         $this->app->singleton(SubmitRequestAction::class);
         $this->app->singleton(CancelRequestAction::class);
         $this->app->singleton(ApproveRequestStageAction::class);
