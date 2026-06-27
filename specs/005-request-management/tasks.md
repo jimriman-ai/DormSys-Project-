@@ -117,12 +117,12 @@ Phase 1 (Setup)
 
 **Independent Test**: Create Personal request → submit → enters approval pipeline — per quickstart Scenario 1.
 
-- [ ] T021 [US1] Implement `CreatePersonalRequestAction` in `app/Modules/Request/Application/Services/CreatePersonalRequestAction.php`
-- [ ] T022 [US1] Implement `SubmitRequestAction` — pipeline per [contracts/request-eligibility-enforcement.md](./contracts/request-eligibility-enforcement.md)
-- [ ] T023 [P] [US1] Create `NullDormitoryReadAdapter` in `app/Modules/Request/Infrastructure/Adapters/` (R-06)
-- [ ] T024 [US1] Feature test `tests/Feature/Modules/Request/PersonalRequestTest.php` — BT-R01, BT-R02
-- [ ] T025 [P] [US1] Artisan commands `CreatePersonalRequestCommand`, `SubmitRequestCommand` per `quickstart.md`
-- [ ] T026 [P] [US1] Unit test `tests/Unit/Modules/Request/Application/SubmitDateValidationTest.php` — BR-01 date subset
+- [x] T021 [US1] Implement `CreatePersonalRequestAction` in `app/Modules/Request/Application/Services/CreatePersonalRequestAction.php`
+- [x] T022 [US1] Implement `SubmitRequestAction` — pipeline per [contracts/request-eligibility-enforcement.md](./contracts/request-eligibility-enforcement.md)
+- [x] T023 [P] [US1] Create `NullDormitoryReadAdapter` in `app/Modules/Request/Infrastructure/Adapters/` (R-06)
+- [x] T024 [US1] Feature test `tests/Feature/Modules/Request/PersonalRequestTest.php` — BT-R01, BT-R02
+- [x] T025 [P] [US1] Artisan commands `CreatePersonalRequestCommand`, `SubmitRequestCommand` per `quickstart.md`
+- [x] T026 [P] [US1] Unit test `tests/Unit/Modules/Request/Application/SubmitDateValidationTest.php` — BR-01 date subset
 
 **Checkpoint**: US1 acceptance scenarios pass; quickstart Scenarios 1–2.
 
@@ -134,10 +134,10 @@ Phase 1 (Setup)
 
 **Independent Test**: Cancel/reject paths — per quickstart Scenarios 4–5.
 
-- [ ] T027 [US2] Implement `CancelRequestAction` — FR-017 / R-07
-- [ ] T028 [P] [US2] Create domain events `RequestSubmitted`, `RequestCancelled`, `RequestRejected` — `BaseEvent` + `EVENT_NAME`/`VERSION` (R-13)
-- [ ] T029 [US2] Feature test `tests/Feature/Modules/Request/RequestLifecycleTest.php` — cancel rules, reject terminal
-- [ ] T030 [P] [US2] Unit test `tests/Unit/Modules/Request/Domain/RequestTransitionMatrixTest.php` — R-07 matrix cells
+- [x] T027 [US2] Implement `CancelRequestAction` — FR-017 / R-07
+- [x] T028 [P] [US2] Create domain events `RequestSubmitted`, `RequestCancelled`, `RequestRejected` — `BaseEvent` + `EVENT_NAME`/`VERSION` (R-13)
+- [x] T029 [US2] Feature test `tests/Feature/Modules/Request/RequestLifecycleTest.php` — cancel rules, reject terminal
+- [x] T030 [P] [US2] Unit test `tests/Unit/Modules/Request/Domain/RequestTransitionMatrixTest.php` — R-07 matrix cells
 
 **Checkpoint**: US2 acceptance scenarios pass.
 
@@ -149,12 +149,12 @@ Phase 1 (Setup)
 
 **Independent Test**: Four approvals → `Approved` — per quickstart Scenario 3.
 
-- [ ] T031 [US3] Implement `ApproveRequestStageAction` in `app/Modules/Request/Application/Services/ApproveRequestStageAction.php`
-- [ ] T032 [P] [US3] Implement `RejectRequestAction` with required reason
-- [ ] T033 [US3] Create `RequestApproval` entity + `RequestApprovalModel` — append-only persistence (R-08)
-- [ ] T034 [P] [US3] Implement `AutoApprovalSettingsReader` — keys per R-09 (`request.approval.auto.*`)
-- [ ] T035 [US3] Feature test `tests/Feature/Modules/Request/RequestApprovalTest.php` — BT-R03, BT-R04
-- [ ] T036 [US3] Bind approval actions; dispatch events on stage completion
+- [x] T031 [US3] Implement `ApproveRequestStageAction` in `app/Modules/Request/Application/Services/ApproveRequestStageAction.php`
+- [x] T032 [P] [US3] Implement `RejectRequestAction` with required reason
+- [x] T033 [US3] Create `RequestApproval` entity + `RequestApprovalModel` — append-only persistence (R-08)
+- [x] T034 [P] [US3] Implement `AutoApprovalSettingsReader` — keys per R-09 (`request.approval.auto.*`)
+- [x] T035 [US3] Feature test `tests/Feature/Modules/Request/RequestApprovalTest.php` — BT-R03, BT-R04
+- [x] T036 [US3] Bind approval actions; dispatch events on stage completion
 
 **Checkpoint**: US3 acceptance scenarios pass; quickstart Scenario 3.
 
@@ -166,9 +166,9 @@ Phase 1 (Setup)
 
 **Gate**: spec03 **US3** authorized or approved fixture strategy.
 
-- [ ] T037 [US4] Implement `CreateFamilyDirectRequestAction` with snapshot capture at submit
-- [ ] T038 [US4] Feature test `tests/Feature/Modules/Request/FamilyDirectSnapshotTest.php` — BT-R06
-- [ ] T039 [P] [US4] Test fixture `DependentSnapshotSourceStub` when Employee US3 unavailable
+- [x] T037 [US4] Implement `CreateFamilyDirectRequestAction` with snapshot capture at submit
+- [x] T038 [US4] Feature test `tests/Feature/Modules/Request/FamilyDirectSnapshotTest.php` — BT-R06
+- [x] T039 [P] [US4] Test fixture `DependentSnapshotSourceStub` when Employee US3 unavailable
 
 **Checkpoint**: US4 acceptance scenarios pass; quickstart Scenario 7.
 
@@ -201,11 +201,11 @@ Phase 1 (Setup)
 
 **Goal**: Downstream read API and Employee pending port loop.
 
-- [ ] T045 Create DTOs and `RequestReadContract` per [contracts/request-read-service.md](./contracts/request-read-service.md)
-- [ ] T046 Implement `RequestReadService` in `app/Modules/Request/Application/Services/RequestReadService.php`
-- [ ] T047 Implement `PendingRequestReadAdapter` + internal `PendingRequestQueryPort` per [contracts/employee-request-boundary.md](./contracts/employee-request-boundary.md) (OA-05-09)
-- [ ] T048 Register `PendingRequestReadPort` binding — replaces Employee null stub when integrated
-- [ ] T049 Feature test `tests/Feature/Modules/Request/RequestReadContractTest.php` + `PendingRequestReadPortTest.php` — BT-R08, BT-R09
+- [x] T045 Create DTOs and `RequestReadContract` per [contracts/request-read-service.md](./contracts/request-read-service.md)
+- [x] T046 Implement `RequestReadService` in `app/Modules/Request/Application/Services/RequestReadService.php`
+- [x] T047 Implement `PendingRequestReadAdapter` + internal `PendingRequestQueryPort` per [contracts/employee-request-boundary.md](./contracts/employee-request-boundary.md) (OA-05-09)
+- [x] T048 Register `PendingRequestReadPort` binding — replaces Employee null stub when integrated
+- [x] T049 Feature test `tests/Feature/Modules/Request/RequestReadContractTest.php` + `PendingRequestReadPortTest.php` — BT-R08, BT-R09
 
 **Checkpoint**: Supplier contracts pass; quickstart Scenarios 6, 10.
 
@@ -213,9 +213,9 @@ Phase 1 (Setup)
 
 ## Phase 10: Polish & Cross-Cutting Concerns
 
-- [ ] T050 [P] Add events `RequestApproved`, `RequestApprovalRecorded`; dispatch from approval actions (R-13)
-- [ ] T051 Create `tests/Architecture/RequestConsumerBoundaryTest.php` — BT-R05, BT-R09
-- [ ] T052 Run MVP gate: `php artisan test tests/Feature/Modules/Request tests/Unit/Modules/Request tests/Architecture/RequestConsumerBoundaryTest.php`; `vendor/bin/phpstan analyse app/Modules/Request`; `vendor/bin/pint app/Modules/Request`; verify `quickstart.md` Wave 1A scenarios
+- [x] T050 [P] Add events `RequestApproved`, `RequestApprovalRecorded`; dispatch from approval actions (R-13)
+- [x] T051 Create `tests/Architecture/RequestConsumerBoundaryTest.php` — BT-R05, BT-R09
+- [x] T052 Run MVP gate: `php artisan test tests/Feature/Modules/Request tests/Unit/Modules/Request tests/Architecture/RequestConsumerBoundaryTest.php`; `vendor/bin/phpstan analyse app/Modules/Request`; `vendor/bin/pint app/Modules/Request`; verify `quickstart.md` Wave 1A scenarios
 
 ### MVP Gate (Wave 1A)
 

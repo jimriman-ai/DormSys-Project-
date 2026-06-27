@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Request\Domain\States;
 
+use App\Modules\Request\Infrastructure\Persistence\Models\RequestModel;
 use Spatie\ModelStates\State;
 use Spatie\ModelStates\StateConfig;
 
+/**
+ * @extends State<RequestModel>
+ */
 abstract class RequestState extends State
 {
     public static function config(): StateConfig
