@@ -75,10 +75,10 @@ Phase 1 (Setup)
 
 **Purpose**: Request module migration path and DI scaffolding.
 
-- [ ] T001 Verify `app/Modules/Request/Infrastructure/Providers/RequestServiceProvider.php` loads migrations from `database/migrations/modules/request/` per plan.md
-- [ ] T002 [P] Ensure `database/migrations/modules/request/` directory exists
-- [ ] T003 [P] Add `RequestPresentationServiceProvider` in `app/Modules/Request/Presentation/Providers/RequestPresentationServiceProvider.php` for Artisan commands; register in `bootstrap/providers.php`
-- [ ] T004 [P] Update `app/Modules/Request/README.md` with spec05 scope, CD-009/010/013, OA-05-09
+- [x] T001 Verify `app/Modules/Request/Infrastructure/Providers/RequestServiceProvider.php` loads migrations from `database/migrations/modules/request/` per plan.md
+- [x] T002 [P] Ensure `database/migrations/modules/request/` directory exists
+- [x] T003 [P] Add `RequestPresentationServiceProvider` in `app/Modules/Request/Presentation/Providers/RequestPresentationServiceProvider.php` for Artisan commands; register in `bootstrap/providers.php`
+- [x] T004 [P] Update `app/Modules/Request/README.md` with spec05 scope, CD-009/010/013, OA-05-09
 
 **Checkpoint**: Module boots; migrations path wired.
 
@@ -90,22 +90,22 @@ Phase 1 (Setup)
 
 **⚠️ CRITICAL**: No user story work until this phase is complete.
 
-- [ ] T005 Create `RequestId` and `RequestCode` value objects in `app/Modules/Request/Domain/ValueObjects/`
-- [ ] T006 [P] Create enums in `app/Modules/Request/Domain/Enums/` — `RequestType`, `ApprovalStage`, `ApprovalDecision` per `data-model.md`
-- [ ] T007 [P] Create domain exceptions — `RequestNotFoundException`, `InvalidRequestTransitionException`, `RequestNotEligibleException`, `RequestValidationException`, `InvalidGroupRequestException`
-- [ ] T008 Create migration `database/migrations/modules/request/*_create_requests_table.php` per `data-model.md`
-- [ ] T009 Create migration `database/migrations/modules/request/*_create_request_approvals_table.php` — FK `request_id`; append-only (no `updated_at`)
-- [ ] T010 [P] Create migration `database/migrations/modules/request/*_create_request_dependent_snapshots_table.php`
-- [ ] T011 [P] Create migration `database/migrations/modules/request/*_create_request_members_table.php`
-- [ ] T012 [P] Create migration `database/migrations/modules/request/*_create_request_mission_details_table.php` — 1:1 PK `request_id`
-- [ ] T013 Create `Request` entity in `app/Modules/Request/Domain/Entities/Request.php` per `data-model.md`
-- [ ] T014 Create `RequestModel` in `app/Modules/Request/Infrastructure/Persistence/Models/RequestModel.php` — `HasUuid`, `RecordsActivity`, spatie `HasStates`
-- [ ] T015 Create `RequestRepositoryContract` and `RequestRepository` in Application/Infrastructure layers
-- [ ] T016 Implement `RequestCodeGenerator` domain/application service — pattern `REQ-YYYYMMDD-NNNN` (R-02)
-- [ ] T017 Create base `RequestState` and `DraftState` in `app/Modules/Request/Domain/States/` per R-07
-- [ ] T018 [P] Create pending state classes — `SubmittedState`, `PendingDepartmentManagerState`, `PendingHRState`, `PendingDormitoryManagerState`, `PendingDormitoryUnitState`
-- [ ] T019 [P] Create terminal state classes — `ApprovedState`, `RejectedState`, `CancelledState`
-- [ ] T020 Bind repositories and foundational services in `RequestServiceProvider.php`
+- [x] T005 Create `RequestId` and `RequestCode` value objects in `app/Modules/Request/Domain/ValueObjects/`
+- [x] T006 [P] Create enums in `app/Modules/Request/Domain/Enums/` — `RequestType`, `ApprovalStage`, `ApprovalDecision` per `data-model.md`
+- [x] T007 [P] Create domain exceptions — `RequestNotFoundException`, `InvalidRequestTransitionException`, `RequestNotEligibleException`, `RequestValidationException`, `InvalidGroupRequestException`
+- [x] T008 Create migration `database/migrations/modules/request/*_create_requests_table.php` per `data-model.md`
+- [x] T009 Create migration `database/migrations/modules/request/*_create_request_approvals_table.php` — FK `request_id`; append-only (no `updated_at`)
+- [x] T010 [P] Create migration `database/migrations/modules/request/*_create_request_dependent_snapshots_table.php`
+- [x] T011 [P] Create migration `database/migrations/modules/request/*_create_request_members_table.php`
+- [x] T012 [P] Create migration `database/migrations/modules/request/*_create_request_mission_details_table.php` — 1:1 PK `request_id`
+- [x] T013 Create `Request` entity in `app/Modules/Request/Domain/Entities/Request.php` per `data-model.md`
+- [x] T014 Create `RequestModel` in `app/Modules/Request/Infrastructure/Persistence/Models/RequestModel.php` — `HasUuid`, `RecordsActivity`, spatie `HasStates`
+- [x] T015 Create `RequestRepositoryContract` and `RequestRepository` in Application/Infrastructure layers
+- [x] T016 Implement `RequestCodeGenerator` domain/application service — pattern `REQ-YYYYMMDD-NNNN` (R-02)
+- [x] T017 Create base `RequestState` and `DraftState` in `app/Modules/Request/Domain/States/` per R-07
+- [x] T018 [P] Create pending state classes — `SubmittedState`, `PendingDepartmentManagerState`, `PendingHRState`, `PendingDormitoryManagerState`, `PendingDormitoryUnitState`
+- [x] T019 [P] Create terminal state classes — `ApprovedState`, `RejectedState`, `CancelledState`
+- [x] T020 Bind repositories and foundational services in `RequestServiceProvider.php`
 
 **Checkpoint**: All `request_*` tables migrate; `Draft` state persistable.
 

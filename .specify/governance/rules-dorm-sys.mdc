@@ -1,0 +1,45 @@
+---
+description: DormSys governance loader — applies to all specifications
+alwaysApply: true
+---
+
+# Governance Loader
+
+You are executing a DormSys specification. All architectural, process, and execution rules are defined in `.specify/governance/`. Load and follow them strictly.
+
+## Core Governance Documents
+
+1. **file-precedence.md** — Source hierarchy and conflict resolution
+2. **decision-index.md** — Decision ID → location map
+3. **execution-policy.md** — Batch discovery, scope lock, failure policy
+4. **coding-rules.md** — Architectural constraints (references constitution, playbook, catalog)
+5. **batch-strategy.md** — Batch types, risk model, wave model
+6. **review-checklist.md** — Architectural review gates
+7. **reporting-template.md** — Standardized batch reports
+8. **ai-prompts.md** — Canonical prompt library
+
+## Execution Flow
+
+1. Receive a prompt (e.g., "Execute Batch B1 for spec05")
+2. Load `.specify/governance/batches/spec05.md`
+3. Locate batch `B1` and extract task range, wave, type
+4. Apply `coding-rules.md` during implementation
+5. Run tests, PHPStan, Pint
+6. Run `review-checklist.md`
+7. Generate report using `reporting-template.md`
+8. **HALT at review gate**
+
+## RULE ZERO
+
+You implement documented decisions. You never invent an architectural decision. If a required decision is missing or ambiguous → **HALT**.
+
+## Tool-Specific Notes
+
+This file is the **Cursor-specific loader** for DormSys governance. If you switch to a different AI agent (Claude Code, Gemini CLI, etc.), replace this file with the equivalent loader for that tool. **The `.specify/governance/` directory remains unchanged.**
+
+---
+
+**Document Control**
+- Version: 1.0.0
+- Last Updated: 1405/04/06
+- Owner: DormSys Architecture Team

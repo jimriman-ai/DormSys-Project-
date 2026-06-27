@@ -13,6 +13,7 @@ use App\Modules\Lottery\Infrastructure\Providers\LotteryServiceProvider;
 use App\Modules\Notification\Infrastructure\Providers\NotificationServiceProvider;
 use App\Modules\Reporting\Infrastructure\Providers\ReportingServiceProvider;
 use App\Modules\Request\Infrastructure\Providers\RequestServiceProvider;
+use App\Modules\Request\Presentation\Providers\RequestPresentationServiceProvider;
 use App\Modules\Voucher\Infrastructure\Providers\VoucherServiceProvider;
 use App\Modules\Workflow\Infrastructure\Providers\WorkflowServiceProvider;
 use App\Providers\AppServiceProvider;
@@ -26,6 +27,7 @@ return [
     EmployeeServiceProvider::class,
     EmployeePresentationServiceProvider::class,
     RequestServiceProvider::class,
+    RequestPresentationServiceProvider::class,
     WorkflowServiceProvider::class,
     DormitoryServiceProvider::class,
     AllocationServiceProvider::class,

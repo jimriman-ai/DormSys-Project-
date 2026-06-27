@@ -1,0 +1,114 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\Request\Infrastructure\Repositories;
+
+use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
+use App\Modules\Request\Domain\Entities\Request;
+use App\Modules\Request\Domain\Exceptions\RequestNotFoundException;
+use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
+use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
+use App\Modules\Request\Domain\ValueObjects\RequestCode;
+use App\Modules\Request\Domain\ValueObjects\RequestId;
+use App\Modules\Request\Infrastructure\Persistence\Models\RequestModel;
+use DateTimeImmutable;
+use DateTimeZone;
+
+class RequestRepository implements RequestRepositoryContract
+{
+    public function save(Request $request): Request
+    {
+        if ($request->id === null) {
+            $model = new RequestModel([
+                'code' => (string) $request->code,
+                'employee_id' => $request->employeeId->value,
+                'dormitory_id' => $request->dormitoryId->value,
+                'type' => $request->type,
+                'check_in_date' => $request->checkInDate->format('Y-m-d'),
+                'check_out_date' => $request->checkOutDate->format('Y-m-d'),
+                'status' => $request->status,
+                'submitted_at' => $request->submittedAt?->format('Y-m-d H:i:s'),
+                'cancelled_at' => $request->cancelledAt?->format('Y-m-d H:i:s'),
+                'rejection_reason' => $request->rejectionReason,
+            ]);
+            $model->save();
+
+            return $this->toDomain($model);
+        }
+
+        $model = RequestModel::query()->find($request->requireId()->value);
+
+        if ($model === null) {
+            throw new RequestNotFoundException('Request not found.');
+        }
+
+        $model->fill([
+            'code' => (string) $request->code,
+            'employee_id' => $request->employeeId->value,
+            'dormitory_id' => $request->dormitoryId->value,
+            'type' => $request->type,
+            'check_in_date' => $request->checkInDate->format('Y-m-d'),
+            'check_out_date' => $request->checkOutDate->format('Y-m-d'),
+            'status' => $request->status,
+            'submitted_at' => $request->submittedAt?->format('Y-m-d H:i:s'),
+            'cancelled_at' => $request->cancelledAt?->format('Y-m-d H:i:s'),
+            'rejection_reason' => $request->rejectionReason,
+        ]);
+        $model->save();
+
+        return $this->toDomain($model);
+    }
+
+    public function findById(RequestId $id): ?Request
+    {
+        $model = RequestModel::query()->find($id->value);
+
+        return $model === null ? null : $this->toDomain($model);
+    }
+
+    public function findByCode(RequestCode $code): ?Request
+    {
+        $model = RequestModel::query()
+            ->where('code', (string) $code)
+            ->first();
+
+        return $model === null ? null : $this->toDomain($model);
+    }
+
+    public function nextDailySequenceForUtcDate(string $datePart): int
+    {
+        $prefix = 'REQ-'.$datePart.'-';
+        $latestCode = RequestModel::query()
+            ->where('code', 'like', $prefix.'%')
+            ->orderByDesc('code')
+            ->value('code');
+
+        if ($latestCode === null) {
+            return 1;
+        }
+
+        return RequestCode::fromString($latestCode)->sequence() + 1;
+    }
+
+    private function toDomain(RequestModel $model): Request
+    {
+        return new Request(
+            id: RequestId::fromString($model->getId()),
+            code: RequestCode::fromString($model->code),
+            employeeId: EmployeeReferenceId::fromString($model->employee_id),
+            dormitoryId: DormitorySiteId::fromString($model->dormitory_id),
+            type: $model->type,
+            checkInDate: new DateTimeImmutable($model->check_in_date->format('Y-m-d'), new DateTimeZone('UTC')),
+            checkOutDate: new DateTimeImmutable($model->check_out_date->format('Y-m-d'), new DateTimeZone('UTC')),
+            status: $model->status->getValue(),
+            submittedAt: $model->submitted_at !== null
+                ? new DateTimeImmutable($model->submitted_at->format('Y-m-d H:i:s'), new DateTimeZone('UTC'))
+                : null,
+            cancelledAt: $model->cancelled_at !== null
+                ? new DateTimeImmutable($model->cancelled_at->format('Y-m-d H:i:s'), new DateTimeZone('UTC'))
+                : null,
+            rejectionReason: $model->rejection_reason,
+        );
+    }
+}
