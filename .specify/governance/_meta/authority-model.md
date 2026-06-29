@@ -1,6 +1,6 @@
 
 # DormSys Governance Authority Model
-model-version: 1.0.0
+model-version: 2.0.0
 status: normative
 tier: none (meta)
 change-policy:
@@ -41,9 +41,16 @@ This document:
 
 - Defines vocabulary that tiered documents MUST use consistently.
 - Defines invariants that tiered documents MUST satisfy.
+- Defines authorization-record lifecycle and structure (conceptual and normative for record shape).
+- Does NOT determine governance decision authority ownership.
+- Does NOT duplicate the Governance Decision Authority Map.
 - Does NOT grant any operational authority.
 - Does NOT override any tiered governance document.
 - Does NOT participate in precedence resolution.
+
+Governance decision authority ownership is defined only in:
+
+`.specify/docs/catalog-decisions.md` § `## Governance Decision Authority Map`
 
 ---
 
@@ -111,18 +118,19 @@ They constrain authorities; they do not grant them.
 
 ---
 
-## §3 — Authority Sources (Exclusive Mapping)
+## §3 — Authority Ownership Resolution (Pointer)
 
-Each operational authority type has **exactly one** authoritative source class.  
-No other file may grant, imply, restore, or revoke that authority.
+Governance decision authority **ownership** is defined only in:
 
-| Authority Type | Authoritative Source Class |
-|---|---|
-| Design Approval | `.specify/docs/handoff/<spec>-design-approved.md` |
-| Implementation Authorization | `.specify/docs/handoff/<spec>-implementation-authorization.md` |
-| Batch Execution Permission | `.specify/governance/execution-policy.md` + `.specify/governance/batches/<spec>.md` + recorded human review outcome |
+`.specify/docs/catalog-decisions.md` § `## Governance Decision Authority Map`
 
-Tier-2 and Tier-3 artifacts (`spec.md`, `plan.md`, `tasks.md`, batch files absent review outcome) MUST NOT grant any of these authorities.
+This section does not duplicate that map. It states conceptual constraints only:
+
+- Each operational authority type has exactly one canonical ownership entry in that map.
+- No tiered document may grant, imply, restore, or revoke operational authority except as defined there.
+- Tier-2 and Tier-3 artifacts (`spec.md`, `plan.md`, `tasks.md`, batch files absent review outcome) MUST NOT grant operational authority.
+
+To resolve who owns any operational authority type, consult the canonical map first. Instance record locations are identified through that map, not through this document.
 
 ---
 
@@ -141,7 +149,7 @@ authorized-scope: explicit list of waves/tasks/user-stories
 blocked-scope: explicit list (required when status = partial)  
 blocking-reason: reference to unresolved dependency (required when status = partial)  
 authority-constraints: explicit list of what this record cannot do  
-lifecycle-reference: pointer to file-precedence.md § lifecycle section
+lifecycle-reference: pointer to authority-model.md §5
 
 ### Field Rules
 
@@ -207,8 +215,8 @@ Each operation requires:
 |---|---|
 | I1 | Exactly one record per spec is in `active` or `partial` state at any moment. |
 | I2 | Status text in Tier-2 or Tier-3 artifacts is descriptive only, never authoritative. |
-| I3 | The Governance Decision Authority Map exists in exactly one file (`catalog-decisions.md`). All other references to authority mapping MUST be pointers, not redefinitions. |
-| I4 | An agent answering "what authorizes implementation of spec X?" must reach exactly one file via exactly one pointer chain. |
+| I3 | The Governance Decision Authority Map exists in exactly one file (`.specify/docs/catalog-decisions.md` § `## Governance Decision Authority Map`). All other references to authority mapping MUST be pointers, not redefinitions. |
+| I4 | An agent answering "what authorizes implementation of spec X?" must start from `.specify/docs/catalog-decisions.md` § `## Governance Decision Authority Map`, then reach exactly one instance record via exactly one pointer chain. |
 | I5 | Each term in §1 has exactly one meaning across all governance documents. |
 | I6 | No tiered document may redefine an authority type or introduce a new one. |
 | I7 | An `authorization-status: partial` record MUST contain non-empty `authorized-scope`, `blocked-scope`, and `blocking-reason`. |
@@ -223,18 +231,20 @@ Defects are corrected by fixing the violating document, not by precedence resolu
 After any change to a tiered governance document, the following query MUST return a deterministic answer derivable from documents alone, without interpretation:
 
 > For specification `<spec-id>`, identify:
-> 1. The authoritative source of implementation authorization (one file path).
-> 2. The current `authorization-status` (one value from §5).
-> 3. The verbatim `authorized-scope`.
-> 4. The verbatim `blocked-scope` (if status is `partial`).
-> 5. The pointer chain from `tasks.md` to the authoritative record.
+> 1. The canonical ownership entry from `.specify/docs/catalog-decisions.md` § `## Governance Decision Authority Map`.
+> 2. The instance file path for implementation authorization (one file path), as identified through that map.
+> 3. The current `authorization-status` (one value from §5).
+> 4. The verbatim `authorized-scope`.
+> 5. The verbatim `blocked-scope` (if status is `partial`).
+> 6. The pointer chain from `tasks.md` to the canonical map and then to the instance record.
 
 Expected answer shape:
 
-- Exactly one file path.
+- One canonical map reference (`.specify/docs/catalog-decisions.md` § `## Governance Decision Authority Map`).
+- Exactly one instance file path.
 - Exactly one state from §5.
 - Two verbatim scope lists (or one, if status is `active`).
-- A pointer chain of length ≤ 2.
+- A pointer chain of length ≤ 2 from operational artifacts to the instance record, starting from the canonical map.
 
 If any of these is ambiguous, multi-valued, or requires interpretation, a defect exists.
 
@@ -254,7 +264,7 @@ This document follows strict change rules:
 
 ## Document Control
 
-- Model Version: 1.0.0
+- Model Version: 2.0.0
 - Document Status: Normative
 - Tier: None (Meta)
 - Owner: DormSys Architecture Team

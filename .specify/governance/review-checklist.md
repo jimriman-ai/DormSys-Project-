@@ -4,6 +4,12 @@
 
 Run this checklist at the end of every batch before submitting the batch report. Focus on DDD boundaries, aggregate consistency, and governance violations. **This is not a CI checklist** — tests, PHPStan, and Pint must pass before reaching this stage.
 
+This document defines review controls only. It does not own, grant, or interpret governance decision authority.
+
+For authority ownership, see only:
+
+`.specify/docs/catalog-decisions.md` § `## Governance Decision Authority Map`
+
 ---
 
 ## Domain Layer
@@ -54,8 +60,45 @@ Run this checklist at the end of every batch before submitting the batch report.
 ## Scope and Risk
 
 - [ ] **Scope Lock**: No files outside the active specification's module were modified (unless explicitly required by `tasks.md`)
-- [ ] **Wave Authorization**: If this batch belongs to Wave 1B/1C, authorization was confirmed before execution
+- [ ] **Wave Gating Precondition**: If this batch belongs to Wave 1B/1C, Implementation Authorization scope was verified per the canonical map before execution (review completion alone is insufficient)
 - [ ] **Failure Protocol**: If tests or static analysis failed, root cause was identified and minimal fix was approved before proceeding
+
+---
+
+## Authority Drift Prevention (MANDATORY)
+
+**MANDATORY** for any change involving:
+
+- `.specify/docs/catalog-decisions.md`
+- `.specify/governance/_meta/authority-model.md`
+- Any tiered governance document, including:
+  - `.specify/governance/execution-policy.md`
+  - `.specify/governance/governance-enforcer.md`
+  - `.specify/governance/file-precedence.md`
+  - `.specify/governance/batch-strategy.md`
+  - `.specify/governance/coding-rules.md`
+  - `.specify/governance/review-checklist.md`
+  - `.specify/governance/decision-index.md`
+
+If none of the above files are changed, this section does not apply.
+
+Before accepting a governance document change, confirm:
+
+- [ ] **Single ownership map**: Only `.specify/docs/catalog-decisions.md` § `## Governance Decision Authority Map` defines governance decision authority ownership
+- [ ] **No new ownership map**: No new ownership map, matrix, or source-class table is introduced outside `catalog-decisions.md`
+- [ ] **No local ownership**: The changed file does not define, summarize, or table authority sources for Design Approval, Implementation Authorization, or Batch Execution Permission
+- [ ] **No alternate resolver**: No other document in this change can determine authority ownership without the canonical map
+- [ ] **No implied authorization**: Status text, sequencing, review outcomes, task progress, or batch progression wording does not imply Implementation Authorization
+- [ ] **Canonical pointers**: All authority-ownership references point to `.specify/docs/catalog-decisions.md` § `## Governance Decision Authority Map`
+- [ ] **Separation preserved**: Design Approval, Implementation Authorization, and Review Gate batch progression remain explicitly distinct
+- [ ] **No inferred readiness**: Execution readiness is not inferred from progress, review PASS, or checklist completion alone
+- [ ] **Role boundary**: Enforcement, precedence, orchestration, batch strategy, coding rules, and review controls do not claim to grant or restore authority
+
+### Final control question (required)
+
+> If `catalog-decisions.md` disappeared, could this change make any other document able to determine who owns authority?
+
+- [ ] **Answer: NO** (allowed answer only; any other answer blocks acceptance)
 
 ---
 
@@ -71,6 +114,6 @@ If any item fails, the batch is **rejected** and must be reworked before continu
 ---
 
 **Document Control**
-- Version: 1.0.0
+- Version: 1.2.0
 - Last Updated: 1405/04/06
 - Owner: DormSys Architecture Team

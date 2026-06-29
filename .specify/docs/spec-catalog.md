@@ -92,7 +92,9 @@ OQ-03 through OQ-05 were closed before Hard Freeze (CD-010, CD-011, CD-014). CON
 | `spec-catalog.md` | v1.0.0 (Hard Freeze) |
 | `specification-playbook.md` | v1.1.0 |
 
-### Wave 1A authorization
+### Wave 1A status snapshot
+
+Status columns below are informational summaries only. They do not define governance decision authority ownership. For ownership, see `.specify/docs/catalog-decisions.md` § `## Governance Decision Authority Map`. Linked handoff files are instance records, not ownership definitions.
 
 | Spec | Status after freeze |
 | ---- | ------------------- |

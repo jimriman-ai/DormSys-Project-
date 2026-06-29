@@ -1,6 +1,6 @@
 # DormSys Catalog Decisions
 
-**Version:** 2.3.0  
+**Version:** 2.4.0  
 **Status:** ACTIVE  
 **Last Updated:** 1405/04/05 | 2026/06/26  
 **Related Documents:** [`context-map.md`](context-map.md), [`spec-catalog.md`](spec-catalog.md), `CONSTITUTION v1.3.0.md`, `dormsys-architecture.md`
@@ -43,6 +43,33 @@ Concept definitions and authorization-record lifecycle are defined in `.specify/
 | Design Approval | `.specify/docs/handoff/<spec>-design-approved.md` | Governance Review | Confirms design readiness only; does not permit implementation |
 | Implementation Authorization | `.specify/docs/handoff/<spec>-implementation-authorization.md` | Governance Review | Permits implementation execution under declared scope recorded in the authorization record |
 | Batch Execution Permission | `.specify/docs/catalog-decisions.md` § Governance Decision Authority Map | Governance Review | Permits progression to the next eligible batch only. Review-gate approval satisfies the human-review governing input only; it does not grant Implementation Authorization. Governing inputs (not authority owners): `.specify/governance/execution-policy.md`, `.specify/governance/batches/<spec>.md`, and a recorded human review outcome. |
+
+---
+
+## Authority Drift Resolution
+
+Authority ownership is determined **only** by this document, section `## Governance Decision Authority Map`.
+
+No other document may determine, duplicate, summarize, or replace that ownership map.
+
+### Governance document roles
+
+| Layer | Role | Ownership |
+| --- | --- | --- |
+| **Tiered governance** | Operational behavior: enforcement, precedence, orchestration, batch strategy, coding constraints, review controls | Non-owning. Must pointer-reference the canonical map. |
+| **Meta governance** | Conceptual vocabulary, invariants, authorization-record lifecycle (`authority-model.md`); indexes and status mirrors (`decision-index.md`, `spec-catalog.md`) | Non-owning. Pointer-only or status-only. |
+
+`.specify/governance/_meta/authority-model.md` (model-version **2.0.0**) is a conceptual and pointer anchor only. It is **not** an ownership map and must not be used to resolve authority ownership without the canonical map.
+
+Meta-layer cleanup has removed parallel authority maps from tiered and meta documents. Ongoing governance changes **must** pass the **MANDATORY** `Authority Drift Prevention` section in `.specify/governance/review-checklist.md`.
+
+### Final control question (verified)
+
+> If `catalog-decisions.md` disappeared, could any other document determine who owns authority?
+
+**Verified answer: NO.**
+
+Without this document § `## Governance Decision Authority Map`, ownership cannot be resolved; enforcement and operational documents must HALT.
 
 ---
 
@@ -529,6 +556,10 @@ Request
 ---
 
 ## Change Log
+
+### 2.4.0 — 2026-06-26
+
+- Added **Authority Drift Resolution** closure section; recorded verified final control question (NO).
 
 ### 2.3.0 — 2026-06-26
 

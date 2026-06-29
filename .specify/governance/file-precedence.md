@@ -1,75 +1,99 @@
-# File Precedence and Conflict Resolution
+# Governance File Precedence
 
 ## Purpose
 
-This document defines the precedence order among tiered governance documents and the protocol for resolving conflicts between them.
+This document defines the precedence order for governance-related artifacts and the protocol for resolving conflicts between them.
 
-It does **not** define authoritative sources for Design Approval, Implementation Authorization, or Batch Execution Permission. For authority ownership, see the Governance Decision Authority Map in `.specify/governance/catalog-decisions.md`.
+It governs conflict resolution only.
+
+It does not:
+
+- create governance authority,
+- transfer authority ownership,
+- grant implementation permission,
+- substitute for approval or authorization records.
+
+For authority ownership, see the Governance Decision Authority Map in:
+
+`.specify/docs/catalog-decisions.md`
 
 ---
 
-## Source of Truth Order
+## Precedence Order
 
-When documents conflict, use this order from highest to lowest:
+When two governance artifacts conflict, the higher-precedence source wins.
 
-### Tier 0 — Supreme Authority
+Precedence resolves document conflicts only. It does not create, grant, or transfer governance decision authority.
+
+### Tier 1 — Canonical Governance Authority
+
 1. `.specify/docs/catalog-decisions.md`
-   - Architectural principles
-   - Non-negotiable constraints
-   - Domain language authority
 
-**Rule:** If a lower document conflicts with the Constitution, the Constitution wins.
+Use this tier to locate:
 
-### Tier 1 — Boundary and Process Governance
-2. `.specify/docs/catalog-decisions.md`
-   - Boundary decisions
-   - Entity ownership
-   - Cross-context contracts
-   - Governance Decision Authority Map
+- governance decision authority ownership (`## Governance Decision Authority Map`),
+- canonical ownership resolution for Design Approval, Implementation Authorization, and Batch Execution Permission.
 
-3. `.specify/governance/specification-playbook.md`
-   - Evidence rules
-   - Conflict process
-   - Freeze and pipeline rules
+Authority ownership is defined only in that section. This document assigns precedence position only.
 
-4. `.specify/governance/execution-policy.md`
-   - Batch discovery and execution process
-   - Activation and halt conditions
-   - Wave gating checkpoints
-   - Review gate procedures
+### Tier 2 — Governance Resolution and Execution Control
 
-**Rule:** Catalog decisions override provisional assumptions. The playbook governs process only. The execution policy governs when implementation may start, continue, pause, or halt. None of these files may override the Constitution or catalog decisions.
+2. `.specify/governance/file-precedence.md`
+3. `.specify/governance/execution-policy.md`
+4. `.specify/governance/governance-enforcer.md`
 
-### Tier 2 — Specification Layer
-5. `specs/<spec>/spec.md`
-   - Feature requirements
-   - Use cases
-   - Operational agreements
-   - Descriptive design-readiness status
+Use this tier for:
 
-6. `specs/<spec>/plan.md`
-   - Implementation strategy
-   - Dependency graph
-   - Execution waves
+- document conflict resolution,
+- execution orchestration behavior,
+- enforcement sequencing,
+- halt behavior,
+- governance validation flow.
 
-7. `specs/<spec>/data-model.md`
-   - Schema contracts
+These documents control procedure, not ownership.
 
-**Rule:** Specs must follow higher tiers. Operational agreements cannot override constitutional or boundary decisions. Status text in spec-scoped artifacts is descriptive only and must not be treated as operational authority.
+### Tier 3 — Planning and Implementation Constraints
 
-### Tier 3 — Execution Layer
-8. `specs/<spec>/tasks.md`
-   - Task breakdown
-   - Acceptance criteria
-   - Status tracking
+5. `.specify/governance/batch-strategy.md`
+6. `.specify/governance/coding-rules.md`
+7. `.specify/governance/review-checklist.md`
+8. `.specify/governance/reporting-template.md`
 
-9. `.specify/governance/batches/<spec>.md`
-   - Batch definitions
-   - Wave mapping
-   - Review gates
-   - Batch progression status
+Use this tier for:
 
-**Rule:** Tasks and batches implement the spec. They cannot create, replace, or imply operational authority, and cannot change higher-tier requirements or constraints.
+- batch composition,
+- execution sequencing strategy,
+- implementation constraints,
+- review criteria,
+- reporting format.
+
+These documents do not override higher-tier ownership or execution rules.
+
+### Tier 4 — Spec and Task Artifacts
+
+9. `spec.md`
+10. `spec05.md`
+11. `tasks.md`
+12. `.specify/governance/batches/<spec>.md`
+
+Use this tier for:
+
+- feature scope,
+- specification detail,
+- task decomposition,
+- batch mapping for execution order and grouping.
+
+These artifacts are operational inputs, not governance authority sources.
+
+### Tier 5 — Informational / Supporting Inputs
+
+13. `decision-index.md`
+14. `constitution.md`
+15. `ai-prompts.md`
+16. `rules-dorm-sys.mdc`
+17. `KNOWN_DEBT.md`
+
+Use this tier as supporting context unless a higher-tier document explicitly delegates a specific interpretive role.
 
 ---
 
@@ -77,28 +101,44 @@ When documents conflict, use this order from highest to lowest:
 
 When a conflict is detected:
 
-1. **HALT** execution immediately.
-2. Identify the conflicting sources and their tier levels.
-3. Apply the higher-precedence source.
-4. Report the conflict with references to both sources.
-5. If both sources are in the same tier, wait for human decision.
-
-**Defect vs conflict:** A statement that violates `.specify/governance/_meta/authority-model.md` is a governance defect, not a precedence conflict. Defects are corrected by fixing the violating document, not by applying this protocol.
-
-If a conflict appears to involve operational authority ownership, resolve the document-content conflict using the steps above, then confirm the authoritative source via `.specify/governance/catalog-decisions.md`.
+1. Identify all conflicting statements.
+2. Determine the source file of each statement.
+3. Compare source files using the precedence order defined above.
+4. Apply the higher-tier statement.
+5. If the conflict involves ownership authority, confirm the authoritative source via `.specify/docs/catalog-decisions.md`.
+6. If the conflict cannot be resolved unambiguously, halt execution.
 
 ---
 
-## Extension Policy
+## Non-Transfer Rule
 
-If new governance documents are added:
-- Update this file to assign their precedence tier.
-- Do not modify `.cursor/rules/dormsys.mdc` unless the loading mechanism changes.
-- New tier assignments must be documented before the document takes effect.
+Referencing a higher-tier rule inside a lower-tier document does not transfer authority ownership to the lower-tier document.
+
+Examples:
+
+- A coding rule may cite a governance decision, but does not become the owner of that decision.
+- A batch map may describe ordering, but does not become the owner of execution authority.
+- An enforcer may validate authorization, but does not become the source of authorization.
 
 ---
 
-**Document Control**
-- Version: 1.1.0
-- Last Updated: 1405/04/06
+## Halt Conditions
+
+Execution must halt when:
+
+- two sources conflict and precedence does not resolve the issue unambiguously,
+- a lower-tier source attempts to replace a higher-tier source,
+- authority ownership cannot be resolved from the canonical source,
+- an artifact implies authority it does not own.
+
+---
+
+## Document Control
+
+- Version: 1.2.0
+- Last Updated: 1405/04/08
 - Owner: DormSys Architecture Team
+
+This ownership line is for document maintenance only.
+
+It does not grant operational authority.

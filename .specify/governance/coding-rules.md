@@ -4,142 +4,109 @@
 
 This document defines mandatory coding practices and implementation discipline for DormSys development.
 
-Its purpose is to ensure:
-
-* consistent implementation practices
-* maintainable and testable code
-* alignment with approved architectural decisions
-* visibility of governance rules during development
+It exists to constrain how code is changed, reviewed, and organized during implementation.
 
 This document is not an authority source.
 
 It does not define:
 
-* architectural approval
-* design decisions
-* implementation authorization
-* batch execution permission
-* governance precedence
+- architectural approval,
+- design decisions,
+- implementation authorization,
+- batch execution permission,
+- governance precedence.
 
-Referenced governance documents remain the authoritative sources for their respective rules.
+Referenced governance documents remain the authoritative sources for the rules they own (AP-*, CD-*, playbook rules, and similar). Governance decision authority ownership is canonical only in `.specify/docs/catalog-decisions.md` § Governance Decision Authority Map.
+
+For canonical governance decision authority ownership, refer only to:
+
+`.specify/docs/catalog-decisions.md`  
+`## Governance Decision Authority Map`
 
 ---
 
-## Technology
+## Technology Baseline
 
-Technology decisions are governed exclusively by:
+| Concern | Source | Rule |
+|--------|--------|------|
+| Framework | `constitution.md` / `AP-01` | Laravel 13 is mandatory |
+| UI Stack | `constitution.md` / `AP-01` | Livewire is mandatory |
+| Database | `constitution.md` / `AP-01` | PostgreSQL is mandatory |
 
-* AP-01 (`constitution.md`)
-
-This document does not duplicate technology versions, framework choices, or tooling policies.
+Implementation must not introduce conflicting technologies without explicit approval from the authoritative source.
 
 ---
 
 ## Architectural Constraints
 
-Apply approved architectural principles during implementation.
+| Concern | Source | Rule |
+|--------|--------|------|
+| Modular Monolith | `constitution.md` / `AP-02` | Preserve module boundaries |
+| DDD Discipline | `constitution.md` / `AP-03` | Respect aggregates, repositories, domain services |
+| No Boundary Leakage | `constitution.md` / `AP-04` | Do not bypass module ownership |
+| Explicit Use Cases | `constitution.md` / `AP-05` | Application flow must remain use-case driven |
 
-| Constraint            | Source                    | Rule                                             |
-| --------------------- | ------------------------- | ------------------------------------------------ |
-| Modular Monolith      | AP-02 (`constitution.md`) | Bounded modules with isolated domain ownership   |
-| Clean Architecture    | AP-03 (`constitution.md`) | Dependencies flow toward domain logic            |
-| Shared Database Rules | AP-04 (`constitution.md`) | No cross-module foreign keys                     |
-| State Machines        | AP-05 (`constitution.md`) | State changes occur through explicit transitions |
+These rules constrain implementation behavior only.
 
-Do not reinterpret architectural principles. Reference the original decision ID.
+They do not transfer architectural authority to this document.
 
 ---
 
 ## Boundary Decisions
 
-When implementation involves cross-module boundaries, consult approved decisions.
+| Concern | Source | Rule |
+|--------|--------|------|
+| Dependent Entity Ownership | `.specify/docs/catalog-decisions.md` / `CD-009` | Ownership follows module responsibility |
+| Approval State vs Transition | `.specify/docs/catalog-decisions.md` / `CD-010` | State belongs to aggregate; transitions follow domain rules |
+| Eligibility Invariant | `.specify/docs/catalog-decisions.md` / `CD-013` | Eligibility validation ownership is explicit |
+| Allocation and Occupancy | `.specify/docs/catalog-decisions.md` / `CD-014` | Assignment and physical occupancy are separate concepts |
 
-| Decision                     | Source                          | Rule                                                        |
-| ---------------------------- | ------------------------------- | ----------------------------------------------------------- |
-| Dependent Entity Ownership   | CD-009 (`catalog-decisions.md`) | Ownership follows module responsibility                     |
-| Approval State vs Transition | CD-010 (`catalog-decisions.md`) | State belongs to aggregate; transitions follow domain rules |
-| Eligibility Invariant        | CD-013 (`catalog-decisions.md`) | Eligibility validation ownership is explicit                |
-| Allocation and Occupancy     | CD-014 (`catalog-decisions.md`) | Assignment and physical occupancy are separate concepts     |
+Boundary decision references do not transfer decision ownership to this document.
 
-Do not simplify or reinterpret these decisions.
+---
+
+## Implementation Rules
+
+Mandatory implementation behavior:
+
+1. Keep changes within approved scope.
+2. Respect module boundaries and ownership.
+3. Prefer explicit domain naming over technical shortcuts.
+4. Preserve aggregate invariants.
+5. Avoid cross-module leakage through direct persistence coupling.
+6. Keep application services thin and domain logic intentional.
+7. Add tests proportional to implementation risk.
+8. Do not invent architectural decisions to fill governance gaps.
 
 ---
 
 ## Evidence and Citation Rules
-
-During implementation:
 
 1. Cite the authoritative source when applying a decision.
 2. Separate architectural concepts from implementation details.
 3. Do not invent missing decisions.
 4. If required governance information is unavailable, halt according to `execution-policy.md`.
 
+These rules govern implementation discipline, not authority ownership.
+
 ---
 
 ## Forbidden Practices
 
-The following violations must be detected during implementation.
-
-The Source column identifies the authoritative document.
-
 This table does not transfer authority ownership to this document.
 
-| Prohibition                                        | Source                    | Rationale                     |
-| -------------------------------------------------- | ------------------------- | ----------------------------- |
-| Cross-module foreign keys                          | AP-04 (`constitution.md`) | Violates module isolation     |
-| Direct status updates                              | AP-05 (`constitution.md`) | Bypasses state invariants     |
-| Paraphrasing governance decisions                  | specification-playbook.md | Creates ambiguity             |
-| Auto-continuing after failure                      | execution-policy.md       | Prevents root cause analysis  |
-| Modifying files outside active specification scope | execution-policy.md       | Prevents uncontrolled changes |
-| Treating coding rules as execution authority       | file-precedence.md        | Prevents authority confusion  |
+| Forbidden Practice | Why Forbidden | Authority Source |
+|-------------------|---------------|------------------|
+| Crossing module boundaries without ownership justification | Breaks modular monolith discipline | `constitution.md` / `AP-04` |
+| Hiding business rules in UI or infrastructure | Violates domain ownership clarity | `constitution.md` / `AP-05` |
+| Treating inferred behavior as approved design | Creates governance drift | `specification-playbook.md` |
+| Continuing after missing governance evidence | Violates halt policy | `execution-policy.md` |
+| Resolving governance conflict by local guesswork | Violates precedence discipline | `file-precedence.md` |
 
 ---
 
-## Code Quality Standards
+## Closing Constraint
 
-Code quality requirements are enforced through project standards and CI configuration.
+This document defines implementation constraints only.
 
-This document references those requirements but does not redefine them.
-
-Required checks:
-
-* Tests pass (Pest)
-* Static analysis passes (PHPStan)
-* Code formatting passes (Pint)
-* Architectural review confirms compliance
-
----
-
-## Implementation Checklist
-
-Before completing implementation:
-
-* [ ] All decisions are referenced by ID
-* [ ] No architectural rules are violated
-* [ ] No unauthorized scope changes are introduced
-* [ ] Tests pass
-* [ ] Static analysis passes
-* [ ] Required review gates are completed
-
----
-
-## Authority Boundary
-
-This document governs coding behavior only.
-
-It must not be interpreted as:
-
-* a source of design approval
-* a source of implementation authorization
-* a source of execution permission
-* a replacement for governance precedence rules
-
-In case of conflict, the authoritative governance hierarchy defined by `file-precedence.md` applies.
-
----
-
-**Document Control**
-
-* Version: 1.1.0
-* Last Updated: 1405/04/06
-* Owner: DormSys Architecture Team
+It does not grant, modify, replace, or interpret governance authority.
