@@ -64,6 +64,21 @@ been verified from the source document.
 | Rule 7 | Shared Database, Isolated Ownership | specification-playbook.md | § IV |
 
 ---
+## Governance Decision Authority Map
+
+| Decision | Authoritative Source | Owner | Constraint |
+| --- | --- | --- | --- |
+| Design Approval | specification status artifact for the active spec | Spec Governance | Confirms design readiness only |
+| Implementation Authorization | `handoff/*-implementation-authorization.md` recognized by governance precedence rules | Governance Review | Authoritative only for implementation execution state |
+| Batch Execution Permission | `execution-policy.md` + human approval at review gate | Governance Review | Permits only next-batch progression |
+| Scope Definition | `spec.md` / `plan.md` | Spec Owner | Does not grant execution authority |
+| Task Definition | `tasks.md` | Spec Owner | Does not grant execution authority |
+| Architecture Principles | `constitution.md` | Architecture Governance | Cannot be overridden by execution artifacts |
+
+Rules:
+- Each decision type must have one authoritative source class.
+- If multiple active sources claim the same decision authority, HALT until resolved.
+- Status summaries, task headers, and progress notes must not be treated as execution authority unless governance explicitly assigns that role.
 
 ## Maintenance Protocol
 

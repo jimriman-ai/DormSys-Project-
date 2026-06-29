@@ -4,7 +4,7 @@
 
 **Created**: 2026-06-23
 
-**Status**: **Planning review checkpoint — PASS** (planning authorization not recorded; implementation not authorized)
+**Status**: **Planning — artifacts ready for review** (planning authorization not recorded; implementation not authorized)
 
 **Catalog**: spec05 — **Planned** (`spec-catalog.md` v1.0.5)
 
@@ -251,18 +251,6 @@ Draft → Submitted → PendingDepartmentManager → PendingHR
 
 **Decision:** When spec05 implements Request persistence, Employee module **`PendingRequestReadPort`** stub is replaced with real adapter reading Request supplier — closes BR-01 `pending_request_exists` loop. Coordinated change across spec03 adapter + spec05 (documented in plan).
 
-### OA-05-09 — PendingRequestReadPort read-only boundary (DECIDED — normative)
-
-**Decision:** `PendingRequestReadPort` is a **read-only pull contract**. It exposes Request **status information required for eligibility checks only**. It **MUST NOT** expose Request commands or lifecycle mutation operations. **Request remains the sole owner of Request lifecycle state.**
-
-| Allowed | Prohibited |
-| ------- | ---------- |
-| `hasPendingRequest(EmployeeId)` — eligibility query | `CancelRequest()`, `ApproveRequest()`, `ChangeRequestState()`, or any command |
-| Read-only adapter implemented in Request Infrastructure | Employee or other contexts mutating Request persistence |
-| Employee owns port **interface**; Request owns **adapter** implementation | Port used as a back-channel for approval or state transitions |
-
-**Rationale:** Dependency Inversion without violating aggregate ownership — Employee pulls facts; Request owns transitions (CD-013, CD-010).
-
 ---
 
 ## Dependency Summary (spec01–spec04)
@@ -288,7 +276,6 @@ Draft → Submitted → PendingDepartmentManager → PendingHR
 | CD-009 | Dependent snapshots only |
 | CD-010 | RequestApproval ownership; Workflow deferred |
 | CD-013 | Eligibility enforce vs compute split |
-| OA-05-09 | `PendingRequestReadPort` read-only — no Request commands via Employee port |
 | BR-01, BR-04 | Eligibility and group size |
 | R-013-01 | Employee downtime blocks submission — mitigate in plan |
 | AP-05 | State machine mandatory |
@@ -302,7 +289,6 @@ Draft → Submitted → PendingDepartmentManager → PendingHR
 - ✅ Request **enforces** BR-01 at submission; Employee **computes** eligibility
 - ✅ Request **snapshots** dependents; Employee **owns** Dependent aggregate
 - ✅ Lottery **owns** draw rules (spec06); Request **supplies** registration request records
-- ✅ Employee **`PendingRequestReadPort`** — read-only pull; Request adapter implements; no mutations (OA-05-09)
 - ❌ Request storing authoritative allocation or bed assignment
 - ❌ FK from `request_*` to `employee_*`, `dormitory_*`, `allocation_*`, `identity_*`
 - ❌ Cross-module Eloquent queries

@@ -1,6 +1,6 @@
 # DormSys Catalog Decisions
 
-**Version:** 2.2.0  
+**Version:** 2.3.0  
 **Status:** ACTIVE  
 **Last Updated:** 1405/04/05 | 2026/06/26  
 **Related Documents:** [`context-map.md`](context-map.md), [`spec-catalog.md`](spec-catalog.md), `CONSTITUTION v1.3.0.md`, `dormsys-architecture.md`
@@ -17,6 +17,32 @@ It records:
 - rationale, impact, and deferred implementation details.
 
 Decisions here supersede provisional assumptions in discovery notes and informal history documents.
+
+---
+
+## Governance Decision Authority Map
+
+This section is the **only** canonical authority ownership map for the operational governance decision classes listed below. Other governance documents MUST reference this section and MUST NOT redefine authority ownership.
+
+Concept definitions and authorization-record lifecycle are defined in `.specify/governance/_meta/authority-model.md`. This document owns the canonical mapping of decision classes to authoritative source files.
+
+### Authority Ownership Rules
+
+- One decision class has one canonical owner.
+- Multiple active authority owners for the same decision class are a governance conflict.
+- Governance conflicts require HALT until resolved.
+
+### Separation Rules
+
+- Design Approval ≠ Implementation Authorization.
+- Batch Execution Permission ≠ Implementation Authorization.
+- Review Gate approval does not grant implementation authority.
+
+| Decision | Canonical Authority Source | Owner | Boundary / Notes |
+| --- | --- | --- | --- |
+| Design Approval | `.specify/docs/handoff/<spec>-design-approved.md` | Governance Review | Confirms design readiness only; does not permit implementation |
+| Implementation Authorization | `.specify/docs/handoff/<spec>-implementation-authorization.md` | Governance Review | Permits implementation execution under declared scope recorded in the authorization record |
+| Batch Execution Permission | `.specify/docs/catalog-decisions.md` § Governance Decision Authority Map | Governance Review | Permits progression to the next eligible batch only. Review-gate approval satisfies the human-review governing input only; it does not grant Implementation Authorization. Governing inputs (not authority owners): `.specify/governance/execution-policy.md`, `.specify/governance/batches/<spec>.md`, and a recorded human review outcome. |
 
 ---
 
@@ -503,6 +529,10 @@ Request
 ---
 
 ## Change Log
+
+### 2.3.0 — 2026-06-26
+
+- Added **Governance Decision Authority Map** as the single canonical authority ownership register for Design Approval, Implementation Authorization, and Batch Execution Permission.
 
 ### 2.2.0 — 2026-06-26
 

@@ -1,82 +1,104 @@
-# File Precedence and Authority Hierarchy
+# File Precedence and Conflict Resolution
+
+## Purpose
+
+This document defines the precedence order among tiered governance documents and the protocol for resolving conflicts between them.
+
+It does **not** define authoritative sources for Design Approval, Implementation Authorization, or Batch Execution Permission. For authority ownership, see the Governance Decision Authority Map in `.specify/governance/catalog-decisions.md`.
+
+---
 
 ## Source of Truth Order
 
-When resolving conflicts or ambiguities during specification execution, follow this precedence order from highest to lowest:
+When documents conflict, use this order from highest to lowest:
 
 ### Tier 0 — Supreme Authority
 1. `.specify/governance/constitution.md`
-   - Architectural principles (AP-*)
-   - Technology stack
+   - Architectural principles
    - Non-negotiable constraints
    - Domain language authority
 
-**Rule**: Constitution is the supreme governance document. Every technical artifact must align with it. If any lower-level artifact conflicts with the Constitution, the Constitution prevails.
+**Rule:** If a lower document conflicts with the Constitution, the Constitution wins.
 
-### Tier 1 — Boundary & Process Governance
+### Tier 1 — Boundary and Process Governance
 2. `.specify/governance/catalog-decisions.md`
-   - Boundary decisions (CD-*)
-   - Entity ownership resolutions
+   - Boundary decisions
+   - Entity ownership
    - Cross-context contracts
+   - Governance Decision Authority Map
 
 3. `.specify/governance/specification-playbook.md`
-   - Evidence management rules
-   - Conflict resolution process
-   - Freeze and pipeline policy
+   - Evidence rules
+   - Conflict process
+   - Freeze and pipeline rules
 
-**Rule**: Catalog decisions supersede provisional assumptions. Playbook governs process only, not architecture decisions.
+4. `.specify/governance/execution-policy.md`
+   - Batch discovery and execution process
+   - Activation and halt conditions
+   - Wave gating checkpoints
+   - Review gate procedures
+
+**Rule:** Catalog decisions override provisional assumptions. The playbook governs process only. The execution policy governs when implementation may start, continue, pause, or halt. None of these files may override the Constitution or catalog decisions.
 
 ### Tier 2 — Specification Layer
-4. `specs/<spec>/spec.md`
+5. `specs/<spec>/spec.md`
    - Feature requirements
    - Use cases
-   - Operational agreements (OA-*)
+   - Operational agreements
+   - Descriptive design-readiness status
 
-5. `specs/<spec>/plan.md`
+6. `specs/<spec>/plan.md`
    - Implementation strategy
    - Dependency graph
    - Execution waves
 
-6. `specs/<spec>/data-model.md`
-   - Aggregate designs
-   - State machines
+7. `specs/<spec>/data-model.md`
    - Schema contracts
 
-**Rule**: Specs must conform to higher tiers. Operational agreements (OA-*) cannot override architectural principles (AP-*) or boundary decisions (CD-*).
+**Rule:** Specs must follow higher tiers. Operational agreements cannot override constitutional or boundary decisions. Status text in spec-scoped artifacts is descriptive only and must not be treated as operational authority.
 
 ### Tier 3 — Execution Layer
-7. `specs/<spec>/tasks.md`
+8. `specs/<spec>/tasks.md`
    - Task breakdown
    - Acceptance criteria
    - Status tracking
 
-8. `.specify/governance/batches/<spec>.md`
+9. `.specify/governance/batches/<spec>.md`
    - Batch definitions
    - Wave mapping
    - Review gates
+   - Batch progression status
 
-**Rule**: Tasks implement the specification. Batch maps organize execution. Neither can alter requirements or architectural constraints defined in higher tiers.
+**Rule:** Tasks and batches implement the spec. They cannot create, replace, or imply operational authority, and cannot change higher-tier requirements or constraints.
+
+---
 
 ## Conflict Resolution Protocol
 
 When a conflict is detected:
 
-1. **HALT execution immediately**
-2. Identify the conflicting sources and their tier levels
-3. Apply the higher-precedence source
-4. Report the conflict with references to both sources
-5. Wait for human decision if both sources are in the same tier
+1. **HALT** execution immediately.
+2. Identify the conflicting sources and their tier levels.
+3. Apply the higher-precedence source.
+4. Report the conflict with references to both sources.
+5. If both sources are in the same tier, wait for human decision.
+
+**Defect vs conflict:** A statement that violates `.specify/governance/_meta/authority-model.md` is a governance defect, not a precedence conflict. Defects are corrected by fixing the violating document, not by applying this protocol.
+
+If a conflict appears to involve operational authority ownership, resolve the document-content conflict using the steps above, then confirm the authoritative source via `.specify/governance/catalog-decisions.md`.
+
+---
 
 ## Extension Policy
 
-If new governance documents are added (ADR, RFC, Architecture Notes, Decision Log):
-- Update this file to define their precedence tier
-- Do not modify `.cursor/rules/dormsys.mdc` unless the governance loading mechanism changes
-- Tier assignments must be explicitly documented before the new document takes effect
+If new governance documents are added:
+- Update this file to assign their precedence tier.
+- Do not modify `.cursor/rules/dormsys.mdc` unless the loading mechanism changes.
+- New tier assignments must be documented before the document takes effect.
 
 ---
 
 **Document Control**
-- Version: 1.0.0
+- Version: 1.1.0
 - Last Updated: 1405/04/06
 - Owner: DormSys Architecture Team

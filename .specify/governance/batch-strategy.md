@@ -85,10 +85,26 @@ Each specification defines its batch map in `.specify/governance/batches/<spec>.
 - Assigns wave authorization
 - Notes dependencies on other specs or waves
 
-**The batch map is the single source of truth for execution order.**
+**The batch map is the single source of truth for execution order.**پ
 
+
+## RULE EXECUTION HIERARCHY
+
+When executing a batch:
+
+1. execution-policy.md → MUST be enforced first
+2. file-precedence.md → resolves conflicts
+3. coding-rules.md → constrains code changes
+4. KNOWN_DEBT.md → defines allowed failure baseline
+5. review-checklist.md → defines PASS/FAIL gate
 ---
+## EXECUTION ENTRY RULE
 
+All batch execution MUST go through:
+
+governance-enforcer.md
+
+Direct execution of any batch without enforcer validation = FORBIDDEN
 **Document Control**
 - Version: 1.0.0
 - Last Updated: 1405/04/06
