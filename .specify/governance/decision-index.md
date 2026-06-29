@@ -22,12 +22,12 @@ This index maps every governance decision identifier to its defining location. T
 
 | ID | Title | Owner File | Section |
 |---|---|---|---|
-| CD-009 | Dependent Entity Ownership | catalog-decisions.md | Decision Index + § CD-009 |
-| CD-010 | Approval State vs Transition Rules | catalog-decisions.md | Decision Index + § CD-010 |
-| CD-011 | Lottery Domain Centralization | catalog-decisions.md | Decision Index + § CD-011 |
-| CD-012 | Employee ↔ Identity Attachment Mechanism | catalog-decisions.md | Decision Index + § CD-012 |
-| CD-013 | Eligibility Invariant Ownership | catalog-decisions.md | Decision Index + § CD-013 |
-| CD-014 | Allocation ↔ Occupancy Ownership Split | catalog-decisions.md | Decision Index + § CD-014 |
+| CD-009 | Dependent Entity Ownership | `.specify/docs/catalog-decisions.md` | Decision Index + § CD-009 |
+| CD-010 | Approval State vs Transition Rules | `.specify/docs/catalog-decisions.md` | Decision Index + § CD-010 |
+| CD-011 | Lottery Domain Centralization | `.specify/docs/catalog-decisions.md` | Decision Index + § CD-011 |
+| CD-012 | Employee ↔ Identity Attachment Mechanism | `.specify/docs/catalog-decisions.md` | Decision Index + § CD-012 |
+| CD-013 | Eligibility Invariant Ownership | `.specify/docs/catalog-decisions.md` | Decision Index + § CD-013 |
+| CD-014 | Allocation ↔ Occupancy Ownership Split | `.specify/docs/catalog-decisions.md` | Decision Index + § CD-014 |
 
 ---
 
@@ -64,21 +64,21 @@ been verified from the source document.
 | Rule 7 | Shared Database, Isolated Ownership | specification-playbook.md | § IV |
 
 ---
-## Governance Decision Authority Map
 
-| Decision | Authoritative Source | Owner | Constraint |
-| --- | --- | --- | --- |
-| Design Approval | specification status artifact for the active spec | Spec Governance | Confirms design readiness only |
-| Implementation Authorization | `handoff/*-implementation-authorization.md` recognized by governance precedence rules | Governance Review | Authoritative only for implementation execution state |
-| Batch Execution Permission | `execution-policy.md` + human approval at review gate | Governance Review | Permits only next-batch progression |
-| Scope Definition | `spec.md` / `plan.md` | Spec Owner | Does not grant execution authority |
-| Task Definition | `tasks.md` | Spec Owner | Does not grant execution authority |
-| Architecture Principles | `constitution.md` | Architecture Governance | Cannot be overridden by execution artifacts |
+## Authority Ownership
 
-Rules:
-- Each decision type must have one authoritative source class.
-- If multiple active sources claim the same decision authority, HALT until resolved.
-- Status summaries, task headers, and progress notes must not be treated as execution authority unless governance explicitly assigns that role.
+This document is an index only.
+
+Canonical Governance Decision Authority ownership is defined only in:
+
+`.specify/docs/catalog-decisions.md`
+
+See:
+
+`## Governance Decision Authority Map`
+
+If any wording in this document conflicts with the canonical map,
+the canonical map prevails.
 
 ## Maintenance Protocol
 
@@ -93,6 +93,6 @@ When a new decision ID is introduced:
 ---
 
 **Document Control**
-- Version: 1.0.0
+- Version: 1.1.0
 - Last Updated: 1405/04/06
 - Owner: DormSys Architecture Team
