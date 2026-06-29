@@ -13,7 +13,7 @@ It does **not** define authoritative sources for Design Approval, Implementation
 When documents conflict, use this order from highest to lowest:
 
 ### Tier 0 — Supreme Authority
-1. `.specify/governance/constitution.md`
+1. `.specify/docs/catalog-decisions.md`
    - Architectural principles
    - Non-negotiable constraints
    - Domain language authority
@@ -21,7 +21,7 @@ When documents conflict, use this order from highest to lowest:
 **Rule:** If a lower document conflicts with the Constitution, the Constitution wins.
 
 ### Tier 1 — Boundary and Process Governance
-2. `.specify/governance/catalog-decisions.md`
+2. `.specify/docs/catalog-decisions.md`
    - Boundary decisions
    - Entity ownership
    - Cross-context contracts

@@ -4,21 +4,21 @@
 
 This document defines how batches are discovered, loaded, executed, and reviewed. It orchestrates the delivery pipeline without containing the detailed implementation rules (those live in `coding-rules.md`, `batch-strategy.md`, and `review-checklist.md`).
 
-This document defines batch execution **process** only. It does not own, grant, imply, restore, or revoke any operational authority.
+This document governs execution behavior only. It does not own, grant, imply, restore, or revoke operational authority.
 
 ---
 
-## Authority Model Reference
+## Authority Ownership
 
-The three operational authority types — Design Approval, Implementation Authorization, and Batch Execution Permission — are distinct. Their authoritative source classes are defined exclusively in `.specify/governance/_meta/authority-model.md` §3.
+Canonical Governance Decision Authority ownership is defined only in:
 
-| Authority Type | Authoritative Source (pointer only) |
-|---|---|
-| Design Approval | `.specify/docs/handoff/<spec>-design-approved.md` |
-| Implementation Authorization | `.specify/docs/handoff/<spec>-implementation-authorization.md` |
-| Batch Execution Permission | This document + `.specify/governance/batches/<spec>.md` + recorded human review outcome |
+`.specify/docs/catalog-decisions.md`
 
-Do not infer authority from `spec.md`, `plan.md`, `tasks.md`, status headers, or progress notes.
+See:
+
+`## Governance Decision Authority Map`
+
+This document does not redefine that ownership.
 
 ---
 
@@ -26,11 +26,11 @@ Do not infer authority from `spec.md`, `plan.md`, `tasks.md`, status headers, or
 
 Before any implementation work begins for the active specification:
 
-1. Confirm Design Approval via `.specify/docs/handoff/<spec>-design-approved.md`.
-2. Design Approval alone does not authorize implementation.
-3. Confirm Implementation Authorization via `.specify/docs/handoff/<spec>-implementation-authorization.md` with `authorization-status` of `active` or `partial` per authority-model §5.
+1. Verify Design Approval is satisfied per the canonical map.
+2. Design Approval is not Implementation Authorization.
+3. Verify Implementation Authorization is satisfied per the canonical map; confirm `authorization-status` is `active` or `partial` per `.specify/governance/_meta/authority-model.md` §5.
 4. Verify the intended batch's wave and tasks appear verbatim in the record's `authorized-scope`. Do not infer scope from spec, plan, or task content.
-5. If the record is missing, duplicated, ambiguous, `revoked`, `superseded` without a single active replacement, or does not cover the batch scope, HALT and report: `Missing or invalid implementation authorization record.`
+5. If authorization is missing, duplicated, ambiguous, `revoked`, `superseded` without a single active replacement, or does not cover the batch scope, HALT and report: `Missing or invalid implementation authorization record.`
 
 ---
 
@@ -64,15 +64,9 @@ When a batch execution request arrives:
 
 ### Wave Gating
 - Determine the batch's wave from `.specify/governance/batches/<spec>.md`.
-- Wave 1A batches may proceed as foundational work when the active Implementation Authorization record's `authorized-scope` explicitly permits that wave.
-- Wave 1B/1C batches require the Implementation Authorization record to include those waves in `authorized-scope`. If a wave is absent from `authorized-scope` or listed in `blocked-scope`, HALT and report: `Wave <X> not yet authorized. Awaiting checkpoint.`
-- Design Approval must not be interpreted as Implementation Authorization.
-
-### Decision Separation
-- Design Approval confirms design readiness only.
-- Implementation Authorization permits implementation execution under declared scope.
-- Batch Execution Permission permits progression to the next eligible batch under the current authorization and review state.
-- These three decisions are distinct and must not be inferred from one another.
+- Wave 1A batches may proceed as foundational work when the active authorization record's `authorized-scope` explicitly permits that wave.
+- Wave 1B/1C batches require those waves in `authorized-scope`. If a wave is absent from `authorized-scope` or listed in `blocked-scope`, HALT and report: `Wave <X> not yet authorized. Awaiting checkpoint.`
+- Design Approval is not Implementation Authorization.
 
 ---
 
@@ -110,12 +104,13 @@ At the end of every batch:
 3. **HALT**
 4. Wait for human approval before starting the next batch
 
-Batch Execution Permission (authority-model §3) requires this document's review rules, the batch map, **and** a recorded human review outcome.
-
 Clarifications:
+- The review gate controls batch progression only.
 - Human approval after the review gate is required before the next batch may start.
-- Review-gate approval is Batch Execution Permission for next-batch progression only, not Implementation Authorization.
+- Review Gate approval is not Implementation Authorization.
 - If Implementation Authorization is `revoked`, `superseded`, or otherwise invalid, review-gate approval does not restore it.
+
+Do not infer authority from `spec.md`, `plan.md`, `tasks.md`, status headers, or progress notes.
 
 ---
 
@@ -136,10 +131,11 @@ If a conflict arises between:
 
 Before executing a batch, load and apply:
 
-- `.specify/governance/_meta/authority-model.md` (vocabulary and authority sources)
+- `.specify/docs/catalog-decisions.md` § Governance Decision Authority Map
+- `.specify/governance/_meta/authority-model.md` (vocabulary and authorization-record lifecycle)
 - `.specify/governance/file-precedence.md` (tier precedence)
 - `.specify/governance/batches/<spec>.md` (batch composition and wave)
-- `.specify/docs/handoff/<spec>-implementation-authorization.md` (implementation authority instance)
+- Authorization record instance required by the canonical map for the active specification
 - `.specify/governance/KNOWN_DEBT.md` (required for full-suite test runs)
 
 If a required input is missing or unreadable, HALT.
@@ -147,6 +143,6 @@ If a required input is missing or unreadable, HALT.
 ---
 
 **Document Control**
-- Version: 1.1.0
+- Version: 1.2.0
 - Last Updated: 1405/04/06
 - Owner: DormSys Architecture Team
