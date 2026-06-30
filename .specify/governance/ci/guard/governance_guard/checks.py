@@ -36,7 +36,8 @@ NEGATION_MARKERS = (
     "cannot satisfy",
     "does not satisfy",
     "must not satisfy",
-    "cannot substitute",
+    "does not replace or satisfy",
+    "not an operational authority failure",
     "does not authorize",
     "do not authorize",
     "must not",
@@ -45,8 +46,12 @@ NEGATION_MARKERS = (
 )
 
 
+def _normalize_for_leakage_check(line: str) -> str:
+    return re.sub(r"\*+", "", line).lower()
+
+
 def _positive_authority_leakage(line: str) -> bool:
-    lowered = line.lower()
+    lowered = _normalize_for_leakage_check(line)
     if "nomination record" not in lowered and "case c" not in lowered:
         return False
     if not any(
