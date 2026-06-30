@@ -13,7 +13,7 @@
 - **Scoring:** Formula from `settings` — never hardcoded
 - **No** Allocation, Voucher, Workflow, Livewire UI in MVP
 
-**Status**: **Execution initialized** — tasks defined; implementation not started
+**Status**: **US2 complete** — T027–T032 implemented; US3+ pending
 
 ---
 
@@ -51,29 +51,29 @@ Phase 1 (Setup)
 
 ## Phase 1: Setup
 
-- [ ] T001 Verify `LotteryServiceProvider` registers migrations from `database/migrations/modules/lottery/`
-- [ ] T002 [P] Create `database/migrations/modules/lottery/` directory
-- [ ] T003 [P] Register `LotteryPresentationServiceProvider` if routes/commands needed
-- [ ] T004 [P] Update `app/Modules/Lottery/README.md` with spec06 scope and CD-011/R4/R5
+- [x] T001 Verify `LotteryServiceProvider` registers migrations from `database/migrations/modules/lottery/`
+- [x] T002 [P] Create `database/migrations/modules/lottery/` directory
+- [x] T003 [P] Register `LotteryPresentationServiceProvider` if routes/commands needed
+- [x] T004 [P] Update `app/Modules/Lottery/README.md` with spec06 scope and CD-011/R4/R5
 
 ---
 
 ## Phase 2: Foundational
 
-- [ ] T005 Create `LotteryProgramId`, `LotteryRegistrationId` value objects in `Domain/ValueObjects/`
-- [ ] T006 [P] Create enums — `LotteryProgramStatus`, `LotteryResultOutcome` in `Domain/Enums/`
-- [ ] T007 [P] Create domain exceptions — `LotteryProgramNotFoundException`, `InvalidLotteryTransitionException`, `RegistrationClosedException`, `DrawNotAllowedException`
-- [ ] T008 Create migration `*_create_lottery_programs_table.php`
-- [ ] T009 Create migration `*_create_lottery_registrations_table.php`
-- [ ] T010 [P] Create migration `*_create_lottery_results_table.php`
-- [ ] T011 [P] Create migration `*_create_lottery_eligible_snapshots_table.php` (JSON payload at lock)
-- [ ] T012 Implement `LotteryProgram` domain entity in `Domain/Models/`
-- [ ] T013 [P] Implement `LotteryRegistration` domain entity
-- [ ] T014 [P] Implement `LotteryResult` domain entity
-- [ ] T015 Create `LotteryProgramState` base + state classes per constitution AP-05 (`Draft` … `Completed`, `Cancelled`)
-- [ ] T016 Create `LotteryProgramRepository` contract + Eloquent adapter
-- [ ] T017 [P] Create `LotteryRegistrationRepository` contract + adapter
-- [ ] T018 [P] Create `LotteryResultRepository` contract + adapter
+- [x] T005 Create `LotteryProgramId`, `LotteryRegistrationId` value objects in `Domain/ValueObjects/`
+- [x] T006 [P] Create enums — `LotteryProgramStatus`, `LotteryResultOutcome` in `Domain/Enums/`
+- [x] T007 [P] Create domain exceptions — `LotteryProgramNotFoundException`, `InvalidLotteryTransitionException`, `RegistrationClosedException`, `DrawNotAllowedException`
+- [x] T008 Create migration `*_create_lottery_programs_table.php`
+- [x] T009 Create migration `*_create_lottery_registrations_table.php`
+- [x] T010 [P] Create migration `*_create_lottery_results_table.php`
+- [x] T011 [P] Create migration `*_create_lottery_eligible_snapshots_table.php` (JSON payload at lock)
+- [x] T012 Implement `LotteryProgram` domain entity in `Domain/Models/`
+- [x] T013 [P] Implement `LotteryRegistration` domain entity
+- [x] T014 [P] Implement `LotteryResult` domain entity
+- [x] T015 Create `LotteryProgramState` base + state classes per constitution AP-05 (`Draft` … `Completed`, `Cancelled`)
+- [x] T016 Create `LotteryProgramRepository` contract + Eloquent adapter
+- [x] T017 [P] Create `LotteryRegistrationRepository` contract + adapter
+- [x] T018 [P] Create `LotteryResultRepository` contract + adapter
 
 **Checkpoint**: Migrations run; state classes registered with spatie.
 
@@ -81,25 +81,25 @@ Phase 1 (Setup)
 
 ## Phase 3: US1 — Lottery Program Lifecycle
 
-- [ ] T019 `CreateLotteryProgramAction` — draft with dormitory ref, capacity, registration window
-- [ ] T020 `OpenRegistrationAction` — `Draft`/`Approved` → `RegistrationOpen`
-- [ ] T021 `CloseRegistrationAction` — → `RegistrationClosed`
-- [ ] T022 `CancelLotteryProgramAction` — → `Cancelled` with reason
-- [ ] T023 [P] Unit tests for program state transitions
-- [ ] T024 [P] Feature test: create program → open registration
-- [ ] T025 Wire program actions in `LotteryServiceProvider`
-- [ ] T026 [P] Domain events — `LotteryProgramCreated`, `LotteryProgramStateChanged`
+- [x] T019 `CreateLotteryProgramAction` — draft with dormitory ref, capacity, registration window
+- [x] T020 `OpenRegistrationAction` — `Draft`/`Approved` → `RegistrationOpen`
+- [x] T021 `CloseRegistrationAction` — → `RegistrationClosed`
+- [x] T022 `CancelLotteryProgramAction` — → `Cancelled` with reason
+- [x] T023 [P] Unit tests for program state transitions
+- [x] T024 [P] Feature test: create program → open registration
+- [x] T025 Wire program actions in `LotteryServiceProvider`
+- [x] T026 [P] Domain events — `LotteryProgramCreated`, `LotteryProgramStateChanged`
 
 ---
 
 ## Phase 4: US2 — Registration Enrollment
 
-- [ ] T027 Create `RequestReadAdapter` in `Infrastructure/Adapters/` binding `RequestReadContract`
-- [ ] T028 `EnrollRegistrationAction` — validate approved `lottery_registration` request; persist registration
-- [ ] T029 Reject duplicate enrollment and closed-program enrollment
-- [ ] T030 [P] Unit tests for enrollment validation rules
-- [ ] T031 Feature test: enroll with Request fixture → registration row exists
-- [ ] T032 [P] Domain event `LotteryRegistrationCreated`
+- [x] T027 Create `RequestReadAdapter` in `Infrastructure/Adapters/` binding `RequestReadContract`
+- [x] T028 `EnrollRegistrationAction` — validate approved `lottery_registration` request; persist registration
+- [x] T029 Reject duplicate enrollment and closed-program enrollment
+- [x] T030 [P] Unit tests for enrollment validation rules
+- [x] T031 Feature test: enroll with Request fixture → registration row exists
+- [x] T032 [P] Domain event `LotteryRegistrationCreated`
 
 ---
 

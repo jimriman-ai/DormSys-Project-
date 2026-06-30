@@ -10,6 +10,7 @@ use App\Modules\Employee\Presentation\Providers\EmployeePresentationServiceProvi
 use App\Modules\Identity\Infrastructure\Providers\IdentityServiceProvider;
 use App\Modules\Identity\Presentation\Providers\IdentityPresentationServiceProvider;
 use App\Modules\Lottery\Infrastructure\Providers\LotteryServiceProvider;
+use App\Modules\Lottery\Presentation\Providers\LotteryPresentationServiceProvider;
 use App\Modules\Notification\Infrastructure\Providers\NotificationServiceProvider;
 use App\Modules\Reporting\Infrastructure\Providers\ReportingServiceProvider;
 use App\Modules\Request\Infrastructure\Providers\RequestServiceProvider;
@@ -32,6 +33,7 @@ return [
     DormitoryServiceProvider::class,
     AllocationServiceProvider::class,
     LotteryServiceProvider::class,
+    LotteryPresentationServiceProvider::class,
     VoucherServiceProvider::class,
     NotificationServiceProvider::class,
     AuditServiceProvider::class,
