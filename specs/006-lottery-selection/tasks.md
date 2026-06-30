@@ -13,7 +13,7 @@
 - **Scoring:** Formula from `settings` — never hardcoded
 - **No** Allocation, Voucher, Workflow, Livewire UI in MVP
 
-**Status**: **US5 complete** — T045–T047 implemented; US6+ pending
+**Status**: **Complete** — T001–T055 implemented
 
 ---
 
@@ -135,19 +135,19 @@ Phase 1 (Setup)
 
 ## Phase 8: Supplier Contract
 
-- [ ] T048 Author `contracts/lottery-result-read-service.md`
-- [ ] T049 Implement `LotteryResultReadContract` + `LotteryResultReadService`
-- [ ] T050 Register contract in `LotteryServiceProvider`
-- [ ] T051 [P] Contract test: consumer receives winner list by program id
+- [x] T048 Author `contracts/lottery-result-read-service.md`
+- [x] T049 Implement `LotteryResultReadContract` + `LotteryResultReadService`
+- [x] T050 Register contract in `LotteryServiceProvider`
+- [x] T051 [P] Contract test: consumer receives winner list by program id
 
 ---
 
 ## Phase 9: Polish
 
-- [ ] T052 Architecture test — no forbidden cross-module imports (SC-005)
-- [ ] T053 [P] `LotteryScoringEngineTest` reproducibility suite
-- [ ] T054 PHPStan level 8 on Lottery module
-- [ ] T055 [P] Run Pint on `app/Modules/Lottery/`
+- [x] T052 Architecture test — no forbidden cross-module imports (SC-005)
+- [x] T053 [P] `LotteryScoringEngineTest` reproducibility suite
+- [x] T054 PHPStan level 8 on Lottery module
+- [x] T055 [P] Run Pint on `app/Modules/Lottery/`
 
 ---
 

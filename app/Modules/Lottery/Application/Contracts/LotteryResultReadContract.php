@@ -9,12 +9,12 @@ use App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId;
 interface LotteryResultReadContract
 {
     /**
-     * @return list<array{
-     *     registration_id: string,
+     * @return array{
      *     program_id: string,
-     *     rank: int,
-     *     outcome: string
-     * }>
+     *     winners: list<array{registration_id: string, rank: int}>,
+     *     reserves: list<array{registration_id: string, rank: int}>,
+     *     ranks: list<array{rank: int, registration_id: string, outcome: string}>
+     * }
      */
     public function resultsForProgram(LotteryProgramId $programId): array;
 }

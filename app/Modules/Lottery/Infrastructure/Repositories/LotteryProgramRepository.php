@@ -72,7 +72,7 @@ class LotteryProgramRepository implements LotteryProgramRepositoryContract
 
     public function findPastRegistrationEndEligibleForAutoLock(DateTimeImmutable $asOf): array
     {
-        return LotteryProgramModel::query()
+        $programs = LotteryProgramModel::query()
             ->where('registration_ends_at', '<=', $asOf->format('Y-m-d H:i:s'))
             ->whereIn('status', [
                 RegistrationOpenState::$name,
@@ -82,11 +82,13 @@ class LotteryProgramRepository implements LotteryProgramRepositoryContract
             ->get()
             ->map(fn (LotteryProgramModel $model): LotteryProgram => $this->toDomain($model))
             ->all();
+
+        return array_values($programs);
     }
 
     public function findLockedReadyForDraw(): array
     {
-        return LotteryProgramModel::query()
+        $programs = LotteryProgramModel::query()
             ->where('status', LockedState::$name)
             ->whereNotExists(function ($query): void {
                 $query->selectRaw('1')
@@ -97,6 +99,8 @@ class LotteryProgramRepository implements LotteryProgramRepositoryContract
             ->get()
             ->map(fn (LotteryProgramModel $model): LotteryProgram => $this->toDomain($model))
             ->all();
+
+        return array_values($programs);
     }
 
     private function toDomain(LotteryProgramModel $model): LotteryProgram

@@ -71,12 +71,14 @@ class LotteryRegistrationRepository implements LotteryRegistrationRepositoryCont
 
     public function findByProgramId(LotteryProgramId $programId): array
     {
-        return LotteryRegistrationModel::query()
+        $registrations = LotteryRegistrationModel::query()
             ->where('program_id', $programId->value)
             ->orderBy('enrolled_at')
             ->get()
             ->map(fn (LotteryRegistrationModel $model): LotteryRegistration => $this->toDomain($model))
             ->all();
+
+        return array_values($registrations);
     }
 
     private function toDomain(LotteryRegistrationModel $model): LotteryRegistration

@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Lottery\Application\Services;
 
-use App\Modules\Lottery\Application\Contracts\LotteryResultRepositoryContract;
 use App\Modules\Lottery\Application\Contracts\LotteryResultReadContract;
+use App\Modules\Lottery\Application\Contracts\LotteryResultRepositoryContract;
+use App\Modules\Lottery\Domain\Enums\LotteryResultOutcome;
 use App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId;
 
 final class LotteryResultReadService implements LotteryResultReadContract
@@ -16,14 +17,34 @@ final class LotteryResultReadService implements LotteryResultReadContract
 
     public function resultsForProgram(LotteryProgramId $programId): array
     {
-        return array_map(
-            static fn ($result): array => [
+        $winners = [];
+        $reserves = [];
+        $ranks = [];
+
+        foreach ($this->results->findByProgramId($programId) as $result) {
+            $winnerOrReserveRow = [
                 'registration_id' => $result->registrationId->value,
-                'program_id' => $result->programId->value,
                 'rank' => $result->rank,
+            ];
+
+            $ranks[] = [
+                'rank' => $result->rank,
+                'registration_id' => $result->registrationId->value,
                 'outcome' => $result->outcome->value,
-            ],
-            $this->results->findByProgramId($programId),
-        );
+            ];
+
+            if ($result->outcome === LotteryResultOutcome::Winner) {
+                $winners[] = $winnerOrReserveRow;
+            } else {
+                $reserves[] = $winnerOrReserveRow;
+            }
+        }
+
+        return [
+            'program_id' => $programId->value,
+            'winners' => $winners,
+            'reserves' => $reserves,
+            'ranks' => $ranks,
+        ];
     }
 }

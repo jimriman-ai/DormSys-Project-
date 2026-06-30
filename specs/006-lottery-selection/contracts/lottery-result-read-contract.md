@@ -1,29 +1,16 @@
 # Contract: Lottery Result Read Service (spec06 → spec07)
 
+**Canonical contract:** [lottery-result-read-service.md](./lottery-result-read-service.md)
+
 **Direction:** Outbound supplier (R5)  
-**Consumer:** Allocation (spec07)  
-**Foundation:** `NullLotteryResultReadAdapter`
+**Consumer:** Allocation (spec07)
 
 ## Interface
 
 `App\Modules\Lottery\Application\Contracts\LotteryResultReadContract`
 
-| Method | Returns | Purpose |
-| ------ | ------- | ------- |
-| `resultsForProgram(LotteryProgramId)` | `list<array>` | Winner/reserve rows for a completed draw |
-
-## Payload shape
-
-```php
-[
-    'registration_id' => string, // UUID
-    'program_id' => string,      // UUID
-    'rank' => int,
-    'outcome' => string,         // winner | reserve
-]
-```
-
 ## Rules
 
+- Read-only supplier contract for draw outcomes
 - No Allocation module code in spec06
-- Full read service implementation follows draw completion (US4)
+- Public output shape is defined in `lottery-result-read-service.md`

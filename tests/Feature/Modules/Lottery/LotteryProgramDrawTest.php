@@ -94,11 +94,13 @@ it('runs full lifecycle through draw with queryable results', function (): void 
     expect($repositoryResults[0]->outcome)->toBe(LotteryResultOutcome::Winner);
 
     $readResults = app(LotteryResultReadContract::class)->resultsForProgram($completed->requireId());
-    expect($readResults)->toHaveCount(1);
-    expect($readResults[0]['registration_id'])->toBe($registration->requireId()->value);
-    expect($readResults[0]['program_id'])->toBe($completed->requireId()->value);
-    expect($readResults[0]['rank'])->toBe(1);
-    expect($readResults[0]['outcome'])->toBe('winner');
+    expect($readResults['program_id'])->toBe($completed->requireId()->value);
+    expect($readResults['winners'])->toHaveCount(1);
+    expect($readResults['winners'][0]['registration_id'])->toBe($registration->requireId()->value);
+    expect($readResults['winners'][0]['rank'])->toBe(1);
+    expect($readResults['reserves'])->toBe([]);
+    expect($readResults['ranks'])->toHaveCount(1);
+    expect($readResults['ranks'][0]['outcome'])->toBe('winner');
 });
 
 it('does not duplicate results when draw is retried', function (): void {

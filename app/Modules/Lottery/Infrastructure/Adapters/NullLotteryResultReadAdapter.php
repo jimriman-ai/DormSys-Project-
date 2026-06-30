@@ -11,6 +11,11 @@ final class NullLotteryResultReadAdapter implements LotteryResultReadContract
 {
     public function resultsForProgram(LotteryProgramId $programId): array
     {
-        return [];
+        return [
+            'program_id' => $programId->value,
+            'winners' => [],
+            'reserves' => [],
+            'ranks' => [],
+        ];
     }
 }

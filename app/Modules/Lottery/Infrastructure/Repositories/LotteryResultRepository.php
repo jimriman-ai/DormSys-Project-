@@ -55,12 +55,14 @@ class LotteryResultRepository implements LotteryResultRepositoryContract
 
     public function findByProgramId(LotteryProgramId $programId): array
     {
-        return LotteryResultModel::query()
+        $results = LotteryResultModel::query()
             ->where('program_id', $programId->value)
             ->orderBy('rank')
             ->get()
             ->map(fn (LotteryResultModel $model): LotteryResult => $this->toDomain($model))
             ->all();
+
+        return array_values($results);
     }
 
     public function existsForProgram(LotteryProgramId $programId): bool
