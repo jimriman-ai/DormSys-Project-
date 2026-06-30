@@ -1,0 +1,80 @@
+name: Governance Guard
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - '001-*'
+    paths:
+      - '.specify/governance/_meta/authority-model.md'
+      - '.specify/governance/execution-policy.md'
+      - '.specify/governance/governance-enforcer.md'
+      - '.specify/docs/catalog-decisions.md'
+      - '.specify/governance/tests/governance-consistency-test-spec.md'
+      - '.specify/governance/ci/governance-guard-layer-spec.md'
+      - '.specify/governance/ci/guard/**'
+      - '.github/workflows/governance-guard.yml'
+  pull_request:
+    paths:
+      - '.specify/governance/_meta/authority-model.md'
+      - '.specify/governance/execution-policy.md'
+      - '.specify/governance/governance-enforcer.md'
+      - '.specify/docs/catalog-decisions.md'
+      - '.specify/governance/tests/governance-consistency-test-spec.md'
+      - '.specify/governance/ci/governance-guard-layer-spec.md'
+      - '.specify/governance/ci/guard/**'
+      - '.github/workflows/governance-guard.yml'
+
+jobs:
+  governance-guard:
+    name: Governance Drift Detection
+    runs-on: ubuntu-latest
+
+    env:
+      HARD_GUARD_MODE: 'true'
+      GOVERNANCE_GUARD_STRICT_LITERALS: 'true'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run governance guard
+        run: |
+          python .specify/governance/ci/guard/run_guard.py \
+            --repo-root "$GITHUB_WORKSPACE" \
+            --output-dir "$GITHUB_WORKSPACE/.specify/governance/ci/guard/output" \
+            --commit-sha "$GITHUB_SHA" \
+            --hard-guard-mode true
+
+      - name: Upload governance drift report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: governance-drift-report
+          path: |
+            .specify/governance/ci/guard/output/governance-drift-report.json
+            .specify/governance/ci/guard/output/governance-drift-summary.md
+          retention-days: 90
+
+      - name: Annotate failures
+        if: failure()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report_path = Path(".specify/governance/ci/guard/output/governance-drift-report.json")
+          if not report_path.exists():
+              print("No governance report found.")
+              raise SystemExit(0)
+
+          report = json.loads(report_path.read_text(encoding="utf-8"))
+          for finding in report.get("findings", [])[:20]:
+              print(f"::error file={finding['file']}::[{finding['severity']}] {finding['rule_id']}: {finding['message']}")
+          PY

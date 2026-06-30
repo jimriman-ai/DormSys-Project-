@@ -1,6 +1,6 @@
 
 # DormSys Governance Authority Model
-model-version: 3.0.0
+model-version: 4.0.0
 status: normative
 tier: none (meta)
 change-policy:
@@ -8,7 +8,7 @@ normative semantic changes: major version bump required
 editorial changes (typo, formatting): no version change
 minor semantic bumps: prohibited
 owner: DormSys Architecture Team
-last-updated: 1405/04/02 | 2026/06/23
+last-updated: 1405/04/03 | 2026/06/24
 
 ---
 
@@ -71,6 +71,8 @@ Doing so is a defect.
 | **Scope** | The explicit, enumerated set of tasks, waves, or user stories covered by an authorization | An implicit inference from spec, plan, or task content |
 | **Defect** | A tiered document statement that violates this model | A precedence conflict |
 | **Conflict** | Two tiered documents at the same tier asserting contradictory authority over the same decision | A defect |
+| **Nomination Record** | An evidence-only artifact documenting program-level spec selection after a governance transition boundary | An Authorization Record, Design Approval, Implementation Authorization, or map-backed authority artifact |
+| **Next Spec Transition Nomination** | A non-operational governance decision class whose instance artifact is a Nomination Record | An operational authority type or authorization grant |
 
 ---
 
@@ -115,6 +117,45 @@ Specifically:
 They constrain authorities; they do not grant them.
 
 - Design Approval, Implementation Authorization, and Batch Execution Permission are BOTH decision classes AND operational authority types.
+
+### Non-Operational Governance Decision Classes
+
+Some governance decision classes record program-level choices **without** granting operational authority. They are **not** operational authority types, **not** Authorization Records, and **not** entries in `## Governance Decision Authority Map`.
+
+Exactly one non-operational governance decision class is defined at this time:
+
+- **Next Spec Transition Nomination**
+
+Additional non-operational classes may be added only via a **major version bump** of this document. They MUST NOT be added to the operational authority type list in §2 above.
+
+#### Next Spec Transition Nomination (normative)
+
+**Next Spec Transition Nomination** is a **non-operational** governance decision class.
+
+It records **which specification is nominated as the program's next focus** after a governance transition boundary. It is selection evidence only.
+
+Next Spec Transition Nomination:
+
+- **MUST NOT** be classified as an operational authority type.
+- **MUST NOT** grant Design Approval, Implementation Authorization, or Batch Execution Permission.
+- **MUST NOT** be treated as an Authorization Record.
+- **MUST NOT** appear as a decision node, authority row, or owner entry in `## Governance Decision Authority Map` (per `.specify/docs/catalog-decisions.md` § Nomination Record boundary).
+- **MAY** be required as a **governance precondition** before certain next-spec processes per `.specify/governance/execution-policy.md` § Nomination and Execution Policy.
+
+Governance decision authority **ownership** for operational types is defined only in the canonical map. This document defines **ontology and vocabulary** for Next Spec Transition Nomination only; it does **not** assign map ownership.
+
+#### Nomination Record (normative)
+
+A **Nomination Record** is an **evidence-only**, **non-authorizing** artifact instance of the Next Spec Transition Nomination decision class.
+
+A Nomination Record:
+
+- **MUST NOT** satisfy Design Approval, Implementation Authorization, Batch Execution Permission, or any pre-execution operational authority check.
+- **MUST NOT** be part of the authorization record lifecycle (§4–§5).
+- **MUST NOT** substitute for, imply, or elevate into operational authority.
+- **MAY** be referenced by execution policy as evidence that a specification has been nominated as the program's next focus.
+
+Presence of a valid Nomination Record **does not** clear HALT caused by missing operational authority.
 
 ---
 
@@ -165,6 +206,7 @@ The following are **outside** the authorization record lifecycle defined in this
 - transition state records
 - checkpoint summaries
 - audit/status documents
+- **Nomination Records** (evidence-only instances of Next Spec Transition Nomination per §2)
 
 They may serve as **evidence or context** for status interpretation, transition interpretation, or audit/history.
 
@@ -237,6 +279,8 @@ Each operation requires:
 | I5 | Each term in §1 has exactly one meaning across all governance documents. |
 | I6 | No tiered document may redefine an authority type or introduce a new one. |
 | I7 | An `authorization-status: partial` record MUST contain non-empty `authorized-scope`, `blocked-scope`, and `blocking-reason`. |
+| I8 | **Next Spec Transition Nomination** and **Nomination Record** are **non-operational**. They MUST NOT be classified as operational authority types, Authorization Records, or map-backed authority classes. |
+| I9 | A Nomination Record MUST NOT satisfy Design Approval, Implementation Authorization, Batch Execution Permission, or authorization lifecycle checks in §4–§5. |
 
 Violation of any invariant is a defect.  
 Defects are corrected by fixing the violating document, not by precedence resolution.
@@ -281,9 +325,10 @@ This document follows strict change rules:
 
 ## Document Control
 
-- Model Version: 3.0.0
+- Model Version: 4.0.0
 - Document Status: Normative
 - Tier: None (Meta)
 - Owner: DormSys Architecture Team
-- Last Updated: 1405/04/02 | 2026/06/23
-- Supersedes: model-version 2.0.0 (governance state / snapshot artifacts clarification)
+- Last Updated: 1405/04/03 | 2026/06/24
+- Change: §2 Non-Operational Governance Decision Classes; Next Spec Transition Nomination; Nomination Record; §4 lifecycle boundary; invariants I8–I9
+- Supersedes: model-version 3.0.0

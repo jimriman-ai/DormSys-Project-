@@ -48,11 +48,16 @@ Do not infer authority from:
 - status headers
 - progress notes
 - governance state or snapshot artifacts (per `catalog-decisions.md` § `Governance state / snapshot artifacts`)
+- Nomination Records (per `.specify/governance/_meta/authority-model.md` — evidence-only; non-operational)
 - checkpoint summaries, status reports, or audit records
 - handoff directory placement or filename similarity to authorization artifacts
 - this document
 
 Authorization checks apply **only** to artifacts that match the canonical authorization artifact classes and instance paths in `## Governance Decision Authority Map`. Artifacts outside the authorization record lifecycle (per `authority-model.md` § `Artifacts outside the authorization record lifecycle`) **cannot** satisfy authorization checks.
+
+Nomination Records **cannot** satisfy authorization checks and **cannot** substitute for Design Approval, Implementation Authorization, or Batch Execution Permission.
+
+Exactly **three** operational authority types exist per `authority-model.md` §2. Next Spec Transition Nomination is a **non-operational** governance decision class; it is **not** an operational authority type.
 
 ---
 
@@ -69,7 +74,7 @@ Before any implementation work begins for the active specification:
    Governance state / snapshot artifacts (per `catalog-decisions.md` § `Governance state / snapshot artifacts`) **cannot** satisfy this check.
 4. Verify the intended batch's wave and tasks appear verbatim in the record's `authorized-scope`.  
    Do not infer scope from spec, plan, or task content.
-5. Classify authorization failure per **§ HALT Classification (Authorization vs Transition)** before reporting.
+5. Classify authorization failure per **§ HALT Classification (Authorization vs Transition vs Governance Precondition)** before reporting.
    If Case A applies, **HALT** and report:
 
    > `Missing or invalid implementation authorization record.`
@@ -77,6 +82,12 @@ Before any implementation work begins for the active specification:
    If Case B applies, **HALT** and report:
 
    > `No authorized implementation exists. Governance transition decision required.`
+
+   If Case C applies, **HALT** and report:
+
+   > `Governance precondition failure: transition nomination record required.`
+
+Nomination Records **cannot** satisfy steps 1–4. A valid Nomination Record does not remove the requirement for operational authority in steps 1–4.
 
 This document does not fix or override invalid authorization; it only detects and HALTs.
 
@@ -102,17 +113,67 @@ Enforcement must **not**:
 
 ---
 
-## HALT Classification (Authorization vs Transition)
+## Nomination and Execution Policy
 
-When execution cannot proceed for authorization reasons, classify the HALT as **Case A** or **Case B** before reporting.
+This section defines how **Next Spec Transition Nomination** and **Nomination Records** interact with execution policy.
+
+Vocabulary and classification are defined in `.specify/governance/_meta/authority-model.md` §2 (Non-Operational Governance Decision Classes):
+
+- **Next Spec Transition Nomination** — a **non-operational** governance decision class (per `authority-model.md` §2).
+- **Nomination Record** — an **evidence-only**, **non-authorizing** artifact instance of that decision class (per `authority-model.md` §2).
+
+### Role
+
+A Nomination Record records **which specification is nominated as the program's next focus** after a governance transition boundary. It is selection evidence only.
+
+A Nomination Record:
+
+- **MUST NOT** grant Design Approval, Implementation Authorization, or Batch Execution Permission.
+- **MUST NOT** be treated as an Authorization Record.
+- **MUST NOT** be used to satisfy enforcement checks that require an operational authority type.
+- **MUST NOT** reclassify a HALT caused by missing operational authority into a non-HALT state.
+- **MAY** be required by this policy as a **governance precondition** before certain next-spec processes are initiated.
+
+### Governance precondition (normative)
+
+For a specification treated as the **next spec** after a governance transition boundary, this policy **requires** a valid Nomination Record nominating that specification **before**:
+
+- initiating Design Approval for that specification, or
+- any other next-spec governance flow that **this policy** identifies as requiring transition nomination.
+
+**Starting Design Approval for a next spec without a required Nomination Record** **SHOULD** be classified as **Case C** (governance precondition failure).
+
+Once a required Nomination Record exists for that specification:
+
+- enforcement **MAY** proceed to evaluate normal operational authority preconditions (Design Approval, Implementation Authorization, Batch Execution Permission) per the canonical map;
+- if operational authority is missing, the situation **remains** a **HALT** — nomination does not clear it.
+
+### Separation from operational authority
+
+| Layer | Governs | Satisfies implementation preconditions? |
+| --- | --- | --- |
+| Nomination Record | Program selection evidence (non-operational) | **No** |
+| Design Approval | Design readiness (operational authority type) | Partially (step 1 only) |
+| Implementation Authorization | Implementation execution (operational authority type) | Yes (steps 3–4) |
+| Batch Execution Permission | Batch progression (operational authority type) | Batch gate only |
+
+Do not infer a Nomination Record from `spec-catalog.md` ordering, status mirrors, or progress notes.
+
+A **transition nomination** (Nomination Record) is **not** the same as an **implementation execution target** (a specification or batch selected for implementation under operational authority workflow). Only the latter engages Case A when Implementation Authorization is missing or invalid.
+
+---
+
+## HALT Classification (Authorization vs Transition vs Governance Precondition)
+
+When execution cannot proceed for authorization or governance-precondition reasons, classify the HALT as **Case A**, **Case B**, or **Case C** before reporting.
 
 Apply the tests in order. Use the **first** case that matches.
 
 ### Case A — Authorization defect
 
-Use when execution attempts to start or continue work that **requires** a valid Implementation Authorization record per the canonical map, and that record is:
+Use when execution attempts to start or continue **implementation work** that **requires** a valid Implementation Authorization record per the canonical map, and that record is:
 
-- missing for the **nominated** specification or batch when a prior governance decision already selected that target for implementation,
+- missing for the **implementation execution target** specification or batch when operational authority workflow has already selected that target for implementation,
 - duplicated,
 - ambiguous,
 - `revoked`,
@@ -123,9 +184,14 @@ Use when execution attempts to start or continue work that **requires** a valid 
 
 > `Missing or invalid implementation authorization record.`
 
-Case A indicates an **error or invalid artifact** relative to a governance decision that already nominated implementation work.
+Case A indicates an **error or invalid artifact** relative to an implementation execution target already under operational authority workflow.
 
-Do **not** use Case A when the only reason execution cannot proceed is that no next specification or batch has been selected or authorized yet.
+Do **not** use Case A when:
+
+- the only reason execution cannot proceed is that no next specification or batch has been selected or authorized for implementation yet, or
+- a Nomination Record exists but Implementation Authorization is missing — unless implementation work is actually being attempted for that target.
+
+A Nomination Record alone does **not** establish an implementation execution target for Case A.
 
 ### Case B — Governance Transition
 
@@ -141,15 +207,36 @@ Use when:
 
 Case B does **not** authorize any specification, batch, or workflow step. It only reports that human governance must decide what to authorize next.
 
+A Nomination Record does **not** clear Case B when Implementation Authorization is still missing for the work being attempted. Case B addresses program-boundary transition; missing operational authority for implementation remains a HALT regardless of nomination.
+
+### Case C — Governance precondition failure (transition nomination)
+
+Use when:
+
+- execution or governance workflow is initiating a **next-spec process** that this policy requires to be preceded by a Nomination Record (see § Nomination and Execution Policy), **and**
+- no valid Nomination Record exists nominating that specification, **or**
+- the Nomination Record is missing, duplicated, ambiguous, or superseded without a single active replacement.
+
+**HALT message (exact):**
+
+> `Governance precondition failure: transition nomination record required.`
+
+Case C is a **governance-precondition failure**, not an authorization defect (Case A) and not a program-boundary transition report (Case B).
+
+Case C does **not** authorize any specification, batch, or workflow step. It does **not** substitute for Design Approval or Implementation Authorization.
+
+Do **not** use Case C when operational authority is missing but the required Nomination Record already exists — classify per Case A or remain halted on operational preconditions instead.
+
 ### Detection procedure
 
-1. Determine whether execution is nominating a **specific** specification or batch, or seeking the **next** work after completion.
-2. Load Implementation Authorization instance(s) required by the canonical map for the nominated target.
-3. If a nominated target exists and its authorization record is missing, duplicated, ambiguous, `revoked`, `superseded` without replacement, or scope-invalid → **Case A**.
-4. If authorized scope for the active specification is complete and no valid Implementation Authorization exists for any next specification or batch, and no artifact has authorized a next target → **Case B**.
-5. If both Case A and Case B could apply, **Case A takes precedence** (defective artifact for a nominated target).
+1. Determine whether execution is seeking the **next** work after a governance transition boundary, initiating **next-spec governance** (e.g., Design Approval for a next spec), or attempting **implementation** for a specific specification or batch.
+2. If step 1 involves a next-spec process that requires a Nomination Record per § Nomination and Execution Policy, load the Nomination Record for that specification. If required and missing, duplicated, ambiguous, or superseded without replacement → **Case C**.
+3. Load Implementation Authorization instance(s) required by the canonical map for the **implementation execution target** (not merely a transition-nominated specification).
+4. If an implementation execution target exists and its authorization record is missing, duplicated, ambiguous, `revoked`, `superseded` without replacement, or scope-invalid → **Case A**.
+5. If authorized scope for the active specification is complete and no valid Implementation Authorization exists for any next specification or batch, and no governance artifact has selected or authorized a next specification or batch for implementation → **Case B**.
+6. If multiple cases could apply, apply this precedence: **Case C** (missing required nomination for the engaged next-spec process) before **Case A** (implementation authorization defect for an execution target) before **Case B** (program-boundary transition).
 
-Never guess which specification or batch should come next.
+Never guess which specification or batch should come next. Never treat a Nomination Record as Implementation Authorization.
 
 ---
 
@@ -166,10 +253,12 @@ Required follow-up:
 1. **Stop.** Do not implement, plan, or batch-execute any unauthorized specification or batch.
 2. A governance body must:
    - consult `.specify/docs/spec-catalog.md` for ordering guidance, dependency information, and informational status (status mirrors are **not** authority),
-   - decide which specification or batch is eligible to be authorized next,
-   - create the appropriate planning or implementation authorization artifact per the canonical map (Design Approval and/or Implementation Authorization as applicable).
-3. Authority ownership for **selecting or authorizing the next specification or batch** is **not** defined in `## Governance Decision Authority Map` at this time. This document does not assign that ownership. Until such a decision class and canonical owner are added to the map through a future governance change, the correct enforcement behavior is Case B HALT — not inference or automatic advancement.
-4. After the appropriate authorization artifact exists and satisfies Pre-Execution Requirements, execution may resume for the newly authorized scope only.
+   - decide which specification is eligible to be the program's next focus,
+   - create a **Nomination Record** for that specification as an evidence-only artifact per `authority-model.md` §2 (Non-Operational Governance Decision Classes) and this policy § Nomination and Execution Policy,
+   - then create the appropriate **operational** artifacts per `## Governance Decision Authority Map` in `catalog-decisions.md` (Design Approval and/or Implementation Authorization as applicable).
+3. A Nomination Record records selection only. It does **not** replace Design Approval or Implementation Authorization. Case B HALT persists for implementation until operational authority exists, even after a Nomination Record is created.
+4. Next Spec Transition Nomination is a **non-operational** governance decision class per `authority-model.md` §2. It is **not** an operational authority type and **does not** have an entry in `## Governance Decision Authority Map`. Operational authority ownership remains defined only in that map per `catalog-decisions.md`.
+5. After the appropriate **operational** authorization artifacts exist and satisfy Pre-Execution Requirements, execution may resume for the newly authorized scope only.
 
 ---
 
@@ -287,7 +376,7 @@ At the end of every batch:
 
    `.specify/governance/review-checklist.md`
 
-3. **HALT** — classify per § HALT Classification (Authorization vs Transition) and report the exact message for Case A or Case B when authorization blocks progression; otherwise halt per Review Gate discipline.
+3. **HALT** — classify per § HALT Classification (Authorization vs Transition vs Governance Precondition) and report the exact message for Case A, Case B, or Case C when authorization or governance preconditions block progression; otherwise halt per Review Gate discipline.
 4. Wait for human approval before starting the next batch.
 
 Clarifications:
@@ -306,10 +395,13 @@ Do not infer authority from:
 - status headers
 - progress notes
 - governance state or snapshot artifacts
+- Nomination Records
 - checkpoint summaries, status reports, or audit records
 - handoff directory placement or filename similarity to authorization artifacts
 
 or from this review-gate section.
+
+Nomination Records do not satisfy review-gate authority requirements.
 
 ---
 
@@ -357,8 +449,9 @@ they do not change authority ownership.
 
 ## Document Control
 
-- Version: 1.3.1
-- Last Updated: 1405/04/02 | 2026/06/23
+- Version: 1.4.1
+- Last Updated: 1405/04/03 | 2026/06/24
+- Change: Nomination references aligned with `authority-model.md` v4.0.0; removed map ownership implication for Next Spec Transition Nomination; canonical map applies to operational artifacts only
 - Owner: DormSys Architecture Team
 
 This ownership line controls document maintenance only.  

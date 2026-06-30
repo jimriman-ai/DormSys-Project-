@@ -1,8 +1,8 @@
 # DormSys Catalog Decisions
 
-**Version:** 2.6.0  
+**Version:** 2.7.0  
 **Status:** ACTIVE  
-**Last Updated:** 1405/04/02 | 2026/06/23  
+**Last Updated:** 1405/04/03 | 2026/06/24  
 **Related Documents:** [`context-map.md`](context-map.md), [`spec-catalog.md`](spec-catalog.md), `CONSTITUTION v1.3.0.md`, `dormsys-architecture.md`
 
 ---
@@ -43,6 +43,44 @@ Concept definitions and authorization-record lifecycle are defined in `.specify/
 | Design Approval | `.specify/docs/handoff/<spec>-design-approved.md` | Governance Review | Confirms design readiness only; does not permit implementation |
 | Implementation Authorization | `.specify/docs/handoff/<spec>-implementation-authorization.md` | Governance Review | Permits implementation execution under declared scope recorded in the authorization record |
 | Batch Execution Permission | `.specify/docs/catalog-decisions.md` § Governance Decision Authority Map | Governance Review | Permits progression to the next eligible batch only. Review-gate approval satisfies the human-review governing input only; it does not grant Implementation Authorization. Governing inputs (not authority owners): `.specify/governance/execution-policy.md`, `.specify/governance/batches/<spec>.md`, and a recorded human review outcome. |
+
+### Operational authority map scope (strict)
+
+The table above is **strictly limited** to exactly **three** operational governance decision classes — and their corresponding operational authority types:
+
+1. **Design Approval**
+2. **Implementation Authorization**
+3. **Batch Execution Permission**
+
+No fourth operational authority type, decision class, or map row is introduced by this document or by tiered enforcement policy.
+
+**Case C** (governance-precondition failure) and **Nomination Record** (evidence-only artifact) **do not** extend, modify, or participate in `## Governance Decision Authority Map`. They are documented below as **non-operational governance dependencies** only.
+
+### Case C — governance precondition classification (non-operational)
+
+**Case C is NOT an operational governance decision class.**
+
+Case C is a **governance-precondition classification only** — used when a required Nomination Record is missing or invalid before certain next-spec governance flows. It:
+
+- exists solely for HALT classification in `.specify/governance/execution-policy.md` v1.4.0 (§ HALT Classification — Case C; § Nomination and Execution Policy),
+- is enforced procedurally by `.specify/governance/governance-enforcer.md` v1.3.0+ (HALT precedence: **Case C → Case A → Case B**),
+- **does not** appear in `## Governance Decision Authority Map` as an authority type, decision class, or owner entry.
+
+Case C **does not** grant Design Approval, Implementation Authorization, or Batch Execution Permission. It **does not** resolve or assign authority ownership.
+
+*Informational cross-reference only (non-authority-defining):* Case C semantics and messages are normative in `execution-policy.md` v1.4.0; enforcement behavior is normative in `governance-enforcer.md` v1.3.0+.
+
+### Nomination Record boundary (non-operational dependency)
+
+A **Nomination Record** is an **evidence-only** artifact recording program-level spec selection after a governance transition boundary. It:
+
+- is **not** part of the authorization record lifecycle (per `authority-model.md`),
+- is **not** used to resolve or assign authority in `## Governance Decision Authority Map`,
+- **must not** appear as a decision node or authority row in the authority map table above.
+
+A Nomination Record **may** be referenced by execution policy as a **prerequisite** before initiating Design Approval workflows for a next specification. That prerequisite relationship is enforced as **Case C** when unmet; it does **not** make the Nomination Record an operational authority artifact.
+
+Nomination Records **do not** grant Design Approval, Implementation Authorization, or Batch Execution Permission.
 
 ### Governance state / snapshot artifacts
 
@@ -597,6 +635,10 @@ Request
 ---
 
 ## Change Log
+
+### 2.7.0 — 2026/06/24
+
+- Under `## Governance Decision Authority Map`: added **Operational authority map scope (strict)**; **Case C — governance precondition classification (non-operational)**; **Nomination Record boundary (non-operational dependency)**. No new map rows; three operational authority types unchanged. Informational cross-references to `execution-policy.md` v1.4.0 and `governance-enforcer.md` v1.3.0+ only.
 
 ### 2.6.0 — 2026/06/23
 

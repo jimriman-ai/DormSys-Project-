@@ -87,8 +87,37 @@ Operational state when authorized work is complete and no next specification or 
 | Concept | Defining location | Section |
 | --- | --- | --- |
 | Governance Transition state | `.specify/governance/execution-policy.md` | § Governance Transition State |
-| HALT Case A / Case B messages | `.specify/governance/execution-policy.md` | § HALT Classification (Authorization vs Transition) |
+| HALT Case A / Case B / Case C | `.specify/governance/execution-policy.md` | § HALT Classification (Authorization vs Transition vs Governance Precondition) |
+| Nomination and Execution Policy | `.specify/governance/execution-policy.md` | § Nomination and Execution Policy |
 | Descriptive note (no owner assigned) | `.specify/docs/catalog-decisions.md` | § Governance Transition (state — not an authority owner) |
+| Case C / Nomination Record boundaries | `.specify/docs/catalog-decisions.md` | § Case C — governance precondition classification; § Nomination Record boundary |
+| Non-operational nomination ontology | `.specify/governance/_meta/authority-model.md` | §2 — Non-Operational Governance Decision Classes |
+
+#### Next Spec Transition Nomination — conceptual handoff chain (documentation only)
+
+When governance resolves **which specification is the program's next focus** after a transition boundary, the conceptual sequence is:
+
+```
+Next Spec Transition Nomination (non-operational decision class)
+        |
+        v
+Nomination Record (evidence-only artifact instance)
+        |
+        v
+Future Design Approval initiation (operational — separate artifact)
+        |
+        v
+Future Implementation Authorization (operational — separate artifact, when applicable)
+```
+
+**Normative constraints (no enforcement logic defined here):**
+
+- **Next Spec Transition Nomination** records program-level spec selection; it is **not** an operational authority type and has **no** entry in `## Governance Decision Authority Map`.
+- A **Nomination Record** is the evidence-only instance of that decision class. It **does not** grant Design Approval, Implementation Authorization, or Batch Execution Permission.
+- **Future operational decisions** still require their own operational authority records per the canonical map (Design Approval at `.specify/docs/handoff/<spec>-design-approved.md`; Implementation Authorization at `.specify/docs/handoff/<spec>-implementation-authorization.md`).
+- A valid Nomination Record may be a **governance precondition** before initiating Design Approval for a next spec (Case C when missing); it does **not** satisfy operational authority checks.
+
+This chain is **descriptive documentation** for operators. HALT classification, detection procedure, and enforcement behavior remain defined only in `execution-policy.md` and `governance-enforcer.md`.
 
 ## Maintenance Protocol
 
@@ -103,6 +132,7 @@ When a new decision ID is introduced:
 ---
 
 **Document Control**
-- Version: 1.2.0
-- Last Updated: 1405/04/02 | 2026/06/23
+- Version: 1.3.0
+- Last Updated: 1405/04/03 | 2026/06/24
+- Change: Next Spec Transition Nomination conceptual handoff chain; Case C cross-references
 - Owner: DormSys Architecture Team
