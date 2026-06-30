@@ -63,7 +63,9 @@ The documents listed below are validation inputs only unless they are explicitly
 4. **Pre-Execution Preconditions**  
    Verify that required Design Approval and Implementation Authorization exist and are valid according to:
    - `.specify/docs/catalog-decisions.md`
-   - `.specify/governance/execution-policy.md`
+   - `.specify/governance/execution-policy.md`  
+   Authorization presence and validity MUST be resolved **only** from canonical authorization artifact classes and instance paths in `## Governance Decision Authority Map`.  
+   Governance state / snapshot artifacts (per `catalog-decisions.md` § `Governance state / snapshot artifacts`) and artifacts outside the authorization record lifecycle (per `authority-model.md` § `Artifacts outside the authorization record lifecycle`) **cannot** satisfy these checks — regardless of `handoff/` placement, filename similarity, or descriptive status wording.
 
 5. **Wave and Scope Gating**  
    Verify that execution is permitted for the current wave, scope, and sequencing state according to `.specify/governance/execution-policy.md`.
@@ -98,6 +100,7 @@ A halt is mandatory when any of the following occurs:
 - A required precondition from the canonical map or execution policy is missing or not satisfied
 - Design Approval is required but missing
 - Implementation Authorization is missing, ambiguous, duplicated, inactive, revoked, or superseded
+- A governance state / snapshot, checkpoint summary, status report, or audit record is used in place of a canonical authorization artifact
 - A review gate required for batch progression has not been passed
 - A lower-tier artifact attempts to imply, replace, or elevate higher-tier authority
 - Two or more governance files use conflicting authority-ownership wording
@@ -124,6 +127,7 @@ The following rules are mandatory:
 - Review-gate approval is not Implementation Authorization.
 - Review-gate approval controls batch progression only.
 - Status text in `tasks.md`, reports, notes, or summaries is not execution authority.
+- Governance state / snapshot artifacts, checkpoint summaries, status reports, and audit records are evidence-only; they cannot satisfy authorization checks or substitute for missing Design Approval, Implementation Authorization, or Batch Execution Permission.
 - Execution readiness cannot be inferred from implementation progress alone.
 - If authoritative governance data is unavailable, the only valid action is halt.
 
@@ -150,8 +154,8 @@ Reports must be explicit enough for remediation without redefining authority.
 
 ## Document Control
 
-- Version: 1.2.0
-- Last Updated: 1405/04/08
+- Version: 1.2.1
+- Last Updated: 1405/04/02 | 2026/06/23
 - Owner: DormSys Architecture Team
 
 This ownership line is for document maintenance only.

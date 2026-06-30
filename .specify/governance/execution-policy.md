@@ -47,7 +47,12 @@ Do not infer authority from:
 - `tasks.md`
 - status headers
 - progress notes
+- governance state or snapshot artifacts (per `catalog-decisions.md` § `Governance state / snapshot artifacts`)
+- checkpoint summaries, status reports, or audit records
+- handoff directory placement or filename similarity to authorization artifacts
 - this document
+
+Authorization checks apply **only** to artifacts that match the canonical authorization artifact classes and instance paths in `## Governance Decision Authority Map`. Artifacts outside the authorization record lifecycle (per `authority-model.md` § `Artifacts outside the authorization record lifecycle`) **cannot** satisfy authorization checks.
 
 ---
 
@@ -59,7 +64,9 @@ Before any implementation work begins for the active specification:
 2. Design Approval is **not** Implementation Authorization.
 3. Verify Implementation Authorization is satisfied **per the canonical map**;  
    confirm `authorization-status` is `active` or `partial` per  
-   `.specify/governance/_meta/authority-model.md` §5.
+   `.specify/governance/_meta/authority-model.md` §5.  
+   The instance record MUST match the Implementation Authorization path pattern in the canonical map.  
+   Governance state / snapshot artifacts (per `catalog-decisions.md` § `Governance state / snapshot artifacts`) **cannot** satisfy this check.
 4. Verify the intended batch's wave and tasks appear verbatim in the record's `authorized-scope`.  
    Do not infer scope from spec, plan, or task content.
 5. Classify authorization failure per **§ HALT Classification (Authorization vs Transition)** before reporting.
@@ -298,6 +305,9 @@ Do not infer authority from:
 - `tasks.md`
 - status headers
 - progress notes
+- governance state or snapshot artifacts
+- checkpoint summaries, status reports, or audit records
+- handoff directory placement or filename similarity to authorization artifacts
 
 or from this review-gate section.
 
@@ -334,7 +344,7 @@ Before executing a batch, **load and apply**:
   - tier precedence
 - `.specify/governance/batches/<spec>.md`
   - batch composition and wave
-- Authorization record instance required by the canonical map for the active specification
+- Authorization record instance required by the canonical map for the active specification (must match a canonical authorization artifact class; evidence-only artifacts **cannot** substitute)
 - `.specify/governance/KNOWN_DEBT.md`
   - required for full-suite test runs
 
@@ -347,7 +357,7 @@ they do not change authority ownership.
 
 ## Document Control
 
-- Version: 1.3.0
+- Version: 1.3.1
 - Last Updated: 1405/04/02 | 2026/06/23
 - Owner: DormSys Architecture Team
 
