@@ -7,6 +7,9 @@ namespace App\Modules\Lottery\Infrastructure\Repositories;
 use App\Modules\Lottery\Application\Contracts\LotteryProgramRepositoryContract;
 use App\Modules\Lottery\Domain\Exceptions\LotteryProgramNotFoundException;
 use App\Modules\Lottery\Domain\Models\LotteryProgram;
+use App\Modules\Lottery\Domain\States\LockedState;
+use App\Modules\Lottery\Domain\States\RegistrationClosedState;
+use App\Modules\Lottery\Domain\States\RegistrationOpenState;
 use App\Modules\Lottery\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId;
 use App\Modules\Lottery\Infrastructure\Persistence\Models\LotteryProgramModel;
@@ -65,6 +68,35 @@ class LotteryProgramRepository implements LotteryProgramRepositoryContract
         $model = LotteryProgramModel::query()->find($id->value);
 
         return $model === null ? null : $this->toDomain($model);
+    }
+
+    public function findPastRegistrationEndEligibleForAutoLock(DateTimeImmutable $asOf): array
+    {
+        return LotteryProgramModel::query()
+            ->where('registration_ends_at', '<=', $asOf->format('Y-m-d H:i:s'))
+            ->whereIn('status', [
+                RegistrationOpenState::$name,
+                RegistrationClosedState::$name,
+            ])
+            ->orderBy('registration_ends_at')
+            ->get()
+            ->map(fn (LotteryProgramModel $model): LotteryProgram => $this->toDomain($model))
+            ->all();
+    }
+
+    public function findLockedReadyForDraw(): array
+    {
+        return LotteryProgramModel::query()
+            ->where('status', LockedState::$name)
+            ->whereNotExists(function ($query): void {
+                $query->selectRaw('1')
+                    ->from('lottery_results')
+                    ->whereColumn('lottery_results.program_id', 'lottery_programs.id');
+            })
+            ->orderBy('locked_at')
+            ->get()
+            ->map(fn (LotteryProgramModel $model): LotteryProgram => $this->toDomain($model))
+            ->all();
     }
 
     private function toDomain(LotteryProgramModel $model): LotteryProgram

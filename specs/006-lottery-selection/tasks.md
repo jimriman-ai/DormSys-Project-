@@ -13,7 +13,7 @@
 - **Scoring:** Formula from `settings` — never hardcoded
 - **No** Allocation, Voucher, Workflow, Livewire UI in MVP
 
-**Status**: **US4 complete** — T039–T044 implemented; US5+ pending
+**Status**: **US5 complete** — T045–T047 implemented; US6+ pending
 
 ---
 
@@ -127,9 +127,9 @@ Phase 1 (Setup)
 
 ## Phase 7: US5 — Background Jobs
 
-- [ ] T045 `AutoLockLotteryJob` — close + lock past deadline programs
-- [ ] T046 `ExecuteLotteryDrawJob` — dispatch draw for locked programs
-- [ ] T047 [P] Feature test: jobs idempotent with queue fake
+- [x] T045 `AutoLockLotteryJob` — close + lock past deadline programs
+- [x] T046 `ExecuteLotteryDrawJob` — dispatch draw for locked programs
+- [x] T047 [P] Feature test: jobs idempotent with queue fake
 
 ---
 

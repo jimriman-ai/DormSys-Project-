@@ -33,3 +33,5 @@ Phase 4 (T027–T032): registration enrollment via `LotteryRequestReadPort` / `R
 Phase 5 (T033–T038): scoring engine, lock snapshot, deterministic scores at lock.
 
 Phase 6 (T039–T044): draw execution, result persistence, allocation stub port.
+
+Phase 7 (T045–T047): auto-lock and draw background jobs.
