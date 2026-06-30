@@ -27,21 +27,30 @@ final class AutoApprovalSettingsReader
             return false;
         }
 
+        return $this->normalizeBool($value);
+    }
+
+    private function normalizeBool(mixed $value): bool
+    {
         if (is_bool($value)) {
             return $value;
         }
 
-        if (is_string($value)) {
-            $decoded = json_decode($value, true);
-
-            if (json_last_error() === JSON_ERROR_NONE) {
-                return filter_var($decoded, FILTER_VALIDATE_BOOLEAN);
-            }
-
-            return filter_var($value, FILTER_VALIDATE_BOOLEAN);
+        if (is_int($value) || is_float($value)) {
+            return $value !== 0;
         }
 
-        return false;
+        if (! is_string($value)) {
+            return false;
+        }
+
+        $decoded = json_decode($value, true);
+
+        if (json_last_error() === JSON_ERROR_NONE) {
+            return $this->normalizeBool($decoded);
+        }
+
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN);
     }
 
     private function keyForStage(ApprovalStage $stage): string
