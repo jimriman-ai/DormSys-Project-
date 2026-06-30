@@ -4,7 +4,7 @@
 
 **Input**: Request bounded context — accommodation request types, lifecycle state machine (approval phase), BR-01 enforcement via Employee supplier, four-stage approval records (CD-010), dependent snapshots (CD-009), supplier read API for Lottery/Allocation.
 
-**Governance**: **Planning review checkpoint — PASS** — planning authorization **not** recorded in catalog. Implementation **not** authorized. spec04 remains frozen.
+**Governance**: **Planning review checkpoint — PASS** — implementation authorized and complete (T001–T052) per [`handoff/spec05-implementation-authorization.md`](../../.specify/docs/handoff/spec05-implementation-authorization.md). spec04 remains frozen.
 
 ---
 

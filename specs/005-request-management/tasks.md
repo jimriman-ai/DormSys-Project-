@@ -16,7 +16,7 @@
 - **OA-05-01:** Terminal at `Approved` — no `WaitingForAllocation`+ states (spec07)
 - **No** Workflow engine, Allocation, Lottery implementation, Livewire UI
 
-**Status**: **Design approved** · **Implementation not authorized** until separate go-ahead ([`handoff/spec05-design-approved.md`](../../.specify/docs/handoff/spec05-design-approved.md)).
+**Status**: **Design approved** · **Implementation complete** — T001–T052 per [`handoff/spec05-implementation-authorization.md`](../../.specify/docs/handoff/spec05-implementation-authorization.md)
 
 ---
 
@@ -227,7 +227,7 @@ Phase 1 (Setup)
 | Pint | `vendor/bin/pint app/Modules/Request` |
 | Quickstart | Scenarios 1–6, 10 (Wave 1A) |
 
-**Implementation authorization:** Required before executing T001 — separate from design approval.
+**Implementation authorization:** Recorded per [`handoff/spec05-implementation-authorization.md`](../../.specify/docs/handoff/spec05-implementation-authorization.md); T001–T052 complete.
 
 ---
 

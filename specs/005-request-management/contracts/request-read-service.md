@@ -4,7 +4,7 @@
 **Spec:** spec05 Request Management  
 **Implements:** spec.md FR-014, OA-05-06  
 **Consumers:** spec06 Lottery, spec07 Allocation, spec11 Reporting  
-**Status:** Phase 1 design — implementation not authorized
+**Status:** Implemented — T045–T049 per [`tasks.md`](../tasks.md)
 
 ---
 

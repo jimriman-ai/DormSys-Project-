@@ -40,12 +40,12 @@
 - [x] Out-of-scope items explicit (Workflow, Allocation, Lottery, CheckIn/Out)
 - [x] `PendingRequestReadPort` read-only constraint documented (OA-05-09, plan.md)
 - [x] **Planning review checkpoint — PASS** (2026-06-23)
-- [ ] Planning authorization recorded in catalog — **pending governance**
-- [ ] Phase 1 design artifacts — **not started (blocked until planning authorization)**
+- [x] Planning authorization recorded — [`handoff/spec05-planning-authorization.md`](../../../.specify/docs/handoff/spec05-planning-authorization.md)
+- [x] Phase 1 design artifacts — complete (tag `spec05-design-approved`)
 
 ## Notes
 
 - FamilyDirect (US4) depends on spec03 US3 authorization — documented as Wave 1B gate in plan.md.
 - Post-approval states deferred to spec07 per OA-05-03.
 - Checklist validated at authoring; planning review checkpoint passed after OA-05-09.
-- **No implementation authorization granted.** spec04 remains frozen.
+- **Implementation authorized and complete (T001–T052).** spec04 remains frozen.

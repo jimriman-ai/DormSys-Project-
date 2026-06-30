@@ -2,9 +2,9 @@
 
 **Date**: 2026-06-23 | **Plan**: [plan.md](./plan.md)
 
-Validation scenarios for Request module **after implementation is authorized**. Prerequisites assume spec01 Foundation, spec02 auth, spec03 Employee with eligibility contract.
+Validation scenarios for the Request module. Prerequisites assume spec01 Foundation, spec02 auth, spec03 Employee with eligibility contract.
 
-**Not executable until implementation authorization.**
+**Status:** Implementation complete — T001–T052 per [`handoff/spec05-implementation-authorization.md`](../../.specify/docs/handoff/spec05-implementation-authorization.md).
 
 ---
 
@@ -128,7 +128,7 @@ docker compose exec laravel.test php artisan migrate
 
 ---
 
-## MVP gate commands (future)
+## MVP gate commands
 
 ```powershell
 docker compose exec laravel.test php artisan test tests/Feature/Modules/Request tests/Unit/Modules/Request tests/Architecture/RequestConsumerBoundaryTest.php

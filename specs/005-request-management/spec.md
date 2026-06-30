@@ -4,9 +4,9 @@
 
 **Created**: 2026-06-23
 
-**Status**: **Planning — artifacts ready for review** (planning authorization not recorded; implementation not authorized)
+**Status**: **Implementation authorized — T001–T052 complete** ([`handoff/spec05-implementation-authorization.md`](../../.specify/docs/handoff/spec05-implementation-authorization.md))
 
-**Catalog**: spec05 — **Planned** (`spec-catalog.md` v1.0.5)
+**Catalog**: spec05 — **Implementation authorized** (`spec-catalog.md` v1.0.7)
 
 **Depends on**: spec01 Foundation (Approved), spec02 Identity & Access (**Frozen — Wave 1A**), spec03 Employee Context (**Wave 1A + 1B complete**; US3 Dependent on hold)
 
@@ -270,8 +270,8 @@ Draft → Submitted → PendingDepartmentManager → PendingHR
 
 | Reference | Relevance |
 | --------- | --------- |
-| `spec-catalog.md` spec05 | Request Management; Planned |
-| `handoff/spec04-planning-authorization.md` | spec05 not authorized for implementation |
+| `spec-catalog.md` spec05 | Request Management; Implementation authorized — T001–T052 complete |
+| `handoff/spec04-planning-authorization.md` | Historical planning record; implementation authorized per `handoff/spec05-implementation-authorization.md` |
 | `handoff/spec03-post-mvp-authorization.md` | US3/US4 hold — affects FamilyDirect timing |
 | CD-009 | Dependent snapshots only |
 | CD-010 | RequestApproval ownership; Workflow deferred |

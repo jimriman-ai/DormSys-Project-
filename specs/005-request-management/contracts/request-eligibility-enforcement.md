@@ -3,7 +3,7 @@
 **Version:** 1.0.0  
 **Spec:** spec05 Request Management  
 **Implements:** spec.md FR-005, BR-01, R-05  
-**Status:** Phase 1 design — implementation not authorized
+**Status:** Implemented — T022 per [`tasks.md`](../tasks.md)
 
 ---
 

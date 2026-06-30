@@ -4,7 +4,7 @@
 
 Consolidates OA-05-xx decisions from [spec.md](./spec.md) and resolves Phase 1 modeling unknowns before `data-model.md` and `contracts/`.
 
-**Governance:** Phase 1 design authorized — [`handoff/spec05-planning-authorization.md`](../../.specify/docs/handoff/spec05-planning-authorization.md). Implementation not authorized.
+**Governance:** Phase 1 design authorized — [`handoff/spec05-planning-authorization.md`](../../.specify/docs/handoff/spec05-planning-authorization.md). Implementation complete — T001–T052 per [`handoff/spec05-implementation-authorization.md`](../../.specify/docs/handoff/spec05-implementation-authorization.md).
 
 ---
 
