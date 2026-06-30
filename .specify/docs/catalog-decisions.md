@@ -1,8 +1,8 @@
 # DormSys Catalog Decisions
 
-**Version:** 2.4.0  
+**Version:** 2.6.0  
 **Status:** ACTIVE  
-**Last Updated:** 1405/04/05 | 2026/06/26  
+**Last Updated:** 1405/04/02 | 2026/06/23  
 **Related Documents:** [`context-map.md`](context-map.md), [`spec-catalog.md`](spec-catalog.md), `CONSTITUTION v1.3.0.md`, `dormsys-architecture.md`
 
 ---
@@ -44,6 +44,47 @@ Concept definitions and authorization-record lifecycle are defined in `.specify/
 | Implementation Authorization | `.specify/docs/handoff/<spec>-implementation-authorization.md` | Governance Review | Permits implementation execution under declared scope recorded in the authorization record |
 | Batch Execution Permission | `.specify/docs/catalog-decisions.md` § Governance Decision Authority Map | Governance Review | Permits progression to the next eligible batch only. Review-gate approval satisfies the human-review governing input only; it does not grant Implementation Authorization. Governing inputs (not authority owners): `.specify/governance/execution-policy.md`, `.specify/governance/batches/<spec>.md`, and a recorded human review outcome. |
 
+### Governance state / snapshot artifacts
+
+This is a **descriptive category only**. It is **not** a decision class and is **not** listed in the authority map above.
+
+Documents in this category are:
+
+- **evidence-only**
+- **non-authoritative**
+- usable only for status interpretation, transition interpretation, and audit/history context
+
+Examples include governance state snapshots, transition-state records, checkpoint summaries, and audit/status documents.
+
+Such artifacts:
+
+- **DO NOT** grant Design Approval
+- **DO NOT** grant Implementation Authorization
+- **DO NOT** grant Batch Execution Permission
+- **DO NOT** satisfy authorization checks
+
+They are **outside** the authorization record lifecycle defined in `.specify/governance/_meta/authority-model.md`.
+
+Formal authorization artifact classes — together with their existing authority mappings in the table above — are the **only** sources that may grant operational execution authority per those mappings. Governance state / snapshot artifacts, alone or in combination with naming similarity to authorization artifacts, **must not** be interpreted as authorization.
+
+Naming, folder location, or similarity to authorization artifact names **alone** must not be interpreted as authorization.
+
+### Governance Transition (state — not an authority owner)
+
+**Governance Transition** is an operational state documented in `.specify/governance/execution-policy.md` § Governance Transition State. It is **not** a decision class in the map above and has **no** canonical authority owner here.
+
+The state occurs when authorized implementation work is complete (or no target is nominated) and no valid Implementation Authorization exists for a next specification or batch because no governance decision has yet selected or authorized one.
+
+**Selecting or authorizing the next specification or batch** is a governance decision that **requires** explicit authority ownership in this map. That decision class is **not** defined in `## Governance Decision Authority Map` at this time. This document does **not** assign it to any existing or new owner.
+
+Until such ownership is formally added through a future governance change:
+
+- enforcement documents must **HALT** with the Case B message from `.specify/governance/execution-policy.md`:
+
+  > `No authorized implementation exists. Governance transition decision required.`
+
+- enforcement must **not** infer the next specification or batch from catalog ordering, dependencies, or informational status mirrors.
+
 ---
 
 ## Authority Drift Resolution
@@ -59,7 +100,7 @@ No other document may determine, duplicate, summarize, or replace that ownership
 | **Tiered governance** | Operational behavior: enforcement, precedence, orchestration, batch strategy, coding constraints, review controls | Non-owning. Must pointer-reference the canonical map. |
 | **Meta governance** | Conceptual vocabulary, invariants, authorization-record lifecycle (`authority-model.md`); indexes and status mirrors (`decision-index.md`, `spec-catalog.md`) | Non-owning. Pointer-only or status-only. |
 
-`.specify/governance/_meta/authority-model.md` (model-version **2.0.0**) is a conceptual and pointer anchor only. It is **not** an ownership map and must not be used to resolve authority ownership without the canonical map.
+`.specify/governance/_meta/authority-model.md` (model-version **3.0.0**) is a conceptual and pointer anchor only. It is **not** an ownership map and must not be used to resolve authority ownership without the canonical map.
 
 Meta-layer cleanup has removed parallel authority maps from tiered and meta documents. Ongoing governance changes **must** pass the **MANDATORY** `Authority Drift Prevention` section in `.specify/governance/review-checklist.md`.
 
@@ -556,6 +597,14 @@ Request
 ---
 
 ## Change Log
+
+### 2.6.0 — 2026/06/23
+
+- Added **Governance state / snapshot artifacts** descriptive subsection under `## Governance Decision Authority Map`; evidence-only, non-authoritative; not a decision class.
+
+### 2.5.0 — 2026/06/23
+
+- Added **Governance Transition (state — not an authority owner)** descriptive note under `## Governance Decision Authority Map`; no new decision class or owner row.
 
 ### 2.4.0 — 2026-06-26
 

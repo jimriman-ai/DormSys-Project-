@@ -1,6 +1,6 @@
 
 # DormSys Governance Authority Model
-model-version: 2.0.0
+model-version: 3.0.0
 status: normative
 tier: none (meta)
 change-policy:
@@ -8,7 +8,7 @@ normative semantic changes: major version bump required
 editorial changes (typo, formatting): no version change
 minor semantic bumps: prohibited
 owner: DormSys Architecture Team
-last-updated: 1405/04/06
+last-updated: 1405/04/02 | 2026/06/23
 
 ---
 
@@ -157,6 +157,23 @@ lifecycle-reference: pointer to authority-model.md §5
 - An authorization record MUST NOT mix an `active` status with inline "blocked" notes. Use `partial` instead.
 - `authority-constraints` MUST explicitly state that the record cannot modify AP-*, override CD-*, expand spec scope, or bypass review gates.
 
+### Artifacts outside the authorization record lifecycle
+
+The following are **outside** the authorization record lifecycle defined in this section and §5:
+
+- governance state snapshots
+- transition state records
+- checkpoint summaries
+- audit/status documents
+
+They may serve as **evidence or context** for status interpretation, transition interpretation, or audit/history.
+
+They **cannot** substitute for formal authorization records.
+
+They **cannot** independently satisfy authorization requirements.
+
+They are not Authorization Records and do not participate in the lifecycle states or operations in §5.
+
 ---
 
 ## §5 — Lifecycle (Normative State Machine)
@@ -264,9 +281,9 @@ This document follows strict change rules:
 
 ## Document Control
 
-- Model Version: 2.0.0
+- Model Version: 3.0.0
 - Document Status: Normative
 - Tier: None (Meta)
 - Owner: DormSys Architecture Team
-- Last Updated: 1405/04/06
-- Supersedes: — (initial version)
+- Last Updated: 1405/04/02 | 2026/06/23
+- Supersedes: model-version 2.0.0 (governance state / snapshot artifacts clarification)

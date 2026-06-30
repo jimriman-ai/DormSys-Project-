@@ -80,6 +80,16 @@ See:
 If any wording in this document conflicts with the canonical map,
 the canonical map prevails.
 
+### Governance Transition (cross-reference — not an authority owner)
+
+Operational state when authorized work is complete and no next specification or batch has been authorized. Not a decision class in the authority map.
+
+| Concept | Defining location | Section |
+| --- | --- | --- |
+| Governance Transition state | `.specify/governance/execution-policy.md` | § Governance Transition State |
+| HALT Case A / Case B messages | `.specify/governance/execution-policy.md` | § HALT Classification (Authorization vs Transition) |
+| Descriptive note (no owner assigned) | `.specify/docs/catalog-decisions.md` | § Governance Transition (state — not an authority owner) |
+
 ## Maintenance Protocol
 
 When a new decision ID is introduced:
@@ -93,6 +103,6 @@ When a new decision ID is introduced:
 ---
 
 **Document Control**
-- Version: 1.1.0
-- Last Updated: 1405/04/06
+- Version: 1.2.0
+- Last Updated: 1405/04/02 | 2026/06/23
 - Owner: DormSys Architecture Team

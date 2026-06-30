@@ -62,13 +62,107 @@ Before any implementation work begins for the active specification:
    `.specify/governance/_meta/authority-model.md` §5.
 4. Verify the intended batch's wave and tasks appear verbatim in the record's `authorized-scope`.  
    Do not infer scope from spec, plan, or task content.
-5. If authorization is missing, duplicated, ambiguous, `revoked`, `superseded`
-   without a single active replacement, or does not cover the batch scope,
-   **HALT** and report:
+5. Classify authorization failure per **§ HALT Classification (Authorization vs Transition)** before reporting.
+   If Case A applies, **HALT** and report:
 
    > `Missing or invalid implementation authorization record.`
 
+   If Case B applies, **HALT** and report:
+
+   > `No authorized implementation exists. Governance transition decision required.`
+
 This document does not fix or override invalid authorization; it only detects and HALTs.
+
+---
+
+## Governance Transition State
+
+**Governance Transition** is an operational state — **not** a decision class with canonical authority ownership in `## Governance Decision Authority Map`.
+
+It occurs when **all** of the following are true:
+
+1. The active specification's authorized implementation scope is **complete** (all tasks in the authorized scope are done, or the final authorized batch has passed its review gate), **or** no specification has been nominated for execution; **and**
+2. No valid Implementation Authorization exists for any specification or batch that execution is attempting to start; **and**
+3. No existing governance decision has selected or authorized a next specification or batch for implementation.
+
+This state means **a governance decision is required** — not a framework defect.
+
+Enforcement must **not**:
+
+- infer which specification or batch should come next,
+- use catalog ordering, dependencies, or informational status mirrors as authorization,
+- auto-advance to any next specification or batch.
+
+---
+
+## HALT Classification (Authorization vs Transition)
+
+When execution cannot proceed for authorization reasons, classify the HALT as **Case A** or **Case B** before reporting.
+
+Apply the tests in order. Use the **first** case that matches.
+
+### Case A — Authorization defect
+
+Use when execution attempts to start or continue work that **requires** a valid Implementation Authorization record per the canonical map, and that record is:
+
+- missing for the **nominated** specification or batch when a prior governance decision already selected that target for implementation,
+- duplicated,
+- ambiguous,
+- `revoked`,
+- `superseded` without a single active replacement,
+- or does not cover the requested scope.
+
+**HALT message (exact):**
+
+> `Missing or invalid implementation authorization record.`
+
+Case A indicates an **error or invalid artifact** relative to a governance decision that already nominated implementation work.
+
+Do **not** use Case A when the only reason execution cannot proceed is that no next specification or batch has been selected or authorized yet.
+
+### Case B — Governance Transition
+
+Use when:
+
+- authorized implementation work for the current specification is **complete**, **and**
+- no valid Implementation Authorization exists for a next specification or batch, **and**
+- no governance artifact has selected or authorized a next specification or batch for implementation.
+
+**HALT message (exact):**
+
+> `No authorized implementation exists. Governance transition decision required.`
+
+Case B does **not** authorize any specification, batch, or workflow step. It only reports that human governance must decide what to authorize next.
+
+### Detection procedure
+
+1. Determine whether execution is nominating a **specific** specification or batch, or seeking the **next** work after completion.
+2. Load Implementation Authorization instance(s) required by the canonical map for the nominated target.
+3. If a nominated target exists and its authorization record is missing, duplicated, ambiguous, `revoked`, `superseded` without replacement, or scope-invalid → **Case A**.
+4. If authorized scope for the active specification is complete and no valid Implementation Authorization exists for any next specification or batch, and no artifact has authorized a next target → **Case B**.
+5. If both Case A and Case B could apply, **Case A takes precedence** (defective artifact for a nominated target).
+
+Never guess which specification or batch should come next.
+
+---
+
+## Governance Transition Follow-Up
+
+When the system HALTs with:
+
+> `No authorized implementation exists. Governance transition decision required.`
+
+the next step is a **human governance action**, not an automated step.
+
+Required follow-up:
+
+1. **Stop.** Do not implement, plan, or batch-execute any unauthorized specification or batch.
+2. A governance body must:
+   - consult `.specify/docs/spec-catalog.md` for ordering guidance, dependency information, and informational status (status mirrors are **not** authority),
+   - decide which specification or batch is eligible to be authorized next,
+   - create the appropriate planning or implementation authorization artifact per the canonical map (Design Approval and/or Implementation Authorization as applicable).
+3. Authority ownership for **selecting or authorizing the next specification or batch** is **not** defined in `## Governance Decision Authority Map` at this time. This document does not assign that ownership. Until such a decision class and canonical owner are added to the map through a future governance change, the correct enforcement behavior is Case B HALT — not inference or automatic advancement.
+4. After the appropriate authorization artifact exists and satisfies Pre-Execution Requirements, execution may resume for the newly authorized scope only.
 
 ---
 
@@ -186,7 +280,7 @@ At the end of every batch:
 
    `.specify/governance/review-checklist.md`
 
-3. **HALT**
+3. **HALT** — classify per § HALT Classification (Authorization vs Transition) and report the exact message for Case A or Case B when authorization blocks progression; otherwise halt per Review Gate discipline.
 4. Wait for human approval before starting the next batch.
 
 Clarifications:
@@ -253,8 +347,8 @@ they do not change authority ownership.
 
 ## Document Control
 
-- Version: 1.2.0
-- Last Updated: 1405/04/06
+- Version: 1.3.0
+- Last Updated: 1405/04/02 | 2026/06/23
 - Owner: DormSys Architecture Team
 
 This ownership line controls document maintenance only.  
