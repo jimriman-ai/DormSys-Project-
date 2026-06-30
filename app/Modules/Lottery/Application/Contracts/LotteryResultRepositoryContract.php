@@ -18,4 +18,6 @@ interface LotteryResultRepositoryContract
      * @return list<LotteryResult>
      */
     public function findByProgramId(LotteryProgramId $programId): array;
+
+    public function existsForProgram(LotteryProgramId $programId): bool;
 }

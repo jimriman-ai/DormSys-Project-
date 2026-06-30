@@ -63,6 +63,13 @@ class LotteryResultRepository implements LotteryResultRepositoryContract
             ->all();
     }
 
+    public function existsForProgram(LotteryProgramId $programId): bool
+    {
+        return LotteryResultModel::query()
+            ->where('program_id', $programId->value)
+            ->exists();
+    }
+
     private function toDomain(LotteryResultModel $model): LotteryResult
     {
         return new LotteryResult(

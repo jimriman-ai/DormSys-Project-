@@ -13,7 +13,7 @@
 - **Scoring:** Formula from `settings` — never hardcoded
 - **No** Allocation, Voucher, Workflow, Livewire UI in MVP
 
-**Status**: **US3 complete** — T033–T038 implemented; US4+ pending
+**Status**: **US4 complete** — T039–T044 implemented; US5+ pending
 
 ---
 
@@ -116,12 +116,12 @@ Phase 1 (Setup)
 
 ## Phase 6: US4 — Draw & Results
 
-- [ ] T039 `ExecuteDrawAction` — select winners/reserves to capacity; transactional
-- [ ] T040 Persist `LotteryResult` rows with rank and outcome
-- [ ] T041 Transition program `Locked` → `Drawn` → `Completed`
-- [ ] T042 Create `ProposedAllocationPort` stub — emit payload for spec07
-- [ ] T043 [P] Unit test: draw idempotency on retry
-- [ ] T044 Feature test: full path open → enroll → lock → draw → results queryable
+- [x] T039 `ExecuteDrawAction` — select winners/reserves to capacity; transactional
+- [x] T040 Persist `LotteryResult` rows with rank and outcome
+- [x] T041 Transition program `Locked` → `Drawn` → `Completed`
+- [x] T042 Create `ProposedAllocationPort` stub — emit payload for spec07
+- [x] T043 [P] Unit test: draw idempotency on retry
+- [x] T044 Feature test: full path open → enroll → lock → draw → results queryable
 
 ---
 

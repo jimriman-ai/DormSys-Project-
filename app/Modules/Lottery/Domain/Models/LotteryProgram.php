@@ -81,6 +81,16 @@ final class LotteryProgram
         return $this->status === RegistrationOpenState::$name;
     }
 
+    public function isCompleted(): bool
+    {
+        return $this->status === CompletedState::$name;
+    }
+
+    public function isDrawn(): bool
+    {
+        return $this->status === DrawnState::$name;
+    }
+
     public function isLocked(): bool
     {
         return $this->status === LockedState::$name;
@@ -167,6 +177,42 @@ final class LotteryProgram
             scoringConfigVersion: $scoringConfigVersion,
             cancelledReason: $this->cancelledReason,
             lockedAt: $lockedAt,
+            drawnAt: $this->drawnAt,
+        );
+    }
+
+    public function markDrawn(DateTimeImmutable $drawnAt): self
+    {
+        return new self(
+            id: $this->id,
+            title: $this->title,
+            dormitoryId: $this->dormitoryId,
+            capacity: $this->capacity,
+            registrationStartsAt: $this->registrationStartsAt,
+            registrationEndsAt: $this->registrationEndsAt,
+            status: DrawnState::$name,
+            randomSeed: $this->randomSeed,
+            scoringConfigVersion: $this->scoringConfigVersion,
+            cancelledReason: $this->cancelledReason,
+            lockedAt: $this->lockedAt,
+            drawnAt: $drawnAt,
+        );
+    }
+
+    public function markCompleted(): self
+    {
+        return new self(
+            id: $this->id,
+            title: $this->title,
+            dormitoryId: $this->dormitoryId,
+            capacity: $this->capacity,
+            registrationStartsAt: $this->registrationStartsAt,
+            registrationEndsAt: $this->registrationEndsAt,
+            status: CompletedState::$name,
+            randomSeed: $this->randomSeed,
+            scoringConfigVersion: $this->scoringConfigVersion,
+            cancelledReason: $this->cancelledReason,
+            lockedAt: $this->lockedAt,
             drawnAt: $this->drawnAt,
         );
     }

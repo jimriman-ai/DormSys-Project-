@@ -31,3 +31,5 @@ Phase 3 (T019–T026): program lifecycle actions — create, open/close registra
 Phase 4 (T027–T032): registration enrollment via `LotteryRequestReadPort` / `RequestReadAdapter`.
 
 Phase 5 (T033–T038): scoring engine, lock snapshot, deterministic scores at lock.
+
+Phase 6 (T039–T044): draw execution, result persistence, allocation stub port.
