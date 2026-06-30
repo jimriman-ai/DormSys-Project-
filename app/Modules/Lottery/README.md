@@ -29,3 +29,5 @@ Phases 1–2 (T001–T018): module wiring, schema, domain models, state machine,
 Phase 3 (T019–T026): program lifecycle actions — create, open/close registration, cancel.
 
 Phase 4 (T027–T032): registration enrollment via `LotteryRequestReadPort` / `RequestReadAdapter`.
+
+Phase 5 (T033–T038): scoring engine, lock snapshot, deterministic scores at lock.

@@ -150,6 +150,27 @@ final class LotteryProgram
         return $this->withStatus(CancelledState::$name, $reason);
     }
 
+    public function markLocked(
+        string $randomSeed,
+        string $scoringConfigVersion,
+        DateTimeImmutable $lockedAt,
+    ): self {
+        return new self(
+            id: $this->id,
+            title: $this->title,
+            dormitoryId: $this->dormitoryId,
+            capacity: $this->capacity,
+            registrationStartsAt: $this->registrationStartsAt,
+            registrationEndsAt: $this->registrationEndsAt,
+            status: LockedState::$name,
+            randomSeed: $randomSeed,
+            scoringConfigVersion: $scoringConfigVersion,
+            cancelledReason: $this->cancelledReason,
+            lockedAt: $lockedAt,
+            drawnAt: $this->drawnAt,
+        );
+    }
+
     public function withStatus(string $status, ?string $cancelledReason = null): self
     {
         return new self(

@@ -60,7 +60,7 @@ function createApprovedLotteryRegistrationRequest(Employee $employee, string $do
 {
     $draft = app(CreateLotteryRegistrationRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString($dormitoryId),
+        dormitoryId: RequestDormitorySiteId::fromString($dormitoryId),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );

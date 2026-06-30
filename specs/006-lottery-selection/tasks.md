@@ -13,7 +13,7 @@
 - **Scoring:** Formula from `settings` — never hardcoded
 - **No** Allocation, Voucher, Workflow, Livewire UI in MVP
 
-**Status**: **US2 complete** — T027–T032 implemented; US3+ pending
+**Status**: **US3 complete** — T033–T038 implemented; US4+ pending
 
 ---
 
@@ -105,12 +105,12 @@ Phase 1 (Setup)
 
 ## Phase 5: US3 — Scoring & Lock
 
-- [ ] T033 Create `LotteryScoringEngine` in `Domain/Services/` — settings-driven formula + PRNG
-- [ ] T034 `LockLotteryProgramAction` — snapshot eligible registrations; persist `random_seed`; → `Locked`
-- [ ] T035 Re-validate request approval at lock (OA-06-01)
-- [ ] T036 [P] Unit test: identical inputs → identical scores (SC-002)
-- [ ] T037 Create `EmployeeLotteryScorePort` + null/stub adapter
-- [ ] T038 Feature test: lock program → snapshot + scores persisted
+- [x] T033 Create `LotteryScoringEngine` in `Domain/Services/` — settings-driven formula + PRNG
+- [x] T034 `LockLotteryProgramAction` — snapshot eligible registrations; persist `random_seed`; → `Locked`
+- [x] T035 Re-validate request approval at lock (OA-06-01)
+- [x] T036 [P] Unit test: identical inputs → identical scores (SC-002)
+- [x] T037 Create `EmployeeLotteryScorePort` + null/stub adapter
+- [x] T038 Feature test: lock program → snapshot + scores persisted
 
 ---
 

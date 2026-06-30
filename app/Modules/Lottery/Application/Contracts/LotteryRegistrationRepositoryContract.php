@@ -19,4 +19,9 @@ interface LotteryRegistrationRepositoryContract
         LotteryProgramId $programId,
         RequestReferenceId $requestId,
     ): ?LotteryRegistration;
+
+    /**
+     * @return list<LotteryRegistration>
+     */
+    public function findByProgramId(LotteryProgramId $programId): array;
 }
