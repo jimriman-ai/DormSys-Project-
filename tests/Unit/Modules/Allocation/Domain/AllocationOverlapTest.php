@@ -7,7 +7,6 @@ namespace Tests\Unit\Modules\Allocation\Domain;
 use App\Modules\Allocation\Application\Contracts\AllocationRepositoryContract;
 use App\Modules\Allocation\Application\Services\CreateAllocationAction;
 use App\Modules\Allocation\Application\Services\ReleaseAllocationAction;
-use App\Modules\Allocation\Application\Services\ReleaseAllocationAction;
 use App\Modules\Allocation\Domain\Exceptions\AllocationOverlapException;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use DateTimeImmutable;

@@ -175,12 +175,12 @@ Phase 0 (Design artifacts)
 
 **Independent Test**: On assign → `reserve`/`occupy` signal dispatched; on release → `release` signal — via null adapter until spec04 live.
 
-- [ ] T046 [US3] Create `DormitoryReadAdapter` in `app/Modules/Allocation/Infrastructure/Adapters/DormitoryReadAdapter.php` — consume `App\Modules\Dormitory\Application\Contracts\DormitoryReadContract` (spec04 supplier); register `NullDormitoryReadAdapter` until spec04 exists; Allocation must NOT implement this contract; do NOT use `App\Modules\Request\Application\Contracts\DormitoryReadContract` for assignability or occupancy logic
-- [ ] T047 [US3] Create `AllocationPhysicalStateAdapter` in `app/Modules/Allocation/Infrastructure/Adapters/AllocationPhysicalStateAdapter.php` — implement outbound calls to `AllocationPhysicalStatePort` per `specs/004-accommodation-resource/contracts/allocation-physical-state-port.md`
-- [ ] T048 [US3] Integrate Dormitory pre-check into `CreateAllocationAction` — reject when bed not assignable (INV-2)
-- [ ] T049 [US3] Emit integration events `AllocationAssigned`, `AllocationReleased` from assign/release actions in `app/Modules/Allocation/Application/Services/`
-- [ ] T050 [P] [US3] Unit test `tests/Unit/Modules/Allocation/Infrastructure/AllocationPhysicalStateAdapterTest.php` — verify port method invocations on assign/release
-- [ ] T051 [US3] Feature test `tests/Feature/Modules/Allocation/DormitoryIntegrationTest.php` — use test double for `AllocationPhysicalStatePort`
+- [x] T046 [US3] Create `DormitoryReadAdapter` in `app/Modules/Allocation/Infrastructure/Adapters/DormitoryReadAdapter.php` — consume `App\Modules\Dormitory\Application\Contracts\DormitoryReadContract` (spec04 supplier); register `NullDormitoryReadAdapter` until spec04 exists; Allocation must NOT implement this contract; do NOT use `App\Modules\Request\Application\Contracts\DormitoryReadContract` for assignability or occupancy logic
+- [x] T047 [US3] Create `AllocationPhysicalStateAdapter` in `app/Modules/Allocation/Infrastructure/Adapters/AllocationPhysicalStateAdapter.php` — implement outbound calls to `AllocationPhysicalStatePort` per `specs/004-accommodation-resource/contracts/allocation-physical-state-port.md`
+- [x] T048 [US3] Integrate Dormitory pre-check into `CreateAllocationAction` — reject when bed not assignable (INV-2)
+- [x] T049 [US3] Emit integration events `AllocationAssigned`, `AllocationReleased` from assign/release actions in `app/Modules/Allocation/Application/Services/`
+- [x] T050 [P] [US3] Unit test `tests/Unit/Modules/Allocation/Infrastructure/AllocationPhysicalStateAdapterTest.php` — verify port method invocations on assign/release
+- [x] T051 [US3] Feature test `tests/Feature/Modules/Allocation/DormitoryIntegrationTest.php` — use test double for `AllocationPhysicalStatePort`
 - [x] T052 [P] [US3] Architecture note in `specs/007-allocation-checkin/contracts/dormitory-integration-adapters.md` — document UD-07 stub vs live spec04 switchover criteria
 
 **Checkpoint**: US3 acceptance — Dormitory signal path wired; full E2E blocked only on spec04 deployment.
