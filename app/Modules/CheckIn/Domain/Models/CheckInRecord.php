@@ -30,4 +30,33 @@ final class CheckInRecord
     {
         return $this->checkedOutAt !== null;
     }
+
+    public static function open(
+        string $allocationId,
+        string $operatorId,
+        DateTimeImmutable $checkedInAt,
+    ): self {
+        return new self(
+            id: null,
+            allocationId: $allocationId,
+            checkedInAt: $checkedInAt,
+            checkedOutAt: null,
+            operatorId: $operatorId,
+        );
+    }
+
+    public function withCheckOut(DateTimeImmutable $checkedOutAt): self
+    {
+        if ($this->checkedOutAt !== null) {
+            throw new \LogicException('Check-in record is already checked out.');
+        }
+
+        return new self(
+            id: $this->id,
+            allocationId: $this->allocationId,
+            checkedInAt: $this->checkedInAt,
+            checkedOutAt: $checkedOutAt,
+            operatorId: $this->operatorId,
+        );
+    }
 }

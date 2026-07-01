@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Allocation\Infrastructure\Repositories;
 
 use App\Modules\Allocation\Application\Contracts\AllocationRepositoryContract;
+use App\Modules\Allocation\Domain\Enums\AllocationStatus;
 use App\Modules\Allocation\Domain\Exceptions\AllocationNotFoundException;
 use App\Modules\Allocation\Domain\Exceptions\AllocationOverlapException;
 use App\Modules\Allocation\Domain\Models\Allocation;
@@ -47,6 +48,17 @@ class AllocationRepository implements AllocationRepositoryContract
             ->find($id->value);
 
         return $model === null ? null : $this->toDomain($model);
+    }
+
+    public function findActiveByPersonId(PersonAllocationRef $personId): array
+    {
+        return AllocationModel::query()
+            ->with('items')
+            ->where('person_id', $personId->value)
+            ->where('status', AllocationStatus::Active)
+            ->get()
+            ->map(fn (AllocationModel $model): Allocation => $this->toDomain($model))
+            ->all();
     }
 
     private function insert(Allocation $allocation): Allocation

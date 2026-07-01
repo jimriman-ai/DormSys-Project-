@@ -28,6 +28,16 @@ class CheckInRecordRepository implements CheckInRecordRepositoryContract
         return $model === null ? null : $this->toDomain($model);
     }
 
+    public function findOpenByAllocationId(string $allocationId): ?CheckInRecord
+    {
+        $model = CheckInRecordModel::query()
+            ->where('allocation_id', $allocationId)
+            ->whereNull('checked_out_at')
+            ->first();
+
+        return $model === null ? null : $this->toDomain($model);
+    }
+
     private function insert(CheckInRecord $record): CheckInRecord
     {
         $model = new CheckInRecordModel([

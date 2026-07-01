@@ -193,14 +193,14 @@ Phase 0 (Design artifacts)
 
 **Independent Test**: Active allocation → check in → check out; CheckIn module does not create or modify assignments.
 
-- [ ] T053 [US4] Define `CheckInCommandPort` interface in `app/Modules/CheckIn/Application/Contracts/CheckInCommandPort.php` per spec contract doc
-- [ ] T054 [US4] Implement `CheckInService` in `app/Modules/CheckIn/Application/Services/CheckInService.php` implementing `CheckInCommandPort`
-- [ ] T055 [US4] Implement `CheckInAction` in `app/Modules/CheckIn/Application/Services/CheckInAction.php` — validate active allocation exists via Allocation read port; Operator role gate
-- [ ] T056 [US4] Implement `CheckOutAction` in `app/Modules/CheckIn/Application/Services/CheckOutAction.php` — require prior check-in; Operator role gate
-- [ ] T057 [P] [US4] Create domain events `CheckedIn`, `CheckedOut` in `app/Modules/CheckIn/Domain/Events/`
-- [ ] T058 [US4] Create `AllocationAssignmentReadAdapter` in `app/Modules/CheckIn/Infrastructure/Adapters/AllocationAssignmentReadAdapter.php` — read assignment facts without Allocation Infrastructure Eloquent
-- [ ] T059 [US4] Feature test `tests/Feature/Modules/CheckIn/CheckInOutFlowTest.php` — full check-in/out on allocated bed
-- [ ] T060 [P] [US4] Feature test `tests/Feature/Modules/CheckIn/CheckInBoundaryTest.php` — reject check-in without allocation; reject non-Operator
+- [x] T053 [US4] Define `CheckInCommandPort` interface in `app/Modules/CheckIn/Application/Contracts/CheckInCommandPort.php` per spec contract doc
+- [x] T054 [US4] Implement `CheckInService` in `app/Modules/CheckIn/Application/Services/CheckInService.php` implementing `CheckInCommandPort`
+- [x] T055 [US4] Implement `CheckInAction` in `app/Modules/CheckIn/Application/Services/CheckInAction.php` — validate active allocation exists via Allocation read port; Operator role gate
+- [x] T056 [US4] Implement `CheckOutAction` in `app/Modules/CheckIn/Application/Services/CheckOutAction.php` — require prior check-in; Operator role gate
+- [x] T057 [P] [US4] Create domain events `CheckedIn`, `CheckedOut` in `app/Modules/CheckIn/Domain/Events/`
+- [x] T058 [US4] Create `AllocationAssignmentReadAdapter` in `app/Modules/CheckIn/Infrastructure/Adapters/AllocationAssignmentReadAdapter.php` — read assignment facts without Allocation Infrastructure Eloquent
+- [x] T059 [US4] Feature test `tests/Feature/Modules/CheckIn/CheckInOutFlowTest.php` — full check-in/out on allocated bed
+- [x] T060 [P] [US4] Feature test `tests/Feature/Modules/CheckIn/CheckInBoundaryTest.php` — reject check-in without allocation; reject non-Operator
 
 **Checkpoint**: US4 acceptance — operational transitions isolated in CheckIn module.
 
@@ -212,14 +212,14 @@ Phase 0 (Design artifacts)
 
 **Independent Test**: `AllocationReadContract` returns active allocation for person; allocation outcome invokes `RequestLifecycleCommandPort` stub.
 
-- [ ] T061 [US5] Define `AllocationReadContract` in `app/Modules/Allocation/Application/Contracts/AllocationReadContract.php` per spec contract doc
-- [ ] T062 [US5] Implement `AllocationReadService` in `app/Modules/Allocation/Application/Services/AllocationReadService.php`
-- [ ] T063 [US5] Define `RequestLifecycleCommandPort` in `app/Modules/Allocation/Application/Contracts/RequestLifecycleCommandPort.php` — document UD-10 payload TBD in contract
-- [ ] T064 [US5] Implement `RequestLifecycleCommandAdapter` in `app/Modules/Allocation/Infrastructure/Adapters/RequestLifecycleCommandAdapter.php` — stub or no-op until Request consumer ready
-- [ ] T065 [P] [US5] Create `VoucherIssuancePort` interface + `NullVoucherIssuanceAdapter` in `app/Modules/Allocation/Application/Contracts/` and `Infrastructure/Adapters/` — trigger facts only (CD-016)
-- [ ] T066 [US5] Feature test `tests/Feature/Modules/Allocation/AllocationReadContractTest.php` — contract shape for `hasActiveAllocation` / active assignment query (replaces spec03 `ActiveAllocationReadPort` stub per UD-11)
-- [ ] T067 [US5] Register `AllocationReadContract`, `RequestLifecycleCommandPort`, `VoucherIssuancePort` in `AllocationServiceProvider.php`
-- [ ] T068 [P] [US5] Contract test `tests/Feature/Modules/Allocation/RequestLifecycleHandoffTest.php` — verify command port invoked on successful allocation from request source
+- [x] T061 [US5] Define `AllocationReadContract` in `app/Modules/Allocation/Application/Contracts/AllocationReadContract.php` per spec contract doc
+- [x] T062 [US5] Implement `AllocationReadService` in `app/Modules/Allocation/Application/Services/AllocationReadService.php`
+- [x] T063 [US5] Define `RequestLifecycleCommandPort` in `app/Modules/Allocation/Application/Contracts/RequestLifecycleCommandPort.php` — document UD-10 payload TBD in contract
+- [x] T064 [US5] Implement `RequestLifecycleCommandAdapter` in `app/Modules/Allocation/Infrastructure/Adapters/RequestLifecycleCommandAdapter.php` — stub or no-op until Request consumer ready
+- [x] T065 [P] [US5] Create `VoucherIssuancePort` interface + `NullVoucherIssuanceAdapter` in `app/Modules/Allocation/Application/Contracts/` and `Infrastructure/Adapters/` — trigger facts only (CD-016)
+- [x] T066 [US5] Feature test `tests/Feature/Modules/Allocation/AllocationReadContractTest.php` — contract shape for `hasActiveAllocation` / active assignment query (replaces spec03 `ActiveAllocationReadPort` stub per UD-11)
+- [x] T067 [US5] Register `AllocationReadContract`, `RequestLifecycleCommandPort`, `VoucherIssuancePort` in `AllocationServiceProvider.php`
+- [x] T068 [P] [US5] Contract test `tests/Feature/Modules/Allocation/RequestLifecycleHandoffTest.php` — verify command port invoked on successful allocation from request source
 
 **Checkpoint**: US5 acceptance — downstream supplier surfaces registered and testable.
 
@@ -229,9 +229,9 @@ Phase 0 (Design artifacts)
 
 **Purpose**: Boundary enforcement, static analysis, and integration verification.
 
-- [ ] T069 Create architecture test `tests/Architecture/AllocationBoundaryTest.php` — no forbidden imports from Request, Lottery, Dormitory, Employee Infrastructure layers
-- [ ] T070 [P] Create architecture test `tests/Architecture/CheckInBoundaryTest.php` — CheckIn does not import Allocation Infrastructure Eloquent
-- [ ] T071 Feature test `tests/Feature/Modules/Allocation/AllocationIntegrationBoundaryTest.php` — Request read → assign → Dormitory signal → read contract round-trip
+- [x] T069 Create architecture test `tests/Architecture/AllocationBoundaryTest.php` — no forbidden imports from Request, Lottery, Dormitory, Employee Infrastructure layers
+- [x] T070 [P] Create architecture test `tests/Architecture/CheckInBoundaryTest.php` — CheckIn does not import Allocation Infrastructure Eloquent
+- [x] T071 Feature test `tests/Feature/Modules/Allocation/AllocationIntegrationBoundaryTest.php` — Request read → assign → Dormitory signal → read contract round-trip
 - [ ] T072 [P] PHPStan level 8 on `app/Modules/Allocation/` and `app/Modules/CheckIn/`
 - [ ] T073 [P] Run Laravel Pint on `app/Modules/Allocation/` and `app/Modules/CheckIn/`
 - [x] T074 Update this `tasks.md` status section when Implementation Authorization handoff is granted

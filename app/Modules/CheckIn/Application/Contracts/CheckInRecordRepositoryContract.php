@@ -12,4 +12,6 @@ interface CheckInRecordRepositoryContract
     public function save(CheckInRecord $record): CheckInRecord;
 
     public function findById(CheckInRecordId $id): ?CheckInRecord;
+
+    public function findOpenByAllocationId(string $allocationId): ?CheckInRecord;
 }
