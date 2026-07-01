@@ -13,7 +13,7 @@
 - **Scoring:** Formula from `settings` — never hardcoded
 - **No** Allocation, Voucher, Workflow, Livewire UI in MVP
 
-**Status**: **Complete** — T001–T055 implemented
+**Status**: **Complete** — T001–T055 implemented; Phase 10 integration boundary verified
 
 ---
 
@@ -150,6 +150,13 @@ Phase 1 (Setup)
 - [x] T055 [P] Run Pint on `app/Modules/Lottery/`
 
 ---
+
+## Phase 10: Integration Boundary Check
+
+- [x] Full E2E test — `LotteryIntegrationBoundaryTest` (Request → Read Contract)
+- [x] Architecture boundary tests (SC-005) — `LotterySupplierBoundaryTest`
+- [x] Scoring determinism suite — `LotteryScoringEngineTest`
+- [x] Transition matrix unit test — no database dependency (portability fix)
 
 ## Parallel Opportunities
 

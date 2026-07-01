@@ -15,15 +15,12 @@ use App\Modules\Lottery\Domain\States\RegistrationOpenState;
 use App\Modules\Lottery\Domain\States\WaitingApprovalState;
 use App\Modules\Lottery\Infrastructure\Persistence\Models\LotteryProgramModel;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class LotteryProgramTransitionMatrixTest extends TestCase
 {
-    use RefreshDatabase;
-
     #[Test]
     #[DataProvider('allowedTransitionProvider')]
     public function it_allows_normative_lottery_program_transitions(string $from, string $to): void
@@ -76,7 +73,9 @@ class LotteryProgramTransitionMatrixTest extends TestCase
 
     private function persistProgramInState(string $status): LotteryProgramModel
     {
-        $model = new LotteryProgramModel([
+        $model = new LotteryProgramModel();
+        $model->forceFill([
+            'id' => UuidGenerator::uuid7(),
             'title' => 'Transition Test Program',
             'dormitory_id' => UuidGenerator::uuid7(),
             'capacity' => 10,
@@ -84,9 +83,9 @@ class LotteryProgramTransitionMatrixTest extends TestCase
             'registration_ends_at' => '2026-07-15 23:59:59',
             'status' => $status,
         ]);
-        $model->save();
+        $model->syncOriginal();
 
-        return $model->refresh();
+        return $model;
     }
 
     /**
