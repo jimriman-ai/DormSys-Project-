@@ -1,7 +1,7 @@
 # DormSys Context Map
 
-**Version:** 0.4
-**Status:** Inventory Updated / Critical Boundaries Closed (OQ-01 through OQ-08)
+**Version:** 0.4.1  
+**Status:** Inventory Updated / Critical Boundaries Closed (OQ-01 through OQ-08)  
 **Last Updated:** 1405/04/10 | 2026/07/01
 
 **Purpose:** Map relationships between bounded contexts as input to Boundary Review and specification work.
@@ -30,28 +30,20 @@ Architectural decisions are recorded in [`catalog-decisions.md`](catalog-decisio
 | Identity     | spec02 | User, Role, Permission |
 | Employee     | spec03 | Employee, Department, Dependent — **CD-009**: Dependent owned by Employee; Request holds snapshots/references only |
 | Dormitory    | spec04 | Dormitory, Room, Bed — physical capacity and availability |
-
 | Request      | spec05 | Request, RequestApproval, RequestMember, RequestType — **CD-010**: Request owns approval state and history |
 | Lottery      | spec06 | LotteryProgram, LotteryRegistration, LotteryResult — **CD-011**: all lottery rules and lifecycle centralized here |
-
 | Allocation   | spec07 | Allocation, AllocationItem, AllocationMethod — **CD-014**: assignment authority only |
 | CheckIn/CheckOut | spec07 | Operational occupancy transitions (`CheckedIn`, `CheckedOut`) — **CD-015**: active boundary |
-
 | Voucher | spec08 | Voucher issuance lifecycle and voucher eligibility authority — **CD-016** |
-
 | Notification | spec09 | NotificationLog (cross-cutting delivery) |
 | Audit        | spec10 | AuditLog (cross-cutting traceability) |
 | Reporting | spec11 | Read-only cross-context projections only — **CD-017**: no write authority, no upstream ownership |
-
 | Workflow     | —      | **DEFERRED** capability — **CD-010**: when activated, owns approval transition rules and orchestration (not an active module yet) |
-
-
 
 ### Candidate Contexts (Not in Active Inventory)
 
 | Candidate              | Status | Notes |
 | ---------------------- | ------ | ----- |
-
 | Occupancy (unified)    | Rejected as standalone | **CD-014**: occupancy is cross-cutting across Allocation, Dormitory, and CheckIn/CheckOut |
 
 ---
@@ -59,31 +51,25 @@ Architectural decisions are recorded in [`catalog-decisions.md`](catalog-decisio
 ## Relationship Map (Summary)
 
 ```
-Identity
+Identity (R1, R12)
    ↓ immutable UUID (CD-012)
-Employee
+Employee (R2)
    ↓ eligibility query (CD-013)
-Request ←—— orchestration when active (CD-010) —— Workflow [deferred]
-   ↓                              ↓
-Lottery (CD-011)              Allocation (CD-014)
-   ↓                              ↓
-Allocation
-   ↓
-Dormitory (physical state)
-   ↓
-CheckIn/CheckOut (CD-015)
+Request ← orchestration when active (CD-010, R3) → Workflow [deferred]
+   ↓ (R4)                    ↓ (R6)
+Lottery (CD-011)         Allocation (CD-014)
+   ↓ (R5)                    ↓ (R7)
+Allocation ──────────→ Dormitory (physical state)
+                           ↓
+                      CheckIn/CheckOut (CD-015)
 
-Lottery / Allocation
-   ↓
+Lottery / Allocation (R8)
+   ↓ upstream triggers
 Voucher (CD-016)
 
-Notification ← events from multiple contexts
-Audit        ← hooks/events from critical operations
-Reporting    ← read-only projections from all contexts (CD-017)
-
-Notification ← events from multiple contexts
-Audit        ← hooks/events from critical operations
-Reporting    ← read-only projections from all contexts
+Notification ← events from multiple contexts (R9)
+Audit        ← hooks/events from critical operations (R10)
+Reporting    ← read-only projections from all contexts (R11, CD-017)
 ```
 
 ---

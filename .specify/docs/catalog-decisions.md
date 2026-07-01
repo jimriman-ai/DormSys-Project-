@@ -1,8 +1,8 @@
 # DormSys Catalog Decisions
 
-**Version:** 2.7.0  
+**Version:** 2.8.1  
 **Status:** ACTIVE  
-**Last Updated:** 1405/04/03 | 2026/06/24  
+**Last Updated:** 1405/04/10 | 2026/07/01
 **Related Documents:** [`context-map.md`](context-map.md), [`spec-catalog.md`](spec-catalog.md), `CONSTITUTION v1.3.0.md`, `dormsys-architecture.md`
 
 ---
@@ -161,21 +161,20 @@ Without this document § `## Governance Decision Authority Map`, ownership canno
 | CD-011 | Lottery Domain Centralization | ACCEPTED | 2026-06-25 | OQ-04 |
 | CD-012 | Employee ↔ Identity Attachment Mechanism | ACCEPTED | 2026-06-26 | OQ-01 |
 | CD-013 | Eligibility Invariant Ownership | ACCEPTED (Recorded Assumption) | 2026-06-26 | OQ-02 (Current Scope) |
-| CD-014 | Allocation ↔ Occupancy Ownership Split | ACCEPTED | 2026-06-26 | OQ-05 || CD-015 | CheckIn/CheckOut Module Boundary | ACCEPTED | 2026-07-01 | OQ-06 |
+| CD-014 | Allocation ↔ Occupancy Ownership Split | ACCEPTED | 2026-06-26 | OQ-05 |
+| CD-015 | CheckIn/CheckOut Module Boundary | ACCEPTED | 2026-07-01 | OQ-06 |
 | CD-016 | Voucher Eligibility Ownership | ACCEPTED | 2026-07-01 | OQ-07 |
 | CD-017 | Reporting Projection Boundary | ACCEPTED | 2026-07-01 | OQ-08 |
 
-
 ---
 
-## Open Boundary Questions (Remaining)
+## Open Boundary Questions (Post-Closure Audit)
 
 | ID | Question | Priority | Next Action |
 | -- | -------- | -------- | ----------- |
 | OQ-06 | Is check-in / check-out inside Allocation, or a separate context? | Medium | CLOSED by CD-015 |
 | OQ-07 | Where does voucher eligibility ownership live? | Medium | CLOSED by CD-016 |
 | OQ-08 | What is the reporting projection boundary / read-model scope? | Medium | CLOSED by CD-017 |
-
 
 ---
 
@@ -203,7 +202,6 @@ Without this document § `## Governance Decision Authority Map`, ownership canno
 | OQ-06 | Open Question | `dormsys-architecture.md:79-84`; `system-flow.md:180-182` → CheckIn/CheckOut operational transitions separated from assignment authority | CD-014 did not originally promote CheckIn to active inventory | Medium | CLOSED (CD-015) |
 | OQ-07 | Open Question | `spec08` planning evidence; Voucher issuance lifecycle belongs to Voucher domain rules | Eligibility trigger may originate upstream, but ownership was unresolved | Medium | CLOSED (CD-016) |
 | OQ-08 | Open Question | Constitution constraints + context map reporting rule → Reporting is read-only cross-boundary projection consumer | Projection/read-model boundary was unspecified | Medium | CLOSED (CD-017) |
-
 
 ---
 
@@ -614,7 +612,7 @@ Request
 - Lines 77-78, 324 → OQ-01, CD-012
 - Lines 80-81, 377, 379 → OQ-03, CD-010
 - Lines 83, 86, 393 → OQ-04, CD-011
-- Lines 79-84 → OQ-05, CD-014
+- Lines 79-84 → OQ-05, OQ-06, CD-014, CD-015
 
 **hist03.md**
 
@@ -634,7 +632,7 @@ Request
 
 - Lines 78, 351 → CONF-DEP-01, CD-009
 - Lines 253, 365-367 → OQ-04, CD-011
-- Lines 180-182, 204, 205, 297, 463 → OQ-05, CD-014
+- Lines 180-182, 204, 205, 297, 463 → OQ-05, OQ-06, CD-014, CD-015
 
 **context-map.md**
 
@@ -642,11 +640,19 @@ Request
 - R2 → OQ-02, CD-013
 - R3 → OQ-03, CD-010
 - R4 → OQ-04, CD-011
-- R7 → OQ-05, CD-014
+- R7 → OQ-05, OQ-06, CD-014, CD-015
+- R8 → OQ-07, CD-016
+- R11 → OQ-08, CD-017
 
 ---
 
 ## Change Log
+
+### 2.8.1 — 2026-07-01 (documentation synchronization remediation)
+
+- Updated Evidence Traceability Index for CD-015, CD-016, CD-017 and OQ-06, OQ-07, OQ-08.
+- Normalized date metadata format (`2026/07/01`).
+- Editorial only — no decision or boundary changes.
 
 ### 2.8.0 — 2026-07-01
 
