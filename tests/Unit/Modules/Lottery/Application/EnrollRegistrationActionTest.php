@@ -16,6 +16,7 @@ use App\Modules\Lottery\Domain\Exceptions\RegistrationClosedException;
 use App\Modules\Lottery\Domain\Models\LotteryProgram;
 use App\Modules\Lottery\Domain\Models\LotteryRegistration;
 use App\Modules\Lottery\Domain\States\DraftState;
+use App\Modules\Lottery\Domain\States\RegistrationClosedState;
 use App\Modules\Lottery\Domain\States\RegistrationOpenState;
 use App\Modules\Lottery\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Lottery\Domain\ValueObjects\EmployeeReferenceId;
@@ -66,11 +67,56 @@ class EnrollRegistrationActionTest extends TestCase
     }
 
     #[Test]
-    public function it_rejects_duplicate_enrollment_for_same_request(): void
+    public function it_rejects_enrollment_when_program_closes_before_transaction_persists(): void
     {
         $programId = LotteryProgramId::fromString(UuidGenerator::uuid7());
         $requestId = RequestReferenceId::fromString(UuidGenerator::uuid7());
         $dormitoryId = DormitorySiteId::fromString(UuidGenerator::uuid7());
+        $employeeId = UuidGenerator::uuid7();
+
+        $openProgram = $this->openProgram($programId, $dormitoryId);
+        $closedProgram = new LotteryProgram(
+            id: $programId,
+            title: $openProgram->title,
+            dormitoryId: $dormitoryId,
+            capacity: $openProgram->capacity,
+            registrationStartsAt: $openProgram->registrationStartsAt,
+            registrationEndsAt: $openProgram->registrationEndsAt,
+            status: RegistrationClosedState::$name,
+        );
+
+        $programs = Mockery::mock(LotteryProgramRepositoryContract::class);
+        $programs->shouldReceive('findById')->once()->with($programId)->andReturn($openProgram);
+        $programs->shouldReceive('findByIdForUpdate')->once()->with($programId)->andReturn($closedProgram);
+        $this->app->instance(LotteryProgramRepositoryContract::class, $programs);
+
+        $requests = Mockery::mock(LotteryRequestReadPort::class);
+        $requests->shouldReceive('findApprovedLotteryRegistration')
+            ->once()
+            ->with($requestId)
+            ->andReturn(new ApprovedLotteryRequestDTO(
+                requestId: $requestId->value,
+                employeeId: $employeeId,
+                dormitoryId: $dormitoryId->value,
+            ));
+        $this->app->instance(LotteryRequestReadPort::class, $requests);
+
+        $registrations = Mockery::mock(LotteryRegistrationRepositoryContract::class);
+        $registrations->shouldNotReceive('save');
+        $this->app->instance(LotteryRegistrationRepositoryContract::class, $registrations);
+
+        $this->expectException(RegistrationClosedException::class);
+
+        app(EnrollRegistrationAction::class)->execute($programId, $requestId);
+    }
+
+    #[Test]
+    public function it_rejects_duplicate_enrollment_for_same_request_inside_transaction(): void
+    {
+        $programId = LotteryProgramId::fromString(UuidGenerator::uuid7());
+        $requestId = RequestReferenceId::fromString(UuidGenerator::uuid7());
+        $dormitoryId = DormitorySiteId::fromString(UuidGenerator::uuid7());
+        $employeeId = UuidGenerator::uuid7();
 
         $program = $this->openProgram($programId, $dormitoryId);
         $existing = LotteryRegistration::enroll(
@@ -82,13 +128,26 @@ class EnrollRegistrationActionTest extends TestCase
 
         $programs = Mockery::mock(LotteryProgramRepositoryContract::class);
         $programs->shouldReceive('findById')->once()->with($programId)->andReturn($program);
+        $programs->shouldReceive('findByIdForUpdate')->once()->with($programId)->andReturn($program);
         $this->app->instance(LotteryProgramRepositoryContract::class, $programs);
+
+        $requests = Mockery::mock(LotteryRequestReadPort::class);
+        $requests->shouldReceive('findApprovedLotteryRegistration')
+            ->once()
+            ->with($requestId)
+            ->andReturn(new ApprovedLotteryRequestDTO(
+                requestId: $requestId->value,
+                employeeId: $employeeId,
+                dormitoryId: $dormitoryId->value,
+            ));
+        $this->app->instance(LotteryRequestReadPort::class, $requests);
 
         $registrations = Mockery::mock(LotteryRegistrationRepositoryContract::class);
         $registrations->shouldReceive('findByProgramAndRequest')
             ->once()
             ->with($programId, $requestId)
             ->andReturn($existing);
+        $registrations->shouldNotReceive('save');
         $this->app->instance(LotteryRegistrationRepositoryContract::class, $registrations);
 
         $this->expectException(DuplicateEnrollmentException::class);
@@ -105,7 +164,6 @@ class EnrollRegistrationActionTest extends TestCase
 
         $program = $this->openProgram($programId, $dormitoryId);
         $this->mockProgramRepository($program);
-        $this->mockRegistrationRepository(null);
 
         $requests = Mockery::mock(LotteryRequestReadPort::class);
         $requests->shouldReceive('findApprovedLotteryRegistration')
@@ -128,7 +186,6 @@ class EnrollRegistrationActionTest extends TestCase
 
         $program = $this->openProgram($programId, $dormitoryId);
         $this->mockProgramRepository($program);
-        $this->mockRegistrationRepository(null);
 
         $requests = Mockery::mock(LotteryRequestReadPort::class);
         $requests->shouldReceive('findApprovedLotteryRegistration')
@@ -157,8 +214,7 @@ class EnrollRegistrationActionTest extends TestCase
         $dormitoryId = DormitorySiteId::fromString(UuidGenerator::uuid7());
 
         $program = $this->openProgram($programId, $dormitoryId);
-        $this->mockProgramRepository($program);
-        $this->mockRegistrationRepository(null);
+        $this->mockProgramRepository($program, forUpdate: true);
 
         $requests = Mockery::mock(LotteryRequestReadPort::class);
         $requests->shouldReceive('findApprovedLotteryRegistration')
@@ -214,13 +270,21 @@ class EnrollRegistrationActionTest extends TestCase
         );
     }
 
-    private function mockProgramRepository(LotteryProgram $program): void
+    private function mockProgramRepository(LotteryProgram $program, bool $forUpdate = false): void
     {
         $programs = Mockery::mock(LotteryProgramRepositoryContract::class);
         $programs->shouldReceive('findById')
             ->once()
             ->with($program->requireId())
             ->andReturn($program);
+
+        if ($forUpdate) {
+            $programs->shouldReceive('findByIdForUpdate')
+                ->once()
+                ->with($program->requireId())
+                ->andReturn($program);
+        }
+
         $this->app->instance(LotteryProgramRepositoryContract::class, $programs);
     }
 
