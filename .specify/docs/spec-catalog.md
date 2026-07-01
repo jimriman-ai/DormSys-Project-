@@ -1,8 +1,8 @@
 # DormSys Spec Catalog
 
-**Version:** 1.0.7 (spec05 implementation authorization)  
+**Version:** 1.0.8 (governance drift sync — OQ-06..08 closure)  
 **Status:** Hard Freeze — Operational  
-**Last Updated:** 1405/04/02 | 2026/06/23  
+**Last Updated:** 1405/04/10 | 2026/07/01  
 **Related Documents:** [`catalog-decisions.md`](catalog-decisions.md), [`context-map.md`](context-map.md), [`playbook/specification-playbook.md`](playbook/specification-playbook.md)
 
 ---
@@ -51,8 +51,11 @@ Boundary decisions recorded in [`catalog-decisions.md`](catalog-decisions.md) su
 | OQ-03 | CD-010 — Request owns approval state; Workflow owns transition rules (deferred) | `spec05`, Workflow |
 | OQ-04 | CD-011 — Lottery owns all lottery rules and lifecycle | `spec06` |
 | OQ-05 | CD-014 — Allocation and Occupancy split across Allocation, Dormitory, CheckIn/CheckOut | `spec04`, `spec07` |
+| OQ-06 | CD-015 — CheckIn/CheckOut promoted to active operational boundary | `spec07` |
+| OQ-07 | CD-016 — Voucher owns eligibility and issuance lifecycle | `spec08` |
+| OQ-08 | CD-017 — Reporting remains read-only cross-domain projection consumer | `spec11` |
 
-**Remaining open boundary questions:** OQ-06 (`spec07`), OQ-07 (`spec08`), OQ-08 (`spec11`) — documented, non-blocking for Hard Freeze (see Acceptance Record below).
+**All catalog-level boundary questions (OQ-01 through OQ-08) are closed.** See [`catalog-decisions.md`](catalog-decisions.md) Decision Index.
 
 ---
 
@@ -67,7 +70,7 @@ Boundary decisions recorded in [`catalog-decisions.md`](catalog-decisions.md) su
 | -- | ----------- | ------ |
 | OQ-01 | Must be CLOSED before spec authoring | ✅ Closed (CD-012) |
 | OQ-02 | Must be CLOSED before spec authoring | ✅ Closed — Current Scope (CD-013) |
-| OQ-03 … OQ-08 | Not required closed; must remain documented | ✅ Documented (OQ-03…OQ-05 closed; OQ-06…OQ-08 open) |
+| OQ-03 … OQ-08 | Not required closed at Hard Freeze gate; must remain documented | ✅ Closed (CD-010 … CD-017) |
 
 > *Playbook criterion (verbatim):* Only OQs that are **critical for the Boundary** (OQ-01, OQ-02) must be closed before writing the spec. Other OQs may be carried inside the spec in documented form.
 
@@ -75,22 +78,22 @@ Boundary decisions recorded in [`catalog-decisions.md`](catalog-decisions.md) su
 
 OQ-03 through OQ-05 were closed before Hard Freeze (CD-010, CD-011, CD-014). CONF-DEP-01 closed (CD-009). This exceeds the mandatory gate.
 
-### Non-blocking deferred OQs
+### Post-Hard-Freeze boundary closures (CD-015 … CD-017)
 
-| OQ | Topic | Documented in |
-| -- | ----- | ------------- |
-| OQ-06 | CheckIn/CheckOut module boundary | `spec07`, catalog-decisions, context-map, playbook §IX |
-| OQ-07 | Voucher eligibility ownership | `spec08`, catalog-decisions, context-map, playbook §IX |
-| OQ-08 | Reporting projection scope | `spec11`, catalog-decisions, context-map, playbook §IX |
+| OQ | Topic | Closed by | Documented in |
+| -- | ----- | --------- | ------------- |
+| OQ-06 | CheckIn/CheckOut module boundary | CD-015 | `spec07`, catalog-decisions, context-map |
+| OQ-07 | Voucher eligibility ownership | CD-016 | `spec08`, catalog-decisions, context-map |
+| OQ-08 | Reporting projection scope | CD-017 | `spec11`, catalog-decisions, context-map |
 
 ### Cross-document consistency (verified at freeze)
 
 | Document | Version |
 | -------- | ------- |
-| `catalog-decisions.md` | v2.2.0 |
-| `context-map.md` | v0.3 |
-| `spec-catalog.md` | v1.0.0 (Hard Freeze) |
-| `specification-playbook.md` | v1.1.0 |
+| `catalog-decisions.md` | v2.8.1 |
+| `context-map.md` | v0.4.1 |
+| `spec-catalog.md` | v1.0.8 |
+| `specification-playbook.md` | v1.1.1 |
 
 ### Wave 1A status snapshot
 
@@ -106,7 +109,7 @@ Status columns below are informational summaries only. They do not define govern
 ### Out of scope for this freeze (not blockers)
 
 - `spec01` implementation alignment debt — **resolved (2026-06-26):** `/api/health` contract; `getId()` rejects unassigned UUID only (creation-time assignment compatible with CD-012).
-- `spec07`–`spec11` — remain Planned until their boundary OQs are resolved or carried in spec.
+- `spec07`–`spec11` — remain Planned; boundary questions closed (CD-015 … CD-017); implementation not authorized.
 
 ### Reopening policy
 
@@ -124,11 +127,11 @@ Any change to a closed OQ or bounded-context boundary requires a new entry in `c
 | `spec04` | **Accommodation Resource** | Dormitories, buildings, rooms, beds, and physical accommodation capacity/availability structures | `Dormitory` | `spec01` | **Planning Authorized** | Explicit | **Open (planning):** building/floor hierarchy — resolve during spec04 authoring. **Decided (CD-014):** owns physical room/bed occupancy state; Allocation drives updates via events. **Hold:** implementation until separate authorization. |
 | `spec05` | **Request Management** | Accommodation request submission, request lifecycle, and request-level approval state/history | `Request` | `spec01`, `spec02`, `spec03` | **Implementation Authorized** | Explicit + Inferred | **Authorized:** T001–T052 per [`handoff/spec05-implementation-authorization.md`](handoff/spec05-implementation-authorization.md). Tag `spec05-design-approved` @ `6ce0e94`; tasks @ `61e2a48`. **CD-009/010/013** frozen. **Hold:** spec03 US3 for Wave 1B; spec04 impl unchanged. |
 | `spec06` | **Lottery Selection** | Lottery programs, registrations, draw execution, scoring, and result production | `Lottery` | `spec01`, `spec05` | Planned | Explicit + Inferred | **Decided (CD-011):** Lottery owns all lottery rules, lifecycle, and results; emits proposed allocations to Allocation. |
-| `spec07` | **Allocation & Occupancy** | Assign rooms/beds (Allocation BC); coordinate physical occupancy (Dormitory) and operational stay transitions (CheckIn/CheckOut) | `Allocation` (+ coordination with `Dormitory`, candidate `CheckIn/CheckOut`) | `spec01`, `spec04`, `spec05`, `spec06` | Planned | Explicit + Inferred | **Decided (CD-014):** Allocation owns assignment authority; Dormitory owns physical state; occupancy is cross-cutting. **Open (OQ-06):** Is CheckIn/CheckOut a separate module within this delivery spec, or folded into Allocation? |
-| `spec08` | **External Accommodation** | Voucher/external-stay handling when internal capacity cannot satisfy accommodation demand | `Voucher` | `spec01`, `spec05`, `spec06` | Planned | Inferred | **Open (OQ-07):** What is the exact boundary between failed internal allocation, lottery outcome, and external accommodation eligibility? |
+| `spec07` | **Allocation & Occupancy** | Assign rooms/beds (Allocation BC); coordinate physical occupancy (Dormitory) and operational stay transitions (CheckIn/CheckOut) | `Allocation`, `Dormitory`, `CheckIn/CheckOut` (spec07 program) | `spec01`, `spec04`, `spec05`, `spec06` | Planned | Explicit + Inferred | **Decided (CD-014):** Allocation owns assignment authority; Dormitory owns physical state. **Decided (CD-015):** CheckIn/CheckOut is an active operational boundary within spec07. |
+| `spec08` | **External Accommodation** | Voucher/external-stay handling when internal capacity cannot satisfy accommodation demand | `Voucher` | `spec01`, `spec05`, `spec06` | Planned | Inferred | **Decided (CD-016):** Voucher owns eligibility evaluation and issuance lifecycle; upstream contexts supply triggering facts only. |
 | `spec09` | **Notification** | Shared delivery capability for system notifications such as email, SMS, and in-app alerts | Cross-cutting Capability | `spec01` | Planned | Provisional | Is Notification only an infrastructure delivery mechanism, or does DormSys need a domain-aware notification policy layer later? |
 | `spec10` | **Audit** | Immutable audit trail, activity logging, and compliance-oriented traceability across critical actions | Cross-cutting Capability | `spec01` | Planned | Explicit + Inferred | Should audit remain purely technical logging, or evolve to include domain audit semantics per module? |
-| `spec11` | **Reporting** | Read models, operational reports, and management-facing projections for analysis and decision support | Cross-cutting / Provisional | `spec01`, implemented business specs as needed | Planned | Explicit + Provisional | **Open (OQ-08):** Does Reporting remain projection-based inside the monolith, or later evolve toward a richer analytics/KPI boundary? |
+| `spec11` | **Reporting** | Read models, operational reports, and management-facing projections for analysis and decision support | Cross-cutting / Provisional | `spec01`, implemented business specs as needed | Planned | Explicit + Provisional | **Decided (CD-017):** Reporting remains a read-only cross-domain projection consumer; no write authority over upstream domain state. |
 
 ---
 
@@ -170,7 +173,7 @@ Notes:
 - `Notification` should not drive core domain modeling; it should follow domain events and operational outcomes.
 - `Reporting` should be shaped by actual implemented read-model needs, not speculative analytics abstractions.
 - `Workflow Engine` remains outside the active implementation sequence until activation criteria are met (**CD-010** boundary applies at activation).
-- `spec07` delivery spans Allocation assignment plus coordination with `spec04` (Dormitory) per **CD-014**; resolve **OQ-06** during `spec07` planning.
+- `spec07` delivery spans Allocation assignment plus coordination with `spec04` (Dormitory) and `CheckIn/CheckOut` per **CD-014** and **CD-015**.
 
 ---
 
@@ -193,7 +196,7 @@ Any later change must follow this rule set:
 The mandatory Hard Freeze gate is satisfied:
 
 - OQ-01 and OQ-02 are closed.
-- OQ-06, OQ-07, and OQ-08 remain open but documented across all governance documents.
+- OQ-01 through OQ-08 are closed (CD-009 through CD-017).
 - Cross-document consistency verified (see Acceptance Record).
 - Wave 1A (`spec02`, `spec03`) authorized.
 
@@ -203,6 +206,12 @@ This catalog is the controlling operational reference for downstream `spec.md`, 
 
 ---
 ## Change Log
+
+### 1.0.8 — 2026-07-01 (governance drift sync)
+
+- Closed OQ-06 (CD-015), OQ-07 (CD-016), OQ-08 (CD-017) in catalog mirrors.
+- Updated Spec Inventory bounded-context and Open Questions columns for spec07..spec11.
+- Editorial only — no architecture decision changes.
 
 ### 1.0.7 — 2026-06-23 (spec05 implementation authorization)
 
