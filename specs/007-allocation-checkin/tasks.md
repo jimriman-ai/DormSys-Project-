@@ -136,16 +136,16 @@ Phase 0 (Design artifacts)
 
 **Independent Test**: Assign person to bed for valid date range → persist; second overlapping assignment for same person rejected.
 
-- [ ] T029 [US1] Implement `CreateAllocationAction` in `app/Modules/Allocation/Application/Services/CreateAllocationAction.php` — validate bed ref and date range; persist allocation + items
-- [ ] T030 [US1] Implement `ReleaseAllocationAction` in `app/Modules/Allocation/Application/Services/ReleaseAllocationAction.php` — terminal release with reason
-- [ ] T031 [US1] Enforce person-level date-range overlap in `CreateAllocationAction` — catch `AllocationOverlapException` from exclusion constraint
-- [ ] T032 [P] [US1] Create domain events `AllocationCreated`, `AllocationReleased` in `app/Modules/Allocation/Domain/Events/` — extend `BaseEvent` with `EVENT_NAME` / `VERSION`
-- [ ] T033 [P] [US1] Unit test `tests/Unit/Modules/Allocation/Domain/AllocationOverlapTest.php` — non-overlapping ranges allowed; overlapping rejected
-- [ ] T034 [US1] Feature test `tests/Feature/Modules/Allocation/CreateAllocationTest.php` — happy path assign + release
-- [ ] T035 [P] [US1] Unit test `tests/Unit/Modules/Allocation/Application/ReleaseAllocationTest.php` — invalid release transitions rejected
-- [ ] T036 [US1] Wire `CreateAllocationAction` and `ReleaseAllocationAction` in `AllocationServiceProvider.php`
-- [ ] T037 [P] [US1] Add `RecordsActivity` configuration on `AllocationModel` for assign/release operations
-- [ ] T038 [P] [US1] Document `AllocationMethod` enum usage in `app/Modules/Allocation/README.md` — manual vs lottery-sourced vs request-sourced (architecture-level only)
+- [x] T029 [US1] Implement `CreateAllocationAction` in `app/Modules/Allocation/Application/Services/CreateAllocationAction.php` — validate bed ref and date range; persist allocation + items
+- [x] T030 [US1] Implement `ReleaseAllocationAction` in `app/Modules/Allocation/Application/Services/ReleaseAllocationAction.php` — terminal release with reason
+- [x] T031 [US1] Enforce person-level date-range overlap in `CreateAllocationAction` — catch `AllocationOverlapException` from exclusion constraint
+- [x] T032 [P] [US1] Create domain events `AllocationCreated`, `AllocationReleased` in `app/Modules/Allocation/Domain/Events/` — extend `BaseEvent` with `EVENT_NAME` / `VERSION`
+- [x] T033 [P] [US1] Unit test `tests/Unit/Modules/Allocation/Domain/AllocationOverlapTest.php` — non-overlapping ranges allowed; overlapping rejected
+- [x] T034 [US1] Feature test `tests/Feature/Modules/Allocation/CreateAllocationTest.php` — happy path assign + release
+- [x] T035 [P] [US1] Unit test `tests/Unit/Modules/Allocation/Application/ReleaseAllocationTest.php` — invalid release transitions rejected
+- [x] T036 [US1] Wire `CreateAllocationAction` and `ReleaseAllocationAction` in `AllocationServiceProvider.php`
+- [x] T037 [P] [US1] Add `RecordsActivity` configuration on `AllocationModel` for assign/release operations
+- [x] T038 [P] [US1] Document `AllocationMethod` enum usage in `app/Modules/Allocation/README.md` — manual vs lottery-sourced vs request-sourced (architecture-level only)
 
 **Checkpoint**: US1 acceptance — assignment and release without upstream or Dormitory adapters.
 
@@ -157,13 +157,13 @@ Phase 0 (Design artifacts)
 
 **Independent Test**: Build allocation from `RequestReadContract` summary and from `ProposedAllocationPort` payload — no Request/Lottery Infrastructure imports.
 
-- [ ] T039 [US2] Create `RequestReadAdapter` in `app/Modules/Allocation/Infrastructure/Adapters/RequestReadAdapter.php` binding `App\Modules\Request\Application\Contracts\RequestReadContract`
-- [ ] T040 [US2] Create `LotteryResultReadAdapter` in `app/Modules/Allocation/Infrastructure/Adapters/LotteryResultReadAdapter.php` binding `App\Modules\Lottery\Application\Contracts\LotteryResultReadContract`
-- [ ] T041 [US2] Create `ProposedAllocationConsumer` in `app/Modules/Allocation/Application/Services/ProposedAllocationConsumer.php` — map `ProposedAllocationPort` payloads to `CreateAllocationAction`
-- [ ] T042 [US2] Implement `CreateAllocationFromRequestAction` in `app/Modules/Allocation/Application/Services/CreateAllocationFromRequestAction.php` — approved accommodation requests only
-- [ ] T043 [P] [US2] Feature test `tests/Feature/Modules/Allocation/RequestDrivenAllocationTest.php` — allocation from Request fixture via read contract
-- [ ] T044 [P] [US2] Feature test `tests/Feature/Modules/Allocation/LotteryDrivenAllocationTest.php` — allocation from lottery proposed payload stub
-- [ ] T045 [US2] Register upstream adapters in `AllocationServiceProvider.php` — no cross-module Eloquent
+- [x] T039 [US2] Create `RequestReadAdapter` in `app/Modules/Allocation/Infrastructure/Adapters/RequestReadAdapter.php` binding `App\Modules\Request\Application\Contracts\RequestReadContract`
+- [x] T040 [US2] Create `LotteryResultReadAdapter` in `app/Modules/Allocation/Infrastructure/Adapters/LotteryResultReadAdapter.php` binding `App\Modules\Lottery\Application\Contracts\LotteryResultReadContract`
+- [x] T041 [US2] Create `ProposedAllocationConsumer` in `app/Modules/Allocation/Application/Services/ProposedAllocationConsumer.php` — map `ProposedAllocationPort` payloads to `CreateAllocationAction`
+- [x] T042 [US2] Implement `CreateAllocationFromRequestAction` in `app/Modules/Allocation/Application/Services/CreateAllocationFromRequestAction.php` — approved accommodation requests only
+- [x] T043 [P] [US2] Feature test `tests/Feature/Modules/Allocation/RequestDrivenAllocationTest.php` — allocation from Request fixture via read contract
+- [x] T044 [P] [US2] Feature test `tests/Feature/Modules/Allocation/LotteryDrivenAllocationTest.php` — allocation from lottery proposed payload stub
+- [x] T045 [US2] Register upstream adapters in `AllocationServiceProvider.php` — no cross-module Eloquent
 
 **Checkpoint**: US2 acceptance — assignment creatable from upstream read ports only.
 
