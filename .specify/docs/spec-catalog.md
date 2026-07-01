@@ -1,6 +1,6 @@
 # DormSys Spec Catalog
 
-**Version:** 1.0.8 (governance drift sync — OQ-06..08 closure)  
+**Version:** 1.0.9 (spec07 implementation authorization)  
 **Status:** Hard Freeze — Operational  
 **Last Updated:** 1405/04/10 | 2026/07/01  
 **Related Documents:** [`catalog-decisions.md`](catalog-decisions.md), [`context-map.md`](context-map.md), [`playbook/specification-playbook.md`](playbook/specification-playbook.md)
@@ -105,11 +105,13 @@ Status columns below are informational summaries only. They do not define govern
 | `spec03` Employee Context | **MVP Implemented — Wave 1A** (US1 / T001–T026a) · **Wave 1B Completed (US2)** (T027–T034) |
 | `spec04` Accommodation Resource | **Planning Authorized** (implementation not authorized) |
 | `spec05` Request Management | **Implementation Authorized** (T001–T052; tag `spec05-design-approved`) |
+| `spec07` Allocation & Occupancy | **Implementation Authorized** — Wave 1A (T006–T052) |
 
 ### Out of scope for this freeze (not blockers)
 
 - `spec01` implementation alignment debt — **resolved (2026-06-26):** `/api/health` contract; `getId()` rejects unassigned UUID only (creation-time assignment compatible with CD-012).
-- `spec07`–`spec11` — remain Planned; boundary questions closed (CD-015 … CD-017); implementation not authorized.
+- `spec08`–`spec11` — remain Planned; boundary questions closed (CD-015 … CD-017); implementation not authorized.
+- `spec07` Wave 1B (T053–T074) — not authorized; see [`handoff/spec07-implementation-authorization.md`](handoff/spec07-implementation-authorization.md).
 
 ### Reopening policy
 
@@ -127,7 +129,7 @@ Any change to a closed OQ or bounded-context boundary requires a new entry in `c
 | `spec04` | **Accommodation Resource** | Dormitories, buildings, rooms, beds, and physical accommodation capacity/availability structures | `Dormitory` | `spec01` | **Planning Authorized** | Explicit | **Open (planning):** building/floor hierarchy — resolve during spec04 authoring. **Decided (CD-014):** owns physical room/bed occupancy state; Allocation drives updates via events. **Hold:** implementation until separate authorization. |
 | `spec05` | **Request Management** | Accommodation request submission, request lifecycle, and request-level approval state/history | `Request` | `spec01`, `spec02`, `spec03` | **Implementation Authorized** | Explicit + Inferred | **Authorized:** T001–T052 per [`handoff/spec05-implementation-authorization.md`](handoff/spec05-implementation-authorization.md). Tag `spec05-design-approved` @ `6ce0e94`; tasks @ `61e2a48`. **CD-009/010/013** frozen. **Hold:** spec03 US3 for Wave 1B; spec04 impl unchanged. |
 | `spec06` | **Lottery Selection** | Lottery programs, registrations, draw execution, scoring, and result production | `Lottery` | `spec01`, `spec05` | Planned | Explicit + Inferred | **Decided (CD-011):** Lottery owns all lottery rules, lifecycle, and results; emits proposed allocations to Allocation. |
-| `spec07` | **Allocation & Occupancy** | Assign rooms/beds (Allocation BC); coordinate physical occupancy (Dormitory) and operational stay transitions (CheckIn/CheckOut) | `Allocation`, `Dormitory`, `CheckIn/CheckOut` (spec07 program) | `spec01`, `spec04`, `spec05`, `spec06` | Planned | Explicit + Inferred | **Decided (CD-014):** Allocation owns assignment authority; Dormitory owns physical state. **Decided (CD-015):** CheckIn/CheckOut is an active operational boundary within spec07. |
+| `spec07` | **Allocation & Occupancy** | Assign rooms/beds (Allocation BC); coordinate physical occupancy (Dormitory) and operational stay transitions (CheckIn/CheckOut) | `Allocation`, `Dormitory`, `CheckIn/CheckOut` (spec07 program) | `spec01`, `spec04`, `spec05`, `spec06` | **Implementation Authorized** | Explicit + Inferred | **Authorized:** Wave 1A T006–T052 per [`handoff/spec07-implementation-authorization.md`](handoff/spec07-implementation-authorization.md). **CD-014/CD-015** frozen. **Hold:** T053–T074 (Wave 1B); spec04 impl; Voucher/Reporting/Notification. |
 | `spec08` | **External Accommodation** | Voucher/external-stay handling when internal capacity cannot satisfy accommodation demand | `Voucher` | `spec01`, `spec05`, `spec06` | Planned | Inferred | **Decided (CD-016):** Voucher owns eligibility evaluation and issuance lifecycle; upstream contexts supply triggering facts only. |
 | `spec09` | **Notification** | Shared delivery capability for system notifications such as email, SMS, and in-app alerts | Cross-cutting Capability | `spec01` | Planned | Provisional | Is Notification only an infrastructure delivery mechanism, or does DormSys need a domain-aware notification policy layer later? |
 | `spec10` | **Audit** | Immutable audit trail, activity logging, and compliance-oriented traceability across critical actions | Cross-cutting Capability | `spec01` | Planned | Explicit + Inferred | Should audit remain purely technical logging, or evolve to include domain audit semantics per module? |
@@ -206,6 +208,13 @@ This catalog is the controlling operational reference for downstream `spec.md`, 
 
 ---
 ## Change Log
+
+### 1.0.9 — 2026-07-01 (spec07 implementation authorization)
+
+- **spec07 implementation authorized** — Wave 1A T006–T052; see [`handoff/spec07-implementation-authorization.md`](handoff/spec07-implementation-authorization.md).
+- Baseline: design handoff [`spec07-design-approved.md`](handoff/spec07-design-approved.md); tasks @ `a12e32cc`.
+- Excluded: T053–T074, spec04 Dormitory implementation, Voucher, Reporting, Notification, reconciliation.
+- spec04 implementation hold unchanged; spec08–spec11 not authorized.
 
 ### 1.0.8 — 2026-07-01 (governance drift sync)
 
