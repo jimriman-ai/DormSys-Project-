@@ -4,7 +4,7 @@
 
 **Created**: 2026-07-02
 
-**Status**: **Draft — Specification baseline** (planning **not** authorized; implementation **not** authorized)
+**Status**: **Draft — Planning complete** (specification + plan baseline; implementation **not** authorized)
 
 **Catalog**: spec09 — Notification (`spec-catalog.md`)
 
@@ -235,9 +235,9 @@ As an employee with an upcoming internal dormitory check-in, I need a reminder n
 
 | ID | Item | Status |
 | -- | ---- | ------ |
-| **UD-09** | Cross-boundary **notification intent** payload contract (fields, correlation rules, role-based recipient resolution) | **Open** — not resolved at specification level |
-| **UD-10** | Check-in reminder scheduling trigger ownership and timing rules (1 day before; timezone/Jalali presentation) | **Open** — delivery in scope; scheduler contract deferred |
-| **UD-11** | Notification retention and archival policy (inbox history duration) | **Open** — FR-013 requires retention; exact policy not specified here |
+| **UD-09** | Cross-boundary **notification intent** payload contract | **Resolved** — [plan.md](./plan.md) §4; [contracts/notification-intent-dto.md](./contracts/notification-intent-dto.md) |
+| **UD-10** | Check-in reminder scheduling trigger ownership and timing | **Resolved** — CheckIn scheduler; [contracts/check-in-reminder-scheduler-port.md](./contracts/check-in-reminder-scheduler-port.md) |
+| **UD-11** | Notification retention and archival policy | **Resolved** — 24-month soft-archive; [data-model.md](./data-model.md) |
 
 ---
 
