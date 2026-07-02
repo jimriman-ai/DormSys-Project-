@@ -105,12 +105,12 @@ Derived from [plan.md](./plan.md) planning clusters (PC-01–PC-08). No new clus
 
 **Independent test**: External-winner trigger facts after draw → evaluation and issuance without physical bed assignment.
 
-- [ ] T018 [US3] Process external lottery winner trigger facts supplied after draw completion — **FR-006**, **OA-08-03**, **BR-09**
-- [ ] T019 [US3] Evaluate and issue vouchers for winners up to program capacity — **FR-004**, **SC-001**
-- [ ] T020 [US3] Ensure external lottery processing stores no room or bed identifiers — **BR-12**
-- [ ] T021 [US3] Reject or ignore trigger facts intended for internal dormitory programs — **FR-005**, **BR-13**
+- [x] T018 [US3] Process external lottery winner trigger facts supplied after draw completion — **FR-006**, **OA-08-03**, **BR-09**
+- [x] T019 [US3] Evaluate and issue vouchers for winners up to program capacity — **FR-004**, **SC-001**
+- [x] T020 [US3] Ensure external lottery processing stores no room or bed identifiers — **BR-12**
+- [x] T021 [US3] Reject or ignore trigger facts intended for internal dormitory programs — **FR-005**, **BR-13**
 
-**Checkpoint**: US3 independently testable — lottery trigger path end-to-end at behavior level.
+**Checkpoint**: US3 independently testable — lottery trigger path end-to-end at behavior level. — **CP-W4**: PASS
 
 ---
 
@@ -120,12 +120,12 @@ Derived from [plan.md](./plan.md) planning clusters (PC-01–PC-08). No new clus
 
 **Independent test**: Winner decline → reserve promotion trigger → reserve evaluation and issuance; prior active voucher superseded or cancelled.
 
-- [ ] T022 [US4] Accept reserve promotion trigger facts for external lottery programs — **FR-010**, **BR-10**
-- [ ] T023 [US4] Cancel or supersede active winner voucher before reserve issuance when still active — **FR-010**, **FR-003**
-- [ ] T024 [US4] Evaluate and issue voucher for next eligible reserve — **FR-010**, **SC-006**
-- [ ] T025 [US4] Complete promotion with explicit no-issuance outcome and transition record when no eligible reserves remain — **FR-010**, **FR-013**
+- [x] T022 [US4] Accept reserve promotion trigger facts for external lottery programs — **FR-010**, **BR-10**
+- [x] T023 [US4] Cancel or supersede active winner voucher before reserve issuance when still active — **FR-010**, **FR-003**
+- [x] T024 [US4] Evaluate and issue voucher for next eligible reserve — **FR-010**, **SC-006**
+- [x] T025 [US4] Complete promotion with explicit no-issuance outcome and transition record when no eligible reserves remain — **FR-010**, **FR-013**
 
-**Checkpoint**: US4 independently testable — reserve promotion without redefining Lottery reserve ownership.
+**Checkpoint**: US4 independently testable — reserve promotion without redefining Lottery reserve ownership. — **CP-W5**: PASS
 
 ---
 
@@ -135,11 +135,11 @@ Derived from [plan.md](./plan.md) planning clusters (PC-01–PC-08). No new clus
 
 **Independent test**: View issued voucher by employee or code — no state change.
 
-- [ ] T026 [P] [US5] Allow employee to view own active and historical vouchers with code, dormitory reference, validity period, and state — **FR-014**, **SC-004**
-- [ ] T027 [P] [US5] Allow authorized operator to search voucher by code for verification — **FR-014**
-- [ ] T028 [US5] Ensure all inquiry paths return read-only results with no lifecycle mutation — **FR-014**, **CD-017**
+- [x] T026 [P] [US5] Allow employee to view own active and historical vouchers with code, dormitory reference, validity period, and state — **FR-014**, **SC-004**
+- [x] T027 [P] [US5] Allow authorized operator to search voucher by code for verification — **FR-014**
+- [x] T028 [US5] Ensure all inquiry paths return read-only results with no lifecycle mutation — **FR-014**, **CD-017**
 
-**Checkpoint**: US5 independently testable — inquiry only.
+**Checkpoint**: US5 independently testable — inquiry only. — **CP-W6**: PASS
 
 ---
 
@@ -147,11 +147,11 @@ Derived from [plan.md](./plan.md) planning clusters (PC-01–PC-08). No new clus
 
 **Goal**: Verify frozen boundaries and carry forward open items without resolution.
 
-- [ ] T029 [B7] Verify all voucher processing consumes upstream trigger facts only — no dependency on upstream operational data ownership — **FR-006**, **SC-005**, **R8**
-- [ ] T030 [B7] Verify internal-dormitory and successful-allocation triggers do not produce voucher issuance — **FR-005**, **BR-13**
-- [ ] T031 [B7] Document that **UD-03** and **UD-08** remain open and are not resolved by this task set — plan open-questions registry
+- [x] T029 [B7] Verify all voucher processing consumes upstream trigger facts only — no dependency on upstream operational data ownership — **FR-006**, **SC-005**, **R8**
+- [x] T030 [B7] Verify internal-dormitory and successful-allocation triggers do not produce voucher issuance — **FR-005**, **BR-13**
+- [x] T031 [B7] Document that **UD-03** and **UD-08** remain open and are not resolved by this task set — plan open-questions registry
 
-**Checkpoint**: Boundary and open-item registry aligned with spec and plan.
+**Checkpoint**: Boundary and open-item registry aligned with spec and plan. — **CP-W7**: PASS
 
 ---
 

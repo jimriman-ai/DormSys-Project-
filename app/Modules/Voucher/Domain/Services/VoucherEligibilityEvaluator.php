@@ -68,6 +68,13 @@ final class VoucherEligibilityEvaluator
 
         $intent = $trigger->upstreamFacts['voucher_intent'] ?? null;
 
-        return is_string($intent) && strtolower($intent) === 'internal_assignment';
+        if (is_string($intent) && strtolower($intent) === 'internal_assignment') {
+            return true;
+        }
+
+        $allocationOutcome = $trigger->upstreamFacts['allocation_outcome'] ?? null;
+
+        return is_string($allocationOutcome)
+            && strtolower($allocationOutcome) === 'successful_internal_assignment';
     }
 }

@@ -45,4 +45,33 @@ final class VoucherLifecycleTransition
             payload: $payload,
         );
     }
+
+    /**
+     * Outcome-only audit record for reserve promotion completion (FR-013).
+     *
+     * @param  array<string, mixed>  $payload
+     */
+    public static function recordPromotionOutcome(
+        VoucherId $voucherId,
+        VoucherLifecycleState $voucherState,
+        CorrelationId $promotionCorrelationId,
+        string $promotionOutcome,
+        DateTimeImmutable $occurredAt,
+        array $payload = [],
+    ): self {
+        return new self(
+            id: null,
+            voucherId: $voucherId,
+            fromState: $voucherState,
+            toState: $voucherState,
+            correlationId: $promotionCorrelationId,
+            occurredAt: $occurredAt,
+            payload: array_merge($payload, [
+                'event_type' => 'reserve_promotion_outcome',
+                'promotion_outcome' => $promotionOutcome,
+                'promotion_correlation_id' => $promotionCorrelationId->value,
+                'voucher_state' => $voucherState->value,
+            ]),
+        );
+    }
 }

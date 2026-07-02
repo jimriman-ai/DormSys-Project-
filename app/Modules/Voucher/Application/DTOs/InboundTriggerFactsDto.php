@@ -48,6 +48,18 @@ final readonly class InboundTriggerFactsDto
     /**
      * @param  array<string, mixed>  $facts
      */
+    public static function fromReservePromotionFacts(array $facts): self
+    {
+        $enriched = array_merge($facts, [
+            'trigger_kind' => 'reserve_promotion',
+        ]);
+
+        return self::fromUpstreamFacts($enriched, TriggerSource::Lottery);
+    }
+
+    /**
+     * @param  array<string, mixed>  $facts
+     */
     private static function fromUpstreamFacts(array $facts, TriggerSource $source): self
     {
         $correlationId = self::requiredString($facts, 'correlation_id');

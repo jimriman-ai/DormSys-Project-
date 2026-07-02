@@ -12,7 +12,6 @@ use App\Modules\Voucher\Domain\Models\Voucher;
 use App\Modules\Voucher\Domain\Models\VoucherLifecycleTransition;
 use App\Modules\Voucher\Domain\ValueObjects\VoucherId;
 use DateTimeImmutable;
-use DateTimeZone;
 
 final class VoucherLifecycleAction implements VoucherLifecycleContract
 {
@@ -38,6 +37,28 @@ final class VoucherLifecycleAction implements VoucherLifecycleContract
         $archived = $voucher->archive($archivedAt);
 
         return $this->vouchers->save($archived);
+    }
+
+    public function cancel(VoucherId $voucherId, DateTimeImmutable $occurredAt): Voucher
+    {
+        $voucher = $this->requireVoucher($voucherId);
+        $fromState = $voucher->lifecycleState;
+        $cancelled = $voucher->cancel();
+        $saved = $this->vouchers->save($cancelled);
+        $this->recordTransition($saved, $fromState, VoucherLifecycleState::Cancelled, $occurredAt);
+
+        return $saved;
+    }
+
+    public function supersede(VoucherId $voucherId, DateTimeImmutable $occurredAt): Voucher
+    {
+        $voucher = $this->requireVoucher($voucherId);
+        $fromState = $voucher->lifecycleState;
+        $superseded = $voucher->supersede();
+        $saved = $this->vouchers->save($superseded);
+        $this->recordTransition($saved, $fromState, VoucherLifecycleState::Superseded, $occurredAt);
+
+        return $saved;
     }
 
     private function requireVoucher(VoucherId $voucherId): Voucher
