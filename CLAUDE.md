@@ -9,7 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at specs/009-notification-delivery/plan.md
+at specs/010-audit-trail/plan.md
 <!-- SPECKIT END -->
 
 ## Tech Stack
