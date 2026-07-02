@@ -9,6 +9,7 @@ use App\Modules\Voucher\Domain\ValueObjects\CorrelationId;
 use App\Modules\Voucher\Domain\ValueObjects\StayPeriod;
 use App\Support\Exceptions\ValidationException;
 use DateTimeImmutable;
+use DateTimeZone;
 
 /**
  * Stub intake shape — UD-03 remains open; required fields only.
@@ -104,6 +105,6 @@ final readonly class InboundTriggerFactsDto
     {
         $value = self::requiredString($facts, $key);
 
-        return new DateTimeImmutable($value);
+        return new DateTimeImmutable($value, new DateTimeZone('UTC'));
     }
 }

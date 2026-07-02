@@ -47,6 +47,13 @@ class VoucherTriggerRepository implements VoucherTriggerRepositoryContract
         return $model === null ? null : $this->toDomain($model);
     }
 
+    public function findById(TriggerId $triggerId): ?VoucherIssuanceTrigger
+    {
+        $model = VoucherIssuanceTriggerModel::query()->find($triggerId->value);
+
+        return $model === null ? null : $this->toDomain($model);
+    }
+
     public function findActiveOverlappingForEmployee(string $employeeId, StayPeriod $stayPeriod): array
     {
         $models = VoucherIssuanceTriggerModel::query()

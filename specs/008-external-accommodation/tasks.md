@@ -70,14 +70,14 @@ Derived from [plan.md](./plan.md) planning clusters (PC-01–PC-08). No new clus
 
 **Independent test**: External-dormitory lottery trigger → explicit outcome `Eligible`, `Ineligible`, or `Deferred` with rationale — upstream does not apply voucher policy.
 
-- [ ] T005 [P] [US1] Evaluate external-dormitory lottery trigger facts and produce `Eligible` outcome with recorded rationale — **FR-002**, **FR-016**
-- [ ] T006 [P] [US1] Produce `Ineligible` outcome with stable reason codes when dormitory reference is missing or not external — **FR-005**, **FR-016**, **BR-12**
-- [ ] T007 [US1] Produce `Deferred` outcome when evaluation cannot complete pending additional facts — spec evaluation vocabulary
-- [ ] T008 [US1] Apply Voucher eligibility rules when unfulfilled-accommodation trigger facts are received — upstream facts do not bypass evaluation — **FR-002**, **OA-08-07**
-- [ ] T009 [US1] Confirm external dormitory classification using accommodation catalog reference when available — **FR-016**, **OA-08-02**
-- [ ] T010 [US1] Record employee, dormitory, request, and correlation references as immutable identifiers without cross-context ownership — **FR-007**
+- [x] T005 [P] [US1] Evaluate external-dormitory lottery trigger facts and produce `Eligible` outcome with recorded rationale — **FR-002**, **FR-016**
+- [x] T006 [P] [US1] Produce `Ineligible` outcome with stable reason codes when dormitory reference is missing or not external — **FR-005**, **FR-016**, **BR-12**
+- [x] T007 [US1] Produce `Deferred` outcome when evaluation cannot complete pending additional facts — spec evaluation vocabulary
+- [x] T008 [US1] Apply Voucher eligibility rules when unfulfilled-accommodation trigger facts are received — upstream facts do not bypass evaluation — **FR-002**, **OA-08-07**
+- [x] T009 [US1] Confirm external dormitory classification using accommodation catalog reference when available — **FR-016**, **OA-08-02**
+- [x] T010 [US1] Record employee, dormitory, request, and correlation references as immutable identifiers without cross-context ownership — **FR-007**
 
-**Checkpoint**: US1 independently testable — eligibility outcomes without issuance.
+**Checkpoint**: US1 independently testable — eligibility outcomes without issuance. — **CP-W2**: PASS
 
 ---
 
@@ -87,15 +87,15 @@ Derived from [plan.md](./plan.md) planning clusters (PC-01–PC-08). No new clus
 
 **Independent test**: `Eligible` outcome → unique voucher code, `Issued` state, validity metadata — no physical assignment or check-in/out.
 
-- [ ] T011 [US2] Generate globally unique voucher code and enter `Issued` state when eligibility outcome is `Eligible` — **FR-003**, **FR-004**, **FR-008**, **SC-003**
-- [ ] T012 [US2] Regenerate voucher code until global uniqueness is confirmed — **FR-008**
-- [ ] T013 [US2] Attach employee, external dormitory site, effective stay period, and upstream source to issued voucher — **FR-001**, **FR-007**, **OA-08-06**
-- [ ] T014 [US2] Transition issued voucher to `Expired` when validity window ends — **FR-009** *(UD-08 policy detail remains open)*
-- [ ] T015 [US2] Reject re-issuance from terminal states (`Expired`, `Cancelled`, `Superseded`) without new `Eligible` evaluation — **FR-003**
-- [ ] T016 [US2] Archive issued voucher records; prohibit silent deletion — **FR-015**
-- [ ] T017 [US2] Record material lifecycle transitions in a form consumable by Audit and Notification downstream contexts — **FR-012**, **FR-013**, **PC-07**
+- [x] T011 [US2] Generate globally unique voucher code and enter `Issued` state when eligibility outcome is `Eligible` — **FR-003**, **FR-004**, **FR-008**, **SC-003**
+- [x] T012 [US2] Regenerate voucher code until global uniqueness is confirmed — **FR-008**
+- [x] T013 [US2] Attach employee, external dormitory site, effective stay period, and upstream source to issued voucher — **FR-001**, **FR-007**, **OA-08-06**
+- [x] T014 [US2] Transition issued voucher to `Expired` when validity window ends — **FR-009** *(UD-08 policy detail remains open)*
+- [x] T015 [US2] Reject re-issuance from terminal states (`Expired`, `Cancelled`, `Superseded`) without new `Eligible` evaluation — **FR-003**
+- [x] T016 [US2] Archive issued voucher records; prohibit silent deletion — **FR-015**
+- [x] T017 [US2] Record material lifecycle transitions in a form consumable by Audit and Notification downstream contexts — **FR-012**, **FR-013**, **PC-07**
 
-**Checkpoint**: US2 independently testable — full issuance lifecycle without lottery-batch or reserve flows.
+**Checkpoint**: US2 independently testable — full issuance lifecycle without lottery-batch or reserve flows. — **CP-W3**: PASS
 
 ---
 

@@ -15,6 +15,8 @@ interface VoucherTriggerRepositoryContract
 
     public function findByCorrelationId(CorrelationId $correlationId): ?VoucherIssuanceTrigger;
 
+    public function findById(TriggerId $triggerId): ?VoucherIssuanceTrigger;
+
     /**
      * @return list<VoucherIssuanceTrigger>
      */
