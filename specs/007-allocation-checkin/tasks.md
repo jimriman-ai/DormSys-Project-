@@ -13,9 +13,9 @@
 - **UD-07:** `DormitoryReadContract` + `AllocationPhysicalStatePort` may use null/stub adapters until spec04 is live
 - **Architecture frozen** — tasks must not alter boundaries ([`architecture-freeze-spec07.md`](../../.specify/governance/freeze/architecture-freeze-spec07.md))
 
-**Authorization gate**: Architecture freeze **APPROVED** · Design Approval **APPROVED WITH CONDITIONS** ([`spec07-design-approved.md`](../../.specify/docs/handoff/spec07-design-approved.md)) · Implementation **authorized** Wave 1A ([`spec07-implementation-authorization.md`](../../.specify/docs/handoff/spec07-implementation-authorization.md))
+**Authorization gate**: Architecture freeze **APPROVED** · Design Approval **APPROVED WITH CONDITIONS** ([`spec07-design-approved.md`](../../.specify/docs/handoff/spec07-design-approved.md)) · Wave 1A **closed** T006–T052 · Wave 1B **closed** T053–T074
 
-**Status**: **Implementation authorized** — Wave 1A T006–T052; execution entry point **T006**
+**Status**: **Implementation complete** — all authorized tasks T001–T074 complete; PHPStan/Pint gates satisfied (T072–T073)
 
 ---
 
@@ -232,8 +232,8 @@ Phase 0 (Design artifacts)
 - [x] T069 Create architecture test `tests/Architecture/AllocationBoundaryTest.php` — no forbidden imports from Request, Lottery, Dormitory, Employee Infrastructure layers
 - [x] T070 [P] Create architecture test `tests/Architecture/CheckInBoundaryTest.php` — CheckIn does not import Allocation Infrastructure Eloquent
 - [x] T071 Feature test `tests/Feature/Modules/Allocation/AllocationIntegrationBoundaryTest.php` — Request read → assign → Dormitory signal → read contract round-trip
-- [ ] T072 [P] PHPStan level 8 on `app/Modules/Allocation/` and `app/Modules/CheckIn/`
-- [ ] T073 [P] Run Laravel Pint on `app/Modules/Allocation/` and `app/Modules/CheckIn/`
+- [x] T072 [P] PHPStan level 8 on `app/Modules/Allocation/` and `app/Modules/CheckIn/`
+- [x] T073 [P] Run Laravel Pint on `app/Modules/Allocation/` and `app/Modules/CheckIn/`
 - [x] T074 Update this `tasks.md` status section when Implementation Authorization handoff is granted
 
 **Checkpoint**: Definition of Done gates from constitution §10.4 satisfied for spec07 scope.

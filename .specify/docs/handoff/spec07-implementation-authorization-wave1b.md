@@ -9,14 +9,20 @@
 
 | Field | Value |
 | ----- | ----- |
-| **Record** | spec07 Wave 1B Implementation Authorization |
-| **authorization-status** | `active` |
+| **Spec** | spec07 — Allocation & Occupancy |
+| **Wave** | Wave 1B |
+| **Authorized Scope** | T053–T074 |
+| **Authorization Type** | Retroactive Acceptance + Completion Authorization |
+| **authorization-status** | `revoked` |
+| **Authorization Status** | **CLOSED** |
 | **authorized-by** | Governance Review |
+| **closure-date** | 2026-07-01 |
+| **revocation-reason** | Program closure — executable scope exhausted (T072–T074 complete) |
+| **Effective Date** | Immediate upon issuance |
 | **effective-date** | 2026-07-01 |
 | **supersedes** | [`.specify/docs/handoff/spec07-implementation-authorization.md`](./spec07-implementation-authorization.md) (Wave 1A — active execution authority only) |
 | **superseded-by** | — |
 | **lifecycle-reference** | `.specify/governance/_meta/authority-model.md` §4–§5 |
-| **Wave** | **Wave 1B** — Post-MVP completion (Phases 6–8) |
 | **Design baseline** | [`spec07-design-approved.md`](./spec07-design-approved.md) |
 | **Architecture freeze** | [`.specify/governance/freeze/architecture-freeze-spec07.md`](../../governance/freeze/architecture-freeze-spec07.md) — **APPROVED** (immutable) |
 | **Task baseline** | `specs/007-allocation-checkin/tasks.md` |
@@ -24,102 +30,122 @@
 **Normative scope fields**
 
 ```text
-authorization-status: active
-authorized-scope: Wave 1B — T072–T074
-retroactive-acceptance-scope: Wave 1B — T053–T071
-program-scope-boundary: Wave 1B — T053–T074
+authorization-status: revoked
+authorized-scope: Wave 1B — T053–T074 (complete)
+executable-forward-scope: —
+retroactive-acceptance-scope: Wave 1B — T053–T071 (accepted)
 blocked-scope: —
+active-execution-scope: none
+authority-constraints: program closed; no forward implementation permitted; cannot authorize spec08+; cannot reopen T006–T074 without new authorization record
 ```
 
 ---
 
 ## Governance Disposition
 
-**Disposition:** **RETROACTIVE_ACCEPTANCE**
+**Selected Disposition:** **RETROACTIVE_ACCEPTANCE**
 
-Reconciliation review classified Wave 1B repository state as **PARTIAL_UNAUTHORIZED_IMPLEMENTATION**: T053–T071 were delivered without active Implementation Authorization but align with approved `tasks.md`, `spec07-design-approved.md`, and frozen boundaries **CD-014** / **CD-015**.
+Repository reconciliation confirmed that Wave 1B implementation artifacts for **T053–T071** exist and align with approved task decomposition, approved design baseline, and established spec07 boundaries.
 
-Under this disposition:
+These artifacts are formally accepted as **design-conformant implementation delivered prior to Wave 1B authorization**.
 
-- **T053–T071** are **accepted retroactively** as design-conformant pre-authorized implementation.
-- **T053–T071 do not require re-implementation.**
-- **T072–T074** remain the **only authorized forward execution** under this record.
+This authorization resolves the previously identified governance condition:
 
-This disposition does not grant authority outside spec07 Wave 1B (T053–T074).
+> **PARTIAL_UNAUTHORIZED_IMPLEMENTATION**
+
+by bringing the existing implementation into an explicit, governed execution baseline for final completion only.
 
 ---
 
 ## Authority Transition
 
+- **Wave 1A (T006–T052):** remains historically **CLOSED** and valid as completed prior authorized scope
+- **Wave 1B (T053–T074):** becomes the **active execution authority** for the remaining spec07 work
+- This record does **not** reopen Wave 1A
+- This record does **not** authorize any work outside T053–T074
+
 | Prior state | Transition | Current state |
 | ----------- | ---------- | ------------- |
-| **Wave 1A** (`spec07-implementation-authorization.md`) | **CLOSED** — historically valid; execution authority superseded for remaining spec07 work | Remains the authoritative record for completed Wave 1A scope **T006–T052** |
-| **Wave 1B** (T053–T074) | **ACTIVE** — this record | Forward execution authorized for **T072–T074** only |
+| **Wave 1A** (`spec07-implementation-authorization.md`) | **CLOSED** — historically valid; active execution authority superseded | Governs completed **T006–T052** only |
+| **Wave 1B** (this record) | **CLOSED** (`revoked`) | Program scope **T053–T074** complete; forward execution **none** |
 
-**Rules**
+---
 
-- Wave 1A closure is **not** invalidated, erased, or reopened.
-- Wave 1A deliverables **T006–T052** remain governed by the Wave 1A authorization record as historically closed work.
-- Active implementation execution for spec07 is governed by **this record** until Wave 1B closure conditions are met.
-- No spec08+ implementation authority is granted by this record.
+## Program Closure Record
+
+**Checkpoint:** `spec07-implementation-closure` = **RECORDED**  
+**Closed:** 2026-07-01  
+**Actor:** Governance Review  
+
+| Item | State |
+| ---- | ----- |
+| Wave 1A | **CLOSED** (T006–T052) |
+| Wave 1B | **CLOSED** (T053–T074) |
+| T072 / T073 / T074 | **PASS** / **PASS** / **COMPLETE** |
+| Active execution scope | **NONE** |
+| spec08+ | **NOT AUTHORIZED** |
+
+This record is **terminal**. No forward implementation is permitted under spec07 without a new Authorization Record.
 
 ---
 
 ## Authorized Scope
 
-### Retroactively accepted (no forward execution)
+### Retroactively Accepted Scope
 
-| Task IDs | Phase | Status under this record |
-| -------- | ----- | ------------------------ |
-| **T053–T071** | 6–8 (US4, US5, partial polish) | **RETROACTIVE_ACCEPTANCE** — accepted; **do not re-implement** |
+The following tasks are accepted as implemented and **do not require re-implementation**:
 
-### Authorized forward execution
+| Task IDs | Scope |
+| -------- | ----- |
+| **T053–T058** | CheckIn / CheckOut core domain |
+| **T059–T060** | CheckIn / CheckOut feature tests |
+| **T061–T067** | Supplier / adapter layer |
+| **T068** | Request lifecycle handoff test |
+| **T069–T071** | Architecture and integration tests |
 
-| Task ID | Phase | Authorized work |
-| ------- | ----- | ----------------- |
-| **T072** | 8 — Polish | PHPStan level 8 on `app/Modules/Allocation/` and `app/Modules/CheckIn/` |
-| **T073** | 8 — Polish | Laravel Pint on `app/Modules/Allocation/` and `app/Modules/CheckIn/` |
-| **T074** | 8 — Polish | Final reconciliation / closure alignment for spec07 Wave 1B and program handoff |
+**Status:** **RETROACTIVE_ACCEPTANCE** — read-only conformity verification only unless a blocking defect is discovered through completion gates.
 
-### Program boundary (prohibited beyond)
+### Remaining Authorized Execution Scope
+
+The only remaining executable scope under this authorization is:
+
+| Task ID | Authorized work |
+| ------- | ----------------- |
+| **T072** | PHPStan validation for Allocation and CheckIn modules |
+| **T073** | Laravel Pint formatting enforcement for Allocation and CheckIn modules |
+| **T074** | Final Wave 1B reconciliation, task/status alignment, and closure confirmation |
+
+### Program boundary
 
 | Boundary | Value |
 | -------- | ----- |
 | **Maximum program scope** | Wave 1B — **T053–T074** |
-| **Executable entry point** | **T072** (T053–T071 skipped by disposition) |
-| **Executable exit point** | **T074** completion + verification pass |
+| **Executable entry point** | **T072** |
+| **Executable exit point** | **T074** + verification pass |
 
-### Code and test paths (unchanged from approved design)
+### Implementation paths
 
 | Area | Path |
 | ---- | ---- |
 | Allocation module | `app/Modules/Allocation/` |
 | CheckIn module | `app/Modules/CheckIn/` |
 | Tests | `tests/Unit/Modules/Allocation/`, `tests/Feature/Modules/Allocation/`, `tests/Feature/Modules/CheckIn/`, `tests/Architecture/AllocationBoundaryTest.php`, `tests/Architecture/CheckInBoundaryTest.php` |
-| Specification tree | `specs/007-allocation-checkin/` (alignment only — no redesign without change request) |
 
 ---
 
 ## Execution Constraints
 
-Implementation **MUST**:
+**Do NOT:**
 
-- Treat **T053–T071** as complete under retroactive acceptance unless verification review proves non-conformance (see Allowed Changes Policy).
-- Execute forward work **only** on **T072**, **T073**, and **T074** in that order unless T072/T073 parallel rules in `tasks.md` apply without scope expansion.
-- Preserve approved design decisions (`data-model.md`, `contracts/`, architecture freeze).
-- Use Application contracts only for cross-module integration — no cross-module Eloquent.
-- Maintain **UD-07** stub path for spec04 (`NullDormitoryReadAdapter` / test doubles) — spec04 implementation **not** authorized.
-
-Implementation **MUST NOT**:
-
-- Reopen, rework, or re-execute **T006–T052** (Wave 1A closed).
-- Re-implement **T053–T071** except minimal fixes strictly required by T072/T073 gates.
-- Execute any task **outside T053–T074**.
-- Implement **spec04** Dormitory bounded context.
-- Implement **spec08** Voucher, **spec09** Notification, **spec10** Audit module work, or **spec11** Reporting projections.
-- Change **CD-014**, **CD-015**, or architecture freeze records.
-- Modify `spec.md` or `plan.md` without change request.
-- Introduce cross-module Eloquent or direct foreign keys.
+- revisit, rework, or reopen **T006–T052**
+- expand scope beyond **T053–T074**
+- introduce new features, new modules, or speculative enhancements
+- redesign existing business logic
+- start **spec08**, **spec09**, **spec10**, or **spec11**
+- modify governance, authority, or specification-definition files as part of Wave 1B completion
+- treat retroactively accepted implementation as implicitly authorizing future out-of-scope work
+- implement **spec04** Dormitory bounded context
+- introduce cross-module Eloquent or direct foreign keys
 
 **Stop conditions**
 
@@ -128,119 +154,110 @@ Implementation **MUST NOT**:
 | Forward work outside **T072–T074** | **HALT** |
 | Any task outside **T053–T074** program boundary | **HALT** |
 | Architectural deviation required | **HALT** — ADR / change request required |
-| Retroactive acceptance review fails conformance | **HALT** — governance review required before execution |
+| Blocking defect in retroactively accepted scope | **HALT** — minimal fix only per Allowed Changes Policy |
 
 ---
 
 ## Allowed Changes Policy
 
-**Permitted without scope expansion**
+Execution under this authorization is **completion-only**.
 
-- PHPStan-driven **minimal** type/safety fixes in `app/Modules/Allocation/` and `app/Modules/CheckIn/` required to satisfy **T072**.
-- Pint-driven **format-only** changes in the same paths required to satisfy **T073**.
-- **T074** documentation/status alignment in `tasks.md` and descriptive handoff snapshots only as required for closure verification — **not** redesign of `spec.md` / `plan.md`.
+### For T053–T071
 
-**Prohibited**
+- Allowed mode: **read-only conformity verification**
+- No rewrite or re-implementation is permitted unless a blocking defect is discovered directly through the allowed completion gates
 
-- Feature additions beyond approved `tasks.md` Wave 1B definitions.
-- Re-implementation of retroactively accepted T053–T071 deliverables for stylistic or refactor reasons.
-- Broad refactors unrelated to PHPStan/Pint gate resolution.
-- Any change motivated by spec08+ or spec04 implementation.
+### For T072–T073
+
+Minimal code changes are permitted **only if strictly required** to:
+
+- satisfy PHPStan
+- satisfy Laravel Pint
+- preserve green tests
+- maintain Wave 1B boundary integrity
+
+### Change limit
+
+Any code changes must remain:
+
+- minimal
+- local to Wave 1B-related implementation paths
+- non-expansive in scope
+- non-architectural in intent
+
+**Prohibited:** feature additions, stylistic re-implementation of T053–T071, broad refactors unrelated to gate resolution, changes motivated by spec04 or spec08+.
 
 ---
 
 ## Verification and Closure Conditions
 
-### T072 — PHPStan
+Wave 1B will be considered **COMPLETE** only if all of the following are true:
 
-- `composer run phpstan` (or project-equivalent) passes at **level 8** for:
-  - `app/Modules/Allocation/`
-  - `app/Modules/CheckIn/`
+- **T072** passes successfully (`composer run phpstan` — level 8, zero errors in `app/Modules/Allocation/` and `app/Modules/CheckIn/`)
+- **T073** passes successfully (`composer run pint` — zero violations in the same paths)
+- no critical static-analysis violations remain within the authorized Wave 1B paths
+- no formatting violations remain within the authorized Wave 1B paths
+- no regressions are introduced in:
+  - Allocation module
+  - CheckIn / CheckOut module
+- **T074** reconciliation confirms final alignment between implementation state, task state, and authorization state
 
-### T073 — Pint
+### spec07 program closure
 
-- `composer run pint` passes with **zero** formatting violations for:
-  - `app/Modules/Allocation/`
-  - `app/Modules/CheckIn/`
+spec07 is **FULLY CLOSED** when:
 
-### Retroactive acceptance verification (read-only)
-
-- Confirm T053–T071 artifacts remain aligned to approved contracts and **CD-015** boundary (no re-implementation unless non-conformance found).
-- Recommended test suites (environment permitting):
-  - `tests/Feature/Modules/CheckIn/`
-  - `tests/Unit/Modules/Allocation/`
-  - `tests/Feature/Modules/Allocation/` (including US5 contract tests)
-  - `tests/Architecture/CheckInBoundaryTest.php`
-
-### T074 — Closure alignment
-
-- `tasks.md` reflects Wave 1B completion state accurately.
-- Descriptive snapshots may be updated; they **do not** substitute for this authorization record.
-
-### Wave 1B closure
-
-Wave 1B is **CLOSED** when **all** are true:
-
-1. T072 complete (PHPStan level 8 — zero errors in scope paths).
-2. T073 complete (Pint — zero violations in scope paths).
-3. T074 complete (closure alignment recorded).
-4. Retroactive acceptance verification **PASS** or documented exception with governance sign-off.
-5. No open HALT conditions under this record.
-
-### spec07 program closure (post Wave 1B)
-
-spec07 implementation program is **CLOSED** when:
-
-1. Wave 1A **CLOSED** (already satisfied).
-2. Wave 1B **CLOSED** (conditions above).
-3. No active Implementation Authorization remains for forward spec07 execution.
-4. Next spec execution requires **separate** Implementation Authorization per canonical map.
+1. Wave 1A **CLOSED** (already satisfied)
+2. Wave 1B **COMPLETE** (conditions above)
+3. No active forward Implementation Authorization remains for spec07
+4. Next implementation requires **separate** explicit governance authorization
 
 ---
 
 ## Risk Acceptance Statement
 
-Governance **accepts** the following risks by approving **RETROACTIVE_ACCEPTANCE**:
+This authorization formally accepts the following governance reality:
 
-- T053–T071 were produced without contemporaneous Implementation Authorization.
-- Retroactive acceptance relies on design-conformance review rather than gate-by-gate authorized execution history.
-- PHPStan/Pint gates (T072–T073) were not proven at authorization time for the full Wave 1B module surface.
-
-Governance **does not accept**:
-
-- Treating retroactive acceptance as blanket authority for future unauthorized work.
-- Expanding spec07 beyond **T053–T074** without a new authorization record.
-- Using this record to authorize spec08 or later specifications.
+- T053–T071 were implemented before Wave 1B authorization existed
+- the issue was **authorization timing**, not scope invention or design divergence
+- audit history must preserve this as **retroactive governance alignment**
+- acceptance of existing implementation does **not** imply that unfinished gates (T072–T073) are already satisfied
+- no scope expansion is permitted as a result of this acceptance
 
 ---
 
 ## Final Execution Directive
 
+The next and only allowed execution under spec07 is:
+
+1. complete **T072**
+2. complete **T073**
+3. perform **T074** final reconciliation and closure alignment
+4. close **Wave 1B**
+5. close **spec07**
+
 ```text
-Implementation may proceed on T072 only.
-T053–T071 are retroactively accepted — do not re-implement.
-Complete T072 → T073 → T074 sequentially per tasks.md polish rules.
+Entry point: T072
+Exit point: T074 + verification and closure conditions satisfied
 HALT on any work outside T053–T074 program boundary.
 HALT on any forward work outside T072–T074.
 ```
-
-**Entry point:** **T072**  
-**Exit point:** **T074** + verification and closure conditions satisfied
 
 ---
 
 ## Post-Completion State
 
-Upon successful Wave 1B closure:
+Upon successful completion of this authorization scope:
 
 | Item | Expected state |
 | ---- | -------------- |
-| **spec07 Wave 1A** | **CLOSED** (historical record preserved) |
-| **spec07 Wave 1B** | **CLOSED** |
-| **spec07 program** | **Implementation complete** for authorized scope T006–T074 |
-| **This record** | May transition to `superseded` when spec07 program closure is recorded; terminal for active execution |
-| **spec08+** | **Not authorized** — requires separate Design Approval and Implementation Authorization |
-| **spec04 Dormitory impl** | **Not authorized** — runtime dependency remains stubbed per UD-07 unless separately authorized |
+| **Wave 1A** | **CLOSED** (historical record preserved) |
+| **Wave 1B** | **CLOSED** |
+| **spec07** | **FULLY CLOSED** |
+| **Implementation** | Formally governed and fully reconciled for T006–T074 |
+| **This record** | May transition to `superseded` on program closure; terminal for active execution |
+| **Next scope** | May be prepared separately; **not authorized by this record** |
+| **spec08+** | Requires new explicit governance authorization |
+| **spec04 Dormitory impl** | **Not authorized** — UD-07 stub path remains unless separately authorized |
 
 ---
 

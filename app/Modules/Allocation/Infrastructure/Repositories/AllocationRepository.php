@@ -52,13 +52,19 @@ class AllocationRepository implements AllocationRepositoryContract
 
     public function findActiveByPersonId(PersonAllocationRef $personId): array
     {
-        return AllocationModel::query()
-            ->with('items')
-            ->where('person_id', $personId->value)
-            ->where('status', AllocationStatus::Active)
-            ->get()
-            ->map(fn (AllocationModel $model): Allocation => $this->toDomain($model))
-            ->all();
+        $allocations = [];
+
+        foreach (
+            AllocationModel::query()
+                ->with('items')
+                ->where('person_id', $personId->value)
+                ->where('status', AllocationStatus::Active)
+                ->get() as $model
+        ) {
+            $allocations[] = $this->toDomain($model);
+        }
+
+        return $allocations;
     }
 
     private function insert(Allocation $allocation): Allocation
@@ -150,16 +156,25 @@ class AllocationRepository implements AllocationRepositoryContract
         return $persisted;
     }
 
+    /**
+     * @param  ?list<AllocationItem>  $items
+     */
     private function toDomain(AllocationModel $model, ?array $items = null): Allocation
     {
-        $domainItems = $items ?? $model->items->map(
-            fn (AllocationItemModel $itemModel): AllocationItem => new AllocationItem(
-                id: AllocationItemId::fromString($itemModel->getId()),
-                allocationId: AllocationId::fromString($model->getId()),
-                bedId: $itemModel->bed_id,
-                sequence: (int) $itemModel->sequence,
-            ),
-        )->all();
+        if ($items !== null) {
+            $domainItems = $items;
+        } else {
+            $domainItems = [];
+
+            foreach ($model->items as $itemModel) {
+                $domainItems[] = new AllocationItem(
+                    id: AllocationItemId::fromString($itemModel->getId()),
+                    allocationId: AllocationId::fromString($model->getId()),
+                    bedId: $itemModel->bed_id,
+                    sequence: (int) $itemModel->sequence,
+                );
+            }
+        }
 
         return new Allocation(
             id: AllocationId::fromString($model->getId()),

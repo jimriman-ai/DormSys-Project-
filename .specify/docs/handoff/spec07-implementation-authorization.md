@@ -7,10 +7,11 @@
 
 ## Status
 
-**Implementation Authorized**
+**Implementation Authorized** — **SUPERSEDED** (Wave 1A closed; program complete)
 
-**Authorization status:** `active`  
-**Wave:** **Wave 1A** — MVP implementation (Phases 1–5 code; Phase 0 design complete)
+**Authorization status:** `superseded`  
+**superseded-by:** [`.specify/docs/handoff/spec07-implementation-authorization-wave1b.md`](./spec07-implementation-authorization-wave1b.md)  
+**Wave:** **Wave 1A** — MVP implementation (Phases 1–5 code; Phase 0 design complete) — **CLOSED**
 
 ---
 
@@ -37,8 +38,9 @@
 
 ## Authorized Scope
 
-**authorization-status:** `active`  
-**authorized-scope:** Wave 1A — T006–T052
+**authorization-status:** `superseded`  
+**authorized-scope:** Wave 1A — T006–T052  
+**superseded-by:** [`.specify/docs/handoff/spec07-implementation-authorization-wave1b.md`](./spec07-implementation-authorization-wave1b.md)
 
 Implementation is authorized **only** for:
 

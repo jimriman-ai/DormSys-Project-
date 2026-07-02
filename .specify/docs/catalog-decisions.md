@@ -1,6 +1,6 @@
 # DormSys Catalog Decisions
 
-**Version:** 2.8.1  
+**Version:** 2.8.2  
 **Status:** ACTIVE  
 **Last Updated:** 1405/04/10 | 2026/07/01
 **Related Documents:** [`context-map.md`](context-map.md), [`spec-catalog.md`](spec-catalog.md), `CONSTITUTION v1.3.0.md`, `dormsys-architecture.md`
@@ -647,6 +647,12 @@ Request
 ---
 
 ## Change Log
+
+### 2.8.2 — 2026-07-01 (spec07 implementation program closure)
+
+- Lifecycle alignment only — no boundary or decision changes.
+- spec07 program closed (T001–T074); Wave 1B authorization record `revoked` (program closure); Wave 1A `superseded`.
+- Active execution scope for spec07: **none**. Checkpoint: `spec07-implementation-closure`.
 
 ### 2.8.1 — 2026-07-01 (documentation synchronization remediation)
 
