@@ -17,7 +17,7 @@
 - **UD-10-01 … UD-10-06:** Resolved at planning — see [plan.md](./plan.md) §4
 - **Not** Design Approval · **Not** Implementation Authorization
 
-**Status**: **PROGRAM CLOSED** — T001–T040 **COMPLETE** (40/40). Waves 1A–3 **CLOSED**. Checkpoints **CP-A1** → **CP-A5** + **CP-A4.1** = **PASS**. Final closure: [`.specify/docs/handoff/spec10-final-closure.md`](../../.specify/docs/handoff/spec10-final-closure.md). `lifecycle_state: CLOSED` · `active_execution_scope: NONE` · `future_execution: DISABLED`. T041+ **not defined**.
+**Status**: **PROGRAM CLOSED / FROZEN** — T001–T040 **COMPLETE** (40/40). Waves 1A–3 **CLOSED**. Checkpoints **CP-A1** → **CP-A5** + **CP-A4.1** = **PASS**. Canonical closure: [`.specify/docs/handoff/spec10-final-closure.md`](../../.specify/docs/handoff/spec10-final-closure.md). `lifecycle_state: CLOSED` · `immutable_status: FROZEN` · `execution_state: NONE` · `active_authorization: NONE` · `reopenability: FORBIDDEN WITHOUT NEW GOVERNANCE` · `archival_reference_status: CANONICAL`. T041+ **not defined**.
 
 ---
 
@@ -383,12 +383,18 @@ Phase 6–7 ──► T039–T040 after T001–T036
 | ----- | ----- |
 | **lifecycle_stage** | **CLOSED** |
 | **lifecycle_state** | **CLOSED** |
+| **immutable_status** | **FROZEN** |
 | **execution_state** | **NONE** |
 | **active_execution_scope** | **NONE** |
-| **next_step** | **HALT** — no forward execution under spec10 without new spec definition + authorization |
+| **active_authorization** | **NONE** |
+| **reopenability** | **FORBIDDEN WITHOUT NEW GOVERNANCE** |
+| **archival_reference_status** | **CANONICAL** |
+| **successor_work_policy** | **NEW SPEC REQUIRED** |
+| **next_step** | **HALT** — spec10 is immutable historical baseline |
 | **execution_authorized** | **no** |
-| **reconciliation_note** | Final closure freeze recorded 2026-07-02 — all waves immutable history |
+| **canonical_closure** | [`.specify/docs/handoff/spec10-final-closure.md`](../../.specify/docs/handoff/spec10-final-closure.md) |
+| **reconciliation_note** | Final immutable baseline freeze recorded 2026-07-02 |
 
 ---
 
-**End of tasks. Program closed.**
+**End of tasks. Program closed and frozen. Do not reinterpret T001–T040.**

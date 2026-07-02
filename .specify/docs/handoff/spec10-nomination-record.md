@@ -57,15 +57,20 @@ governance-transition-state: CLOSED (program complete)
 execution-state: NONE
 planning-state: COMPLETE
 lifecycle-state: CLOSED
+immutable-status: FROZEN
 wave-1a-status: CLOSED
 wave-1b-status: CLOSED
 wave-2-status: CLOSED
 wave-3-status: CLOSED
-program-closure: spec10-final-closure.md
+program-closure: spec10-final-closure.md (CANONICAL)
 active-execution-scope: NONE
+active-authorization: NONE
 blocked-scope: T001–T040 (historical); T041+ (not defined)
 current-authorization: NONE (all waves superseded or revoked)
 implementation-authorization: NONE
+reopenability: FORBIDDEN WITHOUT NEW GOVERNANCE
+archival-reference-status: CANONICAL
+successor-work-policy: NEW SPEC REQUIRED
 future-execution: DISABLED
 ```
 
@@ -245,7 +250,8 @@ Boundary nomination does **not** imply implementation readiness without Implemen
 
 | Item | State |
 | ---- | ----- |
-| **spec10 status** | **CLOSED** (program complete) |
+| **spec10 status** | **CLOSED / FROZEN** (immutable baseline) |
+| **immutable_status** | **FROZEN** |
 | **Wave 1A** | **CLOSED** — T001–T021 |
 | **Wave 1B** | **CLOSED** — T022–T027 |
 | **Wave 2** | **CLOSED** — T028–T032 |
@@ -253,15 +259,18 @@ Boundary nomination does **not** imply implementation readiness without Implemen
 | **Governance transition state** | **CLOSED** |
 | **Execution state** | **NONE** |
 | **Active execution scope** | **NONE** |
-| **Program closure** | [`spec10-final-closure.md`](./spec10-final-closure.md) |
+| **Active authorization** | **NONE** |
+| **Reopenability** | **FORBIDDEN WITHOUT NEW GOVERNANCE** |
+| **Archival reference status** | **CANONICAL** — [`spec10-final-closure.md`](./spec10-final-closure.md) |
+| **Successor work policy** | **NEW SPEC REQUIRED** |
 | **Blocked scope** | **T001–T040** (historical complete); **T041+** (not defined) |
-| **Future execution** | **DISABLED** until new spec definition |
+| **Future execution** | **DISABLED** |
 
 ---
 
 ## Final state
 
-**PROGRAM CLOSED** — spec10 Audit Trail & Traceability is **complete and frozen**. All tasks T001–T040 delivered. Checkpoints CP-A1 through CP-A5 (+ CP-A4.1) **PASS**. Closure record: [`spec10-final-closure.md`](./spec10-final-closure.md).
+**PROGRAM CLOSED AND FROZEN** — spec10 Audit Trail & Traceability is the **canonical immutable implementation baseline**. T001–T040 complete. CP-A1 through CP-A5 (+ CP-A4.1) **PASS**. Terminal record: [`spec10-final-closure.md`](./spec10-final-closure.md). Future specs may consume audit contracts but must not retroactively mutate spec10 scope.
 
 ---
 
