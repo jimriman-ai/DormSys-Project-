@@ -1,6 +1,6 @@
 # DormSys Spec Catalog
 
-**Version:** 1.0.10 (spec07 implementation closure)  
+**Version:** 1.0.11 (spec08 nomination)  
 **Status:** Hard Freeze — Operational  
 **Last Updated:** 1405/04/10 | 2026/07/01  
 **Related Documents:** [`catalog-decisions.md`](catalog-decisions.md), [`context-map.md`](context-map.md), [`playbook/specification-playbook.md`](playbook/specification-playbook.md)
@@ -130,7 +130,7 @@ Any change to a closed OQ or bounded-context boundary requires a new entry in `c
 | `spec05` | **Request Management** | Accommodation request submission, request lifecycle, and request-level approval state/history | `Request` | `spec01`, `spec02`, `spec03` | **Implementation Authorized** | Explicit + Inferred | **Authorized:** T001–T052 per [`handoff/spec05-implementation-authorization.md`](handoff/spec05-implementation-authorization.md). Tag `spec05-design-approved` @ `6ce0e94`; tasks @ `61e2a48`. **CD-009/010/013** frozen. **Hold:** spec03 US3 for Wave 1B; spec04 impl unchanged. |
 | `spec06` | **Lottery Selection** | Lottery programs, registrations, draw execution, scoring, and result production | `Lottery` | `spec01`, `spec05` | Planned | Explicit + Inferred | **Decided (CD-011):** Lottery owns all lottery rules, lifecycle, and results; emits proposed allocations to Allocation. |
 | `spec07` | **Allocation & Occupancy** | Assign rooms/beds (Allocation BC); coordinate physical occupancy (Dormitory) and operational stay transitions (CheckIn/CheckOut) | `Allocation`, `Dormitory`, `CheckIn/CheckOut` (spec07 program) | `spec01`, `spec04`, `spec05`, `spec06` | **Fully Closed — Implementation Complete** | Explicit + Inferred | **Delivered:** T001–T074 per [`handoff/spec07-implementation-authorization-wave1b.md`](handoff/spec07-implementation-authorization-wave1b.md). **CD-014/CD-015** frozen. **Active execution scope:** none. **Hold:** spec04 impl; Voucher/Reporting/Notification. |
-| `spec08` | **External Accommodation** | Voucher/external-stay handling when internal capacity cannot satisfy accommodation demand | `Voucher` | `spec01`, `spec05`, `spec06` | Planned | Inferred | **Decided (CD-016):** Voucher owns eligibility evaluation and issuance lifecycle; upstream contexts supply triggering facts only. |
+| `spec08` | **External Accommodation** | Voucher/external-stay handling when internal capacity cannot satisfy accommodation demand | `Voucher` | `spec01`, `spec05`, `spec06` | **Nominated for Authorization** | Inferred | **Nominated:** [`handoff/spec08-nomination-record.md`](handoff/spec08-nomination-record.md). **Decided (CD-016):** Voucher owns eligibility evaluation and issuance lifecycle. **Execution:** NOT AUTHORIZED. |
 | `spec09` | **Notification** | Shared delivery capability for system notifications such as email, SMS, and in-app alerts | Cross-cutting Capability | `spec01` | Planned | Provisional | Is Notification only an infrastructure delivery mechanism, or does DormSys need a domain-aware notification policy layer later? |
 | `spec10` | **Audit** | Immutable audit trail, activity logging, and compliance-oriented traceability across critical actions | Cross-cutting Capability | `spec01` | Planned | Explicit + Inferred | Should audit remain purely technical logging, or evolve to include domain audit semantics per module? |
 | `spec11` | **Reporting** | Read models, operational reports, and management-facing projections for analysis and decision support | Cross-cutting / Provisional | `spec01`, implemented business specs as needed | Planned | Explicit + Provisional | **Decided (CD-017):** Reporting remains a read-only cross-domain projection consumer; no write authority over upstream domain state. |
@@ -208,6 +208,12 @@ This catalog is the controlling operational reference for downstream `spec.md`, 
 
 ---
 ## Change Log
+
+### 1.0.11 — 2026-07-01 (spec08 nomination)
+
+- **spec08 nominated** for authorization initiation — see [`handoff/spec08-nomination-record.md`](handoff/spec08-nomination-record.md).
+- Informational status: **Nominated for Authorization**; execution **NOT AUTHORIZED**.
+- spec07 remains **Fully Closed**; active execution scope **none**.
 
 ### 1.0.10 — 2026-07-01 (spec07 implementation closure)
 
