@@ -12,10 +12,12 @@
 | **Spec** | spec09 — Notification Delivery |
 | **Wave** | **Wave 3** (terminal program wave) |
 | **Authorized Scope** | **T027–T032** only |
-| **Authorization Type** | Controlled Continuation Implementation Authorization |
-| **authorization-status** | `active` |
-| **Authorization Status** | **ACTIVE** |
+| **Authorization Type** | Program Closure Authorization (terminal wave) |
+| **authorization-status** | `revoked` |
+| **Authorization Status** | **CLOSED** |
 | **authorized-by** | Governance Review (Wave 3 activation) |
+| **closure-date** | 2026-07-02 |
+| **revocation-reason** | Program closure — executable scope exhausted (T027–T032 complete) |
 | **Effective Date** | Immediate upon issuance |
 | **effective-date** | 2026-07-02 |
 | **supersedes** | [`.specify/docs/handoff/spec09-implementation-authorization-wave2.md`](./spec09-implementation-authorization-wave2.md) *(active execution authority only)* |
@@ -30,25 +32,26 @@
 **Normative scope fields**
 
 ```text
-authorization-status: active
-authorized-scope: Wave 3 — T027–T032
-executable-forward-scope: T027–T032
-maximum-authorized-scope: Wave 3 exit — T032 + CP-W7 PASS
-future-continuation-scope: none (spec09 program terminal at T032)
-active-execution-scope: T027–T032
-blocked-scope: T033+; spec10; spec11; presentation UI; CheckIn scheduler implementation
-authority-constraints: R9 frozen; downstream consumer only; no upstream Infrastructure imports; spec07/spec08 closed
+authorization-status: revoked
+authorized-scope: Wave 3 — T027–T032 (complete)
+executable-forward-scope: —
+retroactive-acceptance-scope: Wave 3 — T027–T032 (complete)
+blocked-scope: —
+active-execution-scope: none
+authority-constraints: program closed; no forward implementation permitted; cannot authorize spec10+ under this record; cannot reopen T001–T032 without new authorization record
 ```
 
 ---
 
 ## Status
 
-**Implementation Authorized** — **ACTIVE** for **Wave 3** only.
+**Implementation Authorized** — **CLOSED** (Wave 3 complete; spec09 program fully closed).
 
-This record grants controlled execution authority for the **Notification program closeout slice**: retention/archival (FR-013, UD-11), R9 boundary enforcement test, and PHPStan/Pint quality gates.
+Wave 3 scope **T027–T032** is complete. Active execution authority is **none**. Program closure is recorded in [`spec09-implementation-closure.md`](./spec09-implementation-closure.md).
 
-**This record does NOT authorize:**
+**This record does NOT authorize forward execution under any scope.**
+
+**Historical exclusions (no longer active):**
 
 - Tasks beyond **T032** (spec09 program boundary)
 - Wave 1–2 rework (T001–T026) — historical scope only
@@ -210,36 +213,53 @@ Implementation **MUST NOT**:
 | spec08 | **CLOSED** — no active execution |
 | spec09 Wave 1 | **SUPERSEDED** — governs completed T001–T020 |
 | spec09 Wave 2 | **SUPERSEDED** — governs completed T021–T026 |
-| spec09 Wave 3 (this record) | **ACTIVE** — T027–T032 |
+| spec09 Wave 3 (this record) | **REVOKED** — governs completed T027–T032 only |
+| spec09 program | **FULLY CLOSED** — [`spec09-implementation-closure.md`](./spec09-implementation-closure.md) |
 | spec10–spec11 | **NOT AUTHORIZED** |
 
-Upon **T032 + CP-W7 PASS**:
+Upon program closure (2026-07-02):
 
-- This record may transition to program-closed state (`revoked` or equivalent)
-- Active execution scope becomes **none**
-- spec09 implementation program **FULLY CLOSED** at T032
+- This record is **`revoked`** for active execution
+- Historical validity for completed **T027–T032** is preserved
+- **Active execution scope** is **none**
+
+---
+
+## Program Closure Record
+
+**Checkpoint:** `spec09-implementation-closure` = **RECORDED**  
+**Closed:** 2026-07-02  
+**Actor:** Governance Review  
+
+| Item | State |
+| ---- | ----- |
+| Wave 1 | **CLOSED** (T001–T020) |
+| Wave 2 | **CLOSED** (T021–T026) |
+| Wave 3 | **CLOSED** (T027–T032) |
+| CP-W6 / CP-W7 | **PASS** |
+| Active execution scope | **NONE** |
+| spec10+ | **NOT AUTHORIZED** |
+
+This record is **terminal** for active execution. See [`spec09-implementation-closure.md`](./spec09-implementation-closure.md).
 
 ---
 
 ## Final Execution Directive
 
-Authorized execution under spec09 Wave 3 begins **only** as follows:
-
-1. Execute **Phase 7** — **T027–T029** → **CP-W6 PASS**
-2. Execute **Phase 8** — **T030–T032** → **CP-W7 PASS**
-3. **STOP** — spec09 program complete; no T033+
+**Program complete.** No forward execution permitted under this record.
 
 ```text
-Entry point: T027
-Exit point: T032 + CP-W7 PASS
-Authorized maximum: T027–T032
-HALT on T033+.
+Entry point: (none — program closed)
+Exit point: T032 + CP-W7 PASS — SATISFIED
+Active execution scope: none
+HALT on any work under spec09 without new authorization.
 ```
 
 ---
 
 ## References
 
+- [`spec09-implementation-closure.md`](./spec09-implementation-closure.md) — program closure
 - [`spec09-implementation-authorization-wave2.md`](./spec09-implementation-authorization-wave2.md) — Wave 2 (superseded for active execution)
 - [`spec09-implementation-authorization.md`](./spec09-implementation-authorization.md) — Wave 1 (superseded)
 - [`spec09-nomination-record.md`](./spec09-nomination-record.md)

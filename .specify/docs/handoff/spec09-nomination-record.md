@@ -25,20 +25,21 @@ This record is an **evidence-only** instance of **Next Spec Transition Nominatio
 
 | Field | Value |
 | ----- | ----- |
-| **nomination-status** | `active` |
+| **nomination-status** | `superseded` |
 | **nominated-spec** | spec09 — Notification Delivery |
 | **nominated-by** | Governance Review |
 | **effective-date** | 2026-07-02 |
 | **supersedes** | — |
-| **superseded-by** | — |
+| **superseded-by** | [`.specify/docs/handoff/spec09-implementation-closure.md`](./spec09-implementation-closure.md) |
 | **lifecycle-reference** | `.specify/governance/_meta/authority-model.md` §2; `.specify/governance/execution-policy.md` § Nomination and Execution Policy |
 
 ```text
-nomination-status: active
+nomination-status: superseded
 nominated-spec: spec09
+superseded-by: spec09-implementation-closure.md
 transition-trigger: spec08-implementation-closure
-governance-transition-state: OPEN FOR AUTHORIZATION INITIATION
-execution-state: NOT AUTHORIZED (until Implementation Authorization issued)
+governance-transition-state: FULFILLED — program closed
+execution-state: NONE (program complete)
 ```
 
 ---
@@ -145,23 +146,23 @@ Boundary closure does **not** imply implementation readiness without Implementat
 
 | Item | State |
 | ---- | ----- |
-| **spec09 status** | CANDIDATE → **NOMINATED FOR AUTHORIZATION** |
-| **Governance transition state** | **OPEN FOR AUTHORIZATION INITIATION** |
-| **Execution state** | **NOT AUTHORIZED** (until [`spec09-implementation-authorization.md`](./spec09-implementation-authorization.md) is active) |
+| **spec09 status** | **IMPLEMENTATION COMPLETE** — program **CLOSED** |
+| **Governance transition state** | **FULFILLED** — see [`spec09-implementation-closure.md`](./spec09-implementation-closure.md) |
+| **Execution state** | **NONE** — no active execution scope |
 
 ---
 
 ## Final state
 
-**TRANSITION RECORDED** — spec09 nominated for authorization initiation.
+**TRANSITION FULFILLED** — spec09 nominated, authorized, implemented, and closed.
 
-Implementation execution requires a separate active Implementation Authorization record. Missing operational authority remains **HALT** regardless of this nomination.
+Next spec transition (spec10) requires a separate nomination record. No carryover execution authority from spec09.
 
 ---
 
 ## References
 
-- [`spec08-implementation-closure.md`](./spec08-implementation-closure.md)
+- [`spec09-implementation-closure.md`](./spec09-implementation-closure.md)
 - [`spec08-nomination-record.md`](./spec08-nomination-record.md)
 - [`context-map.md`](../context-map.md) R9
 - [`catalog-decisions.md`](../catalog-decisions.md)
