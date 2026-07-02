@@ -37,6 +37,9 @@
 
 ## Authorized Scope
 
+**authorization-status:** `active`  
+**authorized-scope:** Wave 1A — T006–T052
+
 Implementation is authorized **only** for:
 
 | Scope | Detail |
