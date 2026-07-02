@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Modules\Allocation\Infrastructure\Providers\AllocationServiceProvider;
+use App\Modules\Audit\Infrastructure\Providers\AuditServiceProvider;
 use App\Modules\CheckIn\Infrastructure\Providers\CheckInServiceProvider;
 use App\Modules\Dormitory\Infrastructure\Providers\DormitoryServiceProvider;
 use App\Modules\Employee\Infrastructure\Providers\EmployeeServiceProvider;

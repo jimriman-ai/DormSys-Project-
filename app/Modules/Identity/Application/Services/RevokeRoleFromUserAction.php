@@ -12,6 +12,7 @@ class RevokeRoleFromUserAction
 {
     public function __construct(
         private readonly UserRepositoryContract $users,
+        private readonly IdentityAuditEmitter $auditEmitter,
     ) {}
 
     public function execute(UserId $userId, string $roleName): void
@@ -21,5 +22,11 @@ class RevokeRoleFromUserAction
         }
 
         $this->users->revokeRole($userId, $roleName);
+
+        $this->auditEmitter->recordRoleRevoked(
+            $userId,
+            $roleName,
+            IdentityAuditEmitter::occurredNow(),
+        );
     }
 }

@@ -39,23 +39,34 @@ This record is an **evidence-only** instance of **Next Spec Transition Nominatio
 
 | Field | Value |
 | ----- | ----- |
-| **nomination-status** | `active` |
+| **nomination-status** | `fulfilled` |
 | **nominated-spec** | spec10 — Audit Trail & Traceability |
 | **nominated-by** | Governance Review |
 | **effective-date** | 2026-07-02 |
+| **closure-date** | 2026-07-02 |
 | **supersedes** | — |
-| **superseded-by** | — |
+| **superseded-by** | [`.specify/docs/handoff/spec10-final-closure.md`](./spec10-final-closure.md) |
 | **lifecycle-reference** | `.specify/governance/_meta/authority-model.md` §2; `.specify/governance/execution-policy.md` § Nomination and Execution Policy |
 
 ```text
-nomination-status: active
+nomination-status: fulfilled
 nominated-spec: spec10
 feature-name: audit-trail
 branch: 010-audit-trail
-transition-trigger: spec09-implementation-closure
-governance-transition-state: OPEN FOR PLANNING
-execution-state: NOT AUTHORIZED
-planning-state: ELIGIBLE (/speckit-plan)
+governance-transition-state: CLOSED (program complete)
+execution-state: NONE
+planning-state: COMPLETE
+lifecycle-state: CLOSED
+wave-1a-status: CLOSED
+wave-1b-status: CLOSED
+wave-2-status: CLOSED
+wave-3-status: CLOSED
+program-closure: spec10-final-closure.md
+active-execution-scope: NONE
+blocked-scope: T001–T040 (historical); T041+ (not defined)
+current-authorization: NONE (all waves superseded or revoked)
+implementation-authorization: NONE
+future-execution: DISABLED
 ```
 
 ---
@@ -95,7 +106,7 @@ spec09 is **FULLY CLOSED**.
 | Checklist pass | **yes** (all items) |
 | Ready for planning | **yes** |
 | Unresolved blockers | **none** |
-| Open planning ambiguities | **UD-10-01** through **UD-10-06** (see [`spec.md`](../../specs/010-audit-trail/spec.md)) |
+| Open planning ambiguities | **none** — UD-10-01 through UD-10-06 resolved in [plan.md](../../specs/010-audit-trail/plan.md) |
 
 ---
 
@@ -106,7 +117,7 @@ spec09 is **FULLY CLOSED**.
 | Specification | `specs/010-audit-trail/spec.md` | ✅ Complete |
 | Requirements checklist | `specs/010-audit-trail/checklists/requirements.md` | ✅ PASS |
 | Plan | `specs/010-audit-trail/plan.md` | ✅ Final |
-| Tasks | `specs/010-audit-trail/tasks.md` | ⏳ Not created |
+| Tasks | `specs/010-audit-trail/tasks.md` | ✅ Complete (40 tasks) |
 | Data model | `specs/010-audit-trail/data-model.md` | ✅ Complete |
 | Contracts | `specs/010-audit-trail/contracts/` | ✅ Complete (4 contracts) |
 | Research | `specs/010-audit-trail/research.md` | ✅ Complete |
@@ -117,7 +128,7 @@ spec09 is **FULLY CLOSED**.
 **Non-blocking notes:**
 
 - Planning artifacts (`plan.md`, `data-model.md`, `contracts/`) are **expected outputs** of `/speckit-plan` — absence is not a nomination blocker
-- Formal `spec10-design-approved.md` not issued — design approval follows planning per repository convention
+- Design baseline: **spec09-precedent acceptance** recorded in [`spec10-implementation-authorization.md`](./spec10-implementation-authorization.md) — no separate `spec10-design-approved.md`
 - Presentation UI (OA-10-05) deferred — not a nomination blocker
 - Interim `RecordsActivity` in implemented modules — migration strategy deferred to planning (**UD-10-02**)
 - Audit query **contract** in scope; Livewire audit explorer UI deferred
@@ -223,7 +234,7 @@ HALT on implementation, tasks, or authorization without separate governance reco
 | **AP-06** | Critical events, append-only, AuditService |
 | **OA-10-01** | Domain-aware audit semantics centralized; upstream supplies transition facts |
 | **OA-10-05** | Presentation UI deferred |
-| **UD-10-01 … UD-10-06** | **OPEN** — planning resolution required |
+| **UD-10-01 … UD-10-06** | **RESOLVED** — see [plan.md](../../specs/010-audit-trail/plan.md) |
 | **spec07 / spec08 / spec09** | **CLOSED** — contract integration only |
 
 Boundary nomination does **not** imply implementation readiness without Implementation Authorization.
@@ -234,25 +245,35 @@ Boundary nomination does **not** imply implementation readiness without Implemen
 
 | Item | State |
 | ---- | ----- |
-| **spec10 status** | CANDIDATE → **NOMINATED FOR PLANNING** |
-| **Governance transition state** | **OPEN FOR PLANNING** |
-| **Execution state** | **NOT AUTHORIZED** |
-| **Planning eligibility** | **YES** — `/speckit-plan` |
+| **spec10 status** | **CLOSED** (program complete) |
+| **Wave 1A** | **CLOSED** — T001–T021 |
+| **Wave 1B** | **CLOSED** — T022–T027 |
+| **Wave 2** | **CLOSED** — T028–T032 |
+| **Wave 3** | **CLOSED** — T033–T040 |
+| **Governance transition state** | **CLOSED** |
+| **Execution state** | **NONE** |
+| **Active execution scope** | **NONE** |
+| **Program closure** | [`spec10-final-closure.md`](./spec10-final-closure.md) |
+| **Blocked scope** | **T001–T040** (historical complete); **T041+** (not defined) |
+| **Future execution** | **DISABLED** until new spec definition |
 
 ---
 
 ## Final state
 
-**TRANSITION RECORDED** — spec10 nominated for planning initiation.
-
-Implementation execution requires a separate active Implementation Authorization record. Missing operational authority remains **HALT** regardless of this nomination.
+**PROGRAM CLOSED** — spec10 Audit Trail & Traceability is **complete and frozen**. All tasks T001–T040 delivered. Checkpoints CP-A1 through CP-A5 (+ CP-A4.1) **PASS**. Closure record: [`spec10-final-closure.md`](./spec10-final-closure.md).
 
 ---
 
 ## References
 
-- [`spec09-implementation-closure.md`](./spec09-implementation-closure.md)
-- [`spec09-nomination-record.md`](./spec09-nomination-record.md)
+- [`spec10-final-closure.md`](./spec10-final-closure.md)
+- [`spec10-wave1a-implementation-closure.md`](./spec10-wave1a-implementation-closure.md)
+- [`spec10-wave1b-implementation-closure.md`](./spec10-wave1b-implementation-closure.md)
+- [`spec10-wave2-implementation-closure.md`](./spec10-wave2-implementation-closure.md)
+- [`spec10-wave3-governance-handoff.md`](./spec10-wave3-governance-handoff.md)
+- [`spec10-wave3-governance-review.md`](./spec10-wave3-governance-review.md)
+- [`spec10-implementation-authorization-wave3.md`](./spec10-implementation-authorization-wave3.md)
 - [`context-map.md`](../context-map.md) R10
 - [`catalog-decisions.md`](../catalog-decisions.md)
 - [`spec-catalog.md`](../spec-catalog.md) spec10

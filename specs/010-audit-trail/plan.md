@@ -6,6 +6,8 @@
 
 **Governance**: Planning translation only. **Not** Design Approval. **Not** Implementation Authorization. **No** `tasks.md`. spec07/spec08/spec09 remain **CLOSED**.
 
+**Tasks**: [`tasks.md`](./tasks.md) — **40 tasks** (T001–T040); lifecycle **TASKED**; implementation **not authorized**.
+
 **Nomination**: [`spec10-nomination-record.md`](../../.specify/docs/handoff/spec10-nomination-record.md) — `active`
 
 ---

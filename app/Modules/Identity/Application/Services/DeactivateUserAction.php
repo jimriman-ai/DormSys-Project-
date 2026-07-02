@@ -18,6 +18,7 @@ class DeactivateUserAction
 {
     public function __construct(
         private readonly UserRepositoryContract $users,
+        private readonly IdentityAuditEmitter $auditEmitter,
     ) {}
 
     public function execute(UserId $userId): User
@@ -40,6 +41,11 @@ class DeactivateUserAction
             $persisted = $this->users->save($user);
 
             Event::dispatch(UserDeactivated::forUser($persisted->requireId()->value));
+
+            $this->auditEmitter->recordUserDeactivated(
+                $persisted->requireId(),
+                IdentityAuditEmitter::occurredNow(),
+            );
 
             return $persisted;
         });

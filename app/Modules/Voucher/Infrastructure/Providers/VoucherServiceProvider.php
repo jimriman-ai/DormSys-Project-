@@ -27,6 +27,8 @@ use App\Modules\Voucher\Application\Services\VoucherReadService;
 use App\Modules\Voucher\Domain\Services\ExternalLotteryWinnerFactsSanitizer;
 use App\Modules\Voucher\Domain\Services\VoucherCodeGenerator;
 use App\Modules\Voucher\Domain\Services\VoucherEligibilityEvaluator;
+use App\Modules\Voucher\Application\Services\VoucherAuditRecordingAdapter;
+use App\Modules\Voucher\Infrastructure\Adapters\AuditingVoucherLifecycleTransitionRepository;
 use App\Modules\Voucher\Infrastructure\Adapters\StubAccommodationClassificationReadAdapter;
 use App\Modules\Voucher\Infrastructure\Repositories\VoucherEligibilityRepository;
 use App\Modules\Voucher\Infrastructure\Repositories\VoucherLifecycleTransitionRepository;
@@ -43,7 +45,14 @@ class VoucherServiceProvider extends ServiceProvider
         $this->app->singleton(VoucherEligibilityRepositoryContract::class, VoucherEligibilityRepository::class);
         $this->app->singleton(VoucherRepositoryContract::class, VoucherRepository::class);
         $this->app->singleton(VoucherReadRepositoryContract::class, VoucherReadRepository::class);
-        $this->app->singleton(VoucherLifecycleTransitionRepositoryContract::class, VoucherLifecycleTransitionRepository::class);
+        $this->app->singleton(VoucherLifecycleTransitionRepository::class);
+        $this->app->singleton(VoucherAuditRecordingAdapter::class);
+        $this->app->singleton(VoucherLifecycleTransitionRepositoryContract::class, function ($app): AuditingVoucherLifecycleTransitionRepository {
+            return new AuditingVoucherLifecycleTransitionRepository(
+                $app->make(VoucherLifecycleTransitionRepository::class),
+                $app->make(VoucherAuditRecordingAdapter::class),
+            );
+        });
         $this->app->singleton(VoucherEligibilityEvaluator::class);
         $this->app->singleton(ExternalLotteryWinnerFactsSanitizer::class);
         $this->app->singleton(VoucherCodeGenerator::class);
