@@ -13,9 +13,9 @@
 - **No** internal assignment, check-in/out, physical dormitory modeling, Lottery execution, Request lifecycle, Notification delivery, Audit storage, Reporting projections
 - **No** resolution of **UD-03** (trigger fact bundle shape) or **UD-08** (expiration policy detail)
 - **spec07** remains **CLOSED** — trigger facts only; no reopening
-- **Not** Design Approval · **Not** Implementation Authorization
+- **Implementation Authorization:** Waves 1–3 [`spec08-implementation-authorization.md`](../../.specify/docs/handoff/spec08-implementation-authorization.md) (superseded); Waves 4–5 [`spec08-implementation-authorization-waves4-5.md`](../../.specify/docs/handoff/spec08-implementation-authorization-waves4-5.md) (retroactive acceptance)
 
-**Status**: Task decomposition complete — **not** authorized for implementation
+**Status**: Program **CLOSED** (T001–T031) — post-implementation freeze **PASS** ([`spec08-implementation-closure`](../../.specify/docs/handoff/spec08-implementation-closure.md))
 
 ---
 
@@ -152,6 +152,8 @@ Derived from [plan.md](./plan.md) planning clusters (PC-01–PC-08). No new clus
 - [x] T031 [B7] Document that **UD-03** and **UD-08** remain open and are not resolved by this task set — plan open-questions registry
 
 **Checkpoint**: Boundary and open-item registry aligned with spec and plan. — **CP-W7**: PASS
+
+**Program closure**: Post-implementation freeze — **PASS** (`spec08-implementation-closure`, 2026-07-02)
 
 ---
 

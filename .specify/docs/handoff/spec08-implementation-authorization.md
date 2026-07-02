@@ -13,8 +13,9 @@
 | **Wave** | Waves **1–3** (initial authorized execution) |
 | **Authorized Scope** | T001–T017 |
 | **Authorization Type** | Controlled Initial Implementation Authorization |
-| **authorization-status** | `active` |
-| **Authorization Status** | **ACTIVE** — Waves 1–3 only |
+| **authorization-status** | `superseded` |
+| **Authorization Status** | **SUPERSEDED** — Waves 1–3 historically valid; active execution authority transferred |
+| **superseded-by** | [`.specify/docs/handoff/spec08-implementation-authorization-waves4-5.md`](./spec08-implementation-authorization-waves4-5.md) |
 | **authorized-by** | Governance Review |
 | **Effective Date** | Immediate upon issuance |
 | **effective-date** | 2026-07-01 |
@@ -29,27 +30,34 @@
 **Normative scope fields**
 
 ```text
-authorization-status: active
-authorized-scope: Waves 1–3 — T001–T017
-executable-forward-scope: Wave 1 (EB-1) entry — T001
-maximum-authorized-scope: Wave 3 exit — T017 + CP-W3 PASS
-future-continuation-scope: Waves 4–5 — T018–T031 (NOT AUTHORIZED by this record)
-active-execution-scope: Waves 1–3 — T001–T017
-blocked-scope: Waves 4–5; spec07 reopening; UD-03/UD-08 resolution during execution
-authority-constraints: CD-016 and R8 frozen; behavior-level tasks only; no artifact redesign
+authorization-status: superseded
+authorized-scope: Waves 1–3 — T001–T017 (complete)
+superseded-by: spec08-implementation-authorization-waves4-5.md
+executable-forward-scope: —
+maximum-authorized-scope: Wave 3 exit — T017 + CP-W3 PASS (satisfied)
+future-continuation-scope: Waves 4–5 — T018–T031 (reconciled by superseding record)
+active-execution-scope: none
+blocked-scope: —
+authority-constraints: CD-016 and R8 frozen; historical record only
 ```
 
 ---
 
 ## Status
 
-**Implementation Authorized** — **ACTIVE** (Waves 1–3 only)
+**Implementation Authorized** — **SUPERSEDED** (Waves 1–3 closed; program scope extended via follow-on record)
 
-This record grants controlled execution authority for the **initial Voucher program slice**: trigger intake, eligibility evaluation, and issuance lifecycle with transition recording.
+**Authorization status:** `superseded`  
+**superseded-by:** [`.specify/docs/handoff/spec08-implementation-authorization-waves4-5.md`](./spec08-implementation-authorization-waves4-5.md)  
+**Wave:** **Waves 1–3** — initial authorized execution (T001–T017) — **CLOSED**
 
-**This record does NOT authorize:**
+This record historically granted controlled execution authority for the **initial Voucher program slice**: trigger intake, eligibility evaluation, and issuance lifecycle with transition recording.
 
-- Waves 4–5 (T018–T031)
+**Waves 4–5 (T018–T031)** are reconciled under the superseding record via **RETROACTIVE_ACCEPTANCE** (BM-01 resolution).
+
+**This record does NOT authorize (post-supersession):**
+
+- Forward execution under this record
 - Architecture freeze issuance (not yet approved for spec08)
 - Resolution of **UD-03** or **UD-08**
 - Reopening or modification of **spec07**
@@ -301,8 +309,8 @@ Execution **must not** advance past a wave until its checkpoint **PASS**es.
 | Item | State |
 | ---- | ----- |
 | spec07 | **CLOSED** — no active execution |
-| spec08 (this record) | **ACTIVE** — Waves 1–3 — T001–T017 |
-| spec08 Waves 4–5 | **NOT AUTHORIZED** |
+| spec08 (this record) | **SUPERSEDED** — governs completed Waves 1–3 — T001–T017 |
+| spec08 Waves 4–5 | **RECONCILED** — [`spec08-implementation-authorization-waves4-5.md`](./spec08-implementation-authorization-waves4-5.md) |
 | spec09–spec11 | **NOT AUTHORIZED** |
 
 Upon **CP-W3 PASS** and completion of T001–T017:
@@ -334,6 +342,7 @@ HALT on T018+ without follow-up Implementation Authorization.
 
 ## References
 
+- [`spec08-implementation-authorization-waves4-5.md`](./spec08-implementation-authorization-waves4-5.md) — Waves 4–5 (supersedes active execution authority)
 - [`spec08-nomination-record.md`](./spec08-nomination-record.md)
 - [`spec07-implementation-authorization-wave1b.md`](./spec07-implementation-authorization-wave1b.md) — spec07 closure
 - [`catalog-decisions.md`](../catalog-decisions.md) CD-016, CD-017
