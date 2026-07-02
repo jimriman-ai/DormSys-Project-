@@ -56,6 +56,7 @@ No AI-only governance mutation
 No blocker-related rule without owner and exit-condition logic
 
 ## 5. Rule Record Template
+
 ```text
 Rule ID:
 Title:
@@ -74,10 +75,11 @@ Approval Authority:
 Approval Date:
 Review Date:
 Notes:
+```
 
 ## 6. Adoption Decision Record
 
-text
+```text
 Decision ID:
 Rule ID:
 Decision Outcome:
@@ -88,7 +90,7 @@ Owner:
 Effective Date:
 Next Review:
 Notes:
-
+```
 
 **8. `governance-auditor-prompt.md`**
 ```md
