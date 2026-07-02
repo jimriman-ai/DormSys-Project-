@@ -22,6 +22,7 @@ use App\Modules\Lottery\Infrastructure\Jobs\AutoLockLotteryJob;
 use App\Modules\Lottery\Infrastructure\Jobs\ExecuteLotteryDrawJob;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\Feature\Modules\Lottery\LotteryTestFactory;
 
 uses(RefreshDatabase::class);
 
@@ -38,7 +39,7 @@ afterEach(function (): void {
 
 it('validates the full request to read contract integration boundary', function (): void {
     $employeeOne = createEmployeeForLotteryEnrollmentTest();
-    $employeeTwo = createSecondEmployeeForLotteryContractTest();
+    $employeeTwo = LotteryTestFactory::createSecondEmployee();
     $dormitoryId = UuidGenerator::uuid7();
     $requestOne = createApprovedLotteryRegistrationRequest($employeeOne, $dormitoryId);
     $requestTwo = createApprovedLotteryRegistrationRequest($employeeTwo, $dormitoryId);
@@ -169,34 +170,3 @@ it('preserves idempotency when auto lock and draw jobs retry after manual comple
     expect($payload['winners'])->toHaveCount(1);
     expect(app(LotteryResultRepositoryContract::class)->findByProgramId($opened->requireId()))->toHaveCount(1);
 });
-
-function createSecondEmployeeForLotteryContractTest(): \App\Modules\Employee\Domain\Entities\Employee
-{
-    for ($attempt = 0; $attempt < 100; $attempt++) {
-        $nine = str_pad((string) random_int(100000000, 999999999), 9, '0', STR_PAD_LEFT);
-
-        for ($check = 0; $check <= 9; $check++) {
-            $candidate = $nine.(string) $check;
-
-            if (\App\Support\ValueObjects\Identity\NationalCode::isValid($candidate)) {
-                $nationalCode = \App\Support\ValueObjects\Identity\NationalCode::fromString($candidate);
-
-                $user = app(\App\Modules\Identity\Application\Services\CreateUserAction::class)->execute(
-                    'Lottery Integration User',
-                    'lottery.integration.'.uniqid('', true).'@example.com',
-                );
-
-                return app(\App\Modules\Employee\Application\Services\CreateEmployeeAction::class)->execute(
-                    identityId: \App\Modules\Employee\Domain\ValueObjects\IdentityUserId::fromString($user->requireId()->value),
-                    employeeCode: 'EMP-LI-'.substr(uniqid('', true), -6),
-                    firstName: 'Integration',
-                    lastName: 'Boundary',
-                    nationalCode: $nationalCode,
-                    hireDate: new DateTimeImmutable('2024-01-01'),
-                );
-            }
-        }
-    }
-
-    throw new RuntimeException('Could not generate a valid national code for lottery integration test.');
-}

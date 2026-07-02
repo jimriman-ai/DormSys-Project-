@@ -9,7 +9,7 @@ use App\Modules\Allocation\Domain\Enums\AllocationStatus;
 use App\Support\Models\BaseModel;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
-use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property string $id
@@ -77,7 +77,10 @@ class AllocationModel extends BaseModel
             ])
             ->logOnlyDirty()
             ->dontLogEmptyChanges()
-            ->setDescriptionForEvent('created', 'allocation assigned')
-            ->setDescriptionForEvent('updated', 'allocation updated');
+            ->setDescriptionForEvent(fn (string $eventName): string => match ($eventName) {
+                'created' => 'allocation assigned',
+                'updated' => 'allocation updated',
+                default => $eventName,
+            });
     }
 }
