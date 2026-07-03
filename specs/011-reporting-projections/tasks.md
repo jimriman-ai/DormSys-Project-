@@ -4,17 +4,20 @@
 
 **Branch**: `011-reporting-projections`
 
-**Status**: **IMPLEMENTATION COMPLETE** — batches **I-001–I-031 COMPLETE**; closure verification pending
+**Status**: **CLOSED** — authorized implementation **I-001–I-031 COMPLETE**; final closure verification **PASS** (2026-07-03)
 
 ```text
-lifecycle_state:        IMPLEMENTATION_AUTHORIZED
-execution_state:        COMPLETE (authorized scope)
+lifecycle_state:        CLOSED
+immutable_status:       BASELINE (implementation frozen at closure)
+execution_state:        NONE
 executable:             false
-authorization:          implementation-authorization-decision.md (2026-07-03)
+authorization:          implementation-authorization-decision.md (2026-07-03) — scope delivered
 predecessor:            spec10 CLOSED / FROZEN
-closure_state:          PENDING_FINAL_VERIFICATION
-closure_blocker:        none (authorized implementation scope complete)
+closure_state:          CLOSED
+closure_checkpoint:     spec11-implementation-closure
+closure_blocker:        none
 rollout_authorized:     false
+active_execution_scope: none
 ```
 
 **Authorization baseline**: [`implementation-authorization-decision.md`](./implementation-authorization-decision.md) — **APPROVED_WITH_CONDITIONS**
@@ -123,6 +126,19 @@ rollout_authorized:     false
 | Pint (Reporting paths) | **PASS** | clean |
 | Reporting test suite | **PASS** | 50 tests, 168 assertions |
 
+### Final Program Closure Verification (2026-07-03)
+
+| Gate | Command / scope | Result |
+| ---- | --------------- | ------ |
+| Reporting test suite | `php artisan test tests/Feature/Modules/Reporting tests/Unit/Modules/Reporting tests/Architecture/ReportingBoundaryTest.php` | **PASS** — 50 tests, 168 assertions |
+| PHPStan level 8 | `php vendor/bin/phpstan analyse app/Modules/Reporting` | **PASS** — 0 errors |
+| Pint | `php vendor/bin/pint --test` (Reporting scope paths) | **PASS** |
+| Authorized scope I-001–I-031 | tasks.md reconciliation + repository artifact check | **PASS** — all items `[x]`; RU-01–RU-06 on `ReportingReadContract` |
+| Remaining authorized implementation | implementation-authorization-decision.md §4 | **PASS** — none |
+| spec10 mutation | boundary tests + IA-C-05 | **PASS** — no `Audit\Infrastructure` imports |
+
+**Closure decision:** **spec11 truthfully CLOSED** — authorized Reporting implementation scope delivered; no forward execution under this authorization.
+
 ---
 
 ## FR_MAPPING (planning-level)
@@ -143,7 +159,7 @@ rollout_authorized:     false
 | ----- | ----- |
 | **implementation_batches_complete** | **I-001–I-031** |
 | **remaining_authorized_scope** | **none** |
-| **ready_for_implementation_closure** | **yes** — pending final closure verification batch |
+| **ready_for_implementation_closure** | **yes** — **CLOSED** (2026-07-03) |
 | **rollout_authorized** | **no** |
 | **predecessor_state** | spec10 CLOSED / FROZEN |
 
@@ -153,11 +169,12 @@ rollout_authorized:     false
 
 | Field | Value |
 | ----- | ----- |
-| **lifecycle_stage** | **IMPLEMENTATION_COMPLETE** |
-| **next_step** | Final spec011 closure verification batch |
-| **execution_authorized** | **no** (authorized scope delivered) |
+| **lifecycle_stage** | **CLOSED** |
+| **next_step** | **None under spec11** — new scope requires separate governance authorization |
+| **execution_authorized** | **no** |
 | **spec10_mutation** | **FORBIDDEN** |
+| **not_authorized_without_new_record** | Production rollout; E-03 explorer UI; E-04 KPI dashboards; M4 producer rollout; `SecurityAuditor` role; spec04+ implementation |
 
 ---
 
-**End of tasks. Authorized implementation scope I-001–I-031 complete; spec11 closure verification may proceed.**
+**End of tasks. spec11 authorized implementation scope I-001–I-031 CLOSED (2026-07-03). No forward execution permitted under current authorization.**
