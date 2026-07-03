@@ -1,0 +1,114 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\Reporting\Infrastructure\Repositories;
+
+use App\Modules\Audit\Application\DTOs\AuditHistoryItemDto;
+use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
+use App\Modules\Reporting\Domain\Enums\WindowGranularity;
+use App\Modules\Reporting\Infrastructure\Persistence\Models\AuditWindowAggregateModel;
+use DateTimeImmutable;
+use DateTimeZone;
+use Illuminate\Support\Carbon;
+
+final class AuditWindowAggregateRepository
+{
+    public function incrementForItem(
+        AuditHistoryItemDto $item,
+        DateTimeImmutable $windowStart,
+        DateTimeImmutable $windowEnd,
+        ArchiveVisibilityTier $archiveVisibilityTier,
+        string $projectionVersion,
+    ): void {
+        $refreshedAt = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+
+        $this->incrementRow(
+            windowStart: $windowStart,
+            windowEnd: $windowEnd,
+            eventType: $item->eventType,
+            sourceContext: $item->sourceContext,
+            actorType: $item->actorType,
+            entityType: $item->entityType,
+            archiveVisibilityTier: $archiveVisibilityTier,
+            projectionVersion: $projectionVersion,
+            refreshedAt: $refreshedAt,
+            entityId: $item->entityId,
+            actorId: $item->actorId,
+        );
+
+        $this->incrementRow(
+            windowStart: $windowStart,
+            windowEnd: $windowEnd,
+            eventType: null,
+            sourceContext: null,
+            actorType: null,
+            entityType: null,
+            archiveVisibilityTier: $archiveVisibilityTier,
+            projectionVersion: $projectionVersion,
+            refreshedAt: $refreshedAt,
+            entityId: $item->entityId,
+            actorId: $item->actorId,
+        );
+    }
+
+    private function incrementRow(
+        DateTimeImmutable $windowStart,
+        DateTimeImmutable $windowEnd,
+        ?string $eventType,
+        ?string $sourceContext,
+        ?string $actorType,
+        ?string $entityType,
+        ArchiveVisibilityTier $archiveVisibilityTier,
+        string $projectionVersion,
+        DateTimeImmutable $refreshedAt,
+        string $entityId,
+        string $actorId,
+    ): void {
+        $model = AuditWindowAggregateModel::query()
+            ->where('window_start', Carbon::instance($windowStart))
+            ->where('window_end', Carbon::instance($windowEnd))
+            ->where('granularity', WindowGranularity::Day->value)
+            ->where('event_type', $eventType)
+            ->where('source_context', $sourceContext)
+            ->where('actor_type', $actorType)
+            ->where('entity_type', $entityType)
+            ->where('archive_visibility_tier', $archiveVisibilityTier->value)
+            ->first();
+
+        if ($model === null) {
+            AuditWindowAggregateModel::query()->create([
+                'window_start' => Carbon::instance($windowStart),
+                'window_end' => Carbon::instance($windowEnd),
+                'granularity' => WindowGranularity::Day,
+                'event_type' => $eventType,
+                'source_context' => $sourceContext,
+                'actor_type' => $actorType,
+                'entity_type' => $entityType,
+                'archive_visibility_tier' => $archiveVisibilityTier,
+                'event_count' => 1,
+                'distinct_entity_count' => 1,
+                'distinct_actor_count' => 1,
+                'top_event_types' => $eventType === null ? null : [$eventType => 1],
+                'refreshed_at' => Carbon::instance($refreshedAt),
+                'projection_version' => $projectionVersion,
+            ]);
+
+            return;
+        }
+
+        $model->event_count++;
+        $model->distinct_entity_count = max($model->distinct_entity_count, 1);
+        $model->distinct_actor_count = max($model->distinct_actor_count, 1);
+
+        if ($eventType !== null) {
+            $histogram = $model->top_event_types ?? [];
+            $histogram[$eventType] = ($histogram[$eventType] ?? 0) + 1;
+            $model->top_event_types = $histogram;
+        }
+
+        $model->refreshed_at = Carbon::instance($refreshedAt);
+        $model->projection_version = $projectionVersion;
+        $model->save();
+    }
+}

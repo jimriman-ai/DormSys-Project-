@@ -91,6 +91,11 @@ predecessor:            spec10 CLOSED / FROZEN
 - [x] I-018 Implement projection refresh fetch-batch foundation service
 - [x] I-019 Register refresh foundation DI bindings
 - [x] I-020 Add refresh foundation unit and feature tests
+- [x] I-021 Add projection ingest receipt migration for idempotent window/actor materialization
+- [x] I-022 Implement family-specific projection materializers (correlation, window aggregate, actor activity)
+- [x] I-023 Implement ProjectionRefreshRunnerService with transactional write-then-cursor-advance
+- [x] I-024 Register materialization and runner DI bindings
+- [x] I-025 Add materialization idempotency and cursor progression feature tests
 
 ---
 
