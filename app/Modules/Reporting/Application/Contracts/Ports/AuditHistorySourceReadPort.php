@@ -36,4 +36,11 @@ interface AuditHistorySourceReadPort
         int $page,
         int $perPage,
     ): PaginatedAuditHistoryDto;
+
+    public function queryForProjectionRefresh(
+        bool $includeArchived,
+        ?DateTimeImmutable $occurredAfter,
+        int $page,
+        int $perPage,
+    ): PaginatedAuditHistoryDto;
 }

@@ -86,6 +86,11 @@ predecessor:            spec10 CLOSED / FROZEN
 - [x] I-013 Add T1 `reporting_audit_window_aggregates` migration and `AuditWindowAggregateModel`
 - [x] I-014 Add T1 `reporting_actor_activity_summaries` migration and `ActorActivitySummaryModel`
 - [x] I-015 Add Reporting T1 projection schema feature tests
+- [x] I-016 Add ProjectionCursorControlPort (PP-09) and cursor repository
+- [x] I-017 Add ProjectionRefreshInputPort (PP-02) and T0 ingest page fetch on AuditHistorySourceReadPort
+- [x] I-018 Implement projection refresh fetch-batch foundation service
+- [x] I-019 Register refresh foundation DI bindings
+- [x] I-020 Add refresh foundation unit and feature tests
 
 ---
 

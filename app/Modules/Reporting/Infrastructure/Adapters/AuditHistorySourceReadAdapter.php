@@ -8,12 +8,14 @@ use App\Modules\Audit\Application\Contracts\AuditHistoryReadContract;
 use App\Modules\Audit\Application\DTOs\AuditHistoryQuery;
 use App\Modules\Audit\Application\DTOs\PaginatedAuditHistoryDto;
 use App\Modules\Reporting\Application\Contracts\Ports\AuditHistorySourceReadPort;
+use App\Modules\Reporting\Application\Services\ReportingProjectionEventTypeCatalog;
 use DateTimeImmutable;
 
 final class AuditHistorySourceReadAdapter implements AuditHistorySourceReadPort
 {
     public function __construct(
         private readonly AuditHistoryReadContract $auditHistoryRead,
+        private readonly ReportingProjectionEventTypeCatalog $eventTypeCatalog,
     ) {}
 
     public function queryByEntity(
@@ -54,6 +56,21 @@ final class AuditHistorySourceReadAdapter implements AuditHistorySourceReadPort
             eventTypes: $eventTypes,
             occurredFrom: $occurredFrom,
             occurredTo: $occurredTo,
+            includeArchived: $includeArchived,
+            page: $page,
+            perPage: $perPage,
+        ));
+    }
+
+    public function queryForProjectionRefresh(
+        bool $includeArchived,
+        ?DateTimeImmutable $occurredAfter,
+        int $page,
+        int $perPage,
+    ): PaginatedAuditHistoryDto {
+        return $this->auditHistoryRead->query(new AuditHistoryQuery(
+            eventTypes: $this->eventTypeCatalog->allEventTypes(),
+            occurredFrom: $occurredAfter,
             includeArchived: $includeArchived,
             page: $page,
             perPage: $perPage,
