@@ -7,6 +7,7 @@ namespace App\Modules\Reporting\Application\Services;
 use App\Modules\Audit\Application\Contracts\AuditAuthorizationPort;
 use App\Modules\Reporting\Application\Contracts\Ports\AggregateDrillDownPort;
 use App\Modules\Reporting\Application\Contracts\ReportingReadContract;
+use App\Modules\Reporting\Application\DTOs\ActorTimelineQuery;
 use App\Modules\Reporting\Application\DTOs\AggregateDrillDownQuery;
 use App\Modules\Reporting\Application\DTOs\AggregateDrillDownReadModel;
 use App\Modules\Reporting\Application\DTOs\EntityAuditTimelineReadModel;
@@ -18,6 +19,7 @@ final class ReportingReadService implements ReportingReadContract
         private readonly AuditAuthorizationPort $authorization,
         private readonly ReportingArchiveVisibilityGuard $archiveVisibility,
         private readonly QueryEntityAuditTimelineAction $queryEntityAuditTimeline,
+        private readonly QueryActorAuditTimelineAction $queryActorAuditTimeline,
         private readonly AggregateDrillDownPort $aggregateDrillDown,
     ) {}
 
@@ -28,6 +30,15 @@ final class ReportingReadService implements ReportingReadContract
         $includeArchived = $this->archiveVisibility->resolveIncludeArchived($query->includeArchived);
 
         return $this->queryEntityAuditTimeline->execute($this->withIncludeArchived($query, $includeArchived));
+    }
+
+    public function actorTimeline(ActorTimelineQuery $query): EntityAuditTimelineReadModel
+    {
+        $this->authorization->authorizeRead();
+
+        $includeArchived = $this->archiveVisibility->resolveIncludeArchived($query->includeArchived);
+
+        return $this->queryActorAuditTimeline->execute($this->withIncludeArchivedForActor($query, $includeArchived));
     }
 
     public function drillDown(AggregateDrillDownQuery $query): AggregateDrillDownReadModel
@@ -48,6 +59,24 @@ final class ReportingReadService implements ReportingReadContract
         return new EntityTimelineQuery(
             entityType: $query->entityType,
             entityId: $query->entityId,
+            eventTypes: $query->eventTypes,
+            occurredFrom: $query->occurredFrom,
+            occurredTo: $query->occurredTo,
+            includeArchived: $includeArchived,
+            page: $query->page,
+            perPage: $query->perPage,
+        );
+    }
+
+    private function withIncludeArchivedForActor(ActorTimelineQuery $query, bool $includeArchived): ActorTimelineQuery
+    {
+        if ($query->includeArchived === $includeArchived) {
+            return $query;
+        }
+
+        return new ActorTimelineQuery(
+            actorType: $query->actorType,
+            actorId: $query->actorId,
             eventTypes: $query->eventTypes,
             occurredFrom: $query->occurredFrom,
             occurredTo: $query->occurredTo,

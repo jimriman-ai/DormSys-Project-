@@ -80,6 +80,7 @@ predecessor:            spec10 CLOSED / FROZEN
 - [x] I-007 Add entity timeline summary to RU-01 read model
 - [x] I-008 Harden RU-01/RU-06 filter and pagination behavior with tests
 - [x] I-009 Enforce BT-02 audit history read contract isolation in architecture tests
+- [x] I-010 Implement T0 actor-scoped audit timeline read flow
 
 ---
 

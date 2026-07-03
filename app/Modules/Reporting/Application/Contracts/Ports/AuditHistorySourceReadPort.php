@@ -22,4 +22,18 @@ interface AuditHistorySourceReadPort
         int $page,
         int $perPage,
     ): PaginatedAuditHistoryDto;
+
+    /**
+     * @param  list<string>|null  $eventTypes
+     */
+    public function queryByActor(
+        string $actorType,
+        string $actorId,
+        bool $includeArchived,
+        ?array $eventTypes,
+        ?DateTimeImmutable $occurredFrom,
+        ?DateTimeImmutable $occurredTo,
+        int $page,
+        int $perPage,
+    ): PaginatedAuditHistoryDto;
 }

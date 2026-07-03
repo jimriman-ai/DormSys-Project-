@@ -37,4 +37,26 @@ final class AuditHistorySourceReadAdapter implements AuditHistorySourceReadPort
             perPage: $perPage,
         ));
     }
+
+    public function queryByActor(
+        string $actorType,
+        string $actorId,
+        bool $includeArchived,
+        ?array $eventTypes,
+        ?DateTimeImmutable $occurredFrom,
+        ?DateTimeImmutable $occurredTo,
+        int $page,
+        int $perPage,
+    ): PaginatedAuditHistoryDto {
+        return $this->auditHistoryRead->query(new AuditHistoryQuery(
+            actorType: $actorType,
+            actorId: $actorId,
+            eventTypes: $eventTypes,
+            occurredFrom: $occurredFrom,
+            occurredTo: $occurredTo,
+            includeArchived: $includeArchived,
+            page: $page,
+            perPage: $perPage,
+        ));
+    }
 }
