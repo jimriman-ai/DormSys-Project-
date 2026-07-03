@@ -76,4 +76,22 @@ final class AuditHistorySourceReadAdapter implements AuditHistorySourceReadPort
             perPage: $perPage,
         ));
     }
+
+    public function queryInWindow(
+        bool $includeArchived,
+        ?array $eventTypes,
+        DateTimeImmutable $occurredFrom,
+        DateTimeImmutable $occurredTo,
+        int $page,
+        int $perPage,
+    ): PaginatedAuditHistoryDto {
+        return $this->auditHistoryRead->query(new AuditHistoryQuery(
+            eventTypes: $eventTypes ?? $this->eventTypeCatalog->allEventTypes(),
+            occurredFrom: $occurredFrom,
+            occurredTo: $occurredTo,
+            includeArchived: $includeArchived,
+            page: $page,
+            perPage: $perPage,
+        ));
+    }
 }

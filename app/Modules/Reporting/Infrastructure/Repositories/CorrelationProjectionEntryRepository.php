@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Reporting\Infrastructure\Repositories;
 
 use App\Modules\Audit\Application\DTOs\AuditHistoryItemDto;
+use App\Modules\Reporting\Application\DTOs\ComplianceExportQuery;
 use App\Modules\Reporting\Application\DTOs\CorrelationBundleQuery;
 use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
 use App\Modules\Reporting\Infrastructure\Persistence\Models\CorrelationProjectionEntryModel;
@@ -61,6 +62,40 @@ final class CorrelationProjectionEntryRepository
 
         if ($query->eventTypes !== null && $query->eventTypes !== []) {
             $builder->whereIn('event_type', $query->eventTypes);
+        }
+
+        return array_values($builder->get()->all());
+    }
+
+    /**
+     * @return list<CorrelationProjectionEntryModel>
+     */
+    public function findEntriesInWindow(ComplianceExportQuery $query, ArchiveVisibilityTier $tier): array
+    {
+        $builder = CorrelationProjectionEntryModel::query()
+            ->where('archive_visibility_tier', $tier->value)
+            ->where('occurred_at', '>=', $query->windowStart)
+            ->where('occurred_at', '<', $query->windowEnd)
+            ->orderBy('occurred_at');
+
+        if ($query->eventTypes !== null && $query->eventTypes !== []) {
+            $builder->whereIn('event_type', $query->eventTypes);
+        }
+
+        if ($query->eventType !== null) {
+            $builder->where('event_type', $query->eventType);
+        }
+
+        if ($query->sourceContext !== null) {
+            $builder->where('source_context', $query->sourceContext);
+        }
+
+        if ($query->actorType !== null) {
+            $builder->where('actor_type', $query->actorType);
+        }
+
+        if ($query->entityType !== null) {
+            $builder->where('entity_type', $query->entityType);
         }
 
         return array_values($builder->get()->all());

@@ -44,4 +44,24 @@ final class ReportingProvenanceFactory
             filterHash: hash('sha256', json_encode($normalizedFilters, JSON_THROW_ON_ERROR)),
         );
     }
+
+    /**
+     * @param  array<string, mixed>  $normalizedFilters
+     */
+    public function forMixed(
+        array $normalizedFilters,
+        bool $includeArchived,
+        ?DateTimeImmutable $refreshedAt,
+        ?string $projectionVersion,
+    ): ReportingProvenanceDto {
+        $normalizedFilters['includeArchived'] = $includeArchived;
+
+        return new ReportingProvenanceDto(
+            sourceTier: 'mixed',
+            refreshedAt: $refreshedAt,
+            projectionVersion: $projectionVersion,
+            includeArchived: $includeArchived,
+            filterHash: hash('sha256', json_encode($normalizedFilters, JSON_THROW_ON_ERROR)),
+        );
+    }
 }

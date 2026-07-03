@@ -9,6 +9,8 @@ use App\Modules\Reporting\Application\DTOs\AggregateDrillDownQuery;
 use App\Modules\Reporting\Application\DTOs\AggregateDrillDownReadModel;
 use App\Modules\Reporting\Application\DTOs\AuditWindowSummaryQuery;
 use App\Modules\Reporting\Application\DTOs\AuditWindowSummaryReadModel;
+use App\Modules\Reporting\Application\DTOs\ComplianceExportQuery;
+use App\Modules\Reporting\Application\DTOs\ComplianceExportReadModel;
 use App\Modules\Reporting\Application\DTOs\CorrelationAuditBundleReadModel;
 use App\Modules\Reporting\Application\DTOs\CorrelationBundleQuery;
 use App\Modules\Reporting\Application\DTOs\EntityAuditTimelineReadModel;
@@ -29,4 +31,6 @@ interface ReportingReadContract
     public function auditWindowSummary(AuditWindowSummaryQuery $query): AuditWindowSummaryReadModel;
 
     public function securityActorActivity(SecurityActorActivityQuery $query): SecurityAuditEventReadModel;
+
+    public function complianceExport(ComplianceExportQuery $query): ComplianceExportReadModel;
 }

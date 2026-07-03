@@ -4,16 +4,16 @@
 
 **Branch**: `011-reporting-projections`
 
-**Status**: **IMPLEMENTATION IN PROGRESS** — batches **I-001–I-029 COMPLETE**; **RU-04 remaining**
+**Status**: **IMPLEMENTATION COMPLETE** — batches **I-001–I-031 COMPLETE**; closure verification pending
 
 ```text
 lifecycle_state:        IMPLEMENTATION_AUTHORIZED
-execution_state:        ACTIVE (single remaining use-case)
-executable:             partial — RU-04 only
+execution_state:        COMPLETE (authorized scope)
+executable:             false
 authorization:          implementation-authorization-decision.md (2026-07-03)
 predecessor:            spec10 CLOSED / FROZEN
-closure_state:          NOT CLOSED
-closure_blocker:        RU-04 compliance export (authorized build-order step 3)
+closure_state:          PENDING_FINAL_VERIFICATION
+closure_blocker:        none (authorized implementation scope complete)
 rollout_authorized:     false
 ```
 
@@ -106,7 +106,7 @@ rollout_authorized:     false
 - [x] I-028 Wire RU-02 / RU-03 / RU-05 on ReportingReadContract with DI bindings
 - [x] I-029 Add projection-backed read feature tests for authorized reporting flows
 - [x] I-030 Run implementation closure verification gates (Reporting tests, PHPStan, Pint)
-- [ ] I-031 Implement RU-04 compliance export read assembly (`ComplianceExportReadModel`; PP-07 → PP-01)
+- [x] I-031 Implement RU-04 compliance export read assembly (`ComplianceExportReadModel`; PP-07 → PP-01)
 
 ### Implementation Closure Verification (2026-07-03)
 
@@ -117,11 +117,11 @@ rollout_authorized:     false
 | T1 refresh foundation | **PASS** | I-016–I-020; `ProjectionRefreshInputTest`, `ProjectionCursorControlTest` |
 | T1 materialization | **PASS** | I-021–I-025; `ProjectionRefreshMaterializationTest` |
 | T1 read/query (RU-02, RU-03, RU-05) | **PASS** | I-026–I-029; `ProjectionBackedReadTest` |
-| RU-04 compliance export | **OPEN** | Not implemented — authorized scope per `implementation-authorization-decision.md` §4 step 3 |
+| RU-04 compliance export | **PASS** | I-031; `ComplianceExportReadTest` |
 | Boundary tests (BT-01, BT-02) | **PASS** | `ReportingBoundaryTest` |
 | PHPStan level 8 (`app/Modules/Reporting/`) | **PASS** | 0 errors |
 | Pint (Reporting paths) | **PASS** | clean |
-| Reporting test suite | **PASS** | 46 tests, 147 assertions |
+| Reporting test suite | **PASS** | 50 tests, 168 assertions |
 
 ---
 
@@ -141,9 +141,9 @@ rollout_authorized:     false
 
 | Field | Value |
 | ----- | ----- |
-| **implementation_batches_complete** | **I-001–I-030** |
-| **remaining_authorized_scope** | **I-031** (RU-04 compliance export) |
-| **ready_for_implementation_closure** | **no** — RU-04 open |
+| **implementation_batches_complete** | **I-001–I-031** |
+| **remaining_authorized_scope** | **none** |
+| **ready_for_implementation_closure** | **yes** — pending final closure verification batch |
 | **rollout_authorized** | **no** |
 | **predecessor_state** | spec10 CLOSED / FROZEN |
 
@@ -153,11 +153,11 @@ rollout_authorized:     false
 
 | Field | Value |
 | ----- | ----- |
-| **lifecycle_stage** | **IMPLEMENTATION_ACTIVE** |
-| **next_step** | **I-031** — RU-04 compliance export read assembly |
-| **execution_authorized** | **partial** (RU-04 only) |
+| **lifecycle_stage** | **IMPLEMENTATION_COMPLETE** |
+| **next_step** | Final spec011 closure verification batch |
+| **execution_authorized** | **no** (authorized scope delivered) |
 | **spec10_mutation** | **FORBIDDEN** |
 
 ---
 
-**End of tasks. Implementation batches I-001–I-030 complete; spec11 not closed until I-031 (RU-04) is delivered.**
+**End of tasks. Authorized implementation scope I-001–I-031 complete; spec11 closure verification may proceed.**

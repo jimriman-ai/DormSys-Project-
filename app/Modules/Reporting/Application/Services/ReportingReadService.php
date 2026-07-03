@@ -12,6 +12,8 @@ use App\Modules\Reporting\Application\DTOs\AggregateDrillDownQuery;
 use App\Modules\Reporting\Application\DTOs\AggregateDrillDownReadModel;
 use App\Modules\Reporting\Application\DTOs\AuditWindowSummaryQuery;
 use App\Modules\Reporting\Application\DTOs\AuditWindowSummaryReadModel;
+use App\Modules\Reporting\Application\DTOs\ComplianceExportQuery;
+use App\Modules\Reporting\Application\DTOs\ComplianceExportReadModel;
 use App\Modules\Reporting\Application\DTOs\CorrelationAuditBundleReadModel;
 use App\Modules\Reporting\Application\DTOs\CorrelationBundleQuery;
 use App\Modules\Reporting\Application\DTOs\EntityAuditTimelineReadModel;
@@ -29,6 +31,7 @@ final class ReportingReadService implements ReportingReadContract
         private readonly QueryCorrelationBundleAction $queryCorrelationBundle,
         private readonly QueryAuditWindowSummaryAction $queryAuditWindowSummary,
         private readonly QuerySecurityActorActivityAction $querySecurityActorActivity,
+        private readonly QueryComplianceExportAction $queryComplianceExport,
         private readonly AggregateDrillDownPort $aggregateDrillDown,
     ) {}
 
@@ -84,6 +87,36 @@ final class ReportingReadService implements ReportingReadContract
         $includeArchived = $this->archiveVisibility->resolveIncludeArchived($query->includeArchived);
 
         return $this->querySecurityActorActivity->execute($this->withIncludeArchivedForSecurityActor($query, $includeArchived));
+    }
+
+    public function complianceExport(ComplianceExportQuery $query): ComplianceExportReadModel
+    {
+        $this->authorization->authorizeRead();
+
+        $includeArchived = $this->archiveVisibility->resolveIncludeArchived($query->includeArchived);
+
+        return $this->queryComplianceExport->execute($this->withIncludeArchivedForComplianceExport($query, $includeArchived));
+    }
+
+    private function withIncludeArchivedForComplianceExport(ComplianceExportQuery $query, bool $includeArchived): ComplianceExportQuery
+    {
+        if ($query->includeArchived === $includeArchived) {
+            return $query;
+        }
+
+        return new ComplianceExportQuery(
+            windowStart: $query->windowStart,
+            windowEnd: $query->windowEnd,
+            granularity: $query->granularity,
+            eventTypes: $query->eventTypes,
+            eventType: $query->eventType,
+            sourceContext: $query->sourceContext,
+            actorType: $query->actorType,
+            entityType: $query->entityType,
+            includeArchived: $includeArchived,
+            page: $query->page,
+            perPage: $query->perPage,
+        );
     }
 
     private function withIncludeArchivedForCorrelation(CorrelationBundleQuery $query, bool $includeArchived): CorrelationBundleQuery

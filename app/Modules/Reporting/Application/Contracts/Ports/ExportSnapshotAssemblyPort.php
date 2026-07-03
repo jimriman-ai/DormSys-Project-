@@ -1,0 +1,13 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Modules\Reporting\Application\Contracts\Ports;
+
+use App\Modules\Reporting\Application\DTOs\ComplianceExportManifestDto;
+use App\Modules\Reporting\Application\DTOs\ComplianceExportQuery;
+
+interface ExportSnapshotAssemblyPort
+{
+    public function assembleManifest(ComplianceExportQuery $query): ComplianceExportManifestDto;
+}
