@@ -3,12 +3,12 @@
 
 | | |
 |---|---|
-| **Status** | 🟢 Final (v1.1.0) |
-| **Version** | 1.1.0 |
-| **Last Updated** | 1405/04/05 \| 2026/06/26 |
+| **Status** | 🟢 Final (v1.1.1) |
+| **Version** | 1.1.1 |
+| **Last Updated** | 1405/04/10 \| 2026/07/01 |
 | **Governance Level** | Wave 1 Authority Document |
-| **Supersedes** | v1.0 Final (2026-06-26) |
-| **Alignment** | Mirrored from [`catalog-decisions.md`](../catalog-decisions.md) v2.2.0, [`context-map.md`](../context-map.md) v0.3, [`spec-catalog.md`](../spec-catalog.md) v1.1.0 |
+| **Supersedes** | v1.1.0 (2026-06-26) |
+| **Alignment** | Mirrored from [`catalog-decisions.md`](../catalog-decisions.md) v2.8.1, [`context-map.md`](../context-map.md) v0.4.1, [`spec-catalog.md`](../spec-catalog.md) v1.0.8 |
 
 > **Why RC and not Final:** The issues in version 1.0.0 were not execution-related; they were governance-related. Any governance error that enters this document contaminates all downstream Specs. Therefore, until the final approval of the Boundary Review, this document only guides the process and **is not permitted to produce architectural decisions**.
 
@@ -91,7 +91,7 @@ Context Map
       ↓
 Boundary Review  →  resolution of critical OQs (OQ-01 … OQ-05) + conflicts (CONF-DEP-01)
       ↓
-Proposed Freeze spec02–spec06  (boundary-aligned; OQ-06/07/08 out of scope)
+Proposed Freeze spec02–spec06  (boundary-aligned; OQ-06/07/08 deferred at that wave — later closed CD-015..CD-017)
       ↓
 spec02 … spec06 authoring  (with documented Open Questions where applicable)
       ↓
@@ -121,13 +121,13 @@ Implement
 
 | Spec | Freeze status | Boundary prerequisite | Out-of-scope OQs |
 | ---- | ------------- | --------------------- | ---------------- |
-| `spec02` Identity & Access | Proposed Freeze → **Hard Freeze / Wave 1A** | OQ-01 closed (CD-012) | OQ-06, OQ-07, OQ-08 |
-| `spec03` Employee Context | Proposed Freeze → **Hard Freeze / Wave 1A** | OQ-01, OQ-02 closed; CONF-DEP-01 closed (CD-009, CD-012, CD-013) | OQ-06, OQ-07, OQ-08 |
-| `spec04` Accommodation Resource | Proposed Freeze | CD-014 physical-state split acknowledged | OQ-06, OQ-07, OQ-08 |
-| `spec05` Request Management | Proposed Freeze | OQ-02, OQ-03 closed (CD-010, CD-013) | OQ-06, OQ-07, OQ-08 |
-| `spec06` Lottery Selection | Proposed Freeze | OQ-04 closed (CD-011) | OQ-06, OQ-07, OQ-08 |
+| `spec02` Identity & Access | Proposed Freeze → **Hard Freeze / Wave 1A** | OQ-01 closed (CD-012) | OQ-06..08 deferred at this wave (later closed CD-015..CD-017) |
+| `spec03` Employee Context | Proposed Freeze → **Hard Freeze / Wave 1A** | OQ-01, OQ-02 closed; CONF-DEP-01 closed (CD-009, CD-012, CD-013) | OQ-06..08 deferred at this wave (later closed CD-015..CD-017) |
+| `spec04` Accommodation Resource | Proposed Freeze | CD-014 physical-state split acknowledged | OQ-06..08 deferred at this wave (later closed CD-015..CD-017) |
+| `spec05` Request Management | Proposed Freeze | OQ-02, OQ-03 closed (CD-010, CD-013) | OQ-06..08 deferred at this wave (later closed CD-015..CD-017) |
+| `spec06` Lottery Selection | Proposed Freeze | OQ-04 closed (CD-011) | OQ-06..08 deferred at this wave (later closed CD-015..CD-017) |
 
-**Not frozen:** `spec07` (OQ-06 open), `spec08` (OQ-07 open), `spec11` (OQ-08 open).
+**Not frozen:** `spec07`, `spec08`, `spec11` — boundary closed (CD-015, CD-016, CD-017); implementation not authorized.
 
 ### Hard Freeze v1.0.0 — Catalog Acceptance
 
@@ -138,7 +138,7 @@ Implement
 | --------- | ------ |
 | OQ-01 closed (CD-012) | ✅ |
 | OQ-02 closed (CD-013) | ✅ |
-| OQ-06, OQ-07, OQ-08 documented | ✅ |
+| OQ-06, OQ-07, OQ-08 closed (CD-015, CD-016, CD-017) | ✅ |
 | Cross-document consistency (4 docs) | ✅ |
 | Wave 1A (`spec02`, `spec03`) authorized | ✅ |
 | `spec01` implementation debt | Out of freeze scope (not a gate) |
@@ -173,7 +173,7 @@ Implement
 | ---- | ----- | ---- | -------------- | ------ | --------- |
 | CONF-DEP-01 | Dependent entity ownership | Ownership | spec03, spec05 | ✅ Closed | CD-009 |
 
-### Open Boundary Questions
+### Boundary Questions
 
 | OQ ID | Topic | Type | Affected Specs | Status | Authority |
 | ----- | ----- | ---- | -------------- | ------ | --------- |
@@ -182,16 +182,16 @@ Implement
 | OQ-03 | Approval state vs transition rules | Module split | spec05, Workflow (deferred) | ✅ Closed | CD-010 |
 | OQ-04 | Lottery rules ownership | Business logic | spec06 | ✅ Closed | CD-011 |
 | OQ-05 | Allocation ↔ Occupancy split | Context split | spec04, spec07 | ✅ Closed | CD-014 |
-| OQ-06 | CheckIn/CheckOut module boundary | Context split | spec07 | 🟡 Open | — |
-| OQ-07 | Voucher eligibility ownership | Business logic | spec08 | 🟡 Open | — |
-| OQ-08 | Reporting projection / read-model scope | Read model | spec11 | 🟡 Open | — |
+| OQ-06 | CheckIn/CheckOut module boundary | Context split | spec07 | ✅ Closed | CD-015 |
+| OQ-07 | Voucher eligibility ownership | Business logic | spec08 | ✅ Closed | CD-016 |
+| OQ-08 | Reporting projection / read-model scope | Read model | spec11 | ✅ Closed | CD-017 |
 
 ---
 
 ## VII. Context Inventory
 
 **Active Bounded Contexts:**
-Identity · Employee · Dormitory (Accommodation Resource) · Request · Lottery · Allocation · Voucher
+Identity · Employee · Dormitory (Accommodation Resource) · Request · Lottery · Allocation · CheckIn/CheckOut · Voucher
 
 **Cross-Cutting Capabilities:**
 Notification · Audit · Reporting (the only cross-boundary read)
@@ -214,7 +214,7 @@ The activation criterion for Workflow Engine is also subject to this same framew
 
 ---
 
-## IX. Open Questions — Status
+## IX. Boundary Questions — Status
 
 > Governance note: Statuses are **mirrored** from [`catalog-decisions.md`](../catalog-decisions.md) and [`context-map.md`](../context-map.md).  
 > Decisions are owned by the Decision Catalog via Boundary Review — **not decided here**.  
@@ -235,9 +235,9 @@ The activation criterion for Workflow Engine is also subject to this same framew
 | OQ-03 | Approval state vs transition rules | ✅ Closed | CD-010 |
 | OQ-04 | Lottery rules ownership | ✅ Closed | CD-011 |
 | OQ-05 | Allocation ↔ Occupancy split | ✅ Closed | CD-014 |
-| OQ-06 | CheckIn/CheckOut inside Allocation vs separate context | 🟡 Open | Resolve during `spec07` planning |
-| OQ-07 | Voucher eligibility ownership | 🟡 Open | Resolve during `spec08` specification |
-| OQ-08 | Reporting projection / read-model scope | 🟡 Open | Resolve during `spec11` planning |
+| OQ-06 | CheckIn/CheckOut inside Allocation vs separate context | ✅ Closed | CD-015 |
+| OQ-07 | Voucher eligibility ownership | ✅ Closed | CD-016 |
+| OQ-08 | Reporting projection / read-model scope | ✅ Closed | CD-017 |
 
 ---
 
@@ -323,6 +323,7 @@ This conflict used the working label `DB-001` in early playbook drafts; it is **
 | 1.0.0 | 1405/04/04 | Initial version (withdrawn — governance conflict) |
 | 1.0.1 | 1405/04/05 | Revised OQ status (IX), revised Constitution description (II), layered Evidence in DB-001 (XIII), revised Boundary matrix (VI), revised Freeze order to Soft→Hard (IV), downgraded status to RC |
 | 1.0 Final | 1405/04/05 | Promoted RC → Final after Boundary Review round (CD-012, CD-013, CD-014); mirrored OQ statuses (IX); DB-001 → CD-009 (XIII) |
+| 1.1.1 | 1405/04/10 | Governance drift sync: OQ-06..08 closed (CD-015..CD-017); CheckIn/CheckOut in Context Inventory; alignment mirrors updated |
 | 1.1.0 | 1405/04/05 | Fixed OQ-08 ID collision; added OQ-06/OQ-07; registered Proposed Freeze spec02–spec06; **Hard Freeze v1.0.0 accepted** (spec-catalog Acceptance Record); Wave 1A authorized |
 
 ---
@@ -432,7 +433,7 @@ Which context **owns** and **enforces** the eligibility rule?
 - [ ] Update `spec-catalog.md` status for OQ-01, OQ-02: Open → Decided
 - [ ] Promote Playbook v1.0.1 (RC) → v1.0 (Final) after catalog freeze
 - [ ] Authorize spec02/spec03 authoring with resolved boundaries
-- [ ] Schedule follow-up for OQ-06, OQ-07, OQ-08 (non-blocking for spec02–spec06 authoring)
+- [x] OQ-06, OQ-07, OQ-08 closed (CD-015, CD-016, CD-017) — governance drift sync 2026-07-01
 
 ---
 

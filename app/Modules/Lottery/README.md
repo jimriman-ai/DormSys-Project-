@@ -39,3 +39,5 @@ Phase 7 (T045–T047): auto-lock and draw background jobs.
 Phase 8 (T048–T051): lottery result read supplier contract.
 
 Phase 9 (T052–T055): architecture gate, scoring reproducibility, PHPStan, Pint.
+
+Phase 10: integration boundary verification (`LotteryIntegrationBoundaryTest`).

@@ -12,6 +12,7 @@ class AssignRoleToUserAction
 {
     public function __construct(
         private readonly UserRepositoryContract $users,
+        private readonly IdentityAuditEmitter $auditEmitter,
     ) {}
 
     public function execute(UserId $userId, string $roleName): void
@@ -21,5 +22,11 @@ class AssignRoleToUserAction
         }
 
         $this->users->assignRole($userId, $roleName);
+
+        $this->auditEmitter->recordRoleAssigned(
+            $userId,
+            $roleName,
+            IdentityAuditEmitter::occurredNow(),
+        );
     }
 }

@@ -43,10 +43,6 @@ final class EnrollRegistrationAction
             throw new RegistrationClosedException('Registration is not open for this program.');
         }
 
-        if ($this->registrations->findByProgramAndRequest($programId, $requestId) !== null) {
-            throw new DuplicateEnrollmentException('Request is already enrolled in this program.');
-        }
-
         $approvedRequest = $this->requests->findApprovedLotteryRegistration($requestId);
 
         if ($approvedRequest === null) {
@@ -58,14 +54,29 @@ final class EnrollRegistrationAction
         }
 
         $enrolledAt = new DateTimeImmutable('now', new DateTimeZone('UTC'));
-        $registration = LotteryRegistration::enroll(
-            programId: $programId,
-            requestId: $requestId,
-            employeeId: EmployeeReferenceId::fromString($approvedRequest->employeeId),
-            enrolledAt: $enrolledAt,
-        );
 
-        return DB::transaction(function () use ($registration): LotteryRegistration {
+        return DB::transaction(function () use ($programId, $requestId, $approvedRequest, $enrolledAt): LotteryRegistration {
+            $lockedProgram = $this->programs->findByIdForUpdate($programId);
+
+            if ($lockedProgram === null) {
+                throw new LotteryProgramNotFoundException('Lottery program not found.');
+            }
+
+            if (! $lockedProgram->canAcceptEnrollment()) {
+                throw new RegistrationClosedException('Registration is not open for this program.');
+            }
+
+            if ($this->registrations->findByProgramAndRequest($programId, $requestId) !== null) {
+                throw new DuplicateEnrollmentException('Request is already enrolled in this program.');
+            }
+
+            $registration = LotteryRegistration::enroll(
+                programId: $programId,
+                requestId: $requestId,
+                employeeId: EmployeeReferenceId::fromString($approvedRequest->employeeId),
+                enrolledAt: $enrolledAt,
+            );
+
             $persisted = $this->registrations->save($registration);
 
             Event::dispatch(LotteryRegistrationCreated::forRegistration(

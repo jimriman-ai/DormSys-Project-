@@ -1,8 +1,8 @@
 # DormSys Catalog Decisions
 
-**Version:** 2.7.0  
+**Version:** 2.8.2  
 **Status:** ACTIVE  
-**Last Updated:** 1405/04/03 | 2026/06/24  
+**Last Updated:** 1405/04/10 | 2026/07/01
 **Related Documents:** [`context-map.md`](context-map.md), [`spec-catalog.md`](spec-catalog.md), `CONSTITUTION v1.3.0.md`, `dormsys-architecture.md`
 
 ---
@@ -162,16 +162,19 @@ Without this document § `## Governance Decision Authority Map`, ownership canno
 | CD-012 | Employee ↔ Identity Attachment Mechanism | ACCEPTED | 2026-06-26 | OQ-01 |
 | CD-013 | Eligibility Invariant Ownership | ACCEPTED (Recorded Assumption) | 2026-06-26 | OQ-02 (Current Scope) |
 | CD-014 | Allocation ↔ Occupancy Ownership Split | ACCEPTED | 2026-06-26 | OQ-05 |
+| CD-015 | CheckIn/CheckOut Module Boundary | ACCEPTED | 2026-07-01 | OQ-06 |
+| CD-016 | Voucher Eligibility Ownership | ACCEPTED | 2026-07-01 | OQ-07 |
+| CD-017 | Reporting Projection Boundary | ACCEPTED | 2026-07-01 | OQ-08 |
 
 ---
 
-## Open Boundary Questions (Remaining)
+## Open Boundary Questions (Post-Closure Audit)
 
 | ID | Question | Priority | Next Action |
 | -- | -------- | -------- | ----------- |
-| OQ-06 | Is check-in / check-out inside Allocation, or a separate context? | Medium | Boundary Review when `spec07` planning starts; related to CD-014 but not resolved by it |
-| OQ-07 | Where does voucher eligibility ownership live? | Medium | Evidence review during `spec08` specification |
-| OQ-08 | What is the reporting projection boundary / read-model scope? | Medium | Define during `spec11` planning |
+| OQ-06 | Is check-in / check-out inside Allocation, or a separate context? | Medium | CLOSED by CD-015 |
+| OQ-07 | Where does voucher eligibility ownership live? | Medium | CLOSED by CD-016 |
+| OQ-08 | What is the reporting projection boundary / read-model scope? | Medium | CLOSED by CD-017 |
 
 ---
 
@@ -196,6 +199,9 @@ Without this document § `## Governance Decision Authority Map`, ownership canno
 | OQ-03 | Open Question | `dormsys-architecture.md:80` → RequestApproval in Request; `:81,377` → Workflow engine | — | High | CLOSED (CD-010) |
 | OQ-04 | Open Question | `dormsys-architecture.md:83`; `CONSTITUTION:356` → Lottery lifecycle | — | High | CLOSED (CD-011) |
 | OQ-05 | Open Question | `dormsys-architecture.md:81,86` → Allocation owns assignment; `:80-83` → Dormitory + CheckIn own physical/operational | — | High | CLOSED (CD-014) |
+| OQ-06 | Open Question | `dormsys-architecture.md:79-84`; `system-flow.md:180-182` → CheckIn/CheckOut operational transitions separated from assignment authority | CD-014 did not originally promote CheckIn to active inventory | Medium | CLOSED (CD-015) |
+| OQ-07 | Open Question | `spec08` planning evidence; Voucher issuance lifecycle belongs to Voucher domain rules | Eligibility trigger may originate upstream, but ownership was unresolved | Medium | CLOSED (CD-016) |
+| OQ-08 | Open Question | Constitution constraints + context map reporting rule → Reporting is read-only cross-boundary projection consumer | Projection/read-model boundary was unspecified | Medium | CLOSED (CD-017) |
 
 ---
 
@@ -502,7 +508,8 @@ This decision governs ownership only — not whether validation uses Application
 | **Status** | ACCEPTED |
 | **Closes** | OQ-05 |
 | **Related** | `dormsys-architecture.md:79-84`, `system-flow.md:180-182`, `context-map.md` R7 |
-| **Does NOT close** | OQ-06 (CheckIn/CheckOut module boundary) |
+| **Follow-up** | OQ-06 later resolved by CD-015 (CheckIn/CheckOut Module Boundary) |
+
 
 ### Context
 
@@ -521,7 +528,8 @@ This decision governs ownership only — not whether validation uses Application
 | ------ | ------- |
 | A) Unified Allocation + Occupancy context | Rejected — conflates assignment with physical/operational state |
 | B) Split with Allocation as driver | **CHOSEN** |
-| C) Standalone Occupancy context | Deferred — no independent lifecycle evidence; see OQ-06 |
+| C) Standalone Occupancy context | Rejected for current scope — operational transitions are assigned to CheckIn/CheckOut boundary; see CD-015 |
+
 
 ### Decision
 
@@ -541,7 +549,8 @@ Ownership is **split**; Allocation is the upstream driver:
 - Dormitory updates physical availability.
 - CheckIn/CheckOut consumes assignment to enable transitions.
 - Coupling: `Allocation → Dormitory` (R7), unidirectional.
-- **OQ-06 remains OPEN** — whether CheckIn/CheckOut is promoted to an active module.
+- CheckIn/CheckOut module promotion resolved in CD-015.
+
 
 ### Recorded Assumption
 
@@ -549,7 +558,8 @@ If occupancy later requires a unified, independently-owned lifecycle (e.g., bed 
 
 ### What Was NOT Decided
 
-- CheckIn/CheckOut module promotion (OQ-06).
+- Independent occupancy lifecycle beyond current CheckIn/CheckOut operational boundary.
+
 - Reconciliation when Allocation and Dormitory state diverge.
 
 ---
@@ -602,7 +612,7 @@ Request
 - Lines 77-78, 324 → OQ-01, CD-012
 - Lines 80-81, 377, 379 → OQ-03, CD-010
 - Lines 83, 86, 393 → OQ-04, CD-011
-- Lines 79-84 → OQ-05, CD-014
+- Lines 79-84 → OQ-05, OQ-06, CD-014, CD-015
 
 **hist03.md**
 
@@ -622,7 +632,7 @@ Request
 
 - Lines 78, 351 → CONF-DEP-01, CD-009
 - Lines 253, 365-367 → OQ-04, CD-011
-- Lines 180-182, 204, 205, 297, 463 → OQ-05, CD-014
+- Lines 180-182, 204, 205, 297, 463 → OQ-05, OQ-06, CD-014, CD-015
 
 **context-map.md**
 
@@ -630,11 +640,33 @@ Request
 - R2 → OQ-02, CD-013
 - R3 → OQ-03, CD-010
 - R4 → OQ-04, CD-011
-- R7 → OQ-05, CD-014
+- R7 → OQ-05, OQ-06, CD-014, CD-015
+- R8 → OQ-07, CD-016
+- R11 → OQ-08, CD-017
 
 ---
 
 ## Change Log
+
+### 2.8.2 — 2026-07-01 (spec07 implementation program closure)
+
+- Lifecycle alignment only — no boundary or decision changes.
+- spec07 program closed (T001–T074); Wave 1B authorization record `revoked` (program closure); Wave 1A `superseded`.
+- Active execution scope for spec07: **none**. Checkpoint: `spec07-implementation-closure`.
+
+### 2.8.1 — 2026-07-01 (documentation synchronization remediation)
+
+- Updated Evidence Traceability Index for CD-015, CD-016, CD-017 and OQ-06, OQ-07, OQ-08.
+- Normalized date metadata format (`2026/07/01`).
+- Editorial only — no decision or boundary changes.
+
+### 2.8.0 — 2026-07-01
+
+- Added CD-015 to close OQ-06 and promote CheckIn/CheckOut to an active boundary.
+- Added CD-016 to close OQ-07 and assign Voucher ownership for eligibility and issuance lifecycle.
+- Added CD-017 to close OQ-08 and confirm Reporting as a read-only cross-domain projection consumer.
+- Updated Open Boundary Questions and Evidence Summary accordingly.
+- Updated CD-014 follow-up references after OQ-06 closure.
 
 ### 2.7.0 — 2026/06/24
 
@@ -679,3 +711,167 @@ Request
 ### 1.0.0 — 2026-06-24
 
 - Initial evidence mapping and conflict documentation.
+
+
+## CD-015 — CheckIn/CheckOut Module Boundary
+
+| Field | Value |
+| ----- | ----- |
+| **Date** | 2026-07-01 |
+| **Type** | Domain Boundary |
+| **Status** | ACCEPTED |
+| **Closes** | OQ-06 |
+| **Related** | `spec07`, `context-map.md` R7 |
+
+### Context
+
+The Allocation ↔ Occupancy split in CD-014 separated assignment authority from physical and operational occupancy concerns, but it did not formally decide whether CheckIn/CheckOut should remain implicit or be promoted to an active bounded context.
+
+### Evidence
+
+- `dormsys-architecture.md:79-84` distinguishes `Dormitory`, `Allocation`, and `CheckIn` as separate modules.
+- `system-flow.md:180-182` shows operational transitions `Allocated → CheckedIn → CheckedOut`.
+- `catalog-decisions.md` CD-014 already separated assignment authority from operational transitions.
+
+### Options Considered
+
+| Option | Verdict |
+| ------ | ------- |
+| A) Keep CheckIn/CheckOut inside Allocation | Rejected — assignment authority and operational transitions are different responsibilities |
+| B) Keep CheckIn/CheckOut inside Dormitory | Rejected — Dormitory owns physical state, not operational lifecycle transitions |
+| C) Promote CheckIn/CheckOut to an active bounded context | **CHOSEN** |
+
+### Decision
+
+CheckIn/CheckOut is promoted to a valid active boundary.
+
+Ownership is defined as follows:
+
+| Context | Responsibility |
+| ------- | -------------- |
+| **Allocation** | Assignment authority |
+| **Dormitory** | Physical room/bed capacity and availability |
+| **CheckIn/CheckOut** | Operational occupancy transitions (`CheckedIn`, `CheckedOut`) |
+
+### Rationale
+
+- Operational transition lifecycle is distinct from assignment authority.
+- Physical capacity ownership must remain in Dormitory.
+- Existing source architecture already distinguishes CheckIn as a separate module.
+
+### Impact
+
+- `spec07` must treat CheckIn/CheckOut as an active boundary dependency, not an implicit sub-flow.
+- `context-map.md` active inventory must include CheckIn/CheckOut.
+- Cross-boundary interactions must respect Application Service / Domain Event constraints.
+
+### What Was NOT Decided
+
+- Detailed event contract between Allocation, Dormitory, and CheckIn/CheckOut.
+- Reconciliation strategy for state divergence.
+
+---
+
+## CD-016 — Voucher Eligibility Ownership
+
+| Field | Value |
+| ----- | ----- |
+| **Date** | 2026-07-01 |
+| **Type** | Domain Boundary |
+| **Status** | ACCEPTED |
+| **Closes** | OQ-07 |
+| **Related** | `spec08`, `context-map.md` R8 |
+
+### Context
+
+Voucher issuance may be triggered by upstream processes such as Lottery or Allocation outcomes, but ownership of voucher eligibility and issuance lifecycle required explicit boundary assignment.
+
+### Evidence
+
+- `context-map.md` identifies Voucher as a distinct context under `spec08`.
+- Upstream processes may trigger Voucher flows, but no other context is defined as voucher lifecycle owner.
+- Constitution constraints forbid cross-context ownership ambiguity.
+
+### Options Considered
+
+| Option | Verdict |
+| ------ | ------- |
+| A) Lottery owns voucher eligibility and issuance | Rejected — Lottery may trigger downstream action but does not own Voucher lifecycle |
+| B) Allocation owns voucher eligibility and issuance | Rejected — Allocation owns assignment authority, not external accommodation issuance |
+| C) Voucher owns voucher eligibility and issuance lifecycle | **CHOSEN** |
+
+### Decision
+
+Voucher owns voucher eligibility evaluation within its domain rules and owns the issuance lifecycle.
+
+Upstream contexts may provide triggering facts or eligibility inputs, but Voucher is the final authority for voucher issuance decisions.
+
+### Rationale
+
+- Issuance lifecycle must have a single owner.
+- Triggering a voucher is not the same as owning voucher policy.
+- This keeps Voucher autonomous and prevents ownership leakage from Lottery or Allocation.
+
+### Impact
+
+- `spec08` must model voucher issuance rules inside Voucher.
+- Upstream modules provide facts/events only.
+- `context-map.md` must reflect Voucher ownership explicitly.
+
+### What Was NOT Decided
+
+- Exact input contract from Lottery / Allocation into Voucher.
+- Whether Voucher eligibility logic will later be shared elsewhere.
+
+---
+
+## CD-017 — Reporting Projection Boundary
+
+| Field | Value |
+| ----- | ----- |
+| **Date** | 2026-07-01 |
+| **Type** | Domain Boundary |
+| **Status** | ACCEPTED |
+| **Closes** | OQ-08 |
+| **Related** | `spec11`, `context-map.md` R11 |
+
+### Context
+
+Reporting requires cross-context read access, but the projection boundary and read-model scope were not explicitly closed.
+
+### Evidence
+
+- `context-map.md` states Reporting is a downstream read-only context.
+- Constitution constraints explicitly allow Reporting as the only cross-boundary read consumer and forbid writes.
+- No evidence supports Reporting owning domain write authority.
+
+### Options Considered
+
+| Option | Verdict |
+| ------ | ------- |
+| A) Reporting owns derived business state | Rejected — violates read-only reporting constraint |
+| B) Reporting acts as read-only projection consumer across contexts | **CHOSEN** |
+| C) Reporting shares ownership with source contexts | Rejected — creates ownership ambiguity |
+
+### Decision
+
+Reporting remains a cross-domain read-only consumer.
+
+Its scope is limited to projections and read models derived from source contexts. Reporting has no write authority and no ownership over upstream domain lifecycle rules.
+
+### Rationale
+
+- Reporting is explicitly the only allowed cross-boundary read context.
+- Projection ownership is not domain ownership.
+- Read-model scope must remain downstream and non-authoritative.
+
+### Impact
+
+- `spec11` must be implemented strictly as read-only projection/reporting behavior.
+- No reporting workflow may mutate source domain state.
+- `context-map.md` must reflect Reporting as read-only cross-domain consumer.
+
+### What Was NOT Decided
+
+- Exact reporting model structure.
+- Refresh/update mechanism for projections.

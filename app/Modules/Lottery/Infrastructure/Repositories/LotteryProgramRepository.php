@@ -70,6 +70,16 @@ class LotteryProgramRepository implements LotteryProgramRepositoryContract
         return $model === null ? null : $this->toDomain($model);
     }
 
+    public function findByIdForUpdate(LotteryProgramId $id): ?LotteryProgram
+    {
+        $model = LotteryProgramModel::query()
+            ->whereKey($id->value)
+            ->lockForUpdate()
+            ->first();
+
+        return $model === null ? null : $this->toDomain($model);
+    }
+
     public function findPastRegistrationEndEligibleForAutoLock(DateTimeImmutable $asOf): array
     {
         $programs = LotteryProgramModel::query()

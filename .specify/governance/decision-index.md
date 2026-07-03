@@ -28,6 +28,9 @@ This index maps every governance decision identifier to its defining location. T
 | CD-012 | Employee ↔ Identity Attachment Mechanism | `.specify/docs/catalog-decisions.md` | Decision Index + § CD-012 |
 | CD-013 | Eligibility Invariant Ownership | `.specify/docs/catalog-decisions.md` | Decision Index + § CD-013 |
 | CD-014 | Allocation ↔ Occupancy Ownership Split | `.specify/docs/catalog-decisions.md` | Decision Index + § CD-014 |
+| CD-015 | CheckIn/CheckOut Module Boundary | `.specify/docs/catalog-decisions.md` | Decision Index + § CD-015 |
+| CD-016 | Voucher Eligibility Ownership | `.specify/docs/catalog-decisions.md` | Decision Index + § CD-016 |
+| CD-017 | Reporting Projection Boundary | `.specify/docs/catalog-decisions.md` | Decision Index + § CD-017 |
 
 ---
 
@@ -132,7 +135,7 @@ When a new decision ID is introduced:
 ---
 
 **Document Control**
-- Version: 1.3.0
-- Last Updated: 1405/04/03 | 2026/06/24
-- Change: Next Spec Transition Nomination conceptual handoff chain; Case C cross-references
+- Version: 1.4.0
+- Last Updated: 1405/04/10 | 2026/07/01
+- Change: Added CD-015, CD-016, CD-017 index entries (governance drift sync)
 - Owner: DormSys Architecture Team

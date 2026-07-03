@@ -14,6 +14,14 @@ class IdentityRoleSeeder extends Seeder
 {
     public const string ROLE_SYSTEM_ADMINISTRATOR = PlatformRoles::SYSTEM_ADMINISTRATOR;
 
+    public const string ROLE_ADMINISTRATOR = 'Administrator';
+
+    public const string ROLE_DORM_MGR = 'DormMgr';
+
+    public const string ROLE_HR_MGR = 'HRMgr';
+
+    public const string PERMISSION_AUDIT_READ = 'audit.read';
+
     /**
      * @var list<string>
      */
@@ -21,6 +29,16 @@ class IdentityRoleSeeder extends Seeder
         'identity.users.manage',
         'identity.users.view',
         'identity.roles.manage',
+        self::PERMISSION_AUDIT_READ,
+    ];
+
+    /**
+     * @var list<string>
+     */
+    public const array AUDIT_READ_ROLES = [
+        self::ROLE_ADMINISTRATOR,
+        self::ROLE_DORM_MGR,
+        self::ROLE_HR_MGR,
     ];
 
     public function run(): void
@@ -33,7 +51,16 @@ class IdentityRoleSeeder extends Seeder
             Permission::findOrCreate($permissionName, $guard);
         }
 
-        $role = Role::findOrCreate(self::ROLE_SYSTEM_ADMINISTRATOR, $guard);
-        $role->syncPermissions(self::PERMISSIONS);
+        $systemAdministrator = Role::findOrCreate(self::ROLE_SYSTEM_ADMINISTRATOR, $guard);
+        $systemAdministrator->syncPermissions([
+            'identity.users.manage',
+            'identity.users.view',
+            'identity.roles.manage',
+        ]);
+
+        foreach (self::AUDIT_READ_ROLES as $roleName) {
+            $role = Role::findOrCreate($roleName, $guard);
+            $role->givePermissionTo(self::PERMISSION_AUDIT_READ);
+        }
     }
 }

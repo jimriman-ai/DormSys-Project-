@@ -15,6 +15,7 @@ class CreateUserAction
 {
     public function __construct(
         private readonly UserRepositoryContract $users,
+        private readonly IdentityAuditEmitter $auditEmitter,
     ) {}
 
     public function execute(string $displayName, ?string $email = null): User
@@ -28,6 +29,11 @@ class CreateUserAction
             $persisted = $this->users->save($user);
 
             Event::dispatch(UserCreated::forUser($persisted->requireId()->value));
+
+            $this->auditEmitter->recordUserCreated(
+                $persisted->requireId(),
+                IdentityAuditEmitter::occurredNow(),
+            );
 
             return $persisted;
         });

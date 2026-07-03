@@ -14,6 +14,8 @@ interface LotteryProgramRepositoryContract
 
     public function findById(LotteryProgramId $id): ?LotteryProgram;
 
+    public function findByIdForUpdate(LotteryProgramId $id): ?LotteryProgram;
+
     /**
      * Programs past registration end still accepting close/lock automation.
      *
