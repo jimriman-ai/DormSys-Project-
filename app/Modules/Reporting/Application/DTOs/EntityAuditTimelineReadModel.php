@@ -18,5 +18,6 @@ final readonly class EntityAuditTimelineReadModel
         public int $lastPage,
         public ReportingProvenanceDto $provenance,
         public array $eventTypeHistogram,
+        public EntityTimelineSummaryDto $summary,
     ) {}
 }

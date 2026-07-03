@@ -16,5 +16,6 @@ final readonly class AggregateDrillDownReadModel
         public int $perPage,
         public int $lastPage,
         public ReportingProvenanceDto $provenance,
+        public EntityTimelineSummaryDto $summary,
     ) {}
 }

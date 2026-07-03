@@ -89,4 +89,32 @@ it('returns entity scoped drill down via T0 timeline path', function (): void {
     expect($result->provenance->sourceTier)->toBe('T0');
     expect($result->provenance->refreshedAt)->toBeNull();
     expect($result->provenance->projectionVersion)->toBeNull();
+    expect($result->summary->totalCount)->toBe(2);
+    expect($result->summary->pageItemCount)->toBe(2);
+});
+
+it('applies event type filters through drill down', function (): void {
+    authenticateDrillDownReader();
+    $entityId = UuidGenerator::uuid7();
+
+    seedDrillDownAuditEntry([
+        'entityId' => $entityId,
+        'correlationId' => 'drilldown:filter:001',
+        'eventType' => AuditEventType::RequestApproved->value,
+    ]);
+    seedDrillDownAuditEntry([
+        'entityId' => $entityId,
+        'correlationId' => 'drilldown:filter:002',
+        'eventType' => AuditEventType::RequestRejected->value,
+    ]);
+
+    $result = app(ReportingReadContract::class)->drillDown(new AggregateDrillDownQuery(
+        entityType: 'request',
+        entityId: $entityId,
+        eventTypes: [AuditEventType::RequestRejected->value],
+    ));
+
+    expect($result->total)->toBe(1);
+    expect($result->items[0]->eventType)->toBe(AuditEventType::RequestRejected->value);
+    expect($result->summary->totalCount)->toBe(1);
 });

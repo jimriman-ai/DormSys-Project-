@@ -36,6 +36,7 @@ final class AggregateDrillDownAdapter implements AggregateDrillDownPort
             perPage: $timeline->perPage,
             lastPage: $timeline->lastPage,
             provenance: $timeline->provenance,
+            summary: $timeline->summary,
         );
     }
 }

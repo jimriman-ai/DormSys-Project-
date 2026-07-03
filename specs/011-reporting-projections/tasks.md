@@ -77,6 +77,9 @@ predecessor:            spec10 CLOSED / FROZEN
 - [x] I-004 Implement RU-06 T0 drill-down scaffold
 - [x] I-005 Register Reporting DI bindings
 - [x] I-006 Add Reporting boundary, unit, and feature tests
+- [x] I-007 Add entity timeline summary to RU-01 read model
+- [x] I-008 Harden RU-01/RU-06 filter and pagination behavior with tests
+- [x] I-009 Enforce BT-02 audit history read contract isolation in architecture tests
 
 ---
 

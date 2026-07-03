@@ -8,6 +8,7 @@ use App\Modules\Reporting\Application\Contracts\Ports\AggregateDrillDownPort;
 use App\Modules\Reporting\Application\Contracts\Ports\AuditHistorySourceReadPort;
 use App\Modules\Reporting\Application\Contracts\Ports\ReportingArchiveVisibilityPort;
 use App\Modules\Reporting\Application\Contracts\ReportingReadContract;
+use App\Modules\Reporting\Application\Services\EntityTimelineSummaryBuilder;
 use App\Modules\Reporting\Application\Services\QueryEntityAuditTimelineAction;
 use App\Modules\Reporting\Application\Services\ReportingArchiveVisibilityGuard;
 use App\Modules\Reporting\Application\Services\ReportingProvenanceFactory;
@@ -22,6 +23,7 @@ class ReportingServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(ReportingProvenanceFactory::class);
+        $this->app->singleton(EntityTimelineSummaryBuilder::class);
         $this->app->singleton(ReportingArchiveVisibilityPort::class, ReportingArchiveVisibilityAdapter::class);
         $this->app->singleton(ReportingArchiveVisibilityGuard::class);
         $this->app->singleton(AuditHistorySourceReadPort::class, AuditHistorySourceReadAdapter::class);

@@ -15,6 +15,7 @@ final class QueryEntityAuditTimelineAction
     public function __construct(
         private readonly AuditHistorySourceReadPort $auditHistorySource,
         private readonly ReportingProvenanceFactory $provenanceFactory,
+        private readonly EntityTimelineSummaryBuilder $summaryBuilder,
     ) {}
 
     public function execute(EntityTimelineQuery $query): EntityAuditTimelineReadModel
@@ -53,6 +54,7 @@ final class QueryEntityAuditTimelineAction
             lastPage: $result->lastPage,
             provenance: $provenance,
             eventTypeHistogram: $histogram,
+            summary: $this->summaryBuilder->build($items, $result->total),
         );
     }
 
