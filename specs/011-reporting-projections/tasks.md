@@ -4,19 +4,24 @@
 
 **Branch**: `011-reporting-projections`
 
-**Status**: **PLANNING BACKLOG ONLY** — **NON-EXECUTABLE**
+**Status**: **IMPLEMENTATION IN PROGRESS** — batches **I-001–I-029 COMPLETE**; **RU-04 remaining**
 
 ```text
-lifecycle_state:        ARCHITECTURE_CLARIFIED
-execution_state:        NONE
-executable:             false
-authorization_required: separate governance record (not implied)
+lifecycle_state:        IMPLEMENTATION_AUTHORIZED
+execution_state:        ACTIVE (single remaining use-case)
+executable:             partial — RU-04 only
+authorization:          implementation-authorization-decision.md (2026-07-03)
 predecessor:            spec10 CLOSED / FROZEN
+closure_state:          NOT CLOSED
+closure_blocker:        RU-04 compliance export (authorized build-order step 3)
+rollout_authorized:     false
 ```
 
-**WARNING**: Tasks in this file are **descriptive planning items**. They are **not** authorized for implementation. Prefix `P-` denotes planning work only. No checkpoints, waves, or PHPStan/Pint gates apply until a future Implementation Authorization record explicitly activates execution.
+**Authorization baseline**: [`implementation-authorization-decision.md`](./implementation-authorization-decision.md) — **APPROVED_WITH_CONDITIONS**
 
 **Predecessor baseline**: [`spec10-final-closure.md`](../../.specify/docs/handoff/spec10-final-closure.md) — **do not mutate**
+
+**Planning backlog** (P-*) remains descriptive; prefix `P-` denotes pre-implementation planning work. Prefix `I-` denotes authorized implementation execution items.
 
 ---
 
@@ -100,6 +105,23 @@ predecessor:            spec10 CLOSED / FROZEN
 - [x] I-027 Implement projection-backed query adapters and read use-cases for RU-02, RU-03, RU-05
 - [x] I-028 Wire RU-02 / RU-03 / RU-05 on ReportingReadContract with DI bindings
 - [x] I-029 Add projection-backed read feature tests for authorized reporting flows
+- [x] I-030 Run implementation closure verification gates (Reporting tests, PHPStan, Pint)
+- [ ] I-031 Implement RU-04 compliance export read assembly (`ComplianceExportReadModel`; PP-07 → PP-01)
+
+### Implementation Closure Verification (2026-07-03)
+
+| Area | Status | Evidence |
+| ---- | ------ | -------- |
+| T0 read baseline (RU-01, RU-06, actor timeline) | **PASS** | I-001–I-010; `EntityAuditTimelineReadTest`, `AggregateDrillDownReadTest`, `ActorAuditTimelineReadTest` |
+| T1 schema (cursors, correlation, window, actor) | **PASS** | I-011–I-015; `ReportingProjectionSchemaTest` |
+| T1 refresh foundation | **PASS** | I-016–I-020; `ProjectionRefreshInputTest`, `ProjectionCursorControlTest` |
+| T1 materialization | **PASS** | I-021–I-025; `ProjectionRefreshMaterializationTest` |
+| T1 read/query (RU-02, RU-03, RU-05) | **PASS** | I-026–I-029; `ProjectionBackedReadTest` |
+| RU-04 compliance export | **OPEN** | Not implemented — authorized scope per `implementation-authorization-decision.md` §4 step 3 |
+| Boundary tests (BT-01, BT-02) | **PASS** | `ReportingBoundaryTest` |
+| PHPStan level 8 (`app/Modules/Reporting/`) | **PASS** | 0 errors |
+| Pint (Reporting paths) | **PASS** | clean |
+| Reporting test suite | **PASS** | 46 tests, 147 assertions |
 
 ---
 
@@ -119,10 +141,10 @@ predecessor:            spec10 CLOSED / FROZEN
 
 | Field | Value |
 | ----- | ----- |
-| **ready_for_governance_review** | **no** — initialization only |
-| **ready_for_implementation_authorization** | **no** |
-| **executable** | **false** |
-| **blockers** | Implementation authorization not issued |
+| **implementation_batches_complete** | **I-001–I-030** |
+| **remaining_authorized_scope** | **I-031** (RU-04 compliance export) |
+| **ready_for_implementation_closure** | **no** — RU-04 open |
+| **rollout_authorized** | **no** |
 | **predecessor_state** | spec10 CLOSED / FROZEN |
 
 ---
@@ -131,11 +153,11 @@ predecessor:            spec10 CLOSED / FROZEN
 
 | Field | Value |
 | ----- | ----- |
-| **lifecycle_stage** | **PLANNING_INITIALIZATION** |
-| **next_step** | Optional `/speckit-clarify` or governance nomination when ready |
-| **execution_authorized** | **no** |
+| **lifecycle_stage** | **IMPLEMENTATION_ACTIVE** |
+| **next_step** | **I-031** — RU-04 compliance export read assembly |
+| **execution_authorized** | **partial** (RU-04 only) |
 | **spec10_mutation** | **FORBIDDEN** |
 
 ---
 
-**End of tasks. Non-executable planning backlog.**
+**End of tasks. Implementation batches I-001–I-030 complete; spec11 not closed until I-031 (RU-04) is delivered.**

@@ -127,7 +127,8 @@ This record historically granted controlled execution authority for **retention,
 
 | Condition | Action |
 | --------- | ------ |
-| Execution while `authorization-status` is `prepared` | **HALT** |
+| Execution while `authorization-status` is `prepared` | **HALT** *(historical pre-activation gate)* |
+| Execution while `authorization-status` is `revoked` | **HALT** *(current state — program closed)* |
 | Forward work outside **T033–T040** | **HALT** |
 | Bridge enabled by default | **HALT** |
 | Hard delete on audit content | **HALT** — AP-06 violation |
@@ -161,7 +162,7 @@ Wave 3 is **COMPLETE** only when:
 
 ---
 
-## Activation Record
+## Historical Activation Record
 
 **Activated:** 2026-07-02  
 **Actor:** Governance Review / Activation  
@@ -174,13 +175,36 @@ Wave 3 is **COMPLETE** only when:
 | `active-execution-scope` | `none` | `T033–T040` |
 
 ```text
+# Historical state during Wave 3 execution (2026-07-02):
 Entry point: T033
 Exit point: T040 + CP-A5 PASS
 active-execution-scope: T033–T040
 blocked-scope: T001–T032; T041+
 ```
 
-Per `.specify/governance/execution-policy.md` § Pre-Execution Requirements: execution under spec10 Wave 3 requires this record to be **`active`**.
+During Wave 3 execution, per `.specify/governance/execution-policy.md` § Pre-Execution Requirements, this record was required to be **`active`**.
+
+## Program Closure Transition
+
+**Closed:** 2026-07-02  
+**Actor:** Governance Review  
+**Basis:** [`spec10-final-closure.md`](./spec10-final-closure.md) — CP-A5 PASS; T033–T040 complete
+
+| Transition | From | To |
+| ---------- | ---- | -- |
+| `authorization-status` | `active` | `revoked` |
+| `execution-state` | `AUTHORIZED` | `CLOSED` |
+| `active-execution-scope` | `T033–T040` | `none` |
+
+```text
+# Current state (post-closure):
+authorization-status: revoked
+execution-state: CLOSED
+active-execution-scope: none
+completed-scope: T001–T040
+```
+
+**Current state is `revoked`.** The activation transitions above are **historical** only.
 
 ---
 

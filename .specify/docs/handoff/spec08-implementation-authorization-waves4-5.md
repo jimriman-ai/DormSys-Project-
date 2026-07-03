@@ -82,10 +82,10 @@ by bringing existing implementation into an explicit, governed execution baselin
 | Prior state | Transition | Current state |
 | ----------- | ---------- | ------------- |
 | **Waves 1–3** (`spec08-implementation-authorization.md`) | **SUPERSEDED** — historically valid | Governs completed **T001–T017** only |
-| **Waves 4–5** (this record) | **ACTIVE** — retroactive acceptance | Program scope **T018–T031** accepted; forward execution **none** |
+| **Waves 4–5** (this record) | **ISSUED** (retroactive acceptance) → **CLOSED** (`revoked`) | Program scope **T018–T031** accepted; forward execution **none** |
 
 - **Waves 1–3 (T001–T017):** remain historically **CLOSED** and valid under superseded record
-- **Waves 4–5 (T018–T031):** retroactively accepted; no re-implementation required
+- **Waves 4–5 (T018–T031):** retroactively accepted under this record; no re-implementation required; **current authorization-status is `revoked`**
 - This record does **not** reopen Waves 1–3
 - This record does **not** authorize spec09–spec11 or spec07 reopening
 
@@ -111,7 +111,7 @@ The following tasks are accepted as implemented and **do not require re-implemen
 | Wave range | Task IDs | Authorization record | State |
 | ---------- | -------- | -------------------- | ----- |
 | Waves 1–3 | T001–T017 | `spec08-implementation-authorization.md` (superseded) | **CLOSED** |
-| Waves 4–5 | T018–T031 | This record | **ACCEPTED** |
+| Waves 4–5 | T018–T031 | This record | **CLOSED** (`revoked`) — retroactively accepted |
 | **Full program** | **T001–T031** | Combined | **Implementation complete** |
 
 ### Implementation paths
@@ -217,4 +217,4 @@ See [`spec08-implementation-closure.md`](./spec08-implementation-closure.md) for
 
 ---
 
-**End of authorization record.**
+**End of authorization record. REVOKED — program closed. Historical retroactive acceptance for T018–T031; current `authorization-status` is `revoked`.**
