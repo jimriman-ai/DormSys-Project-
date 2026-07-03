@@ -41,11 +41,11 @@ predecessor:            spec10 CLOSED / FROZEN
 
 ### Phase P2 — Technical planning artifacts (future — not authorized)
 
-- [ ] P-020 Draft `data-model.md` for Reporting read models (projection entities only)
-- [ ] P-021 Draft `contracts/` for reporting read ports (read-only, CD-017)
-- [ ] P-022 Draft `research.md` on projection refresh patterns
-- [ ] P-023 Architecture boundary sketch: Reporting vs Audit vs upstream contexts
-- [ ] P-024 Map `AuditEventType` vocabulary to reporting dimensions (read-only catalog)
+- [x] P-020 Draft `data-model.md` for Reporting read models (projection entities only)
+- [x] P-021 Draft `contracts/` for reporting read ports (read-only, CD-017)
+- [x] P-022 Draft `research.md` on projection refresh patterns
+- [x] P-023 Architecture boundary sketch: Reporting vs Audit vs upstream contexts
+- [x] P-024 Map `AuditEventType` vocabulary to reporting dimensions (read-only catalog)
 
 ### Phase P3 — Governance preparation (future — not authorized)
 
@@ -68,6 +68,15 @@ predecessor:            spec10 CLOSED / FROZEN
 | E-06 M4 producer coordination | Not authorized | HALT |
 | E-07 Reporting boundary tests | Not authorized | HALT |
 | E-08 Governance waves | Not authorized | HALT |
+
+### Implementation Progress — Authorized Execution
+
+- [x] I-001 Create Reporting read contract and slice-1 ports
+- [x] I-002 Implement T0 audit history source adapter via frozen AuditHistoryReadContract
+- [x] I-003 Implement RU-01 entity timeline read flow
+- [x] I-004 Implement RU-06 T0 drill-down scaffold
+- [x] I-005 Register Reporting DI bindings
+- [x] I-006 Add Reporting boundary, unit, and feature tests
 
 ---
 
