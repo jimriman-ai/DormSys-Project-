@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Reporting\Infrastructure\Repositories;
 
 use App\Modules\Audit\Application\DTOs\AuditHistoryItemDto;
+use App\Modules\Reporting\Application\DTOs\SecurityActorActivityQuery;
 use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
 use App\Modules\Reporting\Domain\Enums\WindowGranularity;
 use App\Modules\Reporting\Infrastructure\Persistence\Models\ActorActivitySummaryModel;
@@ -61,5 +62,24 @@ final class ActorActivitySummaryRepository
         $model->refreshed_at = Carbon::instance($refreshedAt);
         $model->projection_version = $projectionVersion;
         $model->save();
+    }
+
+    /**
+     * @return list<ActorActivitySummaryModel>
+     */
+    public function findSummaries(SecurityActorActivityQuery $query, ArchiveVisibilityTier $tier): array
+    {
+        return array_values(
+            ActorActivitySummaryModel::query()
+                ->where('actor_type', $query->actorType)
+                ->where('actor_id', $query->actorId)
+                ->where('window_start', '>=', $query->windowStart)
+                ->where('window_end', '<=', $query->windowEnd)
+                ->where('granularity', $query->granularity->value)
+                ->where('archive_visibility_tier', $tier->value)
+                ->orderBy('window_start')
+                ->get()
+                ->all(),
+        );
     }
 }

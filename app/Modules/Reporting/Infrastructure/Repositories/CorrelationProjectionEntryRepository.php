@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Reporting\Infrastructure\Repositories;
 
 use App\Modules\Audit\Application\DTOs\AuditHistoryItemDto;
+use App\Modules\Reporting\Application\DTOs\CorrelationBundleQuery;
 use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
 use App\Modules\Reporting\Infrastructure\Persistence\Models\CorrelationProjectionEntryModel;
 use DateTimeImmutable;
@@ -46,5 +47,22 @@ final class CorrelationProjectionEntryRepository
         ]);
 
         return true;
+    }
+
+    /**
+     * @return list<CorrelationProjectionEntryModel>
+     */
+    public function findBundleEntries(CorrelationBundleQuery $query, ArchiveVisibilityTier $tier): array
+    {
+        $builder = CorrelationProjectionEntryModel::query()
+            ->where('correlation_id', $query->correlationId)
+            ->where('archive_visibility_tier', $tier->value)
+            ->orderByDesc('occurred_at');
+
+        if ($query->eventTypes !== null && $query->eventTypes !== []) {
+            $builder->whereIn('event_type', $query->eventTypes);
+        }
+
+        return array_values($builder->get()->all());
     }
 }

@@ -10,8 +10,14 @@ use App\Modules\Reporting\Application\Contracts\ReportingReadContract;
 use App\Modules\Reporting\Application\DTOs\ActorTimelineQuery;
 use App\Modules\Reporting\Application\DTOs\AggregateDrillDownQuery;
 use App\Modules\Reporting\Application\DTOs\AggregateDrillDownReadModel;
+use App\Modules\Reporting\Application\DTOs\AuditWindowSummaryQuery;
+use App\Modules\Reporting\Application\DTOs\AuditWindowSummaryReadModel;
+use App\Modules\Reporting\Application\DTOs\CorrelationAuditBundleReadModel;
+use App\Modules\Reporting\Application\DTOs\CorrelationBundleQuery;
 use App\Modules\Reporting\Application\DTOs\EntityAuditTimelineReadModel;
 use App\Modules\Reporting\Application\DTOs\EntityTimelineQuery;
+use App\Modules\Reporting\Application\DTOs\SecurityActorActivityQuery;
+use App\Modules\Reporting\Application\DTOs\SecurityAuditEventReadModel;
 
 final class ReportingReadService implements ReportingReadContract
 {
@@ -20,6 +26,9 @@ final class ReportingReadService implements ReportingReadContract
         private readonly ReportingArchiveVisibilityGuard $archiveVisibility,
         private readonly QueryEntityAuditTimelineAction $queryEntityAuditTimeline,
         private readonly QueryActorAuditTimelineAction $queryActorAuditTimeline,
+        private readonly QueryCorrelationBundleAction $queryCorrelationBundle,
+        private readonly QueryAuditWindowSummaryAction $queryAuditWindowSummary,
+        private readonly QuerySecurityActorActivityAction $querySecurityActorActivity,
         private readonly AggregateDrillDownPort $aggregateDrillDown,
     ) {}
 
@@ -48,6 +57,80 @@ final class ReportingReadService implements ReportingReadContract
         $includeArchived = $this->archiveVisibility->resolveIncludeArchived($query->includeArchived);
 
         return $this->aggregateDrillDown->drillDown($this->withIncludeArchivedForDrillDown($query, $includeArchived));
+    }
+
+    public function correlationBundle(CorrelationBundleQuery $query): CorrelationAuditBundleReadModel
+    {
+        $this->authorization->authorizeRead();
+
+        $includeArchived = $this->archiveVisibility->resolveIncludeArchived($query->includeArchived);
+
+        return $this->queryCorrelationBundle->execute($this->withIncludeArchivedForCorrelation($query, $includeArchived));
+    }
+
+    public function auditWindowSummary(AuditWindowSummaryQuery $query): AuditWindowSummaryReadModel
+    {
+        $this->authorization->authorizeRead();
+
+        $includeArchived = $this->archiveVisibility->resolveIncludeArchived($query->includeArchived);
+
+        return $this->queryAuditWindowSummary->execute($this->withIncludeArchivedForWindow($query, $includeArchived));
+    }
+
+    public function securityActorActivity(SecurityActorActivityQuery $query): SecurityAuditEventReadModel
+    {
+        $this->authorization->authorizeRead();
+
+        $includeArchived = $this->archiveVisibility->resolveIncludeArchived($query->includeArchived);
+
+        return $this->querySecurityActorActivity->execute($this->withIncludeArchivedForSecurityActor($query, $includeArchived));
+    }
+
+    private function withIncludeArchivedForCorrelation(CorrelationBundleQuery $query, bool $includeArchived): CorrelationBundleQuery
+    {
+        if ($query->includeArchived === $includeArchived) {
+            return $query;
+        }
+
+        return new CorrelationBundleQuery(
+            correlationId: $query->correlationId,
+            includeArchived: $includeArchived,
+            eventTypes: $query->eventTypes,
+        );
+    }
+
+    private function withIncludeArchivedForWindow(AuditWindowSummaryQuery $query, bool $includeArchived): AuditWindowSummaryQuery
+    {
+        if ($query->includeArchived === $includeArchived) {
+            return $query;
+        }
+
+        return new AuditWindowSummaryQuery(
+            windowStart: $query->windowStart,
+            windowEnd: $query->windowEnd,
+            granularity: $query->granularity,
+            eventType: $query->eventType,
+            sourceContext: $query->sourceContext,
+            actorType: $query->actorType,
+            entityType: $query->entityType,
+            includeArchived: $includeArchived,
+        );
+    }
+
+    private function withIncludeArchivedForSecurityActor(SecurityActorActivityQuery $query, bool $includeArchived): SecurityActorActivityQuery
+    {
+        if ($query->includeArchived === $includeArchived) {
+            return $query;
+        }
+
+        return new SecurityActorActivityQuery(
+            actorType: $query->actorType,
+            actorId: $query->actorId,
+            windowStart: $query->windowStart,
+            windowEnd: $query->windowEnd,
+            granularity: $query->granularity,
+            includeArchived: $includeArchived,
+        );
     }
 
     private function withIncludeArchived(EntityTimelineQuery $query, bool $includeArchived): EntityTimelineQuery

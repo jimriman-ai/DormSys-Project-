@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Reporting\Infrastructure\Repositories;
 
 use App\Modules\Audit\Application\DTOs\AuditHistoryItemDto;
+use App\Modules\Reporting\Application\DTOs\AuditWindowSummaryQuery;
 use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
 use App\Modules\Reporting\Domain\Enums\WindowGranularity;
 use App\Modules\Reporting\Infrastructure\Persistence\Models\AuditWindowAggregateModel;
@@ -110,5 +111,35 @@ final class AuditWindowAggregateRepository
         $model->refreshed_at = Carbon::instance($refreshedAt);
         $model->projection_version = $projectionVersion;
         $model->save();
+    }
+
+    /**
+     * @return list<AuditWindowAggregateModel>
+     */
+    public function findBuckets(AuditWindowSummaryQuery $query, ArchiveVisibilityTier $tier): array
+    {
+        $builder = AuditWindowAggregateModel::query()
+            ->where('window_start', '>=', $query->windowStart)
+            ->where('window_end', '<=', $query->windowEnd)
+            ->where('granularity', $query->granularity->value)
+            ->where('archive_visibility_tier', $tier->value);
+
+        if ($query->eventType !== null) {
+            $builder->where('event_type', $query->eventType);
+        }
+
+        if ($query->sourceContext !== null) {
+            $builder->where('source_context', $query->sourceContext);
+        }
+
+        if ($query->actorType !== null) {
+            $builder->where('actor_type', $query->actorType);
+        }
+
+        if ($query->entityType !== null) {
+            $builder->where('entity_type', $query->entityType);
+        }
+
+        return array_values($builder->orderBy('window_start')->get()->all());
     }
 }

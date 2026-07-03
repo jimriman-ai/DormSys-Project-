@@ -35,4 +35,28 @@ final readonly class ReportingTimelineItemDto
             occurredAt: $item->occurredAt,
         );
     }
+
+    public static function fromCorrelationProjection(
+        string $sourceAuditLogId,
+        string $correlationId,
+        string $eventType,
+        string $entityType,
+        string $entityId,
+        string $actorType,
+        string $actorId,
+        string $sourceContext,
+        DateTimeImmutable $occurredAt,
+    ): self {
+        return new self(
+            auditLogId: $sourceAuditLogId,
+            correlationId: $correlationId,
+            eventType: $eventType,
+            entityType: $entityType,
+            entityId: $entityId,
+            actorType: $actorType,
+            actorId: $actorId,
+            sourceContext: $sourceContext,
+            occurredAt: $occurredAt,
+        );
+    }
 }

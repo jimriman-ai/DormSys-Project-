@@ -96,6 +96,10 @@ predecessor:            spec10 CLOSED / FROZEN
 - [x] I-023 Implement ProjectionRefreshRunnerService with transactional write-then-cursor-advance
 - [x] I-024 Register materialization and runner DI bindings
 - [x] I-025 Add materialization idempotency and cursor progression feature tests
+- [x] I-026 Add projection query ports for correlation, window aggregate, and actor activity families
+- [x] I-027 Implement projection-backed query adapters and read use-cases for RU-02, RU-03, RU-05
+- [x] I-028 Wire RU-02 / RU-03 / RU-05 on ReportingReadContract with DI bindings
+- [x] I-029 Add projection-backed read feature tests for authorized reporting flows
 
 ---
 
