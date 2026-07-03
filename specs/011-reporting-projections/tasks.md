@@ -81,6 +81,11 @@ predecessor:            spec10 CLOSED / FROZEN
 - [x] I-008 Harden RU-01/RU-06 filter and pagination behavior with tests
 - [x] I-009 Enforce BT-02 audit history read contract isolation in architecture tests
 - [x] I-010 Implement T0 actor-scoped audit timeline read flow
+- [x] I-011 Add T1 `reporting_projection_cursors` migration and `ProjectionCursorModel`
+- [x] I-012 Add T1 `reporting_correlation_projection_entries` migration and `CorrelationProjectionEntryModel`
+- [x] I-013 Add T1 `reporting_audit_window_aggregates` migration and `AuditWindowAggregateModel`
+- [x] I-014 Add T1 `reporting_actor_activity_summaries` migration and `ActorActivitySummaryModel`
+- [x] I-015 Add Reporting T1 projection schema feature tests
 
 ---
 
