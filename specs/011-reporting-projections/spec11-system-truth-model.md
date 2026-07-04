@@ -17,7 +17,7 @@
 
 Planning documents under `p2/` and `architecture-clarification.md` remain historical design context. Where they conflict with tests or runtime behavior, **runtime behavior wins**.
 
----
+
 
 ## 2. Conflict resolutions
 
