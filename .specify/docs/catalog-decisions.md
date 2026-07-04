@@ -528,7 +528,7 @@ This decision governs ownership only — not whether validation uses Application
 | ------ | ------- |
 | A) Unified Allocation + Occupancy context | Rejected — conflates assignment with physical/operational state |
 | B) Split with Allocation as driver | **CHOSEN** |
-| C) Standalone Occupancy context | Rejected for current scope — operational transitions are assigned to CheckIn/CheckOut boundary; see CD-015 |
+| C) Standalone Occupancy context | Deferred — OQ-06 (CheckIn/CheckOut module boundary) unresolved at decision time; resolved later by CD-015 |
 
 
 ### Decision

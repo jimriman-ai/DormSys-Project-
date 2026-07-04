@@ -79,7 +79,7 @@ final class SubmitRequestAction
             throw new RequestValidationException('Check-out date must be after check-in date.');
         }
 
-        $today = new DateTimeImmutable('today', new DateTimeZone('UTC'));
+        $today = now('UTC')->startOfDay()->toDateTimeImmutable();
 
         if ($request->checkInDate < $today) {
             throw new RequestValidationException('Check-in date cannot be in the past.');
