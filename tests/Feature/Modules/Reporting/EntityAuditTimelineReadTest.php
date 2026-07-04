@@ -13,7 +13,6 @@ use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Modules\Reporting\Application\Contracts\ReportingReadContract;
 use App\Modules\Reporting\Application\DTOs\EntityTimelineQuery;
-use App\Modules\Reporting\Domain\Exceptions\UnauthorizedArchiveVisibilityException;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Database\Seeders\IdentityRoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -186,8 +185,11 @@ it('denies entity timeline access without audit.read permission', function (): v
     )))->toThrow(UnauthorizedAuditAccessException::class);
 });
 
-it('denies include archived for non administrator readers', function (): void {
-    authenticateReportingReader(IdentityRoleSeeder::ROLE_DORM_MGR);
+it('denies include archived without audit.read permission', function (): void {
+    $user = app(CreateUserAction::class)->execute('No Archive Access', 'no-archive@example.com');
+    $model = UserModel::query()->findOrFail($user->requireId()->value);
+    request()->attributes->set('audit_principal_user_id', $model->id);
+
     $entityId = UuidGenerator::uuid7();
 
     seedReportingAuditEntry(['entityId' => $entityId, 'correlationId' => 'reporting:archived:001']);
@@ -196,11 +198,11 @@ it('denies include archived for non administrator readers', function (): void {
         entityType: 'request',
         entityId: $entityId,
         includeArchived: true,
-    )))->toThrow(UnauthorizedArchiveVisibilityException::class);
+    )))->toThrow(UnauthorizedAuditAccessException::class);
 });
 
-it('includes archived rows for administrator when requested', function (): void {
-    authenticateReportingReader(IdentityRoleSeeder::ROLE_ADMINISTRATOR);
+it('includes archived rows for audit.read holders when requested', function (): void {
+    authenticateReportingReader(IdentityRoleSeeder::ROLE_DORM_MGR);
     $entityId = UuidGenerator::uuid7();
 
     $active = seedReportingAuditEntry([

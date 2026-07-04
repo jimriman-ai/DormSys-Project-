@@ -171,8 +171,8 @@ Enforced at **Reporting read contract boundary** before T0/T1 delegation:
 | Consumption frame | `includeArchived` default | Override |
 | ----------------- | ------------------------- | -------- |
 | Operational (`RU-01`, `RU-03` ops) | `false` | None |
-| Security (`RU-02`, `RU-05`) | `false` | `Administrator` may set `true` |
-| Compliance (`RU-04`) | `false` | Compliance-authorized roles may set `true` |
+| Security (`RU-02`, `RU-05`) | `false` | `audit.read` holders may set `true` |
+| Compliance (`RU-04`) | `false` | `audit.read` holders may set `true` |
 
 | Rule | Expectation |
 | ---- | ----------- |

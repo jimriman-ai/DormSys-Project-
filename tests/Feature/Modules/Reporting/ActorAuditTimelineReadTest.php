@@ -13,7 +13,6 @@ use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Modules\Reporting\Application\Contracts\ReportingReadContract;
 use App\Modules\Reporting\Application\DTOs\ActorTimelineQuery;
-use App\Modules\Reporting\Domain\Exceptions\UnauthorizedArchiveVisibilityException;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Database\Seeders\IdentityRoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -107,8 +106,11 @@ it('denies actor timeline access without audit.read permission', function (): vo
     )))->toThrow(UnauthorizedAuditAccessException::class);
 });
 
-it('denies include archived for actor timeline non administrator readers', function (): void {
-    authenticateActorTimelineReader(IdentityRoleSeeder::ROLE_DORM_MGR);
+it('denies include archived for actor timeline without audit.read permission', function (): void {
+    $user = app(CreateUserAction::class)->execute('No Actor Archive Access', 'no-actor-archive@example.com');
+    $model = UserModel::query()->findOrFail($user->requireId()->value);
+    request()->attributes->set('audit_principal_user_id', $model->id);
+
     $actorId = UuidGenerator::uuid7();
 
     seedActorTimelineAuditEntry(['actorId' => $actorId, 'correlationId' => 'actor:archived:001']);
@@ -117,5 +119,5 @@ it('denies include archived for actor timeline non administrator readers', funct
         actorType: ActorType::User->value,
         actorId: $actorId,
         includeArchived: true,
-    )))->toThrow(UnauthorizedArchiveVisibilityException::class);
+    )))->toThrow(UnauthorizedAuditAccessException::class);
 });

@@ -96,6 +96,16 @@ This decision explicitly does **NOT** authorize:
 
 ## 7. AUTHORIZATION_POSTURE
 
+**Normative schema fields (execution layer)**
+
+```text
+authorization-status: active
+authorized-by: Governance Review
+authorized-scope: spec11 Reporting module — §4 AUTHORIZED_SCOPE (I-001–I-031 delivered)
+blocked-scope: —
+blocking-reason: —
+```
+
 | Field | Value |
 | ----- | ----- |
 | **Implementation** | **AUTHORIZED** (subject to §5 conditions) |

@@ -12,6 +12,7 @@ use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Modules\Reporting\Application\Contracts\Ports\ProjectionCursorControlPort;
 use App\Modules\Reporting\Application\Contracts\Ports\ProjectionRefreshInputPort;
 use App\Modules\Reporting\Application\DTOs\ProjectionRefreshRequestDto;
+use App\Modules\Audit\Domain\Exceptions\UnauthorizedAuditAccessException;
 use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
 use App\Modules\Reporting\Domain\Enums\ProjectionFamily;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
@@ -96,4 +97,32 @@ it('resumes refresh ingest after cursor advancement', function (): void {
 
     expect($secondBatch->items)->toHaveCount(1);
     expect($secondBatch->items[0]->auditLogId)->not->toBe($latestItem->auditLogId);
+});
+
+it('denies refresh ingest without audit.read permission', function (): void {
+    recordRefreshableAuditEntry();
+
+    $user = app(CreateUserAction::class)->execute('No Refresh Access', 'no-refresh@example.com');
+    $model = UserModel::query()->findOrFail($user->requireId()->value);
+    request()->attributes->set('audit_principal_user_id', $model->id);
+
+    expect(fn () => app(ProjectionRefreshInputPort::class)->fetchNextBatch(new ProjectionRefreshRequestDto(
+        projectionFamily: ProjectionFamily::Correlation,
+        archiveVisibilityTier: ArchiveVisibilityTier::ActiveOnly,
+        projectionVersion: '1.0.0',
+    )))->toThrow(UnauthorizedAuditAccessException::class);
+});
+
+it('denies include archived refresh tier without audit.read permission', function (): void {
+    recordRefreshableAuditEntry();
+
+    $user = app(CreateUserAction::class)->execute('No Archived Refresh', 'no-archived-refresh@example.com');
+    $model = UserModel::query()->findOrFail($user->requireId()->value);
+    request()->attributes->set('audit_principal_user_id', $model->id);
+
+    expect(fn () => app(ProjectionRefreshInputPort::class)->fetchNextBatch(new ProjectionRefreshRequestDto(
+        projectionFamily: ProjectionFamily::Correlation,
+        archiveVisibilityTier: ArchiveVisibilityTier::IncludeArchived,
+        projectionVersion: '1.0.0',
+    )))->toThrow(UnauthorizedAuditAccessException::class);
 });
