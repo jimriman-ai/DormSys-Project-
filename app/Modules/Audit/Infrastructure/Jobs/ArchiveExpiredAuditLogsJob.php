@@ -6,8 +6,6 @@ namespace App\Modules\Audit\Infrastructure\Jobs;
 
 use App\Modules\Audit\Application\Contracts\AuditLogRepositoryContract;
 use App\Modules\Audit\Application\Services\AuditRetentionSettingsReader;
-use DateTimeImmutable;
-use DateTimeZone;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -26,7 +24,7 @@ final class ArchiveExpiredAuditLogsJob implements ShouldQueue
         AuditRetentionSettingsReader $retentionSettings,
     ): void {
         $months = $retentionSettings->retentionMonths();
-        $cutoff = new DateTimeImmutable(sprintf('-%d months', $months), new DateTimeZone('UTC'));
+        $cutoff = now('UTC')->subMonths($months)->toDateTimeImmutable();
 
         $auditLogs->archiveExpiredBefore($cutoff);
     }

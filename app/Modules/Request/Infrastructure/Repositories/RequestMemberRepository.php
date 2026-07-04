@@ -8,14 +8,11 @@ use App\Modules\Request\Application\Contracts\RequestMemberRepositoryContract;
 use App\Modules\Request\Domain\Entities\RequestMember;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
 use App\Modules\Request\Infrastructure\Persistence\Models\RequestMemberModel;
-use DateTimeImmutable;
-use DateTimeZone;
-
 class RequestMemberRepository implements RequestMemberRepositoryContract
 {
     public function append(RequestMember $member): RequestMember
     {
-        $createdAt = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $createdAt = now('UTC')->toDateTimeImmutable();
 
         $model = new RequestMemberModel([
             'request_id' => $member->requestId->value,

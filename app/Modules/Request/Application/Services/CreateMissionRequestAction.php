@@ -20,7 +20,6 @@ use App\Modules\Request\Domain\Services\MissionGroupValidator;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
 use DateTimeImmutable;
-use DateTimeZone;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 
@@ -81,7 +80,7 @@ final class CreateMissionRequestAction
             throw new RequestValidationException('Dormitory site does not exist.');
         }
 
-        $submittedAt = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $submittedAt = now('UTC')->toDateTimeImmutable();
         $submitted = $draft->markSubmitted($submittedAt);
 
         return DB::transaction(function () use ($submitted, $members, $description, $missionDocumentUrl): Request {

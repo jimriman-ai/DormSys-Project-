@@ -9,9 +9,6 @@ use App\Modules\Request\Domain\Entities\RequestApproval;
 use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
 use App\Modules\Request\Infrastructure\Persistence\Models\RequestApprovalModel;
-use DateTimeImmutable;
-use DateTimeZone;
-
 class RequestApprovalRepository implements RequestApprovalRepositoryContract
 {
     public function append(RequestApproval $approval): RequestApproval
@@ -58,7 +55,7 @@ class RequestApprovalRepository implements RequestApprovalRepositoryContract
             decision: $model->decision,
             approverId: ApproverReferenceId::fromString($model->approver_id),
             reason: $model->reason,
-            decidedAt: new DateTimeImmutable($model->decided_at->format('Y-m-d H:i:s'), new DateTimeZone('UTC')),
+            decidedAt: \Illuminate\Support\Carbon::instance($model->decided_at)->utc()->toDateTimeImmutable(),
         );
     }
 }

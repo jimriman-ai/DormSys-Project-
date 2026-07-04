@@ -12,9 +12,6 @@ use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
 use App\Modules\Request\Domain\ValueObjects\RequestCode;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
 use App\Modules\Request\Infrastructure\Persistence\Models\RequestModel;
-use DateTimeImmutable;
-use DateTimeZone;
-
 class RequestRepository implements RequestRepositoryContract
 {
     public function save(Request $request): Request
@@ -99,14 +96,14 @@ class RequestRepository implements RequestRepositoryContract
             employeeId: EmployeeReferenceId::fromString($model->employee_id),
             dormitoryId: DormitorySiteId::fromString($model->dormitory_id),
             type: $model->type,
-            checkInDate: new DateTimeImmutable($model->check_in_date->format('Y-m-d'), new DateTimeZone('UTC')),
-            checkOutDate: new DateTimeImmutable($model->check_out_date->format('Y-m-d'), new DateTimeZone('UTC')),
+            checkInDate: \Illuminate\Support\Carbon::instance($model->check_in_date)->utc()->toDateTimeImmutable(),
+            checkOutDate: \Illuminate\Support\Carbon::instance($model->check_out_date)->utc()->toDateTimeImmutable(),
             status: $model->status->getValue(),
             submittedAt: $model->submitted_at !== null
-                ? new DateTimeImmutable($model->submitted_at->format('Y-m-d H:i:s'), new DateTimeZone('UTC'))
+                ? \Illuminate\Support\Carbon::instance($model->submitted_at)->utc()->toDateTimeImmutable()
                 : null,
             cancelledAt: $model->cancelled_at !== null
-                ? new DateTimeImmutable($model->cancelled_at->format('Y-m-d H:i:s'), new DateTimeZone('UTC'))
+                ? \Illuminate\Support\Carbon::instance($model->cancelled_at)->utc()->toDateTimeImmutable()
                 : null,
             rejectionReason: $model->rejection_reason,
         );

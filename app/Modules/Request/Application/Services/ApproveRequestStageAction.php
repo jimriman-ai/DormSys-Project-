@@ -20,7 +20,6 @@ use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
 use App\Shared\ValueObjects\SystemActorId;
 use DateTimeImmutable;
-use DateTimeZone;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 
@@ -66,7 +65,7 @@ final class ApproveRequestStageAction
             throw new InvalidRequestTransitionException('Request is not awaiting approval.');
         }
 
-        $decidedAt = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $decidedAt = now('UTC')->toDateTimeImmutable();
         $this->approvals->append(new RequestApproval(
             id: null,
             requestId: $request->requireId(),

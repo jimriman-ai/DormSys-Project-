@@ -12,7 +12,6 @@ use App\Modules\Audit\Domain\ValueObjects\ActorReference;
 use App\Modules\Audit\Domain\ValueObjects\CorrelationId;
 use App\Modules\Audit\Domain\ValueObjects\EntityReference;
 use DateTimeImmutable;
-use DateTimeZone;
 use Spatie\Activitylog\Models\Activity;
 
 final class ActivityLogAuditBridge
@@ -54,7 +53,7 @@ final class ActivityLogAuditBridge
                 'activity_description' => $activity->description,
             ],
             occurredAt: $activity->created_at?->toDateTimeImmutable()
-                ?? new DateTimeImmutable('now', new DateTimeZone('UTC')),
+                ?? now('UTC')->toDateTimeImmutable(),
         ));
     }
 

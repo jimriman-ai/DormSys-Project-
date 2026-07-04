@@ -20,7 +20,6 @@ use App\Modules\Request\Domain\Exceptions\RequestValidationException;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
 use DateTimeImmutable;
-use DateTimeZone;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 
@@ -81,12 +80,12 @@ final class CreateFamilyDirectRequestAction
             sourceDependentIds: $sourceDependentIds,
         );
 
-        $submittedAt = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $submittedAt = now('UTC')->toDateTimeImmutable();
         $submitted = $draft->markSubmitted($submittedAt);
 
         return DB::transaction(function () use ($submitted, $snapshotReads): Request {
             $persisted = $this->requests->save($submitted);
-            $capturedAt = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+            $capturedAt = now('UTC')->toDateTimeImmutable();
 
             foreach ($snapshotReads as $snapshotRead) {
                 $this->snapshotRepository->append(new DependentSnapshot(

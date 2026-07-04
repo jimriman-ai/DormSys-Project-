@@ -15,7 +15,6 @@ use App\Modules\Request\Domain\Exceptions\RequestNotFoundException;
 use App\Modules\Request\Domain\Exceptions\RequestValidationException;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
 use DateTimeImmutable;
-use DateTimeZone;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 
@@ -57,7 +56,7 @@ final class SubmitRequestAction
             throw new RequestValidationException('Dormitory site does not exist.');
         }
 
-        $submittedAt = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $submittedAt = now('UTC')->toDateTimeImmutable();
         $submitted = $request->markSubmitted($submittedAt);
 
         return DB::transaction(function () use ($submitted): Request {

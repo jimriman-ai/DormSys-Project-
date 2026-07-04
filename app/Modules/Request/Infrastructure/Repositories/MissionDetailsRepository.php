@@ -8,14 +8,11 @@ use App\Modules\Request\Application\Contracts\MissionDetailsRepositoryContract;
 use App\Modules\Request\Domain\Entities\MissionDetails;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
 use App\Modules\Request\Infrastructure\Persistence\Models\RequestMissionDetailsModel;
-use DateTimeImmutable;
-use DateTimeZone;
-
 class MissionDetailsRepository implements MissionDetailsRepositoryContract
 {
     public function save(MissionDetails $details): MissionDetails
     {
-        $createdAt = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $createdAt = now('UTC')->toDateTimeImmutable();
 
         $model = new RequestMissionDetailsModel([
             'request_id' => $details->requestId->value,

@@ -11,7 +11,6 @@ use App\Modules\Request\Domain\Exceptions\InvalidRequestTransitionException;
 use App\Modules\Request\Domain\Exceptions\RequestNotFoundException;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
 use DateTimeImmutable;
-use DateTimeZone;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 
@@ -34,7 +33,7 @@ final class CancelRequestAction
         }
 
         $previousStatus = $request->status;
-        $cancelledAt = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $cancelledAt = now('UTC')->toDateTimeImmutable();
         $cancelled = $request->markCancelled($cancelledAt);
 
         return DB::transaction(function () use ($cancelled, $previousStatus): Request {

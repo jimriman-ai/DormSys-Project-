@@ -8,9 +8,6 @@ use App\Modules\Request\Application\Contracts\DependentSnapshotRepositoryContrac
 use App\Modules\Request\Domain\Entities\DependentSnapshot;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
 use App\Modules\Request\Infrastructure\Persistence\Models\RequestDependentSnapshotModel;
-use DateTimeImmutable;
-use DateTimeZone;
-
 class DependentSnapshotRepository implements DependentSnapshotRepositoryContract
 {
     public function append(DependentSnapshot $snapshot): DependentSnapshot
@@ -52,7 +49,7 @@ class DependentSnapshotRepository implements DependentSnapshotRepositoryContract
             lastName: $model->last_name,
             relationship: $model->relationship,
             nationalCode: $model->national_code,
-            capturedAt: new DateTimeImmutable($model->captured_at->format('Y-m-d H:i:s'), new DateTimeZone('UTC')),
+            capturedAt: \Illuminate\Support\Carbon::instance($model->captured_at)->utc()->toDateTimeImmutable(),
         );
     }
 }

@@ -20,7 +20,6 @@ use App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId;
 use App\Modules\Lottery\Domain\ValueObjects\ScoringConfig;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use DateTimeImmutable;
-use DateTimeZone;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 
@@ -52,7 +51,7 @@ final class LockLotteryProgramAction
 
         $config = $this->scoringConfigReader->load();
         $randomSeed = UuidGenerator::uuid7();
-        $lockedAt = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $lockedAt = now('UTC')->toDateTimeImmutable();
 
         return DB::transaction(function () use ($program, $programId, $config, $randomSeed, $lockedAt): LotteryProgram {
             $previousStatus = $program->status;

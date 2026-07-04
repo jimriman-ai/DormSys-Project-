@@ -17,7 +17,6 @@ use App\Modules\Lottery\Domain\ValueObjects\EmployeeReferenceId;
 use App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId;
 use App\Modules\Lottery\Domain\ValueObjects\RequestReferenceId;
 use DateTimeImmutable;
-use DateTimeZone;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 
@@ -53,7 +52,7 @@ final class EnrollRegistrationAction
             throw new LotteryValidationException('Request dormitory does not match program dormitory.');
         }
 
-        $enrolledAt = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $enrolledAt = now('UTC')->toDateTimeImmutable();
 
         return DB::transaction(function () use ($programId, $requestId, $approvedRequest, $enrolledAt): LotteryRegistration {
             $lockedProgram = $this->programs->findByIdForUpdate($programId);

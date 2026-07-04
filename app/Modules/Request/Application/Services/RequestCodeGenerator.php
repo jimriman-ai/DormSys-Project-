@@ -8,7 +8,6 @@ use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
 use App\Modules\Request\Domain\Exceptions\RequestValidationException;
 use App\Modules\Request\Domain\ValueObjects\RequestCode;
 use DateTimeImmutable;
-use DateTimeZone;
 
 final class RequestCodeGenerator
 {
@@ -18,7 +17,7 @@ final class RequestCodeGenerator
 
     public function generate(?DateTimeImmutable $at = null): RequestCode
     {
-        $at ??= new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $at ??= now('UTC')->toDateTimeImmutable();
         $datePart = $at->format('Ymd');
         $sequence = $this->requests->nextDailySequenceForUtcDate($datePart);
 

@@ -106,10 +106,10 @@ final readonly class AuditEntryDto
         }
 
         if (is_string($value) && $value !== '') {
-            return new DateTimeImmutable($value);
+            return \Illuminate\Support\Carbon::parse($value, 'UTC')->toDateTimeImmutable();
         }
 
-        return new DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        return now('UTC')->toDateTimeImmutable();
     }
 }
 

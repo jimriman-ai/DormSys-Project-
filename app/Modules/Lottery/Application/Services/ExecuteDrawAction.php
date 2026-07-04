@@ -19,7 +19,6 @@ use App\Modules\Lottery\Domain\Services\LotteryDrawSelector;
 use App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId;
 use App\Modules\Lottery\Domain\ValueObjects\LotteryRegistrationId;
 use DateTimeImmutable;
-use DateTimeZone;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 
@@ -63,7 +62,7 @@ final class ExecuteDrawAction
             return $this->completeDrawWithoutResults($program);
         }
 
-        $drawnAt = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $drawnAt = now('UTC')->toDateTimeImmutable();
 
         return DB::transaction(function () use ($program, $programId, $eligible, $drawnAt): LotteryProgram {
             if ($this->results->existsForProgram($programId)) {
@@ -139,7 +138,7 @@ final class ExecuteDrawAction
 
     private function completeDrawWithoutResults(LotteryProgram $program): LotteryProgram
     {
-        $drawnAt = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $drawnAt = now('UTC')->toDateTimeImmutable();
 
         return DB::transaction(function () use ($program, $drawnAt): LotteryProgram {
             $previousStatus = $program->status;

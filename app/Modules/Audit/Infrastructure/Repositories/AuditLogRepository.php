@@ -15,7 +15,6 @@ use App\Modules\Audit\Domain\ValueObjects\CorrelationId;
 use App\Modules\Audit\Domain\ValueObjects\EntityReference;
 use App\Modules\Audit\Infrastructure\Persistence\Models\AuditLogModel;
 use DateTimeImmutable;
-use DateTimeZone;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -114,7 +113,7 @@ final class AuditLogRepository implements AuditLogRepositoryContract
 
     public function archiveExpiredBefore(DateTimeImmutable $cutoff): int
     {
-        $archivedAt = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $archivedAt = now('UTC')->toDateTimeImmutable();
 
         return DB::table('audit_logs')
             ->whereNull('archived_at')
@@ -162,6 +161,6 @@ final class AuditLogRepository implements AuditLogRepositoryContract
 
     private function toImmutable(Carbon $value): DateTimeImmutable
     {
-        return new DateTimeImmutable($value->format('Y-m-d H:i:s.u'), new DateTimeZone('UTC'));
+        return $value->utc()->toDateTimeImmutable();
     }
 }

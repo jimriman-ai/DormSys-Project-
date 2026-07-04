@@ -11,7 +11,6 @@ use App\Modules\Employee\Application\DTOs\EligibilityResultDTO;
 use App\Modules\Employee\Domain\Exceptions\EmployeeNotFoundException;
 use App\Modules\Employee\Domain\ValueObjects\EmployeeId;
 use DateTimeImmutable;
-use DateTimeZone;
 
 final class EmployeeEligibilityService implements EmployeeEligibilityContract
 {
@@ -28,7 +27,7 @@ final class EmployeeEligibilityService implements EmployeeEligibilityContract
             throw new EmployeeNotFoundException('Employee not found.');
         }
 
-        $evaluatedAt = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+        $evaluatedAt = now('UTC')->toDateTimeImmutable();
 
         if (! $employee->isActive()) {
             return new EligibilityResultDTO(

@@ -14,8 +14,6 @@ use App\Modules\Lottery\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId;
 use App\Modules\Lottery\Infrastructure\Persistence\Models\LotteryProgramModel;
 use DateTimeImmutable;
-use DateTimeZone;
-
 class LotteryProgramRepository implements LotteryProgramRepositoryContract
 {
     public function save(LotteryProgram $program): LotteryProgram
@@ -133,7 +131,6 @@ class LotteryProgramRepository implements LotteryProgramRepositoryContract
 
     private function toImmutable(\DateTimeInterface $value): DateTimeImmutable
     {
-        return DateTimeImmutable::createFromInterface($value)
-            ->setTimezone(new DateTimeZone('UTC'));
+        return \Illuminate\Support\Carbon::instance($value)->utc()->toDateTimeImmutable();
     }
 }
