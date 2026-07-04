@@ -70,6 +70,8 @@ composer run test
 
 Architecture checks run **before** the full suite so boundary failures surface early.
 
+**PR-level governance:** reviewers use [pr-review-checklist.md](./pr-review-checklist.md); authors complete `.github/pull_request_template.md`.
+
 ---
 
 ## Related documents

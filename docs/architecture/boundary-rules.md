@@ -8,7 +8,8 @@
 **Enforcement matrix:** [ci-enforcement-matrix.md](./ci-enforcement-matrix.md)  
 **Known exceptions:** [known-exceptions-registry.md](./known-exceptions-registry.md)
 
-Rules marked **ENFORCED** fail CI when violated. Rules marked **POLICY** are review expectations not fully automated.
+Rules marked **ENFORCED** fail CI when violated. Rules marked **POLICY** are review expectations not fully automated.  
+**PR governance:** [pr-review-checklist.md](./pr-review-checklist.md) · author attestation: `.github/pull_request_template.md`
 
 ---
 
