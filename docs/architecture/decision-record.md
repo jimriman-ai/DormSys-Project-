@@ -2,7 +2,7 @@
 
 **Status:** Accepted and stabilized (2026-07-04)  
 **Scope:** `app/Modules/`, `app/Integrations/`, `app/Providers/IntegrationServiceProvider.php`  
-**CI:** `tests/Architecture/` — 751 tests passing at stabilization
+**CI:** `composer run arch` (mandatory) · `tests/Architecture/` — 768 mandatory tests at first decay-prevention batch
 
 This record documents what was repaired, why, and how to maintain the approved model. It reflects **actual code and tests**, not a target-state diagram.
 
@@ -131,6 +131,18 @@ composer run pint
 
 Architecture failures block merge at the same priority as feature test failures.
 
+### CI decay-prevention batch (2026-07-04)
+
+First mandatory guardrails added without changing business logic:
+
+- `ModuleInventoryParityTest` — bootstrap/disk/matrix parity + CheckIn debt allowlist
+- `IntegrationCompositionRootTest` — integration port binding location
+- `CrossModuleAdapterLocationTest` — blocks new legacy-style adapters
+- `ForbiddenImportsScanTest` + `scripts/architecture/forbidden-imports-scan.php`
+- `ArchitectureAdvisoryTest` — non-blocking debt visibility (`composer run arch:advisory`)
+
+See [ci-enforcement-matrix.md](./ci-enforcement-matrix.md) and [known-exceptions-registry.md](./known-exceptions-registry.md).
+
 ### When to update this record
 
 - New module added to matrix
@@ -147,6 +159,8 @@ Do **not** update for routine feature PRs.
 | Document | Path |
 |----------|------|
 | Boundary rules | [boundary-rules.md](./boundary-rules.md) |
+| CI enforcement matrix | [ci-enforcement-matrix.md](./ci-enforcement-matrix.md) |
+| Known exceptions registry | [known-exceptions-registry.md](./known-exceptions-registry.md) |
 | Integration policy | [integration-layer-policy.md](./integration-layer-policy.md) |
 | PR checklist | [pr-review-checklist.md](./pr-review-checklist.md) |
 | Arch inventory | `tests/Architecture/architecture.php` |

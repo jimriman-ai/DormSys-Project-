@@ -5,8 +5,22 @@
 ## Test plan
 
 - [ ] Tests pass (`sail artisan test`)
+- [ ] Architecture decay prevention passes (`composer run arch`)
 - [ ] PHPStan level 8 passes
 - [ ] Pint formatting applied
+
+---
+
+## Architecture boundary check
+
+Complete when the PR touches `app/Modules/`, `app/Integrations/`, `app/Providers/`, or `bootstrap/providers.php`.
+
+- [ ] `composer run arch` passes (mandatory)
+- [ ] New cross-module edges use `app/Integrations/` + `IntegrationServiceProvider` (not legacy adapter locations)
+- [ ] No new entries needed in `architectureLegacyCrossModuleAdapterPaths()` unless explicitly approved
+- [ ] If adding an active module: updated `architectureModuleNames()` or `architectureMatrixExcludedActiveModules()` in `tests/Architecture/architecture.php`
+
+If no architecture files are changed, write **N/A**.
 
 ---
 

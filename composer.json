@@ -64,6 +64,13 @@
             "@php artisan config:clear --ansi @no_additional_args",
             "@php artisan test"
         ],
+        "arch:scan": "@php scripts/architecture/forbidden-imports-scan.php",
+        "arch:test": "@php -d memory_limit=512M vendor/bin/pest tests/Architecture/ --exclude-group architecture-advisory",
+        "arch:advisory": "@php -d memory_limit=512M vendor/bin/pest tests/Architecture/ArchitectureAdvisoryTest.php --group architecture-advisory",
+        "arch": [
+            "@arch:scan",
+            "@arch:test"
+        ],
         "pint": "pint",
         "phpstan": "@php vendor/bin/phpstan analyse --memory-limit=1G --ansi",
         "post-autoload-dump": [

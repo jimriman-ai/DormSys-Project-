@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 /**
+ * Modules with full matrix enforcement (layer + boundary rules).
+ *
  * @return list<string>
  */
 function architectureModuleNames(): array
@@ -19,6 +21,78 @@ function architectureModuleNames(): array
         'Notification',
         'Audit',
         'Reporting',
+    ];
+}
+
+/**
+ * Active modules registered in bootstrap but intentionally excluded from the full
+ * matrix until documented contract debt is resolved. Do not add here to bypass CI.
+ *
+ * @return list<string>
+ */
+function architectureMatrixExcludedActiveModules(): array
+{
+    return [
+        'CheckIn',
+    ];
+}
+
+/**
+ * Cross-module ports that MUST bind only in IntegrationServiceProvider.
+ *
+ * @return list<class-string>
+ */
+function architectureIntegrationPortClasses(): array
+{
+    return [
+        'App\\Modules\\Allocation\\Application\\Contracts\\Ports\\ApprovedRequestReadPort',
+        'App\\Modules\\CheckIn\\Application\\Contracts\\AllocationAssignmentReadPort',
+        'App\\Modules\\Request\\Application\\Contracts\\Internal\\RequestEligibilityGatewayContract',
+        'App\\Modules\\Employee\\Application\\Contracts\\Ports\\PendingRequestReadPort',
+        'App\\Modules\\Lottery\\Application\\Contracts\\ProposedAllocationPort',
+    ];
+}
+
+/**
+ * Legacy cross-module port bindings allowed outside the composition root until migrated.
+ *
+ * @return array<class-string, string> port FQCN => relative provider path from repo root
+ */
+function architectureLegacyModuleProviderPortBindings(): array
+{
+    return [
+        'App\\Modules\\Lottery\\Application\\Contracts\\LotteryRequestReadPort' => 'app/Modules/Lottery/Infrastructure/Providers/LotteryServiceProvider.php',
+        'App\\Modules\\Audit\\Application\\Contracts\\AuditPermissionReadPort' => 'app/Modules/Identity/Infrastructure/Providers/IdentityServiceProvider.php',
+    ];
+}
+
+/**
+ * Cross-module adapters outside app/Integrations that remain tolerated until migrated.
+ * New adapters MUST NOT be added here without architecture approval.
+ *
+ * @return list<string> repo-relative file paths
+ */
+function architectureLegacyCrossModuleAdapterPaths(): array
+{
+    return [
+        'app/Modules/Lottery/Application/Adapters/RequestReadAdapter.php',
+        'app/Modules/Reporting/Infrastructure/Adapters/AuditHistorySourceReadAdapter.php',
+        'app/Modules/Reporting/Infrastructure/Adapters/ReportingArchiveVisibilityAdapter.php',
+        'app/Modules/Identity/Infrastructure/Adapters/SpatieAuditPermissionReadAdapter.php',
+    ];
+}
+
+/**
+ * Documented foreign Domain imports permitted in CheckIn Application until UserId debt closes.
+ *
+ * @return array<string, list<string>> repo-relative path => list of allowed import FQCNs
+ */
+function architectureCheckInForeignDomainImportAllowlist(): array
+{
+    return [
+        'app/Modules/CheckIn/Application/Services/OperatorRoleGate.php' => [
+            'App\\Modules\\Identity\\Domain\\ValueObjects\\UserId',
+        ],
     ];
 }
 
@@ -60,5 +134,56 @@ function architectureModuleServiceProviders(): array
             return $providerClass;
         },
         architectureModuleNames()
+    ));
+}
+
+/**
+ * Discover module names that expose an Infrastructure service provider on disk.
+ *
+ * @return list<string>
+ */
+function architectureDiscoverActiveModuleNames(): array
+{
+    $modulesPath = app_path('Modules');
+
+    if (! is_dir($modulesPath)) {
+        return [];
+    }
+
+    $modules = [];
+
+    foreach (scandir($modulesPath) ?: [] as $entry) {
+        if ($entry === '.' || $entry === '..') {
+            continue;
+        }
+
+        $providerPath = "{$modulesPath}/{$entry}/Infrastructure/Providers/{$entry}ServiceProvider.php";
+
+        if (is_file($providerPath)) {
+            $modules[] = $entry;
+        }
+    }
+
+    sort($modules);
+
+    return $modules;
+}
+
+/**
+ * Module Infrastructure service providers registered in bootstrap/providers.php.
+ *
+ * @return list<class-string>
+ */
+function architectureBootstrapModuleServiceProviders(): array
+{
+    /** @var list<class-string> $providers */
+    $providers = require base_path('bootstrap/providers.php');
+
+    return array_values(array_filter(
+        $providers,
+        static fn (string $provider): bool => preg_match(
+            '#^App\\\\Modules\\\\[A-Za-z]+\\\\Infrastructure\\\\Providers\\\\[A-Za-z]+ServiceProvider$#',
+            $provider
+        ) === 1
     ));
 }

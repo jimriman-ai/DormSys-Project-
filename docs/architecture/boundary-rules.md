@@ -1,8 +1,12 @@
 # Module Boundary Rules
 
 **Status:** Approved — reflects post-repair codebase (2026-07-04)  
-**CI gate:** `php artisan test tests/Architecture/` (751 tests at last verification)  
-**Inventory source:** `tests/Architecture/architecture.php`
+**CI gate (mandatory):** `composer run arch`  
+**CI gate (full suite):** `php artisan test`  
+**Advisory debt visibility:** `composer run arch:advisory`  
+**Inventory source:** `tests/Architecture/architecture.php`  
+**Enforcement matrix:** [ci-enforcement-matrix.md](./ci-enforcement-matrix.md)  
+**Known exceptions:** [known-exceptions-registry.md](./known-exceptions-registry.md)
 
 Rules marked **ENFORCED** fail CI when violated. Rules marked **POLICY** are review expectations not fully automated.
 

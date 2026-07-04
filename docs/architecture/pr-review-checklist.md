@@ -2,7 +2,9 @@
 
 **Status:** Approved  
 **Use when:** PR touches `app/Modules/`, `app/Integrations/`, `app/Providers/`, or `bootstrap/providers.php`  
-**CI gate:** `php artisan test tests/Architecture/` (751 tests)
+**CI gate (mandatory):** `composer run arch`  
+**CI gate (full suite):** `php artisan test`  
+**Enforcement matrix:** [ci-enforcement-matrix.md](./ci-enforcement-matrix.md)
 
 Legend: **ENFORCED** = CI fails on violation. **POLICY** = reviewer must catch manually.
 
@@ -129,6 +131,9 @@ rg "Infrastructure|Illuminate\\\\Database|Eloquent|Facades" app/Modules/{Module}
 ```
 
 ```bash
+# Mandatory architecture decay-prevention gate
+composer run arch
+
 # Full CI gate
 php artisan test tests/Architecture/
 composer run phpstan
