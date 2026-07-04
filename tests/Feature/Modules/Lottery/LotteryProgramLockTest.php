@@ -25,6 +25,7 @@ use Illuminate\Support\Carbon;
 uses(RefreshDatabase::class);
 
 require_once __DIR__.'/LotteryRegistrationEnrollmentTest.php';
+require_once __DIR__.'/LotteryFeatureSupport.php';
 
 beforeEach(function (): void {
     Carbon::setTestNow('2026-06-30 12:00:00');
@@ -110,5 +111,5 @@ it('locks a program and persists snapshot with stable scores', function (): void
         departmentPriority: 0,
     );
 
-    expect($reloadedRegistration?->weightedScore)->toBe($expectedScore);
+    expectPersistedWeightedScore($reloadedRegistration?->weightedScore, $expectedScore);
 });

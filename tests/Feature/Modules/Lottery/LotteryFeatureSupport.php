@@ -11,6 +11,15 @@ use Illuminate\Support\Carbon;
 
 const LOTTERY_RESULT_READ_CONTRACT_KEYS = ['program_id', 'winners', 'reserves', 'ranks'];
 
+/** Matches lottery_registrations.weighted_score decimal(16, 8) persistence precision. */
+const LOTTERY_WEIGHTED_SCORE_DB_EPSILON = 1e-8;
+
+function expectPersistedWeightedScore(?float $persisted, float $computed): void
+{
+    expect($persisted)->not->toBeNull();
+    expect(abs($persisted - $computed))->toBeLessThan(LOTTERY_WEIGHTED_SCORE_DB_EPSILON);
+}
+
 function bootstrapLotteryFeatureTests(): void
 {
     Carbon::setTestNow('2026-06-30 12:00:00');

@@ -123,7 +123,7 @@ it('validates the full request to read contract integration boundary', function 
 
         $registration = app(LotteryRegistrationRepositoryContract::class)->findById($result->registrationId);
 
-        expect($registration?->weightedScore)->toBe($recomputed);
+        expectPersistedWeightedScore($registration?->weightedScore, $recomputed);
     }
 
     $drawJob = new ExecuteLotteryDrawJob($locked->requireId()->value);
