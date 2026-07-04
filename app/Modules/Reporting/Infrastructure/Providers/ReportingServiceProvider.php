@@ -14,6 +14,10 @@ use App\Modules\Reporting\Application\Contracts\Ports\ProjectionRefreshInputPort
 use App\Modules\Reporting\Application\Contracts\Ports\ProjectionRefreshRunnerPort;
 use App\Modules\Reporting\Application\Contracts\Ports\ReportingArchiveVisibilityPort;
 use App\Modules\Reporting\Application\Contracts\Ports\WindowAggregateQueryPort;
+use App\Modules\Reporting\Application\Contracts\Ports\ActorActivitySummaryWritePort;
+use App\Modules\Reporting\Application\Contracts\Ports\AuditWindowAggregateWritePort;
+use App\Modules\Reporting\Application\Contracts\Ports\CorrelationProjectionWritePort;
+use App\Modules\Reporting\Application\Contracts\Ports\ProjectionIngestReceiptRepositoryPort;
 use App\Modules\Reporting\Application\Contracts\ReportingReadContract;
 use App\Modules\Reporting\Application\Services\EntityTimelineSummaryBuilder;
 use App\Modules\Reporting\Application\Services\Materializers\ActorActivitySummaryMaterializer;
@@ -56,6 +60,10 @@ class ReportingServiceProvider extends ServiceProvider
         $this->app->singleton(ReportingProvenanceFactory::class);
         $this->app->singleton(EntityTimelineSummaryBuilder::class);
         $this->app->singleton(ReportingProjectionEventTypeCatalog::class);
+        $this->app->singleton(ProjectionIngestReceiptRepositoryPort::class, ProjectionIngestReceiptRepository::class);
+        $this->app->singleton(CorrelationProjectionWritePort::class, CorrelationProjectionEntryRepository::class);
+        $this->app->singleton(AuditWindowAggregateWritePort::class, AuditWindowAggregateRepository::class);
+        $this->app->singleton(ActorActivitySummaryWritePort::class, ActorActivitySummaryRepository::class);
         $this->app->singleton(ProjectionCursorRepository::class);
         $this->app->singleton(CorrelationProjectionEntryRepository::class);
         $this->app->singleton(ProjectionIngestReceiptRepository::class);

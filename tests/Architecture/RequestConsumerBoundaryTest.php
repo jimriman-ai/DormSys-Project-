@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Integrations\Request\PendingRequestReadBridge;
 use App\Modules\Employee\Application\Contracts\Ports\PendingRequestReadPort;
-use App\Modules\Request\Infrastructure\Adapters\PendingRequestReadAdapter;
 
 arch('request module does not import employee domain enums (spec03 isolation)')
     ->expect('App\Modules\Request')
@@ -46,7 +46,7 @@ arch('request domain does not import foreign modules (BT-R05)')
     ->not->toUse('App\Modules\Lottery\*');
 
 test('pending request read adapter implements only the employee read port (BT-R09 / OA-05-09)', function (): void {
-    $adapterReflection = new ReflectionClass(PendingRequestReadAdapter::class);
+    $adapterReflection = new ReflectionClass(PendingRequestReadBridge::class);
     $portReflection = new ReflectionClass(PendingRequestReadPort::class);
 
     expect($adapterReflection->implementsInterface(PendingRequestReadPort::class))->toBeTrue();

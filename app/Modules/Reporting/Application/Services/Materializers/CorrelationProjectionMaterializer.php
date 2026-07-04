@@ -7,12 +7,12 @@ namespace App\Modules\Reporting\Application\Services\Materializers;
 use App\Modules\Reporting\Application\Contracts\Ports\ProjectionRefreshMaterializerPort;
 use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
 use App\Modules\Reporting\Domain\Enums\ProjectionFamily;
-use App\Modules\Reporting\Infrastructure\Repositories\CorrelationProjectionEntryRepository;
+use App\Modules\Reporting\Application\Contracts\Ports\CorrelationProjectionWritePort;
 
 final class CorrelationProjectionMaterializer implements ProjectionRefreshMaterializerPort
 {
     public function __construct(
-        private readonly CorrelationProjectionEntryRepository $repository,
+        private readonly CorrelationProjectionWritePort $repository,
     ) {}
 
     public function supports(ProjectionFamily $projectionFamily): bool

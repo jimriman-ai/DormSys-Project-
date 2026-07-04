@@ -8,14 +8,14 @@ use App\Modules\Reporting\Application\Contracts\Ports\ProjectionRefreshMateriali
 use App\Modules\Reporting\Application\Services\ProjectionDayWindowResolver;
 use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
 use App\Modules\Reporting\Domain\Enums\ProjectionFamily;
-use App\Modules\Reporting\Infrastructure\Repositories\AuditWindowAggregateRepository;
-use App\Modules\Reporting\Infrastructure\Repositories\ProjectionIngestReceiptRepository;
+use App\Modules\Reporting\Application\Contracts\Ports\AuditWindowAggregateWritePort;
+use App\Modules\Reporting\Application\Contracts\Ports\ProjectionIngestReceiptRepositoryPort;
 
 final class AuditWindowAggregateMaterializer implements ProjectionRefreshMaterializerPort
 {
     public function __construct(
-        private readonly ProjectionIngestReceiptRepository $receiptRepository,
-        private readonly AuditWindowAggregateRepository $aggregateRepository,
+        private readonly ProjectionIngestReceiptRepositoryPort $receiptRepository,
+        private readonly AuditWindowAggregateWritePort $aggregateRepository,
         private readonly ProjectionDayWindowResolver $windowResolver,
     ) {}
 

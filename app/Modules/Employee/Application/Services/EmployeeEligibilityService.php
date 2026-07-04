@@ -19,9 +19,10 @@ final class EmployeeEligibilityService implements EmployeeEligibilityContract
         private readonly PendingRequestReadPort $pendingRequests,
     ) {}
 
-    public function computeRequestEligibility(EmployeeId $employeeId, ?string $excludingRequestId = null): EligibilityResultDTO
+    public function computeRequestEligibility(string $employeeId, ?string $excludingRequestId = null): EligibilityResultDTO
     {
-        $employee = $this->employees->findById($employeeId);
+        $id = EmployeeId::fromString($employeeId);
+        $employee = $this->employees->findById($id);
 
         if ($employee === null) {
             throw new EmployeeNotFoundException('Employee not found.');

@@ -10,7 +10,8 @@ use App\Modules\Audit\Application\Contracts\AuditLogRepositoryContract;
 use App\Modules\Audit\Application\Contracts\AuditPrincipalContextPort;
 use App\Modules\Audit\Application\Contracts\AuditRecordingContract;
 use App\Modules\Audit\Application\Services\AuditHistoryReadService;
-use App\Modules\Audit\Application\Services\AuditRetentionSettingsReader;
+use App\Modules\Audit\Application\Contracts\AuditEventTypeCatalogPort;
+use App\Modules\Audit\Application\Services\AuditEventTypeCatalog;
 use App\Modules\Audit\Application\Services\PayloadHashCalculator;
 use App\Modules\Audit\Application\Services\QueryAuditHistoryAction;
 use App\Modules\Audit\Application\Services\RecordAuditAction;
@@ -37,6 +38,7 @@ class AuditServiceProvider extends ServiceProvider
         $this->app->singleton(QueryAuditHistoryAction::class);
         $this->app->singleton(AuditHistoryReadService::class);
         $this->app->singleton(AuditHistoryReadContract::class, AuditHistoryReadService::class);
+        $this->app->singleton(AuditEventTypeCatalogPort::class, AuditEventTypeCatalog::class);
         $this->app->singleton(AuditRetentionSettingsReader::class);
         $this->app->singleton(ActivityLogAuditBridge::class);
     }

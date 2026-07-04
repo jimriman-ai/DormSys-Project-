@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Allocation\Application\Services;
 
 use App\Modules\Allocation\Application\Contracts\AllocationRepositoryContract;
+use App\Modules\Allocation\Application\Contracts\Ports\DormitoryReadPort;
+use App\Modules\Allocation\Application\Contracts\Ports\PhysicalStateSignalPort;
 use App\Modules\Allocation\Domain\Enums\AllocationMethod;
 use App\Modules\Allocation\Domain\Events\AllocationAssigned;
 use App\Modules\Allocation\Domain\Events\AllocationCreated;
@@ -13,8 +15,6 @@ use App\Modules\Allocation\Domain\Exceptions\BedNotAssignableException;
 use App\Modules\Allocation\Domain\Models\Allocation;
 use App\Modules\Allocation\Domain\ValueObjects\DateRange;
 use App\Modules\Allocation\Domain\ValueObjects\PersonAllocationRef;
-use App\Modules\Allocation\Infrastructure\Adapters\AllocationPhysicalStateAdapter;
-use App\Modules\Allocation\Infrastructure\Adapters\DormitoryReadAdapter;
 use DateTimeImmutable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -23,8 +23,8 @@ final class CreateAllocationAction
 {
     public function __construct(
         private readonly AllocationRepositoryContract $allocations,
-        private readonly DormitoryReadAdapter $dormitory,
-        private readonly AllocationPhysicalStateAdapter $physicalState,
+        private readonly DormitoryReadPort $dormitory,
+        private readonly PhysicalStateSignalPort $physicalState,
     ) {}
 
     public function execute(
@@ -55,7 +55,11 @@ final class CreateAllocationAction
             Event::dispatch(AllocationCreated::forAllocation($persisted));
             Event::dispatch(AllocationAssigned::forAllocation($persisted));
 
-            $this->physicalState->signalAssigned(
+            $this->physicalState->reserveBed(
+                bedId: $persisted->bedId,
+                signalReferenceId: $persisted->requireId()->value,
+            );
+            $this->physicalState->occupyBed(
                 bedId: $persisted->bedId,
                 signalReferenceId: $persisted->requireId()->value,
             );

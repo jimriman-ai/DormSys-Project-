@@ -6,7 +6,6 @@ use App\Modules\Employee\Application\Contracts\EmployeeEligibilityContract;
 use App\Modules\Employee\Application\Contracts\Ports\PendingRequestReadPort;
 use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\Entities\Employee;
-use App\Modules\Employee\Domain\ValueObjects\EmployeeId;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Request\Application\Services\ApproveRequestStageAction;
@@ -20,7 +19,7 @@ use App\Modules\Request\Domain\States\PendingDepartmentManagerState;
 use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
-use App\Modules\Request\Infrastructure\Adapters\PendingRequestReadAdapter;
+use App\Integrations\Request\PendingRequestReadBridge;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use App\Support\ValueObjects\Identity\NationalCode;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -57,7 +56,7 @@ it('returns true when a non-terminal request exists (BT-R08)', function (): void
     $employee = createEmployeeForPendingPortTest();
     $port = app(PendingRequestReadPort::class);
 
-    expect($port->hasPendingRequest(EmployeeId::fromString($employee->requireId()->value)))->toBeFalse();
+    expect($port->hasPendingRequest($employee->requireId()->value))->toBeFalse();
 
     app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
@@ -66,12 +65,12 @@ it('returns true when a non-terminal request exists (BT-R08)', function (): void
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
 
-    expect($port->hasPendingRequest(EmployeeId::fromString($employee->requireId()->value)))->toBeTrue();
+    expect($port->hasPendingRequest($employee->requireId()->value))->toBeTrue();
 });
 
 it('returns false for terminal request statuses (BT-R08)', function (): void {
     $employee = createEmployeeForPendingPortTest();
-    $employeeId = EmployeeId::fromString($employee->requireId()->value);
+    $employeeId = $employee->requireId()->value;
     $port = app(PendingRequestReadPort::class);
 
     $draft = app(CreatePersonalRequestAction::class)->execute(
@@ -98,7 +97,7 @@ it('returns false for terminal request statuses (BT-R08)', function (): void {
 });
 
 it('exposes only the read-only port surface (BT-R09 / OA-05-09)', function (): void {
-    $adapterReflection = new \ReflectionClass(PendingRequestReadAdapter::class);
+    $adapterReflection = new \ReflectionClass(PendingRequestReadBridge::class);
     $publicAdapterMethods = array_filter(
         $adapterReflection->getMethods(\ReflectionMethod::IS_PUBLIC),
         static fn (\ReflectionMethod $method): bool => ! $method->isConstructor() && ! $method->isStatic(),
@@ -131,7 +130,7 @@ it('blocks submit when eligibility detects an existing pending request (CD-013)'
         });
 
     $eligibility = app(EmployeeEligibilityContract::class)->computeRequestEligibility(
-        EmployeeId::fromString($employee->requireId()->value),
+        $employee->requireId()->value,
     );
 
     expect($eligibility->eligible)->toBeFalse();
@@ -140,7 +139,7 @@ it('blocks submit when eligibility detects an existing pending request (CD-013)'
 
 it('does not treat cancelled requests as pending (R-04)', function (): void {
     $employee = createEmployeeForPendingPortTest();
-    $employeeId = EmployeeId::fromString($employee->requireId()->value);
+    $employeeId = $employee->requireId()->value;
 
     $draft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),

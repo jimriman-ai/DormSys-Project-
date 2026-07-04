@@ -8,14 +8,14 @@ use App\Modules\Reporting\Application\Contracts\Ports\ProjectionRefreshMateriali
 use App\Modules\Reporting\Application\Services\ProjectionDayWindowResolver;
 use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
 use App\Modules\Reporting\Domain\Enums\ProjectionFamily;
-use App\Modules\Reporting\Infrastructure\Repositories\ActorActivitySummaryRepository;
-use App\Modules\Reporting\Infrastructure\Repositories\ProjectionIngestReceiptRepository;
+use App\Modules\Reporting\Application\Contracts\Ports\ActorActivitySummaryWritePort;
+use App\Modules\Reporting\Application\Contracts\Ports\ProjectionIngestReceiptRepositoryPort;
 
 final class ActorActivitySummaryMaterializer implements ProjectionRefreshMaterializerPort
 {
     public function __construct(
-        private readonly ProjectionIngestReceiptRepository $receiptRepository,
-        private readonly ActorActivitySummaryRepository $summaryRepository,
+        private readonly ProjectionIngestReceiptRepositoryPort $receiptRepository,
+        private readonly ActorActivitySummaryWritePort $summaryRepository,
         private readonly ProjectionDayWindowResolver $windowResolver,
     ) {}
 

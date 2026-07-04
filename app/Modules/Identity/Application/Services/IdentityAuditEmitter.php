@@ -7,11 +7,6 @@ namespace App\Modules\Identity\Application\Services;
 use App\Modules\Audit\Application\Contracts\AuditPrincipalContextPort;
 use App\Modules\Audit\Application\Contracts\AuditRecordingContract;
 use App\Modules\Audit\Application\DTOs\AuditEntryDto;
-use App\Modules\Audit\Domain\Enums\ActorType;
-use App\Modules\Audit\Domain\Enums\AuditEventType;
-use App\Modules\Audit\Domain\ValueObjects\ActorReference;
-use App\Modules\Audit\Domain\ValueObjects\CorrelationId;
-use App\Modules\Audit\Domain\ValueObjects\EntityReference;
 use App\Modules\Identity\Domain\Enums\UserStatus;
 use App\Modules\Identity\Domain\ValueObjects\UserId;
 use DateTimeImmutable;
@@ -32,7 +27,7 @@ final class IdentityAuditEmitter
     {
         $this->record(
             correlationId: $this->correlationId($userId, 'identity.user_created', 'created'),
-            eventType: AuditEventType::IdentityUserCreated,
+            eventType: 'identity.user_created',
             userId: $userId,
             oldValues: null,
             newValues: ['status' => UserStatus::Active->value],
@@ -45,7 +40,7 @@ final class IdentityAuditEmitter
     {
         $this->record(
             correlationId: $this->correlationId($userId, 'identity.user_deactivated', 'deactivated'),
-            eventType: AuditEventType::IdentityUserDeactivated,
+            eventType: 'identity.user_deactivated',
             userId: $userId,
             oldValues: ['status' => UserStatus::Active->value],
             newValues: ['status' => UserStatus::Disabled->value],
@@ -57,8 +52,8 @@ final class IdentityAuditEmitter
     public function recordRoleAssigned(UserId $userId, string $roleName, DateTimeImmutable $occurredAt): void
     {
         $this->record(
-            correlationId: $this->correlationId($userId, AuditEventType::IdentityRoleChanged->value, 'assigned:'.$roleName),
-            eventType: AuditEventType::IdentityRoleChanged,
+            correlationId: $this->correlationId($userId, 'identity.role_changed', 'assigned:'.$roleName),
+            eventType: 'identity.role_changed',
             userId: $userId,
             oldValues: null,
             newValues: ['role' => $roleName],
@@ -70,8 +65,8 @@ final class IdentityAuditEmitter
     public function recordRoleRevoked(UserId $userId, string $roleName, DateTimeImmutable $occurredAt): void
     {
         $this->record(
-            correlationId: $this->correlationId($userId, AuditEventType::IdentityRoleChanged->value, 'revoked:'.$roleName),
-            eventType: AuditEventType::IdentityRoleChanged,
+            correlationId: $this->correlationId($userId, 'identity.role_changed', 'revoked:'.$roleName),
+            eventType: 'identity.role_changed',
             userId: $userId,
             oldValues: ['role' => $roleName],
             newValues: null,
@@ -87,35 +82,36 @@ final class IdentityAuditEmitter
      */
     private function record(
         string $correlationId,
-        AuditEventType $eventType,
+        string $eventType,
         UserId $userId,
         ?array $oldValues,
         ?array $newValues,
         ?array $metadata,
         DateTimeImmutable $occurredAt,
     ): void {
-        $this->auditRecording->record(new AuditEntryDto(
-            correlationId: CorrelationId::fromString($correlationId),
-            eventType: $eventType,
-            entityReference: EntityReference::fromStrings(self::ENTITY_TYPE, $userId->value),
-            actorReference: $this->actorReference(),
-            sourceContext: self::SOURCE_CONTEXT,
-            oldValues: $oldValues,
-            newValues: $newValues,
-            metadata: $metadata,
-            occurredAt: $occurredAt,
-        ));
+        $this->auditRecording->record(AuditEntryDto::fromArray([
+            'correlationId' => $correlationId,
+            'eventType' => $eventType,
+            'entityType' => self::ENTITY_TYPE,
+            'entityId' => $userId->value,
+            'actorType' => $this->actorType(),
+            'actorId' => $this->actorId(),
+            'sourceContext' => self::SOURCE_CONTEXT,
+            'oldValues' => $oldValues,
+            'newValues' => $newValues,
+            'metadata' => $metadata,
+            'occurredAt' => $occurredAt->format('Y-m-d H:i:s.u'),
+        ]));
     }
 
-    private function actorReference(): ActorReference
+    private function actorType(): string
     {
-        $principalId = $this->principalContext->currentPrincipalId();
+        return $this->principalContext->currentPrincipalId() !== null ? 'user' : 'system';
+    }
 
-        if ($principalId !== null) {
-            return new ActorReference(ActorType::User, $principalId);
-        }
-
-        return new ActorReference(ActorType::System, 'system:scheduler');
+    private function actorId(): string
+    {
+        return $this->principalContext->currentPrincipalId() ?? 'system:scheduler';
     }
 
     private function correlationId(UserId $userId, string $eventType, string $outcomeToken): string

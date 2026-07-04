@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Reporting\Infrastructure\Repositories;
 
 use App\Modules\Audit\Application\DTOs\AuditHistoryItemDto;
+use App\Modules\Reporting\Application\Contracts\Ports\CorrelationProjectionWritePort;
 use App\Modules\Reporting\Application\DTOs\ComplianceExportQuery;
 use App\Modules\Reporting\Application\DTOs\CorrelationBundleQuery;
 use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
@@ -13,7 +14,7 @@ use DateTimeImmutable;
 use DateTimeZone;
 use Illuminate\Support\Carbon;
 
-final class CorrelationProjectionEntryRepository
+final class CorrelationProjectionEntryRepository implements CorrelationProjectionWritePort
 {
     public function upsertFromAuditItem(
         AuditHistoryItemDto $item,

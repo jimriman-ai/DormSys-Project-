@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Employee\Application\Contracts\Ports;
 
-use App\Modules\Employee\Domain\ValueObjects\EmployeeId;
-
 interface PendingRequestReadPort
 {
-    public function hasPendingRequest(EmployeeId $employeeId, ?string $excludingRequestId = null): bool;
+    public function hasPendingRequest(string $employeeId, ?string $excludingRequestId = null): bool;
 }

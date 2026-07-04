@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Reporting\Infrastructure\Repositories;
 
 use App\Modules\Audit\Application\DTOs\AuditHistoryItemDto;
+use App\Modules\Reporting\Application\Contracts\Ports\ActorActivitySummaryWritePort;
 use App\Modules\Reporting\Application\DTOs\SecurityActorActivityQuery;
 use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
 use App\Modules\Reporting\Domain\Enums\WindowGranularity;
@@ -13,7 +14,7 @@ use DateTimeImmutable;
 use DateTimeZone;
 use Illuminate\Support\Carbon;
 
-final class ActorActivitySummaryRepository
+final class ActorActivitySummaryRepository implements ActorActivitySummaryWritePort
 {
     public function incrementForItem(
         AuditHistoryItemDto $item,

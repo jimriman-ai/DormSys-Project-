@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Modules\Allocation\Application\Services;
 
 use App\Modules\Allocation\Application\Contracts\AllocationRepositoryContract;
+use App\Modules\Allocation\Application\Contracts\Ports\PhysicalStateSignalPort;
 use App\Modules\Allocation\Domain\Events\AllocationReleased;
 use App\Modules\Allocation\Domain\Exceptions\AllocationNotFoundException;
 use App\Modules\Allocation\Domain\Models\Allocation;
 use App\Modules\Allocation\Domain\ValueObjects\AllocationId;
-use App\Modules\Allocation\Infrastructure\Adapters\AllocationPhysicalStateAdapter;
 use DateTimeImmutable;
 use DateTimeZone;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +19,7 @@ final class ReleaseAllocationAction
 {
     public function __construct(
         private readonly AllocationRepositoryContract $allocations,
-        private readonly AllocationPhysicalStateAdapter $physicalState,
+        private readonly PhysicalStateSignalPort $physicalState,
     ) {}
 
     public function execute(string $allocationId, string $reason): Allocation
@@ -40,7 +40,7 @@ final class ReleaseAllocationAction
 
         Event::dispatch(AllocationReleased::forAllocation($persisted));
 
-        $this->physicalState->signalReleased(
+        $this->physicalState->releaseBed(
             bedId: $persisted->bedId,
             signalReferenceId: $persisted->requireId()->value,
         );
