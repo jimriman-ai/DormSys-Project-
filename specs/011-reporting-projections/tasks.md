@@ -160,7 +160,9 @@ active_execution_scope: none
 | **implementation_batches_complete** | **I-001–I-031** |
 | **remaining_authorized_scope** | **none** |
 | **ready_for_implementation_closure** | **yes** — **CLOSED** (2026-07-03) |
-| **rollout_authorized** | **no** |
+| **system_truth_model** | [`spec11-system-truth-model.md`](./spec11-system-truth-model.md) — **Option A (system-led)** |
+| **technical_deployment_state** | **DEPLOYMENT_READY** (2026-07-04) |
+| **rollout_authorized** | **no** — external governance only; does not block technical readiness |
 | **predecessor_state** | spec10 CLOSED / FROZEN |
 
 ---
