@@ -7,6 +7,8 @@ namespace App\Modules\Identity\Infrastructure\Persistence\Models;
 use App\Modules\Identity\Domain\Enums\UserStatus;
 use App\Modules\Identity\Domain\PlatformRoles;
 use App\Support\Models\BaseModel;
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Builder;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -16,8 +18,9 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $display_name
  * @property string|null $email
  */
-class UserModel extends BaseModel
+class UserModel extends BaseModel implements AuthenticatableContract
 {
+    use Authenticatable;
     use HasRoles;
 
     protected $table = 'identity_users';
@@ -63,5 +66,10 @@ class UserModel extends BaseModel
     public function isSystemAdministrator(): bool
     {
         return $this->hasRole(PlatformRoles::SYSTEM_ADMINISTRATOR);
+    }
+
+    public function getAuthPassword(): string
+    {
+        return '';
     }
 }

@@ -14,6 +14,7 @@ use App\Modules\Lottery\Infrastructure\Providers\LotteryServiceProvider;
 use App\Modules\Lottery\Presentation\Providers\LotteryPresentationServiceProvider;
 use App\Modules\Notification\Infrastructure\Providers\NotificationServiceProvider;
 use App\Modules\Reporting\Infrastructure\Providers\ReportingServiceProvider;
+use App\Modules\Reporting\Presentation\Providers\ReportingPresentationServiceProvider;
 use App\Modules\Request\Infrastructure\Providers\RequestServiceProvider;
 use App\Modules\Request\Presentation\Providers\RequestPresentationServiceProvider;
 use App\Modules\Voucher\Infrastructure\Providers\VoucherServiceProvider;
@@ -40,4 +41,5 @@ return [
     NotificationServiceProvider::class,
     AuditServiceProvider::class,
     ReportingServiceProvider::class,
+    ReportingPresentationServiceProvider::class,
 ];

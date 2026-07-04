@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\User;
+use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 
 return [
 
@@ -44,6 +45,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'api' => [
+            'driver' => 'session',
+            'provider' => 'identity',
+        ],
     ],
 
     /*
@@ -68,11 +73,10 @@ return [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', User::class),
         ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'identity' => [
+            'driver' => 'eloquent',
+            'model' => UserModel::class,
+        ],
     ],
 
     /*
