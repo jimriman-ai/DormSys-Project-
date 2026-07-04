@@ -20,11 +20,6 @@ final class IntegrationServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
-    }
-
-    public function boot(): void
-    {
         $this->app->singleton(ApprovedRequestReadPort::class, ApprovedRequestReadBridge::class);
         $this->app->singleton(AllocationAssignmentReadPort::class, AllocationAssignmentReadBridge::class);
         $this->app->singleton(RequestEligibilityGatewayContract::class, EmployeeEligibilityBridge::class);
