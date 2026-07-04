@@ -41,6 +41,7 @@ Defined in `tests/Architecture/architecture.php` → `architectureModuleNames()`
 | Workflow | `WorkflowServiceProvider` | `ModuleBoundaryTest` |
 | Dormitory | `DormitoryServiceProvider` | `ModuleBoundaryTest` |
 | Allocation | `AllocationServiceProvider` | `ModuleBoundaryTest` + `AllocationBoundaryTest` |
+| CheckIn | `CheckInServiceProvider` | `ModuleBoundaryTest` + `CheckInBoundaryTest` |
 | Lottery | `LotteryServiceProvider` | `ModuleBoundaryTest` + `LotterySupplierBoundaryTest` |
 | Voucher | `VoucherServiceProvider` | `ModuleBoundaryTest` + `VoucherBoundaryTest` |
 | Notification | `NotificationServiceProvider` | `ModuleBoundaryTest` + `NotificationBoundaryTest` |
@@ -49,13 +50,7 @@ Defined in `tests/Architecture/architecture.php` → `architectureModuleNames()`
 
 Provider registration and four-layer directories for these modules: **ENFORCED** by `tests/Architecture/ServiceProviderRegistrationTest.php`.
 
-### Active but not in full matrix (**COVERAGE GAP**)
-
-| Module | In `bootstrap/providers.php` | Enforcement today |
-|--------|------------------------------|-------------------|
-| **CheckIn** | Yes (`CheckInServiceProvider`, line 38) | Partial only — `tests/Architecture/CheckInBoundaryTest.php` blocks Allocation Infrastructure persistence/repos; **not** in `architectureModuleNames()` |
-
-**Known gap:** `app/Modules/CheckIn/Application/Services/OperatorRoleGate.php` imports `App\Modules\Identity\Domain\ValueObjects\UserId`. This violates Application→foreign Domain policy but does **not** fail CI until CheckIn is added to the matrix (after contract fix).
+`architectureMatrixExcludedActiveModules()` is empty — any future temporary exclusion requires explicit architecture approval.
 
 Shared kernel (any module may use): `App\Support`, `App/Shared` — **ENFORCED** by `LayerDependencyTest.php`.
 
@@ -93,7 +88,7 @@ Infrastructure and Presentation are siblings; neither imports the other (**ENFOR
 | Domain → Facades | `use Illuminate\Support\Facades\*` in Domain | **ENFORCED** — `domain layer does not depend on laravel facades` |
 | Domain → foreign module | Any `App\Modules\{Other}\*` in Domain | **ENFORCED** — per-pair rules in `ModuleBoundaryTest.php` |
 | Application → own Infrastructure | Concrete repository in action constructor | **ENFORCED** — `application layer does not depend on infrastructure` |
-| Application → foreign Domain | CheckIn `OperatorRoleGate` → `UserId` | **POLICY** (CheckIn out of matrix); **ENFORCED** for 11 matrix modules |
+| Application → foreign Domain | Any `App\Modules\{Other}\Domain\*` in Application | **ENFORCED** — `ModuleBoundaryTest` (12 matrix modules) |
 | Application → foreign Infrastructure | `Lottery\Infrastructure\*` in Request Application | **ENFORCED** — `ModuleBoundaryTest` |
 | Infrastructure → foreign module (any layer) | Cross-module Eloquent/repo in Infrastructure | **ENFORCED** for matrix modules — `ModuleBoundaryTest` |
 | Cross-module Eloquent / FK | Foreign keys across module tables | **POLICY** — constitution; not Pest-arch scanned |
@@ -145,11 +140,17 @@ use App\Modules\Lottery\Application\Contracts\ProposedAllocationPort;
 use App\Modules\Request\Application\Contracts\Internal\RequestEligibilityGatewayContract;
 ```
 
-**Bad** — foreign Domain (known gap, do not copy):
+**Good** — cross-module role check via Identity read contract (post–CheckIn closure):
 
 ```php
-// app/Modules/CheckIn/Application/Services/OperatorRoleGate.php:10
-use App\Modules\Identity\Domain\ValueObjects\UserId;
+// app/Modules/CheckIn/Application/Services/OperatorRoleGate.php
+use App\Modules\Identity\Application\Contracts\IdentityUserReadContract;
+```
+
+**Bad** — foreign Domain (do not copy):
+
+```php
+use App\Modules\Identity\Domain\ValueObjects\UserId; // in another module's Application layer
 ```
 
 ### Infrastructure
@@ -203,7 +204,7 @@ Guarded by **ENFORCED** custom rule in `ReportingBoundaryTest.php` (single adapt
 | Allocation suppliers | `AllocationBoundaryTest.php` | Blocks Request/Lottery/Dormitory/Employee Infrastructure |
 | Lottery ↔ Request | `LotterySupplierBoundaryTest.php` | Blocks foreign Infrastructure; documents `RequestReadAdapter` |
 | Reporting ↔ Audit | `ReportingBoundaryTest.php` | Blocks Audit Infrastructure; single `AuditHistoryReadContract` reference |
-| CheckIn ↔ Allocation | `CheckInBoundaryTest.php` | Blocks Allocation Infrastructure persistence/repos only |
+| CheckIn ↔ Allocation | `CheckInBoundaryTest.php` | Blocks Allocation Infrastructure persistence/repos; full matrix via `ModuleBoundaryTest` |
 
 Run before merge:
 

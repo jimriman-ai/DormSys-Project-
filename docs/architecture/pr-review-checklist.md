@@ -33,7 +33,7 @@ rg "singleton\((ApprovedRequestReadPort|AllocationAssignmentReadPort|RequestElig
 rg "use App\\Modules\\[A-Za-z]+\\Application\\" app/Modules/*/Application/Adapters app/Modules/*/Infrastructure/Adapters
 
 # Foreign Domain in matrix Application layers (expect no matches)
-rg "use App\\Modules\\(Identity|Employee|Request|Workflow|Dormitory|Allocation|Lottery|Voucher|Notification|Audit|Reporting)\\Domain\\" app/Modules/*/Application --glob '!**/CheckIn/**'
+rg "use App\\Modules\\(Identity|Employee|Request|Workflow|Dormitory|Allocation|CheckIn|Lottery|Voucher|Notification|Audit|Reporting)\\Domain\\" app/Modules/*/Application
 
 # Domain purity spot-check (replace {Module})
 rg "Infrastructure|Illuminate\\Database|Eloquent|Facades|@extends State<" app/Modules/{Module}/Domain/
@@ -74,7 +74,7 @@ php -d memory_limit=512M vendor/bin/pest tests/Architecture/ModuleInventoryParit
 | Integration port bound in module provider | **Merge-blocking** | Yes | `IntegrationCompositionRootTest` |
 | New cross-module adapter outside Integrations (not in legacy registry) | **Merge-blocking** | Yes | `CrossModuleAdapterLocationTest` |
 | Undocumented active module (bootstrap without matrix/exclusion entry) | **Merge-blocking** | Yes | `ModuleInventoryParityTest` |
-| New CheckIn foreign Domain import beyond allowlist | **Merge-blocking** | Yes | `ModuleInventoryParityTest` |
+| Foreign Domain import in matrix Application (includes CheckIn) | **Merge-blocking** | Yes | `ModuleBoundaryTest` / static scan |
 | Copy of Lottery `RequestReadAdapter` pattern | **Merge-blocking** | Yes / POLICY | Reject even if CI missed |
 | Business logic in `app/Integrations/*` | **Merge-blocking** | POLICY | Reviewer reads bridge diff |
 | Cross-module Eloquent / FK in migrations | **Merge-blocking** | POLICY | Constitution rule |
@@ -84,11 +84,10 @@ php -d memory_limit=512M vendor/bin/pest tests/Architecture/ModuleInventoryParit
 | Touch existing legacy adapter (bugfix, no new edge) | **Allowed** | Yes | Must not expand coupling |
 | Add entry to legacy exception registry | **Approval required** | Yes after merge | See exception flow below |
 | Add module to `architectureModuleNames()` | **Approval required** | Yes after merge | Matrix rules apply to new module |
-| Add module to `architectureMatrixExcludedActiveModules()` | **Approval required** | Yes | Must document debt + allowlist |
+| Add module to `architectureMatrixExcludedActiveModules()` | **Approval required** | Yes | Must document debt plan |
 | New bounded-context relationship | **Approval required** | No | Update context map + decision record |
 | Foreign Domain on new public contract surface | **Approval required** | No | Prefer string IDs / DTOs |
 | Reporting↔Audit-style Infrastructure adapter (new file) | **Approval required** | Would fail CI | Do not approve without registry change |
-| CheckIn full matrix enrollment | **Approval required** | Yes | Only after `UserId` debt closed |
 
 ---
 
@@ -161,7 +160,7 @@ Use when the PR attestation boxes are checked or diff touches these paths.
 | Scenario | Tier |
 |----------|------|
 | New module added to `architectureModuleNames()` | **Approval required** — full matrix applies |
-| Active module added to `architectureMatrixExcludedActiveModules()` | **Approval required** — must include debt plan + allowlists |
+| Active module added to `architectureMatrixExcludedActiveModules()` | **Approval required** — must include debt plan |
 | Bootstrap provider added without inventory update | **Merge-blocking** once CI runs |
 
 **CI:** `ModuleInventoryParityTest.php`, `ServiceProviderRegistrationTest.php`
@@ -170,7 +169,7 @@ Use when the PR attestation boxes are checked or diff touches these paths.
 
 ### 5. Tolerated legacy exception request
 
-**Paths:** `architectureLegacyCrossModuleAdapterPaths()`, `architectureLegacyModuleProviderPortBindings()`, `architectureCheckInForeignDomainImportAllowlist()`
+**Paths:** `architectureLegacyCrossModuleAdapterPaths()`, `architectureLegacyModuleProviderPortBindings()`
 
 **Do not merge without all of:**
 
@@ -231,7 +230,7 @@ PR adds cross-module coupling
 
 - Injects ports/contracts, not concrete repos
 - Foreign access: `{Other}\Application\Contracts` or DTOs only
-- **Never approve** new `OperatorRoleGate` → `UserId` copies
+- **Never approve** foreign Domain imports in another module's Application layer
 
 ### Infrastructure
 
@@ -247,7 +246,6 @@ PR adds cross-module coupling
 | Lottery read adapter | `Lottery/Application/Adapters/RequestReadAdapter.php` | Pre-Integrations; CI closes this folder |
 | Reporting audit adapters | `Reporting/Infrastructure/Adapters/AuditHistory*.php` | Legacy projection wiring |
 | Identity audit permission | `Identity/Infrastructure/Adapters/SpatieAuditPermissionReadAdapter.php` | Inverted supplier placement |
-| CheckIn UserId import | `CheckIn/.../OperatorRoleGate.php` | Frozen debt — one import only |
 
 Full list: [known-exceptions-registry.md](./known-exceptions-registry.md)
 

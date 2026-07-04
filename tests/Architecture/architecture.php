@@ -16,6 +16,7 @@ function architectureModuleNames(): array
         'Workflow',
         'Dormitory',
         'Allocation',
+        'CheckIn',
         'Lottery',
         'Voucher',
         'Notification',
@@ -32,9 +33,7 @@ function architectureModuleNames(): array
  */
 function architectureMatrixExcludedActiveModules(): array
 {
-    return [
-        'CheckIn',
-    ];
+    return [];
 }
 
 /**
@@ -79,20 +78,6 @@ function architectureLegacyCrossModuleAdapterPaths(): array
         'app/Modules/Reporting/Infrastructure/Adapters/AuditHistorySourceReadAdapter.php',
         'app/Modules/Reporting/Infrastructure/Adapters/ReportingArchiveVisibilityAdapter.php',
         'app/Modules/Identity/Infrastructure/Adapters/SpatieAuditPermissionReadAdapter.php',
-    ];
-}
-
-/**
- * Documented foreign Domain imports permitted in CheckIn Application until UserId debt closes.
- *
- * @return array<string, list<string>> repo-relative path => list of allowed import FQCNs
- */
-function architectureCheckInForeignDomainImportAllowlist(): array
-{
-    return [
-        'app/Modules/CheckIn/Application/Services/OperatorRoleGate.php' => [
-            'App\\Modules\\Identity\\Domain\\ValueObjects\\UserId',
-        ],
     ];
 }
 

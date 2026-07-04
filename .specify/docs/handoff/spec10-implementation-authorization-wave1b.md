@@ -32,7 +32,8 @@
 ```text
 authorization-status: superseded
 authorized-scope: Wave 1B — T022–T027 (complete)
-superseded-by: spec10-wave1b-implementation-closure.md
+superseded-by: spec10-implementation-authorization-wave2.md
+closure-record: spec10-wave1b-implementation-closure.md
 active-execution-scope: none
 completed-scope: T001–T027
 executable-forward-scope: —

@@ -7,14 +7,14 @@ $repoRoot = dirname(__DIR__, 2);
 
 require $repoRoot.'/vendor/autoload.php';
 
+use Illuminate\Contracts\Console\Kernel;
+use Tests\Architecture\Support\ArchitectureGuard;
+
 $app = require $repoRoot.'/bootstrap/app.php';
 $app->make(Kernel::class)->bootstrap();
 
 require $repoRoot.'/tests/Architecture/architecture.php';
 require $repoRoot.'/tests/Architecture/Support/ArchitectureGuard.php';
-
-use Illuminate\Contracts\Console\Kernel;
-use Tests\Architecture\Support\ArchitectureGuard;
 
 $violations = ArchitectureGuard::scanForbiddenImports($repoRoot);
 
@@ -22,20 +22,6 @@ $matrixForeignDomainViolations = ArchitectureGuard::findMatrixApplicationForeign
     $repoRoot,
     architectureModuleNames()
 );
-
-$checkInAllowlist = architectureCheckInForeignDomainImportAllowlist();
-$checkInForeignDomainViolations = array_values(array_filter(
-    ArchitectureGuard::findForeignDomainImports($repoRoot, 'CheckIn'),
-    static function (array $finding) use ($checkInAllowlist): bool {
-        $importBase = str_contains($finding['import'], ' as ')
-            ? trim(explode(' as ', $finding['import'])[0])
-            : $finding['import'];
-
-        $allowed = $checkInAllowlist[$finding['path']] ?? [];
-
-        return ! in_array($importBase, $allowed, true);
-    }
-));
 
 $integrationPortViolations = ArchitectureGuard::findPortBindingsInModuleProviders(
     $repoRoot,
@@ -64,7 +50,6 @@ foreach (architectureDiscoverActiveModuleNames() as $module) {
 $allViolations = [
     'forbidden_imports' => $violations,
     'matrix_foreign_domain' => $matrixForeignDomainViolations,
-    'checkin_foreign_domain' => $checkInForeignDomainViolations,
     'integration_port_bindings' => $integrationPortViolations,
     'unregistered_cross_module_adapters' => $legacyAdapterViolations,
 ];

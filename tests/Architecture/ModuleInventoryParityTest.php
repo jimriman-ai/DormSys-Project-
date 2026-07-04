@@ -66,31 +66,6 @@ test('bootstrap module providers and discovered active modules stay in parity', 
     expect($bootstrapModules)->toEqual($activeModules);
 });
 
-test('check-in application foreign domain imports remain within the documented debt allowlist', function (): void {
-    $basePath = base_path();
-    $findings = ArchitectureGuard::findForeignDomainImports($basePath, 'CheckIn');
-    $allowlist = architectureCheckInForeignDomainImportAllowlist();
-
-    $unexpected = [];
-
-    foreach ($findings as $finding) {
-        $allowedImports = $allowlist[$finding['path']] ?? [];
-        $importBase = str_contains($finding['import'], ' as ')
-            ? trim(explode(' as ', $finding['import'])[0])
-            : $finding['import'];
-
-        if (! in_array($importBase, $allowedImports, true)) {
-            $unexpected[] = "{$finding['path']}:{$finding['line']} {$finding['import']}";
-        }
-    }
-
-    expect($unexpected)->toBe(
-        [],
-        "CheckIn Application has undocumented foreign Domain imports. Fix contract debt or update the allowlist intentionally:\n"
-        .implode("\n", $unexpected)
-    );
-});
-
 test('matrix modules application layer has no foreign domain imports', function (): void {
     $basePath = base_path();
     $findings = ArchitectureGuard::findMatrixApplicationForeignDomainImports($basePath, architectureModuleNames());

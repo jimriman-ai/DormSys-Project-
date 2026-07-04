@@ -135,13 +135,22 @@ Architecture failures block merge at the same priority as feature test failures.
 
 First mandatory guardrails added without changing business logic:
 
-- `ModuleInventoryParityTest` — bootstrap/disk/matrix parity + CheckIn debt allowlist
+- `ModuleInventoryParityTest` — bootstrap/disk/matrix parity
 - `IntegrationCompositionRootTest` — integration port binding location
 - `CrossModuleAdapterLocationTest` — blocks new legacy-style adapters
 - `ForbiddenImportsScanTest` + `scripts/architecture/forbidden-imports-scan.php`
 - `ArchitectureAdvisoryTest` — non-blocking debt visibility (`composer run arch:advisory`)
 
 See [ci-enforcement-matrix.md](./ci-enforcement-matrix.md) and [known-exceptions-registry.md](./known-exceptions-registry.md).
+
+### CheckIn matrix enrollment (2026-07-04)
+
+Closed CheckIn → Identity Domain leak:
+
+- Added `IdentityUserReadContract::userHasRole(string, string)`
+- `OperatorRoleGate` consumes read contract only (no `UserId` import)
+- Removed `architectureCheckInForeignDomainImportAllowlist()`
+- Added `CheckIn` to `architectureModuleNames()` (12-module matrix)
 
 ### When to update this record
 
@@ -171,4 +180,4 @@ Do **not** update for routine feature PRs.
 
 ## Governance summary
 
-DormSys modular architecture is **enforced in CI** for 11 matrix modules via Pest arch tests. Cross-module wiring for the repaired edges is **centralized** in `IntegrationServiceProvider`. **CheckIn** is active but **not fully matrix-enforced** — treat as open coverage debt. Legacy Lottery/Reporting/Identity edges are **tolerated, not templates** for new work.
+DormSys modular architecture is **enforced in CI** for 12 matrix modules via Pest arch tests. Cross-module wiring for the repaired edges is **centralized** in `IntegrationServiceProvider`. Legacy Lottery/Reporting/Identity edges are **tolerated, not templates** for new work.

@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 use App\Modules\Identity\Application\Contracts\IdentityUserReadContract;
 use App\Modules\Identity\Application\DTOs\UserSummaryDTO;
+use App\Modules\Identity\Application\Services\AssignRoleToUserAction;
 use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Identity\Application\Services\DeactivateUserAction;
 use App\Modules\Identity\Domain\ValueObjects\UserId;
 use App\Support\Exceptions\ValidationException;
 use Ramsey\Uuid\Uuid;
+use Spatie\Permission\Models\Role;
 
 it('answers existence and active status per contract', function (): void {
     $contract = app(IdentityUserReadContract::class);
@@ -44,6 +46,30 @@ it('returns false and null for unknown identifiers without leaking errors', func
     expect($contract->userExists($unknownId->value))->toBeFalse()
         ->and($contract->isUserActive($unknownId->value))->toBeFalse()
         ->and($contract->findUserSummary($unknownId->value))->toBeNull();
+});
+
+it('reports role membership via userHasRole', function (): void {
+    $contract = app(IdentityUserReadContract::class);
+
+    $created = app(CreateUserAction::class)->execute(
+        'Role Check User',
+        'role-check-'.uniqid('', true).'@example.com',
+    );
+    $userId = $created->requireId()->value;
+
+    expect($contract->userHasRole($userId, 'Operator'))->toBeFalse();
+
+    Role::findOrCreate('Operator', config('auth.defaults.guard', 'web'));
+    app(AssignRoleToUserAction::class)->execute($created->requireId(), 'Operator');
+
+    expect($contract->userHasRole($userId, 'Operator'))->toBeTrue();
+});
+
+it('returns false for userHasRole when user does not exist', function (): void {
+    $contract = app(IdentityUserReadContract::class);
+    $unknownId = UserId::fromString(Uuid::uuid7()->toString());
+
+    expect($contract->userHasRole($unknownId->value, 'operator'))->toBeFalse();
 });
 
 it('rejects malformed identifiers at UserId validation', function (): void {

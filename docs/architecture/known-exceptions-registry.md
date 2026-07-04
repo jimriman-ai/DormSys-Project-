@@ -1,6 +1,6 @@
 # Known Architecture Exceptions Registry
 
-**Status:** Approved — first mandatory batch (2026-07-04)  
+**Status:** Approved — updated after CheckIn matrix enrollment (2026-07-04)  
 **Purpose:** Keep tolerated legacy debt **visible** while CI blocks **new** regressions.
 
 CI reads this registry through `tests/Architecture/architecture.php`.  
@@ -10,11 +10,9 @@ CI reads this registry through `tests/Architecture/architecture.php`.
 
 ## 1. Matrix-excluded active modules
 
-| Module | Reason | Mandatory CI behavior | Exit criteria |
-|--------|--------|----------------------|---------------|
-| **CheckIn** | Active in bootstrap; `OperatorRoleGate` still imports Identity `UserId` | Included in inventory parity; **foreign Domain imports frozen** via allowlist | Change `UserRepositoryContract` to string IDs; remove allowlist entry; add `CheckIn` to `architectureModuleNames()` |
+None. `architectureMatrixExcludedActiveModules()` returns an empty list.
 
-Functions: `architectureMatrixExcludedActiveModules()`, `architectureCheckInForeignDomainImportAllowlist()`
+CheckIn was enrolled in the full matrix after `OperatorRoleGate` migrated to `IdentityUserReadContract::userHasRole()`.
 
 ---
 
@@ -46,41 +44,27 @@ Function: `architectureLegacyModuleProviderPortBindings()`
 
 ---
 
-## 4. CheckIn Application foreign Domain allowlist (open debt)
-
-| File | Allowed import | Debt |
-|------|----------------|------|
-| `app/Modules/CheckIn/Application/Services/OperatorRoleGate.php` | `App\Modules\Identity\Domain\ValueObjects\UserId` | Required by `UserRepositoryContract::userHasRole(UserId, …)` |
-
-Function: `architectureCheckInForeignDomainImportAllowlist()`
-
-**Mandatory rule:** any **additional** CheckIn Application foreign Domain import → **CI failure**.
-
----
-
-## 5. Contract-level Domain leakage (advisory — not in exception registry)
+## 4. Contract-level Domain leakage (advisory — not in exception registry)
 
 These pass CI today but remain tracked debt:
 
 | Contract | Leaked type | Consumer impact |
 |----------|-------------|-----------------|
 | `RequestReadContract` | `RequestId` | `ApprovedRequestReadBridge` imports Request Domain |
-| `UserRepositoryContract` | `UserId` | Forces CheckIn debt above |
 
 **Enforcement:** advisory review + future contract refactor batch. **Not** silently normalized.
 
 ---
 
-## 6. Patterns intentionally **not** in the exception registry
+## 5. Patterns intentionally **not** in the exception registry
 
 CI **will** fail if these appear:
 
 - New `Application/Adapters/*` cross-module files (Lottery directory is closed)
 - Duplicate bindings for integration ports in module providers
-- Undocumented active module without matrix or exclusion entry
-- New CheckIn foreign Domain imports beyond the single allowlisted `UserId`
+- Undocumented active module without matrix entry
+- Foreign Domain imports in any matrix module Application layer
 - Domain Eloquent / Infrastructure / Facade imports
-- Matrix Application → foreign Domain imports
 
 ---
 

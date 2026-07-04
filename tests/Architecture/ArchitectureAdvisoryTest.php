@@ -20,12 +20,10 @@ test('legacy cross-module adapter registry matches files on disk', function (): 
     expect($missing)->toBe([], 'Stale legacy adapter registry entries: '.implode(', ', $missing));
 })->group('architecture-advisory');
 
-test('check-in foreign domain debt remains a single allowlisted import', function (): void {
+test('check-in application has no foreign domain imports', function (): void {
     $findings = ArchitectureGuard::findForeignDomainImports(base_path(), 'CheckIn');
 
-    expect($findings)->toHaveCount(1);
-    expect($findings[0]['path'])->toBe('app/Modules/CheckIn/Application/Services/OperatorRoleGate.php');
-    expect($findings[0]['import'])->toBe('App\\Modules\\Identity\\Domain\\ValueObjects\\UserId');
+    expect($findings)->toBe([]);
 })->group('architecture-advisory');
 
 test('reporting infrastructure foreign application imports remain within legacy adapters only', function (): void {

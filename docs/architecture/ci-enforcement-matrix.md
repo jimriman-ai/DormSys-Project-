@@ -21,8 +21,7 @@ Legend:
 | Domain → Infrastructure ban | Layer inward flow | `App\Modules\*\Domain` | Architecture test + static scan | Yes | Low | **Now** |
 | Domain → Facades ban | Framework isolation in Domain | `App\Modules\*\Domain` | Architecture test + static scan | Yes | Low | **Now** |
 | Application → Infrastructure ban | Port-based Application layer | `App\Modules\*\Application` | Architecture test + static scan | Yes | Low | **Now** |
-| Application → foreign Domain ban (matrix) | Cross-module contract boundary | 11 matrix modules | Architecture test (`ModuleBoundaryTest`) + static scan | Yes | Low | **Now** |
-| Application → foreign Domain ban (CheckIn) | Pre-matrix active module | CheckIn Application only | Static scan + debt allowlist test | Yes (new imports only) | Low | **Now** |
+| Application → foreign Domain ban (matrix) | Cross-module contract boundary | 12 matrix modules | Architecture test (`ModuleBoundaryTest`) + static scan | Yes | Low | **Now** |
 | Active-module inventory parity | Bootstrap ↔ disk ↔ matrix inventory | All module providers | Architecture test (`ModuleInventoryParityTest`) | Yes | Low | **Now** |
 | Integration port composition root | Single wiring location | 5 integration ports | Architecture test (`IntegrationCompositionRootTest`) + static scan | Yes | Low | **Now** |
 | Legacy port binding location | Tolerated debt visibility | Lottery + Identity legacy ports | Architecture test (`IntegrationCompositionRootTest`) | Yes (wrong file only) | Low | **Now** |
@@ -31,7 +30,7 @@ Legend:
 | Module pair boundary isolation | Full matrix cross-talk | 11 matrix modules | Architecture test (`ModuleBoundaryTest`) | Yes | Low | **Now** |
 | Service provider registration | Module bootstrapping parity | Matrix modules | Architecture test (`ServiceProviderRegistrationTest`) | Yes | Low | **Now** |
 | Edge-specific boundary tests | Approved context edges | Request, Lottery, Reporting, etc. | Architecture test (module edge files) | Yes | Low | **Now** |
-| CheckIn full matrix enrollment | Complete CheckIn isolation | CheckIn all layers | `ModuleBoundaryTest` expansion | Yes | Medium until debt fixed | **After CheckIn fix** |
+| CheckIn full matrix enrollment | Complete CheckIn isolation | CheckIn all layers | `ModuleBoundaryTest` | Yes | Low | **Done (2026-07-04)** |
 | Recursive Infrastructure → foreign Application | Reporting↔Audit legacy | Reporting Infrastructure | Advisory test | No | High if enforced now | **Later** |
 | Foreign Domain on public contracts | Contract surface purity | Cross-module ports/DTOs | Advisory + review | No | Medium | **Later** |
 | Cross-module Eloquent / FK ban | Constitution persistence rule | Migrations/models | PR checklist | No | N/A | **Later** |

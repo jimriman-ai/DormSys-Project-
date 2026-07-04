@@ -22,4 +22,9 @@ interface IdentityUserReadContract
      * Returns a minimal read projection, or null if not found.
      */
     public function findUserSummary(string $id): ?UserSummaryDTO;
+
+    /**
+     * Returns true if the user exists and has the given role name.
+     */
+    public function userHasRole(string $userId, string $roleName): bool;
 }
