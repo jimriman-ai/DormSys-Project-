@@ -1,208 +1,153 @@
 # Integration Layer Policy
 
-**Status:** Active  
+**Status:** Approved  
 **Location:** `app/Integrations/`  
 **Composition root:** `app/Providers/IntegrationServiceProvider.php`  
-**Registration order:** `IntegrationServiceProvider` must be **last** in `bootstrap/providers.php`
+**Registration:** `IntegrationServiceProvider::register()` — provider must remain **last** in `bootstrap/providers.php` (line 46)
+
+**ENFORCED indirectly:** cross-module ports bound here are exercised by feature tests; bridge shape for Employee↔Request is **ENFORCED** by `RequestConsumerBoundaryTest.php` (method parity with `PendingRequestReadPort`).
 
 ---
 
-## Purpose
+## Why `app/Integrations` exists
 
-`app/Integrations/` is the **only approved place** for wiring one bounded context to another when:
-
-- The **consumer module** defines a port (application contract), and
-- The **supplier module** exposes a public application contract or internal query port, and
-- The two modules must not reference each other's Infrastructure or Domain.
-
-Integrations contain **no business rules**. They translate between contracts at the application boundary.
+Modules must not wire each other's Infrastructure or Domain. When module **A** defines a port and module **B** exposes an Application contract, the **implementation of A's port** that calls B belongs outside both modules — in `app/Integrations/`.
 
 ```
-┌─────────────────────┐     port      ┌──────────────────────┐     contract    ┌─────────────────────┐
-│ Consumer module     │ ────────────► │ app/Integrations/    │ ──────────────► │ Supplier module     │
-│ (e.g. Employee)     │               │ *Bridge.php          │                 │ (e.g. Request)      │
-└─────────────────────┘               └──────────────────────┘                 └─────────────────────┘
-         ▲                                        │
-         │         IntegrationServiceProvider      │
-         └──────────────── binds port → bridge ────┘
+Consumer module (port owner)     Integrations (bridge)        Supplier module (contract owner)
+────────────────────────────     ─────────────────────        ──────────────────────────────
+Employee\PendingRequestReadPort  PendingRequestReadBridge     Request\PendingRequestQueryPort
+Allocation\ApprovedRequestReadPort ApprovedRequestReadBridge  Request\RequestReadContract
+CheckIn\AllocationAssignmentReadPort AllocationAssignmentReadBridge Allocation\AllocationReadContract
+Request\RequestEligibilityGatewayContract EmployeeEligibilityBridge Employee\EmployeeEligibilityContract
 ```
 
 ---
 
-## What is allowed inside integrations
+## When a bridge belongs here (**POLICY**)
 
-| Allowed | Example in this repo |
-|---------|---------------------|
-| Implement a **consumer-owned port** | `PendingRequestReadBridge implements PendingRequestReadPort` |
-| Inject **supplier application contracts** only | `RequestReadContract`, `AllocationReadContract`, `EmployeeEligibilityContract` |
-| Inject **consumer internal query ports** (same bounded context as bridge namespace) | `PendingRequestQueryPort` in `Integrations\Request\` |
-| Use supplier **application DTOs** | `RequestSummaryDTO`, `EligibilityResultDTO` |
-| Simple delegation, filtering, mapping | `ApprovedRequestReadBridge` filters `status === 'approved'` |
-| `final` classes, constructor injection, no static state | All current bridges |
+Create `app/Integrations/{ConsumerContext}/{Name}Bridge.php` when **all** apply:
 
-### Correct bridge — CheckIn ↔ Allocation
+1. Consumer module owns the port interface in `Application/Contracts/` (or `Ports/`).
+2. Supplier exposes an existing Application contract, DTO, or consumer-internal query port.
+3. The edge crosses bounded contexts (see `.specify/docs/context-map.md`).
+4. Binding the implementation inside either module's `*ServiceProvider` would hide a cross-module edge.
 
-```php
-// app/Integrations/CheckIn/AllocationAssignmentReadBridge.php
-final class AllocationAssignmentReadBridge implements AllocationAssignmentReadPort
-{
-    public function __construct(
-        private readonly AllocationReadContract $allocations, // supplier Application contract
-    ) {}
+**Do not** add a bridge when:
 
-    public function hasActiveAllocation(string $allocationId): bool
-    {
-        $summary = $this->allocations->getAllocationSummary($allocationId);
-        return $summary !== null && $summary['status'] === 'active';
-    }
-}
-```
-
-Uses `AllocationReadContract` (string IDs) — **not** `AllocationRepositoryContract` or `AllocationId` domain type.
-
-### Correct bridge — Employee ↔ Request (read-only)
-
-```php
-// app/Integrations/Request/PendingRequestReadBridge.php
-final class PendingRequestReadBridge implements PendingRequestReadPort
-{
-    public function __construct(
-        private readonly PendingRequestQueryPort $queries, // Request-internal query port
-    ) {}
-
-    public function hasPendingRequest(string $employeeId, ?string $excludingRequestId = null): bool
-    {
-        return $this->queries->hasNonTerminalRequest($employeeId, $excludingRequestId);
-    }
-}
-```
-
-Enforced: `tests/Architecture/RequestConsumerBoundaryTest.php` — bridge public methods must match port exactly (OA-05-09 read-only boundary).
+- Dependency stays inside one module (use `Infrastructure/Adapters/` within that module).
+- Consumer can inject the foreign Application contract directly with no adapter logic (see legacy Lottery case below).
+- No port interface exists yet — define the port in the consumer first.
 
 ---
 
-## What is forbidden inside integrations
+## What a bridge may depend on (**POLICY**)
 
-| Forbidden | Why |
-|-----------|-----|
-| Domain logic (eligibility rules, state transitions, validation policies) | Belongs in consumer or supplier **Domain/Application** |
-| Direct use of Eloquent models / repositories | Bypasses application contracts |
-| `use App\Modules\{X}\Infrastructure\*` | Infrastructure must not cross modules |
-| `use App\Modules\{X}\Domain\*` | Prefer application contracts with primitive/DTO types; foreign domain VOs are a last resort |
-| Database queries, HTTP calls, queue dispatch | Infrastructure concern |
-| Mutating supplier state unless port is explicitly a **command** port | Read ports stay read-only |
-| More than one responsibility per bridge class | Split ports, split bridges |
-
-### Incorrect — business logic in bridge
-
-```php
-// FORBIDDEN — eligibility rules belong in EmployeeEligibilityService
-final class EmployeeEligibilityBridge implements RequestEligibilityGatewayContract
-{
-    public function computeRequestEligibility(string $employeeId, ?string $excludingRequestId = null): EligibilityResultDTO
-    {
-        if ($this->employees->isInactive($employeeId)) {
-            return EligibilityResultDTO::ineligible('inactive'); // ❌ policy in bridge
-        }
-        // ...
-    }
-}
-```
-
-**Actual implementation** (correct) — pure delegation:
-
-```php
-return $this->eligibility->computeRequestEligibility($employeeId, $excludingRequestId);
-```
-
-### Incorrect — infrastructure leak
-
-```php
-// FORBIDDEN
-use App\Modules\Request\Infrastructure\Repositories\RequestRepository;
-use App\Modules\Allocation\Infrastructure\Persistence\Models\AllocationModel;
-```
-
-### Incorrect — duplicate bridge in module Infrastructure
-
-```php
-// REMOVED — do not recreate
-// app/Modules/CheckIn/Infrastructure/Adapters/AllocationAssignmentReadAdapter.php
-// app/Modules/Allocation/Infrastructure/Adapters/RequestReadAdapter.php
-```
+| Allowed | Example in repo |
+|---------|-----------------|
+| Consumer port interface | `implements PendingRequestReadPort` |
+| Supplier Application contracts | `RequestReadContract`, `AllocationReadContract` |
+| Consumer-internal query ports | `PendingRequestQueryPort` (Request-internal, wired from Request module) |
+| Supplier Application DTOs | `RequestSummaryDTO`, `EligibilityResultDTO` |
+| Simple mapping / filtering | `ApprovedRequestReadBridge`: `status === 'approved'` |
 
 ---
 
-## When a new bridge is justified
+## What a bridge must not contain (**POLICY**)
 
-Create a new file under `app/Integrations/{ConsumerContext}/` when **all** of the following are true:
+| Forbidden | Reason |
+|-----------|--------|
+| Domain business rules | Belongs in consumer/supplier Domain or Application services |
+| Eloquent models / repositories | Infrastructure leak |
+| `use App\Modules\{X}\Infrastructure\*` | Cross-module Infrastructure |
+| Direct SQL, HTTP, queue dispatch | Infrastructure concerns |
+| Command/mutation on read-only ports | OA-05-09: `PendingRequestReadPort` is query-only |
 
-1. **Consumer module** defines a port interface in `Application/Contracts/` (or `Application/Contracts/Ports/`).
-2. **Supplier capability** already exists as an application contract, DTO, or consumer-internal query port.
-3. The dependency **crosses bounded contexts** (see `.specify/docs/context-map.md`).
-4. Binding the implementation inside either module's `*ServiceProvider` would create a hidden cross-module edge or duplicate binding.
-
-**Do not create a bridge when:**
-
-- The dependency stays inside one module (use `Infrastructure/Adapters/` within that module).
-- The consumer can inject the foreign **application contract** directly without an adapter class (acceptable for simple pass-through — see Lottery below).
-- No port interface exists yet — **define the port first** in the consumer module (contract design is not an Integration concern).
+**Prefer** Application contracts with `string` IDs over foreign Domain value objects. **Known exception:** `ApprovedRequestReadBridge` uses `RequestId::fromString()` because `RequestReadContract::getRequestSummary(RequestId $id)` requires it today.
 
 ---
 
-## Registration rules
+## Provider registration (**POLICY** — post-cleanup standard)
 
-All cross-module port → implementation bindings for Integrations live in **`IntegrationServiceProvider::register()`**:
+All approved cross-module port bindings live in **`IntegrationServiceProvider::register()`**:
 
 ```php
-// app/Providers/IntegrationServiceProvider.php — current bindings
+// app/Providers/IntegrationServiceProvider.php (current)
 ApprovedRequestReadPort::class          → ApprovedRequestReadBridge::class
 AllocationAssignmentReadPort::class     → AllocationAssignmentReadBridge::class
 RequestEligibilityGatewayContract::class → EmployeeEligibilityBridge::class
 PendingRequestReadPort::class           → PendingRequestReadBridge::class
-ProposedAllocationPort::class           → ProposedAllocationConsumer::class  // consumer service, not a bridge file
+ProposedAllocationPort::class           → ProposedAllocationConsumer::class
 ```
 
 **Rules:**
 
-- One binding per port — no duplicate registration in module providers.
-- `IntegrationServiceProvider` registers **after** all module providers in `bootstrap/providers.php`.
-- Module providers bind **only** own-module abstractions to own-module implementations (+ null stubs for undeferred suppliers).
+- One binding per port — **no** duplicate registration in module providers.
+- Module providers bind **own-module** abstractions only (+ null stubs for undeferred suppliers).
+- `IntegrationServiceProvider` is last in `bootstrap/providers.php`.
 
-**Anti-pattern (removed):**
-
-```php
-// EmployeeServiceProvider — DO NOT re-add
-$this->app->singleton(PendingRequestReadPort::class, NullPendingRequestReadAdapter::class);
-```
-
-Null stubs may remain as **classes** for isolated tests but must not compete with Integration bindings in production bootstrap.
+**Removed (post-cleanup):** `EmployeeServiceProvider` no longer binds `PendingRequestReadPort`. `NullPendingRequestReadAdapter` deleted — production path is the bridge only.
 
 ---
 
-## Legacy patterns (do not extend)
+## Current bridges (approved)
 
-These exist in the codebase, pass CI, but **new work must not follow them**:
+### `Integrations/Request/PendingRequestReadBridge.php`
 
-| Pattern | Location | Preferred approach |
-|---------|----------|-------------------|
-| Cross-module adapter in Application layer | `Lottery/Application/Adapters/RequestReadAdapter.php` | Move to `app/Integrations/Lottery/` when touched |
-| Cross-module adapter in Infrastructure | `Reporting/Infrastructure/Adapters/AuditHistorySourceReadAdapter.php` | New Reporting↔Audit edges → Integrations; existing file guarded by `ReportingBoundaryTest` |
-| Foreign domain VO in bridge | `ApprovedRequestReadBridge` uses `RequestId::fromString()` | Acceptable until `RequestReadContract` accepts string IDs |
+- **Implements:** `App\Modules\Employee\Application\Contracts\Ports\PendingRequestReadPort`
+- **Depends on:** `App\Modules\Request\Application\Contracts\Internal\PendingRequestQueryPort`
+- **Behavior:** delegates `hasPendingRequest()` → `hasNonTerminalRequest()`
+- **ENFORCED:** public methods must match port exactly — `RequestConsumerBoundaryTest.php`
+
+### `Integrations/Request/EmployeeEligibilityBridge.php`
+
+- **Implements:** `Request\...\RequestEligibilityGatewayContract`
+- **Depends on:** `Employee\...\EmployeeEligibilityContract`
+- **Behavior:** pure delegation
+
+### `Integrations/Allocation/ApprovedRequestReadBridge.php`
+
+- **Implements:** `Allocation\...\ApprovedRequestReadPort`
+- **Depends on:** `Request\...\RequestReadContract`, filters approved status
+- **Note:** uses `Request\Domain\ValueObjects\RequestId` (contract-required; see known debt)
+
+### `Integrations/CheckIn/AllocationAssignmentReadBridge.php`
+
+- **Implements:** `CheckIn\...\AllocationAssignmentReadPort`
+- **Depends on:** `Allocation\...\AllocationReadContract` (string IDs via `getAllocationSummary()`)
+- **Post-repair pattern:** no foreign Domain types
+
+### `ProposedAllocationConsumer` (not under Integrations/)
+
+- **Bound as:** `ProposedAllocationPort` → `ProposedAllocationConsumer`
+- **Location:** `app/Modules/Allocation/Application/Services/ProposedAllocationConsumer.php`
+- **Rationale:** consumer-side command handler, not a translation bridge; wiring still centralized in `IntegrationServiceProvider`
 
 ---
 
-## Checklist for a new bridge PR
+## Legacy tolerated patterns — do not copy for new work
 
-- [ ] Consumer port interface exists in consumer `Application/Contracts/`
-- [ ] Bridge class lives under `app/Integrations/{Consumer}/`
-- [ ] Bridge implements **only** the consumer port methods
-- [ ] Dependencies are application contracts / DTOs only (no Infrastructure, no repositories)
+These exist, pass CI, and are documented in boundary tests. **New cross-module edges must not follow them** without explicit architecture approval.
+
+| Pattern | Location | Binding | Why legacy |
+|---------|----------|---------|------------|
+| Lottery → Request read adapter | `Lottery/Application/Adapters/RequestReadAdapter.php` | `LotteryServiceProvider:58` → `LotteryRequestReadPort` | Pre-Integrations; uses foreign Application contract only |
+| Reporting → Audit history | `Reporting/Infrastructure/Adapters/AuditHistorySourceReadAdapter.php` | `ReportingServiceProvider` | CD-017 read-only projection; `ReportingBoundaryTest` guards |
+| Reporting → Audit permissions | `Reporting/Infrastructure/Adapters/ReportingArchiveVisibilityAdapter.php` | `ReportingServiceProvider` | Same |
+| Identity implements Audit permission port | `Identity/Infrastructure/Adapters/SpatieAuditPermissionReadAdapter.php` | `IdentityServiceProvider:31` → `AuditPermissionReadPort` | Supplier impl hosted in consumer-adjacent module |
+
+---
+
+## New bridge PR checklist
+
+- [ ] Consumer port exists in consumer `Application/Contracts/`
+- [ ] Class under `app/Integrations/{Consumer}/`, `final`, single port
+- [ ] Dependencies are Application contracts / DTOs only
 - [ ] No business branching beyond mapping/filtering
 - [ ] Binding added to `IntegrationServiceProvider::register()` only
-- [ ] No duplicate binding in module service providers
-- [ ] Architecture tests pass: `php artisan test tests/Architecture/`
-- [ ] If read-only port (OA-05-09 pattern), add/update reflection test like `RequestConsumerBoundaryTest.php`
+- [ ] No duplicate binding in module providers
+- [ ] `php artisan test tests/Architecture/` passes
+- [ ] Read-only ports: add/update reflection test like `RequestConsumerBoundaryTest.php`
 
 ---
 

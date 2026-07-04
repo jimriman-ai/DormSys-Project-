@@ -1,240 +1,222 @@
 # Module Boundary Rules
 
-**Status:** Active — enforced in CI  
-**Audience:** Developers, PR reviewers  
-**Enforcement:** `tests/Architecture/` (670+ Pest architecture tests) + PHPStan level 8
+**Status:** Approved — reflects post-repair codebase (2026-07-04)  
+**CI gate:** `php artisan test tests/Architecture/` (751 tests at last verification)  
+**Inventory source:** `tests/Architecture/architecture.php`
 
-This document describes **what the repository actually enforces today**, not an idealized future state.
+Rules marked **ENFORCED** fail CI when violated. Rules marked **POLICY** are review expectations not fully automated.
 
 ---
 
 ## Module layout
 
-Every bounded context lives under:
-
 ```
-app/Modules/{ModuleName}/
-├── Domain/           # Pure business rules — no Laravel, no Eloquent, no foreign modules
-├── Application/      # Use cases, contracts (ports), DTOs, application services
-├── Infrastructure/   # Eloquent models, repositories, module-local adapters, service provider
-└── Presentation/     # HTTP, Livewire, console — depends inward only
+app/Modules/{Module}/
+├── Domain/           Pure PHP — no Laravel persistence, no foreign modules
+├── Application/      Use cases, contracts (ports), DTOs
+├── Infrastructure/   Eloquent, repositories, module service provider
+└── Presentation/     HTTP, Livewire, console
 ```
 
-**Registered modules** (full matrix in `tests/Architecture/architecture.php`):
+Cross-module composition for approved edges lives in `app/Integrations/` and is wired by `app/Providers/IntegrationServiceProvider.php`.
 
-`Identity`, `Employee`, `Request`, `Workflow`, `Dormitory`, `Allocation`, `Lottery`, `Voucher`, `Notification`, `Audit`, `Reporting`
+---
 
-**Active but partially enforced:** `CheckIn` — registered in `bootstrap/providers.php`, covered only by `tests/Architecture/CheckInBoundaryTest.php` (not the full module matrix). Treat CheckIn with the same rules manually until added to `architectureModuleNames()`.
+## Module inventory
 
-**Shared kernel** (any module may use):
+### Full architecture matrix (**ENFORCED**)
 
-- `App\Support/*`
-- `App/Shared/*`
+Defined in `tests/Architecture/architecture.php` → `architectureModuleNames()`:
+
+| Module | Service provider | Matrix tests |
+|--------|------------------|--------------|
+| Identity | `IdentityServiceProvider` | `ModuleBoundaryTest` + `IdentitySupplierBoundaryTest` |
+| Employee | `EmployeeServiceProvider` | `ModuleBoundaryTest` + `EmployeeSupplierBoundaryTest` |
+| Request | `RequestServiceProvider` | `ModuleBoundaryTest` + `RequestConsumerBoundaryTest` |
+| Workflow | `WorkflowServiceProvider` | `ModuleBoundaryTest` |
+| Dormitory | `DormitoryServiceProvider` | `ModuleBoundaryTest` |
+| Allocation | `AllocationServiceProvider` | `ModuleBoundaryTest` + `AllocationBoundaryTest` |
+| Lottery | `LotteryServiceProvider` | `ModuleBoundaryTest` + `LotterySupplierBoundaryTest` |
+| Voucher | `VoucherServiceProvider` | `ModuleBoundaryTest` + `VoucherBoundaryTest` |
+| Notification | `NotificationServiceProvider` | `ModuleBoundaryTest` + `NotificationBoundaryTest` |
+| Audit | `AuditServiceProvider` | `ModuleBoundaryTest` + `AuditBoundaryTest` |
+| Reporting | `ReportingServiceProvider` | `ModuleBoundaryTest` + `ReportingBoundaryTest` |
+
+Provider registration and four-layer directories for these modules: **ENFORCED** by `tests/Architecture/ServiceProviderRegistrationTest.php`.
+
+### Active but not in full matrix (**COVERAGE GAP**)
+
+| Module | In `bootstrap/providers.php` | Enforcement today |
+|--------|------------------------------|-------------------|
+| **CheckIn** | Yes (`CheckInServiceProvider`, line 38) | Partial only — `tests/Architecture/CheckInBoundaryTest.php` blocks Allocation Infrastructure persistence/repos; **not** in `architectureModuleNames()` |
+
+**Known gap:** `app/Modules/CheckIn/Application/Services/OperatorRoleGate.php` imports `App\Modules\Identity\Domain\ValueObjects\UserId`. This violates Application→foreign Domain policy but does **not** fail CI until CheckIn is added to the matrix (after contract fix).
+
+Shared kernel (any module may use): `App\Support`, `App/Shared` — **ENFORCED** by `LayerDependencyTest.php`.
 
 ---
 
 ## Allowed dependency directions
 
-| From | To | Rule |
-|------|-----|------|
-| **Presentation** | Application, Domain (own module) | Controllers/Livewire call application services |
-| **Infrastructure** | Application, Domain (own module) | Repositories implement application contracts |
-| **Application** | Domain (own module) | Actions orchestrate domain entities/value objects |
-| **Application** | **Application (foreign module)** | Cross-module reads/writes only via **public contracts** and DTOs |
-| **Domain** | Nothing outside own module + shared kernel | Pure PHP only |
-| **Integrations** (`app/Integrations/`) | Application contracts + DTOs from any module | Bridge layer — see [integration-layer-policy.md](./integration-layer-policy.md) |
-| **Any module** | `App\Support`, `App/Shared` | Shared value objects, base types |
+| From | To | Status |
+|------|-----|--------|
+| Presentation | Own Application, own Domain | Implicit Laravel layering |
+| Infrastructure | Own Application, own Domain | Required for repository mapping |
+| Application | Own Domain | Standard use-case orchestration |
+| Application | Foreign **Application** contracts + DTOs | **ENFORCED** — `ModuleBoundaryTest` allows; blocks foreign Domain/Infra/Presentation |
+| Domain | Own module only + `App\Support` / `App/Shared` | **ENFORCED** |
+| `app/Integrations/*` | Application contracts + DTOs from any module | **POLICY** — see [integration-layer-policy.md](./integration-layer-policy.md) |
 
-### Layer rules (all modules)
-
-Enforced by `tests/Architecture/LayerDependencyTest.php`:
+### Layer inward flow (**ENFORCED** — `tests/Architecture/LayerDependencyTest.php`)
 
 ```
-Presentation → Application → Domain
-Infrastructure → Application → Domain
+Presentation  ──┐
+                ├──► Application ──► Domain
+Infrastructure ─┘
 ```
 
-Infrastructure and Presentation are **siblings** — neither imports the other.
+Infrastructure and Presentation are siblings; neither imports the other (**ENFORCED**).
 
 ---
 
 ## Forbidden dependency directions
 
-| Violation | Example | Enforced by |
+| Violation | Example | Enforcement |
 |-----------|---------|-------------|
-| Domain → Infrastructure | `use App\Modules\Request\Infrastructure\Persistence\Models\RequestModel` in Domain | `LayerDependencyTest` |
-| Domain → Eloquent | `use Illuminate\Database\Eloquent\Model` in Domain | `LayerDependencyTest` |
-| Domain → Facades | `use Illuminate\Support\Facades\DB` in Domain | `LayerDependencyTest` |
-| Application → Infrastructure (own module) | Action injecting `RequestRepository` concrete class | `LayerDependencyTest` |
-| Application → Presentation | Application service importing Livewire component | `LayerDependencyTest` |
-| Domain → foreign module | `use App\Modules\Employee\Domain\...` in Request Domain | `ModuleBoundaryTest` |
-| Application → foreign **Domain** | `use App\Modules\Identity\Domain\ValueObjects\UserId` in CheckIn Application | `ModuleBoundaryTest` (when module in matrix) |
-| Application → foreign **Infrastructure** | `use App\Modules\Lottery\Infrastructure\...` in Allocation Application | `ModuleBoundaryTest` |
-| Infrastructure → foreign module | `use App\Modules\Audit\...` in Request Infrastructure | `ModuleBoundaryTest` |
-| Cross-module Eloquent / FK | Foreign-key constraint to another module's table | Constitution + code review |
-| Module provider binds foreign bridge | `PendingRequestReadPort` bound in `EmployeeServiceProvider` **and** `IntegrationServiceProvider` | Code review |
+| Domain → Infrastructure | `use App\Modules\Request\Infrastructure\...` in Domain | **ENFORCED** — `LayerDependencyTest`: `domain layer does not depend on infrastructure` |
+| Domain → Eloquent | `use Illuminate\Database\Eloquent\*` in Domain | **ENFORCED** — `domain layer does not depend on eloquent` |
+| Domain → Facades | `use Illuminate\Support\Facades\*` in Domain | **ENFORCED** — `domain layer does not depend on laravel facades` |
+| Domain → foreign module | Any `App\Modules\{Other}\*` in Domain | **ENFORCED** — per-pair rules in `ModuleBoundaryTest.php` |
+| Application → own Infrastructure | Concrete repository in action constructor | **ENFORCED** — `application layer does not depend on infrastructure` |
+| Application → foreign Domain | CheckIn `OperatorRoleGate` → `UserId` | **POLICY** (CheckIn out of matrix); **ENFORCED** for 11 matrix modules |
+| Application → foreign Infrastructure | `Lottery\Infrastructure\*` in Request Application | **ENFORCED** — `ModuleBoundaryTest` |
+| Infrastructure → foreign module (any layer) | Cross-module Eloquent/repo in Infrastructure | **ENFORCED** for matrix modules — `ModuleBoundaryTest` |
+| Cross-module Eloquent / FK | Foreign keys across module tables | **POLICY** — constitution; not Pest-arch scanned |
+| Duplicate port bindings | Same port in module provider + `IntegrationServiceProvider` | **POLICY** — review + grep; was removed for `PendingRequestReadPort` |
 
 ---
 
-## Rules by layer
+## Rules by layer (with real examples)
 
 ### Domain
 
-**May contain:** entities, value objects, enums, domain events, domain exceptions, domain services, state machines (pure PHP).
+**ENFORCED:** no Infrastructure, Eloquent, Facades, foreign modules.
 
-**Must not contain:** Eloquent models (those belong in `Infrastructure/Persistence/Models/`), Laravel imports, imports from any `App\Modules\{Other}\*`.
-
-**Good** — Request domain entity:
+**Good** — Request entity (own module only):
 
 ```php
 // app/Modules/Request/Domain/Entities/Request.php
-namespace App\Modules\Request\Domain\Entities;
-
 use App\Modules\Request\Domain\ValueObjects\RequestId;
-// own-module domain only
 ```
 
-**Bad** — domain state tied to Eloquent (fixed pattern; do not reintroduce):
+**Good** — state without Infrastructure model binding (post-repair pattern):
 
 ```php
-// FORBIDDEN
-use App\Modules\Request\Infrastructure\Persistence\Models\RequestModel;
-/** @extends State<RequestModel> */
+// app/Modules/Request/Domain/States/RequestState.php
+use Spatie\ModelStates\State;  // no @extends State<RequestModel>
 ```
 
-State classes use `spatie/laravel-model-states` without referencing Infrastructure model types in PHPDoc or imports.
+**Bad** — do not reintroduce:
 
----
+```php
+use App\Modules\Request\Infrastructure\Persistence\Models\RequestModel;
+```
 
 ### Application
 
-**May contain:** actions, application services, **contracts** (ports), DTOs, internal gateway interfaces owned by the consuming module.
+**ENFORCED:** inject contracts/ports; no own Infrastructure imports.
 
-**Must inject:** abstractions (`*Contract`, `*Port`) — never concrete Infrastructure classes.
-
-**Cross-module access:** only through foreign **Application** contracts/DTOs, never foreign Domain or Infrastructure.
-
-**Good** — Allocation consumes lottery outcome via port:
+**Good** — foreign Application contract:
 
 ```php
 // app/Modules/Allocation/Application/Services/ProposedAllocationConsumer.php
-use App\Modules\Lottery\Application\Contracts\ProposedAllocationPort; // foreign Application contract — OK
+use App\Modules\Lottery\Application\Contracts\ProposedAllocationPort;
 ```
 
-**Good** — Request eligibility via internal gateway (implementation in Integrations):
+**Good** — internal gateway (implementation in Integrations):
 
 ```php
-// app/Modules/Request/Application/Services/CreatePersonalRequestAction.php
+// app/Modules/Request/Application/Services/SubmitRequestAction.php
 use App\Modules\Request\Application\Contracts\Internal\RequestEligibilityGatewayContract;
 ```
 
-**Bad** — Application action using foreign domain type:
+**Bad** — foreign Domain (known gap, do not copy):
 
 ```php
-// app/Modules/CheckIn/Application/Services/OperatorRoleGate.php — KNOWN GAP
-use App\Modules\Identity\Domain\ValueObjects\UserId; // foreign Domain — reject in PR
+// app/Modules/CheckIn/Application/Services/OperatorRoleGate.php:10
+use App\Modules\Identity\Domain\ValueObjects\UserId;
 ```
-
-**Bad** — Application importing Infrastructure:
-
-```php
-// FORBIDDEN
-use App\Modules\Allocation\Infrastructure\Repositories\AllocationRepository;
-```
-
----
 
 ### Infrastructure
 
-**May contain:** Eloquent models, repositories (implementing Application contracts), module-local null stubs, queries, jobs, listeners, **module service provider**.
+**ENFORCED (matrix modules):** no foreign module imports.
 
-**Must not import:** foreign modules (any layer), Presentation.
-
-**Own-module only:** Infrastructure → own Application + own Domain is required for repository mapping.
-
-**Good** — repository implements contract:
+**Good** — own contract implementation:
 
 ```php
 // app/Modules/Allocation/Infrastructure/Repositories/AllocationRepository.php
-use App\Modules\Allocation\Application\Contracts\AllocationRepositoryContract;
-use App\Modules\Allocation\Domain\Models\Allocation;
+implements AllocationRepositoryContract
 ```
 
-**Bad** — deleted anti-pattern (do not recreate):
+**Legacy tolerated** — Reporting reads Audit via Application layer (not Infrastructure isolation for `Audit\Application\*`):
 
 ```php
-// FORBIDDEN — was removed
-// app/Modules/Allocation/Infrastructure/Adapters/RequestReadAdapter.php
-use App\Modules\Request\Infrastructure\...;
+// app/Modules/Reporting/Infrastructure/Adapters/AuditHistorySourceReadAdapter.php
+use App\Modules\Audit\Application\Contracts\AuditHistoryReadContract;
 ```
 
-**Legacy exception (allowed, do not copy for new work):** Reporting module contains `AuditHistorySourceReadAdapter` that calls `AuditHistoryReadContract`. This is guarded by `tests/Architecture/ReportingBoundaryTest.php` (single adapter file rule). New cross-module wiring belongs in `app/Integrations/`.
+Guarded by **ENFORCED** custom rule in `ReportingBoundaryTest.php` (single adapter file for `AuditHistoryReadContract`).
+
+**Removed anti-pattern** — do not recreate:
+
+- `app/Modules/Allocation/Infrastructure/Adapters/RequestReadAdapter.php`
+- `app/Modules/Request/Infrastructure/Adapters/PendingRequestReadAdapter.php`
 
 ---
 
-### Integrations (`app/Integrations/`)
+## Approved cross-module edges (current)
 
-Not a business module — a **composition-only bridge layer**. Full policy: [integration-layer-policy.md](./integration-layer-policy.md).
-
-**Current bridges:**
-
-| Bridge | Implements (consumer port) | Delegates to (supplier contract) |
-|--------|---------------------------|-----------------------------------|
-| `Integrations/Request/PendingRequestReadBridge` | `Employee\...\PendingRequestReadPort` | `Request\...\PendingRequestQueryPort` |
-| `Integrations/Request/EmployeeEligibilityBridge` | `Request\...\RequestEligibilityGatewayContract` | `Employee\...\EmployeeEligibilityContract` |
-| `Integrations/Allocation/ApprovedRequestReadBridge` | `Allocation\...\ApprovedRequestReadPort` | `Request\...\RequestReadContract` |
-| `Integrations/CheckIn/AllocationAssignmentReadBridge` | `CheckIn\...\AllocationAssignmentReadPort` | `Allocation\...\AllocationReadContract` |
-
-All registered in `app/Providers/IntegrationServiceProvider.php` (must remain **last** in `bootstrap/providers.php`).
+| Consumer port | Bridge / adapter | Supplier contract | Binding location |
+|---------------|------------------|-------------------|------------------|
+| `Employee\...\PendingRequestReadPort` | `Integrations\Request\PendingRequestReadBridge` | `Request\...\PendingRequestQueryPort` | `IntegrationServiceProvider::register()` |
+| `Request\...\RequestEligibilityGatewayContract` | `Integrations\Request\EmployeeEligibilityBridge` | `Employee\...\EmployeeEligibilityContract` | `IntegrationServiceProvider::register()` |
+| `Allocation\...\ApprovedRequestReadPort` | `Integrations\Allocation\ApprovedRequestReadBridge` | `Request\...\RequestReadContract` | `IntegrationServiceProvider::register()` |
+| `CheckIn\...\AllocationAssignmentReadPort` | `Integrations\CheckIn\AllocationAssignmentReadBridge` | `Allocation\...\AllocationReadContract` | `IntegrationServiceProvider::register()` |
+| `Lottery\...\ProposedAllocationPort` | `Allocation\...\ProposedAllocationConsumer` (service, not bridge file) | — | `IntegrationServiceProvider::register()` |
 
 ---
 
-## Cross-module communication patterns
+## CI test map
 
-### Allowed
+| Rule | Test file | Test name pattern |
+|------|-----------|-------------------|
+| Layer inward dependencies | `LayerDependencyTest.php` | `domain/application/infrastructure layer does not depend on *` |
+| Module pair isolation | `ModuleBoundaryTest.php` | `{module} domain/infrastructure/presentation/application is isolated from {foreign}` |
+| Vacuous-rule guard | `ArchTestCanaryTest.php` | Ensures arch expectations are non-empty |
+| Provider + layer dirs | `ServiceProviderRegistrationTest.php` | `each module has a service provider`, `exposes required layer directories` |
+| Request ↔ Employee | `RequestConsumerBoundaryTest.php` | BT-R05 / BT-R09 rules + bridge method parity |
+| Allocation suppliers | `AllocationBoundaryTest.php` | Blocks Request/Lottery/Dormitory/Employee Infrastructure |
+| Lottery ↔ Request | `LotterySupplierBoundaryTest.php` | Blocks foreign Infrastructure; documents `RequestReadAdapter` |
+| Reporting ↔ Audit | `ReportingBoundaryTest.php` | Blocks Audit Infrastructure; single `AuditHistoryReadContract` reference |
+| CheckIn ↔ Allocation | `CheckInBoundaryTest.php` | Blocks Allocation Infrastructure persistence/repos only |
 
-1. **Consumer injects port** → **Integration bridge** → **Supplier application contract**
-2. **Consumer application service** → **Foreign application contract** (no bridge file required if consumer already depends only on the contract interface — e.g. Lottery `RequestReadAdapter` → `RequestReadContract`)
-3. **Downstream read-only projection** (Reporting) → **Foreign application contract/DTO** via dedicated infrastructure adapter (legacy; prefer Integrations for new edges)
-
-### Forbidden
-
-1. Infrastructure adapter in module A calling module B repository or Eloquent model
-2. Domain entity in module A referencing domain type from module B
-3. Binding a foreign port implementation inside the **supplier's** or **consumer's** module provider when the edge is cross-context (use `IntegrationServiceProvider`)
-4. Duplicate competing bindings for the same port in two providers
-
----
-
-## CI verification
-
-Run before opening a PR:
+Run before merge:
 
 ```bash
-# Architecture tests (layer + module matrix + module-specific boundary tests)
 php artisan test tests/Architecture/
-
-# Static analysis
 composer run phpstan
-
-# Formatting
-composer run pint
 ```
-
-**Canary:** `tests/Architecture/ArchTestCanaryTest.php` ensures architecture rules are not empty/vacuous.
-
-**Provider registration:** `tests/Architecture/ServiceProviderRegistrationTest.php` verifies every module in `architectureModuleNames()` has a provider registered in `bootstrap/providers.php`.
 
 ---
 
-## Adding a new module
+## Adding a new matrix module
 
-1. Create four layer directories under `app/Modules/{Name}/`
+1. Create four layers under `app/Modules/{Name}/`
 2. Add `{Name}ServiceProvider` under `Infrastructure/Providers/`
-3. Register provider in `bootstrap/providers.php` (before `IntegrationServiceProvider`)
+3. Register in `bootstrap/providers.php` **before** `IntegrationServiceProvider`
 4. Add `{Name}` to `architectureModuleNames()` in `tests/Architecture/architecture.php`
-5. Add module-specific boundary tests if the module has known supplier/consumer edges (see `LotterySupplierBoundaryTest.php`, `AllocationBoundaryTest.php` as templates)
-6. Run full architecture suite — expect new cross-module matrix tests to generate automatically from `ModuleBoundaryTest.php`
+5. Add module-specific boundary tests if the module has known supplier edges
+6. Run full architecture suite — `ModuleBoundaryTest` generates pairwise rules automatically
 
 ---
 
@@ -243,5 +225,3 @@ composer run pint
 - [integration-layer-policy.md](./integration-layer-policy.md)
 - [pr-review-checklist.md](./pr-review-checklist.md)
 - [decision-record.md](./decision-record.md)
-- Governance source: `.specify/memory/constitution.md`, `.specify/docs/context-map.md`
-- ADR outline: `.specify/docs/ADR/002-module-boundary-enforcement.md`

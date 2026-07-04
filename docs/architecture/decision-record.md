@@ -1,182 +1,127 @@
-# Architecture Decision Record — Modular Boundaries & Integration Layer
+# Architecture Decision Record — Modular Boundary Repair
 
-**Status:** Accepted (implemented)  
-**Date:** 2026-07-04  
+**Status:** Accepted and stabilized (2026-07-04)  
 **Scope:** `app/Modules/`, `app/Integrations/`, `app/Providers/IntegrationServiceProvider.php`  
-**Enforcement:** `tests/Architecture/` (670+ Pest tests), PHPStan level 8
+**CI:** `tests/Architecture/` — 751 tests passing at stabilization
 
-This record documents **why** the current architecture exists, **what** it replaced, and **how** to maintain it — grounded in the actual codebase, not a generic Clean Architecture template.
-
----
-
-## Context — what was going wrong
-
-Before the boundary refactor, CI failed `LayerDependencyTest` and `ModuleBoundaryTest` with real violations:
-
-| Problem | Symptom | Example location (removed or fixed) |
-|---------|---------|-------------------------------------|
-| Domain coupled to Infrastructure | State classes referenced Eloquent model types | `RequestState`, `LotteryProgramState` PHPDoc/`@extends` |
-| Application injected Infrastructure | Actions constructed with concrete repositories/adapters | Allocation actions binding Infrastructure adapters directly |
-| Cross-module wiring inside Infrastructure | Adapters in module A imported module B repositories | `Allocation/Infrastructure/Adapters/RequestReadAdapter.php` (deleted) |
-| Employee ↔ Request coupling in wrong module | Adapter lived under Request Infrastructure | `Request/Infrastructure/Adapters/PendingRequestReadAdapter.php` (deleted) |
-| Hidden composition | Cross-module ports bound in multiple providers | `PendingRequestReadPort` in both Employee and Integration providers |
-| Audit domain leakage | Identity/Voucher/Reporting imported Audit **Domain** enums | Fixed to `AuditEntryDto` + application ports |
-
-These were not stylistic issues — they allowed compile-time coupling that violates DormSys constitution module boundaries (F01-026+) and context-map integration rules (Application Service or Domain Event only).
+This record documents what was repaired, why, and how to maintain the approved model. It reflects **actual code and tests**, not a target-state diagram.
 
 ---
 
-## Decision — patterns chosen
+## Summary of what was repaired
 
-### 1. Four layers per module with strict inward dependencies
+| Problem category | Symptom before repair | Repair applied |
+|------------------|----------------------|----------------|
+| Domain ↔ Infrastructure coupling | State classes referenced Eloquent model types | Removed Infrastructure imports/generics from Domain states |
+| Application → Infrastructure injection | Actions wired to concrete adapters/repos | Application injects ports/contracts; Infrastructure implements |
+| Cross-module wiring in Infrastructure | Adapters in module A called module B repos | Deleted in-module cross adapters; moved to `app/Integrations/` |
+| Hidden composition | `PendingRequestReadPort` bound in Employee + Integration providers | Single binding in `IntegrationServiceProvider`; null stub removed |
+| Audit Domain leakage | Identity/Voucher/Reporting imported Audit Domain enums | Switched to `AuditEntryDto` + Application ports |
+| CheckIn ↔ Allocation Domain leak | Adapter used `AllocationId` VO | Bridge uses `AllocationReadContract` with string summaries |
+| Composition root phase | Integration bindings in `boot()` | Moved to `register()` (post-cleanup) |
 
-```
-Presentation / Infrastructure  →  Application  →  Domain
-```
-
-**Enforced by:** `tests/Architecture/LayerDependencyTest.php`
-
-Application never imports Infrastructure (even own module). Infrastructure implements Application contracts and may import own Domain for mapping.
-
-### 2. Module matrix isolation
-
-For each pair of modules in `architectureModuleNames()`:
-
-- Domain, Infrastructure, Presentation: **no** imports from foreign module (any layer)
-- Application: may import foreign **Application** only — not foreign Domain, Infrastructure, or Presentation
-
-**Enforced by:** `tests/Architecture/ModuleBoundaryTest.php` (auto-generated per module pair)
-
-### 3. `app/Integrations/` as the cross-module composition layer
-
-Cross-context **port implementations** that translate between modules live outside both modules:
-
-```
-app/Integrations/
-├── Allocation/ApprovedRequestReadBridge.php
-├── CheckIn/AllocationAssignmentReadBridge.php
-└── Request/
-    ├── EmployeeEligibilityBridge.php
-    └── PendingRequestReadBridge.php
-```
-
-**Composition root:** `app/Providers/IntegrationServiceProvider.php` — registered **last** in `bootstrap/providers.php`.
-
-### 4. Application contracts as the only cross-module API
-
-Modules expose capability through:
-
-- `Application/Contracts/*Contract.php` — public supplier surface
-- `Application/Contracts/Ports/*Port.php` — consumer-defined outbound/inbound ports
-- `Application/Contracts/Internal/*` — module-private gateway interfaces (implementations in Integrations)
-- `Application/DTOs/*` — read models crossing boundaries
-
-**Example:** Employee defines `PendingRequestReadPort`; Request exposes data via `PendingRequestQueryPort`; bridge connects them without Employee importing Request Domain.
-
-### 5. Pest architecture tests as the enforcement mechanism
-
-Chose Pest `arch()` expectations over Deptrac or runtime guards because:
-
-- Rules live beside PHPUnit/Pest feature tests
-- Failures name exact dependency violations
-- Module list centralized in `tests/Architecture/architecture.php`
-- Incremental module-specific rules added (`AllocationBoundaryTest`, `ReportingBoundaryTest`, etc.)
-
-See `.specify/docs/ADR/002-module-boundary-enforcement.md` for original ADR intent.
-
-### 6. Reporting as downstream read-only consumer (CD-017)
-
-Reporting may consume Audit **application** contracts via dedicated infrastructure adapters, guarded by:
-
-- `ReportingBoundaryTest` — blocks Audit Infrastructure; single-file rule for `AuditHistoryReadContract`
-
-New cross-module read edges should prefer `app/Integrations/` for consistency.
-
----
-
-## Patterns explicitly avoided
-
-| Avoided pattern | Why | What we do instead |
-|-----------------|-----|-------------------|
-| Cross-module Eloquent queries | Breaks bounded context ownership | Application service + contract on supplier |
-| Cross-module foreign keys | Constitution prohibits | Store UUID references without FK |
-| Infrastructure adapters calling foreign repositories | Hides dependency from arch tests | Integration bridge + supplier contract |
-| Binding foreign ports in module providers | Order-dependent overrides, duplicate wiring | `IntegrationServiceProvider` only |
-| Domain state referencing Eloquent models | Domain ceases to be pure | State classes without Infrastructure generics |
-| Application → own Infrastructure imports | Untestable without database | Inject contract interface |
-| Business logic in Integrations | Bridges become god objects | Delegation only |
-| Runtime boundary checks | Constitution forbids production overhead (F01-026) | Static Pest + PHPStan in CI |
-
-**Do not recreate deleted adapters:**
+**Deleted files (do not recreate):**
 
 - `Allocation/Infrastructure/Adapters/RequestReadAdapter.php`
 - `Allocation/Infrastructure/Adapters/LotteryResultReadAdapter.php`
 - `Request/Infrastructure/Adapters/EmployeeEligibilityGateway.php`
 - `Request/Infrastructure/Adapters/PendingRequestReadAdapter.php`
 - `CheckIn/Infrastructure/Adapters/AllocationAssignmentReadAdapter.php`
+- `Employee/Infrastructure/Adapters/NullPendingRequestReadAdapter.php`
 
 ---
 
-## Legacy debt (known, tracked)
+## Root cause categories
 
-These pass CI but should not be copied in new code:
-
-| Item | Current location | Target state |
-|------|------------------|--------------|
-| Lottery → Request read adapter | `Lottery/Application/Adapters/RequestReadAdapter.php` | Move to `app/Integrations/Lottery/` when next touched |
-| Reporting → Audit read adapter | `Reporting/Infrastructure/Adapters/AuditHistorySourceReadAdapter.php` | Keep guarded; new edges via Integrations |
-| CheckIn → Identity domain type | `CheckIn/Application/Services/OperatorRoleGate.php` uses `UserId` | Identity contract accepting string ID, or Identity bridge |
-| CheckIn not in arch matrix | `architectureModuleNames()` omits CheckIn | Add module + fix gaps when authorized |
-| ApprovedRequestReadBridge uses `RequestId` VO | Required by `RequestReadContract` signature today | Acceptable until contract accepts string |
+1. **Convenience adapters** — cross-module reads implemented as Infrastructure adapters inside the consumer module.
+2. **Framework leakage** — Domain states typed against Eloquent models for Spatie states.
+3. **Composition sprawl** — module service providers bound foreign ports with null stubs that were overridden later by registration order.
+4. **Incomplete enforcement inventory** — CheckIn promoted to active module but not added to `architectureModuleNames()`.
+5. **Pre-Integrations edges** — Lottery and Reporting cross-module wiring predates `app/Integrations/` policy.
 
 ---
 
-## Problems solved (verification)
+## Accepted repair patterns
 
-| Gate | Result |
-|------|--------|
-| `LayerDependencyTest` + `ModuleBoundaryTest` | 670/670 pass |
-| Domain → Infrastructure imports | Zero in `app/Modules/*/Domain` |
-| Application → Infrastructure imports | Zero in `app/Modules/*/Application` |
-| Cross-module Employee ↔ Request ↔ Allocation wiring | Centralized in `IntegrationServiceProvider` |
-| Duplicate `PendingRequestReadPort` binding | Removed from `EmployeeServiceProvider` |
+| Pattern | Where | Enforcement |
+|---------|-------|-------------|
+| Four layers per module | `app/Modules/{Module}/` | `ServiceProviderRegistrationTest` |
+| Application contracts as cross-module API | `Application/Contracts/`, `Ports/` | `ModuleBoundaryTest` |
+| Integrations bridges | `app/Integrations/{Consumer}/` | **POLICY** + feature/arch tests |
+| Single integration composition root | `IntegrationServiceProvider::register()` | **POLICY** + review grep |
+| Supplier read contracts with string/DTO types | e.g. `AllocationReadContract::getAllocationSummary(string)` | Reduces foreign Domain in bridges |
+| Pest arch matrix | `ModuleBoundaryTest.php` + `LayerDependencyTest.php` | **ENFORCED** — 751 tests |
+| Module-specific boundary tests | `*BoundaryTest.php` files | **ENFORCED** for documented edges |
+| Null stubs for undeferred suppliers | `NullDormitoryReadAdapter`, etc. | Own-module only; Wave 1 pattern |
 
 ---
 
-## Long-term maintenance guidance
+## Rejected anti-patterns
 
-### Adding a feature inside one module
+| Anti-pattern | Why rejected |
+|--------------|--------------|
+| Cross-module Eloquent / repository calls | Violates bounded context ownership |
+| Infrastructure adapter calling foreign Infrastructure | Hidden from arch tests; deleted in repair |
+| Application importing foreign Domain | Consumer depends on supplier internals |
+| Duplicate port bindings across providers | Order-dependent overrides; removed for `PendingRequestReadPort` |
+| Business logic in Integrations | Bridges become god objects |
+| Runtime boundary checks | Constitution forbids production overhead (F01-026) |
+| Reintroducing deleted in-module cross adapters | Explicitly removed and documented |
 
-1. Domain rules → `Domain/`
-2. Use case → `Application/Services/` or `Application/Actions/`
+---
+
+## Known remaining debt (honest inventory)
+
+| Item | Type | CI today | Next step |
+|------|------|----------|-----------|
+| `CheckIn/OperatorRoleGate` → `Identity\Domain\UserId` | **Violation (latent)** | Passes — CheckIn not in matrix | Contract change, then add CheckIn to matrix |
+| CheckIn absent from `architectureModuleNames()` | **Coverage gap** | Partial `CheckInBoundaryTest` only | Add after OperatorRoleGate fix |
+| `Lottery/Application/Adapters/RequestReadAdapter` | **Legacy tolerated** | Passes — Application→Application allowed | Move to Integrations when authorized |
+| Reporting Infrastructure → Audit Application adapters | **Legacy tolerated** | `ReportingBoundaryTest` guards | New Audit edges → Integrations |
+| `IdentityServiceProvider` binds `AuditPermissionReadPort` | **Legacy tolerated** | Passes | Policy decision: move or exempt |
+| `ApprovedRequestReadBridge` uses `RequestId` VO | **Safe but brittle** | Passes | Optional when `RequestReadContract` accepts string |
+| `DormitoryReadAdapter`, `AllocationPhysicalStateAdapter` | **Dead in prod DI** | N/A — test-only instantiation | Keep until tests refactored |
+| `Request/README.md` references deleted adapter | **Documentation gap** | N/A | Update when docs touched |
+
+---
+
+## Safe cleanup already applied (post-repair)
+
+| Change | File | Effect |
+|--------|------|--------|
+| Integration bindings → `register()` | `IntegrationServiceProvider.php` | Composition root at correct phase; behavior unchanged |
+| Removed unwired null stub | `NullPendingRequestReadAdapter.php` deleted | Single production path via `PendingRequestReadBridge` |
+
+---
+
+## Maintenance workflow
+
+### Single-module feature
+
+1. Domain → `Domain/`
+2. Use case → `Application/Services/`
 3. Contract → `Application/Contracts/`
-4. Persistence → `Infrastructure/Repositories/` implementing the contract
-5. Bind contract → implementation in module `{Module}ServiceProvider`
+4. Persistence → `Infrastructure/Repositories/`
+5. Bind in module `{Module}ServiceProvider`
 
 No Integrations involvement.
 
-### Adding a feature across modules
+### Cross-module feature
 
-1. Identify **consumer** (defines need) and **supplier** (owns data/lifecycle)
-2. Add or reuse **supplier application contract** (read or command)
-3. Add **consumer port** if the consumer must not depend on supplier's contract directly
+1. Identify consumer (port owner) and supplier (contract owner)
+2. Add/reuse supplier Application contract
+3. Add consumer port if needed
 4. Implement bridge in `app/Integrations/{Consumer}/`
-5. Register binding in `IntegrationServiceProvider::register()` only
-6. Add or extend architecture test for the edge (copy `RequestConsumerBoundaryTest.php` pattern)
-7. Update `.specify/docs/context-map.md` if relationship is new
+5. Bind in `IntegrationServiceProvider::register()` only
+6. Add/update arch test for the edge
+7. Run `php artisan test tests/Architecture/`
 
-### Adding a new module
+### Contract change
 
-Follow [boundary-rules.md](./boundary-rules.md) § "Adding a new module" — critical step is adding to `architectureModuleNames()` **before merge** so the matrix applies from day one.
-
-### Changing a contract
-
-- Treat as breaking change across bounded contexts
-- Update all bridges and adapters in the same PR
+- Update bridge + all implementations in **one PR**
 - Run full architecture + affected feature tests
-- Do not change contract + bridge in separate PRs (CI will pass individually but runtime breaks)
 
-### CI commands (Definition of Done alignment)
+### Definition of Done (architecture)
 
 ```bash
 php artisan test tests/Architecture/
@@ -184,18 +129,16 @@ composer run phpstan
 composer run pint
 ```
 
-Architecture regressions block merge — same priority as failing feature tests.
+Architecture failures block merge at the same priority as feature test failures.
 
 ### When to update this record
 
-Update `decision-record.md` when:
+- New module added to matrix
+- Legacy adapter migrated to Integrations
+- CheckIn added to enforcement inventory
+- Material change to composition root bindings
 
-- A new integration pattern is adopted (e.g. all legacy adapters migrated to Integrations)
-- `architectureModuleNames()` changes
-- A new enforcement test suite is added
-- Constitution or context-map boundary decisions change (CD-015, CD-016, CD-017, etc.)
-
-Do **not** update for individual feature PRs — those belong in spec handoff docs under `.specify/docs/handoff/`.
+Do **not** update for routine feature PRs.
 
 ---
 
@@ -206,14 +149,12 @@ Do **not** update for individual feature PRs — those belong in spec handoff do
 | Boundary rules | [boundary-rules.md](./boundary-rules.md) |
 | Integration policy | [integration-layer-policy.md](./integration-layer-policy.md) |
 | PR checklist | [pr-review-checklist.md](./pr-review-checklist.md) |
-| Architecture test inventory | `tests/Architecture/architecture.php` |
+| Arch inventory | `tests/Architecture/architecture.php` |
 | Context map | `.specify/docs/context-map.md` |
-| Catalog decisions | `.specify/docs/catalog-decisions.md` |
 | Constitution | `.specify/memory/constitution.md` |
-| Project commands | `CLAUDE.md`, `AGENTS.md` |
 
 ---
 
-## Summary
+## Governance summary
 
-DormSys modular architecture is **enforced**, not documented-only. Modules communicate through **application contracts**; **Integrations** wire consumers to suppliers; **IntegrationServiceProvider** owns cross-module composition. Domain stays pure; Infrastructure stays module-local. CI architecture tests exist to catch regressions before review — use the [PR checklist](./pr-review-checklist.md) to align human review with automated gates.
+DormSys modular architecture is **enforced in CI** for 11 matrix modules via Pest arch tests. Cross-module wiring for the repaired edges is **centralized** in `IntegrationServiceProvider`. **CheckIn** is active but **not fully matrix-enforced** — treat as open coverage debt. Legacy Lottery/Reporting/Identity edges are **tolerated, not templates** for new work.

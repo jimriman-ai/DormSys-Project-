@@ -1,129 +1,99 @@
 # Architecture PR Review Checklist
 
-**Status:** Active  
-**Use when:** Reviewing any PR touching `app/Modules/`, `app/Integrations/`, `app/Providers/`, or `bootstrap/providers.php`  
-**CI gate:** `php artisan test tests/Architecture/` must pass (670+ tests)
+**Status:** Approved  
+**Use when:** PR touches `app/Modules/`, `app/Integrations/`, `app/Providers/`, or `bootstrap/providers.php`  
+**CI gate:** `php artisan test tests/Architecture/` (751 tests)
 
-Copy this checklist into PR review comments or use as a self-review guide before requesting review.
-
----
-
-## Quick reject criteria
-
-Reject or request changes immediately if the PR:
-
-- [ ] Adds `use App\Modules\{Foreign}\Domain\*` or `{Foreign}\Infrastructure\*` inside another module's Domain or Application layer
-- [ ] Adds Eloquent, Facades, or Infrastructure imports to Domain
-- [ ] Adds concrete Infrastructure classes to Application constructor injection
-- [ ] Adds cross-module repository or Eloquent model access
-- [ ] Binds a cross-module port in a module `*ServiceProvider` instead of `IntegrationServiceProvider`
-- [ ] Introduces duplicate singleton binding for the same port interface
-- [ ] Adds business logic to `app/Integrations/*`
-- [ ] Fails architecture tests or PHPStan level 8
+Legend: **ENFORCED** = CI fails on violation. **POLICY** = reviewer must catch manually.
 
 ---
 
-## 1. Domain purity check
+## Immediate reject criteria
 
-**Scope:** `app/Modules/*/Domain/**/*.php`
+Reject or request changes if the PR:
 
-| Check | Pass | Fail |
-|-------|------|------|
-| No `Illuminate\Database\Eloquent\*` imports | Pure PHP entities/VOs | Any Eloquent base class or trait in Domain |
-| No `App\Modules\*\Infrastructure\*` imports | — | Domain importing persistence |
-| No `Illuminate\Support\Facades\*` | — | `DB::`, `Cache::`, etc. in Domain |
-| No foreign module imports | Only own-module + `App\Support` | `use App\Modules\Employee\...` in Request Domain |
-| State classes don't reference Infrastructure models in PHPDoc | `RequestState` without `@extends State<Model>` | Generic bound to Eloquent model type |
-
-**Spot-check commands:**
-
-```bash
-# Should return no matches for the touched module
-rg "Infrastructure|Illuminate\\\\Database|Eloquent|Facades" app/Modules/{Module}/Domain/
-rg "use App\\\\Modules\\\\(Employee|Request|Lottery|Audit|Allocation|Identity|Reporting|Voucher|Dormitory|Notification|Workflow)\\\\" app/Modules/{Module}/Domain/
-```
+- [ ] Adds foreign **Domain** or **Infrastructure** imports to another module's Application layer (**ENFORCED** for matrix modules)
+- [ ] Adds Eloquent, Facades, or Infrastructure imports to Domain (**ENFORCED**)
+- [ ] Injects concrete Infrastructure classes into Application services (**ENFORCED**)
+- [ ] Adds cross-module repository or Eloquent access (**POLICY** + usually **ENFORCED** via Infrastructure isolation)
+- [ ] Binds a cross-module port in a module `*ServiceProvider` instead of `IntegrationServiceProvider` (**POLICY**)
+- [ ] Duplicates a singleton binding already in `IntegrationServiceProvider` (**POLICY**)
+- [ ] Adds business logic to `app/Integrations/*` (**POLICY**)
+- [ ] Fails `tests/Architecture/` or PHPStan level 8
 
 ---
 
-## 2. Application contract usage check
+## 1. Layer purity questions
 
-**Scope:** `app/Modules/*/Application/**/*.php`
+**Domain** (`app/Modules/*/Domain/**/*.php`)
 
-| Check | Pass | Fail |
-|-------|------|------|
-| Actions/services inject `*Contract`, `*Port` interfaces | `AllocationRepositoryContract` | `AllocationRepository` concrete class |
-| No own-module Infrastructure imports | — | `use App\Modules\Request\Infrastructure\...` |
-| Foreign access via Application contracts/DTOs only | `RequestReadContract`, `AuditEntryDto` | Foreign domain entity or repository |
-| Cross-module writes go through defined command ports | `ProposedAllocationPort`, `AuditRecordingContract` | Direct mutation of foreign module state |
-| Internal gateways use `Contracts/Internal/` namespace | `RequestEligibilityGatewayContract` | Public contract used for cross-module secret coupling |
+| Question | ENFORCED by |
+|----------|-------------|
+| Any `Illuminate\Database\Eloquent\*` import? | `LayerDependencyTest` — `domain layer does not depend on eloquent` |
+| Any `App\Modules\*\Infrastructure\*` import? | `LayerDependencyTest` — `domain layer does not depend on infrastructure` |
+| Any `Illuminate\Support\Facades\*` import? | `LayerDependencyTest` — `domain layer does not depend on laravel facades` |
+| Any foreign module import? | `ModuleBoundaryTest` — `{module} domain is isolated from {foreign}` |
+| State classes reference Eloquent models in PHPDoc? | **POLICY** — post-repair: no `@extends State<Model>` |
 
-**Good pattern:**
+**Application** (`app/Modules/*/Application/**/*.php`)
 
-```php
-public function __construct(
-    private readonly ApprovedRequestReadPort $requests,
-    private readonly AllocationRepositoryContract $allocations,
-) {}
-```
+| Question | ENFORCED by |
+|----------|-------------|
+| Constructor injects `*Contract` / `*Port`, not concrete repos? | `LayerDependencyTest` — `application layer does not depend on infrastructure` |
+| Any own-module Infrastructure import? | Same |
+| Foreign access only via Application contracts/DTOs? | `ModuleBoundaryTest` — `application does not access {foreign} domain/infrastructure/presentation` |
+| Copying `OperatorRoleGate` → `UserId` pattern? | **POLICY** — known gap; reject new copies |
 
-**Bad pattern:**
+**Infrastructure** (`app/Modules/*/Infrastructure/**/*.php`)
 
-```php
-public function __construct(
-    private readonly RequestRepository $requests, // concrete Infrastructure
-) {}
-```
-
-**Known gap to flag (not template):** `CheckIn/Application/Services/OperatorRoleGate.php` imports `Identity\Domain\ValueObjects\UserId` — reject **new** PRs that copy this; existing code is tracked for contract cleanup.
+| Question | ENFORCED by |
+|----------|-------------|
+| Repositories implement Application contracts? | **POLICY** |
+| Foreign module imports (any layer)? | `ModuleBoundaryTest` — `{module} infrastructure is isolated from {foreign}` |
+| New cross-module adapter outside Integrations? | **POLICY** — reject unless legacy exception documented |
 
 ---
 
-## 3. Cross-module dependency check
+## 2. Cross-module edge questions
 
-**Scope:** Any new `use App\Modules\{Other}*` statement
+For every new `use App\Modules\{Other}\...`:
 
-| Dependency type | Verdict | Action |
-|-----------------|---------|--------|
-| `{Other}\Application\Contracts\*` | ✅ Allowed | Verify port ownership (consumer vs supplier) |
-| `{Other}\Application\DTOs\*` | ✅ Allowed | DTO must stay immutable/read-oriented |
-| `{Other}\Domain\*` | ❌ Reject | Use contract with string/UUID/DTO instead |
-| `{Other}\Infrastructure\*` | ❌ Reject | Use bridge + application contract |
-| `{Other}\Presentation\*` | ❌ Reject | Never cross presentation boundaries |
+| Import path | Verdict |
+|-------------|---------|
+| `{Other}\Application\Contracts\*` | Usually OK — verify port ownership |
+| `{Other}\Application\DTOs\*` | OK for read/projection flows |
+| `{Other}\Domain\*` | **Reject** (except Integrations edge cases tied to existing contracts) |
+| `{Other}\Infrastructure\*` | **Reject** |
 
-**For new cross-module edges:**
+**New cross-module feature checklist:**
 
-- [ ] Port defined on **consumer** side
-- [ ] Bridge in `app/Integrations/{Consumer}/` (unless trivial direct contract injection like Lottery→Request read)
-- [ ] No new Infrastructure adapter in module A calling module B
-- [ ] Context map relationship documented if new bounded-context edge (`.specify/docs/context-map.md`)
+- [ ] Consumer owns the port interface
+- [ ] Bridge in `app/Integrations/{Consumer}/` (not legacy pattern)
+- [ ] Binding only in `IntegrationServiceProvider::register()`
+- [ ] Module-specific arch test added/updated if edge is stable (see table below)
 
-**Module-specific tests to verify exist or are updated:**
-
-| Edge | Test file |
-|------|-----------|
-| Request ↔ Employee | `tests/Architecture/RequestConsumerBoundaryTest.php` |
-| Allocation ↔ Request/Lottery/Dormitory/Employee | `tests/Architecture/AllocationBoundaryTest.php` |
-| Lottery ↔ Request | `tests/Architecture/LotterySupplierBoundaryTest.php` |
-| Reporting ↔ Audit | `tests/Architecture/ReportingBoundaryTest.php` |
-| CheckIn ↔ Allocation | `tests/Architecture/CheckInBoundaryTest.php` |
-| All modules (matrix) | `tests/Architecture/ModuleBoundaryTest.php` |
+| Edge | Arch test file |
+|------|----------------|
+| Request ↔ Employee | `RequestConsumerBoundaryTest.php` |
+| Allocation ↔ suppliers | `AllocationBoundaryTest.php` |
+| Lottery ↔ Request | `LotterySupplierBoundaryTest.php` |
+| Reporting ↔ Audit | `ReportingBoundaryTest.php` |
+| CheckIn ↔ Allocation | `CheckInBoundaryTest.php` (partial) |
+| All matrix modules | `ModuleBoundaryTest.php` |
 
 ---
 
-## 4. Provider binding correctness check
+## 3. Composition root questions
 
-**Scope:** `*ServiceProvider.php`, `bootstrap/providers.php`, `IntegrationServiceProvider.php`
+| Question | Expected state |
+|----------|----------------|
+| Cross-module ports bound only in `IntegrationServiceProvider`? | **POLICY** — 5 bindings today (see below) |
+| `IntegrationServiceProvider` last in `bootstrap/providers.php`? | Line 46 |
+| Bindings in `register()`, not `boot()`? | Post-cleanup standard |
+| Module provider binds own implementations only? | e.g. `AllocationRepositoryContract → AllocationRepository` |
+| New matrix module added to `architectureModuleNames()`? | **ENFORCED** via `ServiceProviderRegistrationTest` |
 
-| Check | Pass | Fail |
-|-------|------|------|
-| Module provider binds own implementations only | `AllocationRepositoryContract → AllocationRepository` | `PendingRequestReadPort` in `EmployeeServiceProvider` |
-| Cross-module bindings only in `IntegrationServiceProvider` | All `*Bridge` classes | Bridge binding in `RequestServiceProvider` |
-| `IntegrationServiceProvider` is **last** in `bootstrap/providers.php` | Line 46 after all module providers | Integration registered before modules |
-| Bindings in `register()`, not `boot()` | `IntegrationServiceProvider::register()` | Container bindings in `boot()` |
-| New module provider added to `bootstrap/providers.php` | Registered and bootable | Orphan provider |
-| New enforced module added to `architectureModuleNames()` | `tests/Architecture/architecture.php` | Module ships without matrix coverage |
-
-**Current integration bindings (must not duplicate elsewhere):**
+**Current `IntegrationServiceProvider` bindings (do not duplicate elsewhere):**
 
 ```
 ApprovedRequestReadPort
@@ -133,72 +103,62 @@ PendingRequestReadPort
 ProposedAllocationPort
 ```
 
-**Verify:**
+**Legacy bindings outside Integrations (do not copy):**
 
-```bash
-rg "singleton\((ApprovedRequestReadPort|AllocationAssignmentReadPort|RequestEligibilityGatewayContract|PendingRequestReadPort|ProposedAllocationPort)" app/Modules/
-# Should return no matches — all in IntegrationServiceProvider
+```
+LotteryRequestReadPort          → LotteryServiceProvider (RequestReadAdapter)
+AuditPermissionReadPort         → IdentityServiceProvider (SpatieAuditPermissionReadAdapter)
 ```
 
 ---
 
-## 5. Integration layer validation
-
-**Scope:** `app/Integrations/**/*.php`
-
-| Check | Pass | Fail |
-|-------|------|------|
-| Class is `final` | All bridges | Extensible bridge hierarchies |
-| Implements exactly one consumer port | `implements PendingRequestReadPort` | Multiple interfaces or fat helper |
-| Constructor deps are application contracts / internal query ports | `AllocationReadContract` | Repository, Model, HTTP client |
-| No domain rules | Delegation + mapping only | Eligibility/scoring/approval logic |
-| File namespace matches consumer context | `Integrations\Request\` for Employee-facing Request bridge | Random namespace |
-| Registered in `IntegrationServiceProvider` | Binding present | Orphan bridge class |
-
-**Read-only port check (OA-05-09):** If port is query-only, confirm bridge does not expose extra public methods — mirror `RequestConsumerBoundaryTest.php` pattern.
-
----
-
-## 6. Infrastructure layer check
-
-**Scope:** `app/Modules/*/Infrastructure/**/*.php`
-
-| Check | Pass | Fail |
-|-------|------|------|
-| Repositories implement Application contracts | `implements AllocationRepositoryContract` | Standalone repository without interface |
-| Eloquent models in `Infrastructure/Persistence/Models/` only | `AllocationModel.php` | Model in Domain |
-| No foreign module imports | Own module + Laravel | `use App\Modules\Audit\...` in Request Infrastructure |
-| Null/stub adapters for undeferred suppliers | `NullDormitoryReadAdapter` | Live cross-module repo in Infrastructure |
-
-**Reporting exception:** `AuditHistorySourceReadAdapter` may reference `AuditHistoryReadContract` — must remain the **only** Reporting file referencing that contract (`ReportingBoundaryTest.php`).
-
----
-
-## 7. Automated verification (reviewer)
-
-Request author confirmation or re-run locally:
+## 4. Provider binding drift checks
 
 ```bash
+# Cross-module ports must NOT appear in module providers
+rg "singleton\((ApprovedRequestReadPort|AllocationAssignmentReadPort|RequestEligibilityGatewayContract|PendingRequestReadPort|ProposedAllocationPort)" app/Modules/
+
+# Expected: no matches
+```
+
+```bash
+# Domain purity spot-check (replace {Module})
+rg "Infrastructure|Illuminate\\\\Database|Eloquent|Facades" app/Modules/{Module}/Domain/
+
+# Expected: no matches
+```
+
+```bash
+# Full CI gate
 php artisan test tests/Architecture/
 composer run phpstan
-composer run pint
-```
-
-For PRs touching a single module's behavior:
-
-```bash
-php artisan test tests/Architecture/LayerDependencyTest.php
-php artisan test tests/Architecture/ModuleBoundaryTest.php
-php artisan test tests/Feature/Modules/{Module}/
 ```
 
 ---
 
-## 8. Documentation & governance (when applicable)
+## 5. Integration layer review
 
-- [ ] New bounded-context relationship reflected in `.specify/docs/context-map.md` (if new module edge)
-- [ ] No unauthorized cross-spec implementation beyond active governance authorization records
-- [ ] Migrations use module path `database/migrations/modules/{module}/` with rollback
+| Question | Pass criteria |
+|----------|---------------|
+| Bridge is `final` and implements one consumer port? | Yes |
+| Dependencies are Application contracts / internal query ports? | No repositories/models |
+| Only delegation + mapping? | No eligibility/scoring/approval rules |
+| Registered in `IntegrationServiceProvider::register()`? | Yes |
+| Read-only port exposes no extra public methods? | Match `RequestConsumerBoundaryTest` pattern |
+
+---
+
+## 6. When architecture approval is required (**POLICY**)
+
+Escalate beyond normal PR review when the PR:
+
+1. Adds a **new bounded-context relationship** not in `.specify/docs/context-map.md`
+2. Introduces a **new cross-module port** without an Integrations bridge (and is not a documented legacy exception)
+3. Adds a module to `architectureModuleNames()` (expect new matrix rules to apply)
+4. Touches **CheckIn ↔ Identity** until `OperatorRoleGate` contract debt is resolved
+5. Moves or splits **Reporting ↔ Audit** integration outside existing guarded adapters
+6. Requires **foreign Domain types** in Application or Integrations (contract change needed)
+7. Operates under a **governance authorization** scope (spec handoff) — verify authorization record allows the change
 
 ---
 
@@ -207,12 +167,12 @@ php artisan test tests/Feature/Modules/{Module}/
 ```markdown
 ### Architecture review
 
-- [ ] Domain purity — pass / fail: ___
-- [ ] Application contracts — pass / fail: ___
-- [ ] Cross-module deps — pass / fail: ___
-- [ ] Provider bindings — pass / fail: ___
-- [ ] Integration layer — pass / fail: ___
-- [ ] CI architecture tests — pass / fail
+- [ ] Domain purity — pass / fail
+- [ ] Application contracts — pass / fail
+- [ ] Cross-module edges — pass / fail
+- [ ] Composition root — pass / fail
+- [ ] Integration layer — pass / fail / N/A
+- [ ] tests/Architecture — pass / fail
 
 **Notes:**
 ```
