@@ -7,7 +7,6 @@ namespace Tests\Support;
 use Mockery;
 use Mockery\Expectation;
 use Mockery\MockInterface;
-use RuntimeException;
 
 final class MockeryTest
 {
@@ -25,18 +24,21 @@ final class MockeryTest
         return $mock;
     }
 
-    public static function expect(MockInterface $mock, string $method): Expectation
+    /**
+     * @return Expectation
+     */
+    public static function expect(MockInterface $mock, string $method): mixed
     {
+        /** @var Expectation $expectation */
         $expectation = $mock->shouldReceive($method);
-
-        if (! $expectation instanceof Expectation) {
-            throw new RuntimeException('Mockery shouldReceive did not return an Expectation.');
-        }
 
         return $expectation;
     }
 
-    public static function expectOnce(MockInterface $mock, string $method): Expectation
+    /**
+     * @return Expectation
+     */
+    public static function expectOnce(MockInterface $mock, string $method): mixed
     {
         return self::expect($mock, $method)->once();
     }

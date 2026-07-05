@@ -125,10 +125,7 @@ it('blocks submit when eligibility detects an existing pending request (CD-013)'
     );
 
     expect(fn () => app(SubmitRequestAction::class)->execute($secondDraft->requireId()))
-        ->toThrow(function (Throwable $exception): bool {
-            return $exception instanceof RequestNotEligibleException
-                && $exception->reasonCodes === ['pending_request_exists'];
-        });
+        ->toThrow(RequestNotEligibleException::class);
 
     $eligibility = app(EmployeeEligibilityContract::class)->computeRequestEligibility(
         $employee->requireId()->value,

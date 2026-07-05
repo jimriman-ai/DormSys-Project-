@@ -83,11 +83,12 @@ it('rejects submit for an ineligible employee with stable reason codes', functio
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
 
-    expect(fn () => app(SubmitRequestAction::class)->execute($draft->requireId()))
-        ->toThrow(function (Throwable $exception): bool {
-            return $exception instanceof RequestNotEligibleException
-                && in_array('employee_inactive', $exception->reasonCodes, true);
-        });
+    try {
+        app(SubmitRequestAction::class)->execute($draft->requireId());
+        test()->fail('Expected RequestNotEligibleException to be thrown.');
+    } catch (RequestNotEligibleException $exception) {
+        expect($exception->reasonCodes)->toContain('employee_inactive');
+    }
 
     $unchanged = app(RequestRepositoryContract::class)->findById($draft->requireId());
     expect($unchanged?->status)->toBe(DraftState::$name);
@@ -113,9 +114,10 @@ it('rejects submit when eligibility contract reports pending request exists', fu
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
 
-    expect(fn () => app(SubmitRequestAction::class)->execute($draft->requireId()))
-        ->toThrow(function (Throwable $exception): bool {
-            return $exception instanceof RequestNotEligibleException
-                && $exception->reasonCodes === ['pending_request_exists'];
-        });
+    try {
+        app(SubmitRequestAction::class)->execute($draft->requireId());
+        test()->fail('Expected RequestNotEligibleException to be thrown.');
+    } catch (RequestNotEligibleException $exception) {
+        expect($exception->reasonCodes)->toBe(['pending_request_exists']);
+    }
 });
