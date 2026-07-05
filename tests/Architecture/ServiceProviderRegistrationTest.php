@@ -22,6 +22,8 @@ test('each module service provider is bootable', function (): void {
     foreach (architectureModuleServiceProviders() as $providerClass) {
         $provider = app()->resolveProvider($providerClass);
 
+        expect($provider)->toBeInstanceOf($providerClass);
+
         if (method_exists($provider, 'boot')) {
             $provider->boot();
         }
