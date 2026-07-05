@@ -18,9 +18,9 @@ use App\Modules\Lottery\Domain\ValueObjects\RequestReferenceId;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Carbon;
 
 uses(RefreshDatabase::class);
 

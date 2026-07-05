@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Modules\Employee\Application\Contracts\Ports\PendingRequestReadPort;
 use App\Integrations\Request\PendingRequestReadBridge;
+use App\Modules\Employee\Application\Contracts\Ports\PendingRequestReadPort;
 
 arch('request module does not import employee domain enums (spec03 isolation)')
     ->expect('App\Modules\Request')

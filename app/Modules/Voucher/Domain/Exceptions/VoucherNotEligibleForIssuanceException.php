@@ -6,6 +6,4 @@ namespace App\Modules\Voucher\Domain\Exceptions;
 
 use RuntimeException;
 
-final class VoucherNotEligibleForIssuanceException extends RuntimeException
-{
-}
+final class VoucherNotEligibleForIssuanceException extends RuntimeException {}

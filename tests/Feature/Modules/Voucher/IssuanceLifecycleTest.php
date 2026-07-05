@@ -7,13 +7,14 @@ use App\Modules\Voucher\Application\Contracts\VoucherEligibilityEvaluationContra
 use App\Modules\Voucher\Application\Contracts\VoucherIssuanceContract;
 use App\Modules\Voucher\Application\Contracts\VoucherLifecycleContract;
 use App\Modules\Voucher\Application\Contracts\VoucherLifecycleTransitionRepositoryContract;
-use App\Modules\Voucher\Application\Contracts\VoucherRepositoryContract;
 use App\Modules\Voucher\Application\Contracts\VoucherTriggerIntakeContract;
 use App\Modules\Voucher\Application\DTOs\InboundTriggerFactsDto;
+use App\Modules\Voucher\Application\Services\IssueVoucherAction;
 use App\Modules\Voucher\Domain\Enums\AccommodationClassification;
 use App\Modules\Voucher\Domain\Enums\TriggerSource;
 use App\Modules\Voucher\Domain\Enums\VoucherLifecycleState;
 use App\Modules\Voucher\Domain\Exceptions\VoucherReissuanceRejectedException;
+use App\Modules\Voucher\Domain\Services\VoucherCodeGenerator;
 use App\Modules\Voucher\Domain\ValueObjects\VoucherCode;
 use App\Modules\Voucher\Infrastructure\Adapters\InMemoryAccommodationClassificationReadAdapter;
 use App\Modules\Voucher\Infrastructure\Persistence\Models\VoucherModel;
@@ -95,8 +96,8 @@ it('regenerates voucher codes until global uniqueness is confirmed', function ()
     ]);
 
     $attempts = 0;
-    app()->bind(\App\Modules\Voucher\Domain\Services\VoucherCodeGenerator::class, function () use ($existingCode, &$attempts) {
-        return new class($existingCode, $attempts) extends \App\Modules\Voucher\Domain\Services\VoucherCodeGenerator
+    app()->bind(VoucherCodeGenerator::class, function () use ($existingCode, &$attempts) {
+        return new class($existingCode, $attempts) extends VoucherCodeGenerator
         {
             public function __construct(
                 private readonly VoucherCode $duplicate,
@@ -112,7 +113,7 @@ it('regenerates voucher codes until global uniqueness is confirmed', function ()
         };
     });
 
-    app()->forgetInstance(\App\Modules\Voucher\Application\Services\IssueVoucherAction::class);
+    app()->forgetInstance(IssueVoucherAction::class);
     app()->forgetInstance(VoucherIssuanceContract::class);
 
     $voucher = issueEligibleVoucher('issue-unique-001', $employeeId, $dormitoryId);
@@ -162,7 +163,7 @@ it('transitions issued voucher to expired when validity window ends', function (
 
     $expired = app(VoucherLifecycleContract::class)->expire(
         $voucher->requireId(),
-        new \DateTimeImmutable('2026-09-01', new \DateTimeZone('UTC')),
+        new DateTimeImmutable('2026-09-01', new DateTimeZone('UTC')),
     );
 
     expect($expired->lifecycleState)->toBe(VoucherLifecycleState::Expired);
@@ -175,7 +176,7 @@ it('rejects re-issuance from terminal voucher without new eligible evaluation', 
 
     app(VoucherLifecycleContract::class)->expire(
         $voucher->requireId(),
-        new \DateTimeImmutable('2026-09-01', new \DateTimeZone('UTC')),
+        new DateTimeImmutable('2026-09-01', new DateTimeZone('UTC')),
     );
 
     expect(fn () => app(VoucherIssuanceContract::class)->issueFromEligibility($voucher->eligibilityOutcomeId))
@@ -189,7 +190,7 @@ it('archives issued voucher records without silent deletion', function (): void 
 
     $archived = app(VoucherLifecycleContract::class)->archive(
         $voucher->requireId(),
-        new \DateTimeImmutable('2026-09-15', new \DateTimeZone('UTC')),
+        new DateTimeImmutable('2026-09-15', new DateTimeZone('UTC')),
     );
 
     expect($archived->archivedAt)->not->toBeNull();
@@ -203,7 +204,7 @@ it('records material lifecycle transitions for downstream consumers', function (
 
     app(VoucherLifecycleContract::class)->expire(
         $voucher->requireId(),
-        new \DateTimeImmutable('2026-09-01', new \DateTimeZone('UTC')),
+        new DateTimeImmutable('2026-09-01', new DateTimeZone('UTC')),
     );
 
     $transitions = app(VoucherLifecycleTransitionRepositoryContract::class)

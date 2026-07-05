@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\Voucher\Infrastructure\Repositories;
 
 use App\Modules\Voucher\Application\Contracts\VoucherLifecycleTransitionRepositoryContract;
-use App\Modules\Voucher\Domain\Enums\VoucherLifecycleState;
 use App\Modules\Voucher\Domain\Models\VoucherLifecycleTransition;
 use App\Modules\Voucher\Domain\ValueObjects\CorrelationId;
 use App\Modules\Voucher\Domain\ValueObjects\VoucherId;

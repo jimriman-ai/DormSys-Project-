@@ -14,7 +14,7 @@ class LotteryDrawSelectorTest extends TestCase
     #[Test]
     public function it_selects_winners_up_to_capacity_and_ranks_reserves(): void
     {
-        $selector = new LotteryDrawSelector();
+        $selector = new LotteryDrawSelector;
 
         $eligible = [
             ['registration_id' => 'reg-low', 'employee_id' => 'emp-1', 'weighted_score' => 1.0],
@@ -37,7 +37,7 @@ class LotteryDrawSelectorTest extends TestCase
     #[Test]
     public function it_marks_all_eligible_as_winners_when_capacity_exceeds_count(): void
     {
-        $selector = new LotteryDrawSelector();
+        $selector = new LotteryDrawSelector;
 
         $eligible = [
             ['registration_id' => 'reg-a', 'employee_id' => 'emp-1', 'weighted_score' => 2.0],

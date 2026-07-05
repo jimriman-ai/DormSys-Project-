@@ -19,7 +19,6 @@ use App\Modules\Lottery\Domain\States\LockedState;
 use App\Modules\Lottery\Domain\States\RegistrationOpenState;
 use App\Modules\Lottery\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId;
-use App\Modules\Lottery\Domain\ValueObjects\LotteryRegistrationId;
 use App\Modules\Lottery\Domain\ValueObjects\LotteryResultId;
 use App\Modules\Lottery\Domain\ValueObjects\LotterySnapshotId;
 use App\Modules\Lottery\Domain\ValueObjects\ScoringConfig;

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Modules\Lottery\Application\Contracts\LotteryEligibleSnapshotRepositoryContract;
+use App\Modules\Lottery\Application\Contracts\LotteryProgramRepositoryContract;
 use App\Modules\Lottery\Application\Contracts\LotteryResultRepositoryContract;
 use App\Modules\Lottery\Application\Services\CreateLotteryProgramAction;
 use App\Modules\Lottery\Application\Services\EnrollRegistrationAction;
@@ -17,10 +18,10 @@ use App\Modules\Lottery\Infrastructure\Jobs\ExecuteLotteryDrawJob;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Carbon;
 
 uses(RefreshDatabase::class);
 
@@ -82,7 +83,7 @@ it('auto-locks past-deadline programs idempotently', function (): void {
     app()->call([$job, 'handle']);
     app()->call([$job, 'handle']);
 
-    $reloaded = app(\App\Modules\Lottery\Application\Contracts\LotteryProgramRepositoryContract::class)
+    $reloaded = app(LotteryProgramRepositoryContract::class)
         ->findById($opened->requireId());
 
     expect($reloaded?->status)->toBe(LockedState::$name);
@@ -119,7 +120,7 @@ it('executes draw job idempotently for locked programs', function (): void {
     app()->call([$drawJob, 'handle']);
     app()->call([$drawJob, 'handle']);
 
-    $program = app(\App\Modules\Lottery\Application\Contracts\LotteryProgramRepositoryContract::class)
+    $program = app(LotteryProgramRepositoryContract::class)
         ->findById($opened->requireId());
 
     expect($program?->status)->toBe(CompletedState::$name);
