@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Application\Auth\GetCurrentAuthUserAction;
 use App\Application\Auth\LoginUserAction;
+use App\Application\Auth\LogoutUserAction;
 use App\Domain\Auth\Data\AuthCredentialsData;
 use App\Models\User;
 use App\Providers\AuthFoundationServiceProvider;
@@ -12,51 +13,57 @@ beforeEach(function (): void {
     $this->app->register(AuthFoundationServiceProvider::class);
 });
 
-it('authenticates a user with valid credentials', function (): void {
+it('establishes session auth and resolvable current user after successful login', function (): void {
     $user = User::factory()->create([
-        'email' => 'auth-test@example.com',
+        'email' => 'regression-login@example.com',
         'password' => 'secret-password',
     ]);
 
     $result = app(LoginUserAction::class)->execute(new AuthCredentialsData(
-        identifier: 'auth-test@example.com',
+        identifier: 'regression-login@example.com',
         password: 'secret-password',
     ));
 
+    $current = app(GetCurrentAuthUserAction::class)->execute();
+
     expect($result->success)->toBeTrue()
         ->and($result->failureReason)->toBeNull()
-        ->and($result->user)->not->toBeNull()
-        ->and($result->user?->id)->toBe($user->id)
-        ->and($result->user?->identifier)->toBe('auth-test@example.com')
-        ->and(auth()->check())->toBeTrue();
+        ->and(auth()->check())->toBeTrue()
+        ->and($current)->not->toBeNull()
+        ->and($current?->id)->toBe($user->id)
+        ->and($current?->identifier)->toBe('regression-login@example.com');
 });
 
-it('fails login with invalid credentials', function (): void {
+it('keeps guest state and returns invalid credential failure reason after failed login', function (): void {
     User::factory()->create([
-        'email' => 'auth-test@example.com',
+        'email' => 'regression-fail@example.com',
         'password' => 'secret-password',
     ]);
 
     $result = app(LoginUserAction::class)->execute(new AuthCredentialsData(
-        identifier: 'auth-test@example.com',
+        identifier: 'regression-fail@example.com',
         password: 'wrong-password',
     ));
 
     expect($result->success)->toBeFalse()
         ->and($result->failureReason)->toBe('invalid_credentials')
-        ->and($result->user)->toBeNull();
+        ->and($result->user)->toBeNull()
+        ->and(auth()->check())->toBeFalse()
+        ->and(app(GetCurrentAuthUserAction::class)->execute())->toBeNull();
 });
 
-it('does not authenticate the user when login fails', function (): void {
+it('clears auth state and current user resolution after logout following login', function (): void {
     User::factory()->create([
-        'email' => 'auth-test@example.com',
+        'email' => 'regression-logout@example.com',
         'password' => 'secret-password',
     ]);
 
     app(LoginUserAction::class)->execute(new AuthCredentialsData(
-        identifier: 'auth-test@example.com',
-        password: 'wrong-password',
+        identifier: 'regression-logout@example.com',
+        password: 'secret-password',
     ));
+
+    app(LogoutUserAction::class)->execute();
 
     expect(auth()->check())->toBeFalse()
         ->and(app(GetCurrentAuthUserAction::class)->execute())->toBeNull();
