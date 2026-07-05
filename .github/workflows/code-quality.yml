@@ -6,6 +6,7 @@ on:
       - main
       - develop
       - '001-*'
+      - '011-*'
   pull_request:
 
 jobs:
