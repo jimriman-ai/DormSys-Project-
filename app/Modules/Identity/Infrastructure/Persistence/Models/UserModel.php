@@ -13,6 +13,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
+ * Persistence adapter for Identity users (spec02).
+ *
+ * Implements {@see AuthenticatableContract} only so Spatie RBAC and feature tests
+ * can resolve an authenticated principal via the `api` guard (`actingAs`).
+ * Password-based login is explicitly out of scope (OA-02-01); credentials
+ * belong to {@see \App\Models\User} on the default `web` guard.
+ *
  * @property string $id
  * @property UserStatus $status
  * @property string $display_name
@@ -69,6 +76,13 @@ class UserModel extends BaseModel implements AuthenticatableContract
     }
 
     public function getAuthPassword(): string
+    {
+        throw new \LogicException(
+            'Identity users do not support password-based authentication. Use App\Models\User on the web guard for credential login.',
+        );
+    }
+
+    public function getRememberTokenName(): string
     {
         return '';
     }
