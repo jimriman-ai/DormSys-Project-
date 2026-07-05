@@ -10,6 +10,7 @@ use App\Modules\Lottery\Application\Services\ExecuteDrawAction;
 use App\Modules\Lottery\Application\Services\LockLotteryProgramAction;
 use App\Modules\Lottery\Application\Services\OpenRegistrationAction;
 use App\Modules\Lottery\Domain\ValueObjects\DormitorySiteId;
+use App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId;
 use App\Modules\Lottery\Domain\ValueObjects\RequestReferenceId;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -79,7 +80,7 @@ it('returns the public contract output shape for a completed draw', function ():
 });
 
 it('returns empty winners and reserves with stable shape when no draw results exist', function (): void {
-    $programId = \App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId::fromString(UuidGenerator::uuid7());
+    $programId = LotteryProgramId::fromString(UuidGenerator::uuid7());
 
     $payload = app(LotteryResultReadContract::class)->resultsForProgram($programId);
 

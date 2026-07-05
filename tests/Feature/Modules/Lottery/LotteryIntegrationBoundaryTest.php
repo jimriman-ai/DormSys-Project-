@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Modules\Lottery\Application\Contracts\LotteryEligibleSnapshotRepositoryContract;
+use App\Modules\Lottery\Application\Contracts\LotteryProgramRepositoryContract;
 use App\Modules\Lottery\Application\Contracts\LotteryRegistrationRepositoryContract;
 use App\Modules\Lottery\Application\Contracts\LotteryResultReadContract;
 use App\Modules\Lottery\Application\Contracts\LotteryResultRepositoryContract;
@@ -22,6 +23,7 @@ use App\Modules\Lottery\Infrastructure\Jobs\AutoLockLotteryJob;
 use App\Modules\Lottery\Infrastructure\Jobs\ExecuteLotteryDrawJob;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\Feature\Modules\Lottery\LotteryTestFactory;
 
 uses(RefreshDatabase::class);
@@ -150,13 +152,13 @@ it('preserves idempotency when auto lock and draw jobs retry after manual comple
         RequestReferenceId::fromString($requestId),
     );
 
-    \Illuminate\Support\Carbon::setTestNow('2026-07-15 12:00:00');
+    Carbon::setTestNow('2026-07-15 12:00:00');
 
     $autoLockJob = app(AutoLockLotteryJob::class);
     app()->call([$autoLockJob, 'handle']);
     app()->call([$autoLockJob, 'handle']);
 
-    $locked = app(\App\Modules\Lottery\Application\Contracts\LotteryProgramRepositoryContract::class)
+    $locked = app(LotteryProgramRepositoryContract::class)
         ->findById($opened->requireId());
 
     expect($locked?->status)->toBe(LockedState::$name);

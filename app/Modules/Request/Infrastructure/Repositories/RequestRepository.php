@@ -12,6 +12,8 @@ use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
 use App\Modules\Request\Domain\ValueObjects\RequestCode;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
 use App\Modules\Request\Infrastructure\Persistence\Models\RequestModel;
+use Illuminate\Support\Carbon;
+
 class RequestRepository implements RequestRepositoryContract
 {
     public function save(Request $request): Request
@@ -96,14 +98,14 @@ class RequestRepository implements RequestRepositoryContract
             employeeId: EmployeeReferenceId::fromString($model->employee_id),
             dormitoryId: DormitorySiteId::fromString($model->dormitory_id),
             type: $model->type,
-            checkInDate: \Illuminate\Support\Carbon::instance($model->check_in_date)->utc()->toDateTimeImmutable(),
-            checkOutDate: \Illuminate\Support\Carbon::instance($model->check_out_date)->utc()->toDateTimeImmutable(),
+            checkInDate: Carbon::instance($model->check_in_date)->utc()->toDateTimeImmutable(),
+            checkOutDate: Carbon::instance($model->check_out_date)->utc()->toDateTimeImmutable(),
             status: $model->status->getValue(),
             submittedAt: $model->submitted_at !== null
-                ? \Illuminate\Support\Carbon::instance($model->submitted_at)->utc()->toDateTimeImmutable()
+                ? Carbon::instance($model->submitted_at)->utc()->toDateTimeImmutable()
                 : null,
             cancelledAt: $model->cancelled_at !== null
-                ? \Illuminate\Support\Carbon::instance($model->cancelled_at)->utc()->toDateTimeImmutable()
+                ? Carbon::instance($model->cancelled_at)->utc()->toDateTimeImmutable()
                 : null,
             rejectionReason: $model->rejection_reason,
         );

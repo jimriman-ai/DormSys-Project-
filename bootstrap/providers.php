@@ -19,9 +19,9 @@ use App\Modules\Request\Infrastructure\Providers\RequestServiceProvider;
 use App\Modules\Request\Presentation\Providers\RequestPresentationServiceProvider;
 use App\Modules\Voucher\Infrastructure\Providers\VoucherServiceProvider;
 use App\Modules\Workflow\Infrastructure\Providers\WorkflowServiceProvider;
-use App\Providers\IntegrationServiceProvider;
 use App\Providers\AppServiceProvider;
 use App\Providers\HorizonServiceProvider;
+use App\Providers\IntegrationServiceProvider;
 
 return [
     AppServiceProvider::class,

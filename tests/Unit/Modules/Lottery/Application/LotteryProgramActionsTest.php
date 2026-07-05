@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Unit\Modules\Lottery\Application;
 
 use App\Modules\Lottery\Application\Contracts\LotteryProgramRepositoryContract;
-use App\Modules\Lottery\Application\Services\CancelLotteryProgramAction;
 use App\Modules\Lottery\Application\Services\CloseRegistrationAction;
 use App\Modules\Lottery\Application\Services\CreateLotteryProgramAction;
 use App\Modules\Lottery\Application\Services\OpenRegistrationAction;

@@ -8,6 +8,7 @@ use App\Modules\Request\Application\Contracts\MissionDetailsRepositoryContract;
 use App\Modules\Request\Domain\Entities\MissionDetails;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
 use App\Modules\Request\Infrastructure\Persistence\Models\RequestMissionDetailsModel;
+
 class MissionDetailsRepository implements MissionDetailsRepositoryContract
 {
     public function save(MissionDetails $details): MissionDetails

@@ -12,6 +12,7 @@ use App\Modules\Audit\Domain\ValueObjects\CorrelationId;
 use App\Modules\Audit\Domain\ValueObjects\EntityReference;
 use App\Support\Exceptions\ValidationException;
 use DateTimeImmutable;
+use Illuminate\Support\Carbon;
 use Ramsey\Uuid\Uuid;
 
 final readonly class AuditEntryDto
@@ -106,7 +107,7 @@ final readonly class AuditEntryDto
         }
 
         if (is_string($value) && $value !== '') {
-            return \Illuminate\Support\Carbon::parse($value, 'UTC')->toDateTimeImmutable();
+            return Carbon::parse($value, 'UTC')->toDateTimeImmutable();
         }
 
         return now('UTC')->toDateTimeImmutable();

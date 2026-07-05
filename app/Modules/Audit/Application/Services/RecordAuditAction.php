@@ -13,7 +13,6 @@ use App\Modules\Audit\Domain\Exceptions\AuditDuplicateConflictException;
 use App\Modules\Audit\Domain\Models\AuditLog;
 use App\Modules\Audit\Domain\ValueObjects\AuditLogId;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
-use DateTimeImmutable;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 

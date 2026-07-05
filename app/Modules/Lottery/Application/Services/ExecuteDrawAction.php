@@ -18,7 +18,6 @@ use App\Modules\Lottery\Domain\Models\LotteryResult;
 use App\Modules\Lottery\Domain\Services\LotteryDrawSelector;
 use App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId;
 use App\Modules\Lottery\Domain\ValueObjects\LotteryRegistrationId;
-use DateTimeImmutable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 

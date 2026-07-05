@@ -8,6 +8,7 @@ use App\Modules\Request\Application\Contracts\RequestMemberRepositoryContract;
 use App\Modules\Request\Domain\Entities\RequestMember;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
 use App\Modules\Request\Infrastructure\Persistence\Models\RequestMemberModel;
+
 class RequestMemberRepository implements RequestMemberRepositoryContract
 {
     public function append(RequestMember $member): RequestMember

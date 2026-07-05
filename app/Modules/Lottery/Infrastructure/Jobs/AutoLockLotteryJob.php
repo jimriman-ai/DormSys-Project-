@@ -9,7 +9,6 @@ use App\Modules\Lottery\Application\Services\CloseRegistrationAction;
 use App\Modules\Lottery\Application\Services\LockLotteryProgramAction;
 use App\Modules\Lottery\Domain\Exceptions\InvalidLotteryTransitionException;
 use App\Modules\Lottery\Domain\Models\LotteryProgram;
-use DateTimeImmutable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

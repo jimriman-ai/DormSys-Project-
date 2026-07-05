@@ -9,6 +9,8 @@ use App\Modules\Request\Domain\Entities\RequestApproval;
 use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
 use App\Modules\Request\Infrastructure\Persistence\Models\RequestApprovalModel;
+use Illuminate\Support\Carbon;
+
 class RequestApprovalRepository implements RequestApprovalRepositoryContract
 {
     public function append(RequestApproval $approval): RequestApproval
@@ -55,7 +57,7 @@ class RequestApprovalRepository implements RequestApprovalRepositoryContract
             decision: $model->decision,
             approverId: ApproverReferenceId::fromString($model->approver_id),
             reason: $model->reason,
-            decidedAt: \Illuminate\Support\Carbon::instance($model->decided_at)->utc()->toDateTimeImmutable(),
+            decidedAt: Carbon::instance($model->decided_at)->utc()->toDateTimeImmutable(),
         );
     }
 }

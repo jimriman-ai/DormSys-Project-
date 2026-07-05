@@ -10,7 +10,6 @@ use App\Modules\Request\Domain\Events\RequestCancelled;
 use App\Modules\Request\Domain\Exceptions\InvalidRequestTransitionException;
 use App\Modules\Request\Domain\Exceptions\RequestNotFoundException;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
-use DateTimeImmutable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 

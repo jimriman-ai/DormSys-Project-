@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Unit\Modules\Lottery\Application\Adapters;
 
 use App\Modules\Lottery\Application\Contracts\LotteryRequestReadPort;
+use App\Modules\Lottery\Domain\ValueObjects\RequestReferenceId;
 use App\Modules\Request\Application\Contracts\RequestReadContract;
 use App\Modules\Request\Application\DTOs\RequestSummaryDTO;
-use App\Modules\Lottery\Domain\ValueObjects\RequestReferenceId;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;

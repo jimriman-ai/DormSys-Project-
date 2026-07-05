@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Modules\Audit\Infrastructure\Providers;
 
 use App\Modules\Audit\Application\Contracts\AuditAuthorizationPort;
+use App\Modules\Audit\Application\Contracts\AuditEventTypeCatalogPort;
 use App\Modules\Audit\Application\Contracts\AuditHistoryReadContract;
 use App\Modules\Audit\Application\Contracts\AuditLogRepositoryContract;
 use App\Modules\Audit\Application\Contracts\AuditPrincipalContextPort;
 use App\Modules\Audit\Application\Contracts\AuditRecordingContract;
-use App\Modules\Audit\Application\Services\AuditHistoryReadService;
-use App\Modules\Audit\Application\Contracts\AuditEventTypeCatalogPort;
 use App\Modules\Audit\Application\Services\AuditEventTypeCatalog;
+use App\Modules\Audit\Application\Services\AuditHistoryReadService;
 use App\Modules\Audit\Application\Services\PayloadHashCalculator;
 use App\Modules\Audit\Application\Services\QueryAuditHistoryAction;
 use App\Modules\Audit\Application\Services\RecordAuditAction;

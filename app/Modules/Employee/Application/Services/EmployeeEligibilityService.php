@@ -10,7 +10,6 @@ use App\Modules\Employee\Application\Contracts\Ports\PendingRequestReadPort;
 use App\Modules\Employee\Application\DTOs\EligibilityResultDTO;
 use App\Modules\Employee\Domain\Exceptions\EmployeeNotFoundException;
 use App\Modules\Employee\Domain\ValueObjects\EmployeeId;
-use DateTimeImmutable;
 
 final class EmployeeEligibilityService implements EmployeeEligibilityContract
 {

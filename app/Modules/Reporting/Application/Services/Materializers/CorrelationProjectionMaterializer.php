@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Reporting\Application\Services\Materializers;
 
+use App\Modules\Reporting\Application\Contracts\Ports\CorrelationProjectionWritePort;
 use App\Modules\Reporting\Application\Contracts\Ports\ProjectionRefreshMaterializerPort;
 use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
 use App\Modules\Reporting\Domain\Enums\ProjectionFamily;
-use App\Modules\Reporting\Application\Contracts\Ports\CorrelationProjectionWritePort;
 
 final class CorrelationProjectionMaterializer implements ProjectionRefreshMaterializerPort
 {

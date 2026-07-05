@@ -11,7 +11,6 @@ use App\Modules\Audit\Domain\Enums\AuditEventType;
 use App\Modules\Audit\Domain\ValueObjects\ActorReference;
 use App\Modules\Audit\Domain\ValueObjects\CorrelationId;
 use App\Modules\Audit\Domain\ValueObjects\EntityReference;
-use DateTimeImmutable;
 use Spatie\Activitylog\Models\Activity;
 
 final class ActivityLogAuditBridge

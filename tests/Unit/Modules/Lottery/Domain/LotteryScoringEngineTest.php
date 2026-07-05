@@ -15,7 +15,7 @@ class LotteryScoringEngineTest extends TestCase
     #[Test]
     public function it_produces_identical_scores_for_identical_inputs(): void
     {
-        $engine = new LotteryScoringEngine();
+        $engine = new LotteryScoringEngine;
         $config = new ScoringConfig(
             version: '1.0.0',
             baseScoreCoefficient: 1.0,
@@ -48,7 +48,7 @@ class LotteryScoringEngineTest extends TestCase
     #[Test]
     public function it_changes_scores_when_random_seed_changes(): void
     {
-        $engine = new LotteryScoringEngine();
+        $engine = new LotteryScoringEngine;
         $config = new ScoringConfig(
             version: '1.0.0',
             baseScoreCoefficient: 1.0,
@@ -67,7 +67,7 @@ class LotteryScoringEngineTest extends TestCase
     #[Test]
     public function it_changes_scores_when_registration_id_changes(): void
     {
-        $engine = new LotteryScoringEngine();
+        $engine = new LotteryScoringEngine;
         $config = new ScoringConfig(
             version: '1.0.0',
             baseScoreCoefficient: 1.0,
@@ -86,7 +86,7 @@ class LotteryScoringEngineTest extends TestCase
     #[Test]
     public function prng_factor_is_deterministic_for_identical_inputs(): void
     {
-        $engine = new LotteryScoringEngine();
+        $engine = new LotteryScoringEngine;
         $seed = 'reproducible-seed';
         $registrationId = UuidGenerator::uuid7();
 
@@ -99,7 +99,7 @@ class LotteryScoringEngineTest extends TestCase
     #[Test]
     public function it_produces_stable_scores_across_repeated_computations(): void
     {
-        $engine = new LotteryScoringEngine();
+        $engine = new LotteryScoringEngine;
         $config = new ScoringConfig(
             version: '1.0.0',
             baseScoreCoefficient: 0.75,
@@ -128,7 +128,7 @@ class LotteryScoringEngineTest extends TestCase
     #[Test]
     public function it_produces_distinct_stable_scores_per_registration_with_same_seed(): void
     {
-        $engine = new LotteryScoringEngine();
+        $engine = new LotteryScoringEngine;
         $config = new ScoringConfig(
             version: '1.0.0',
             baseScoreCoefficient: 1.0,

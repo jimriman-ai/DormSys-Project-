@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Reporting\Application\Services\Materializers;
 
+use App\Modules\Reporting\Application\Contracts\Ports\AuditWindowAggregateWritePort;
+use App\Modules\Reporting\Application\Contracts\Ports\ProjectionIngestReceiptRepositoryPort;
 use App\Modules\Reporting\Application\Contracts\Ports\ProjectionRefreshMaterializerPort;
 use App\Modules\Reporting\Application\Services\ProjectionDayWindowResolver;
 use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
 use App\Modules\Reporting\Domain\Enums\ProjectionFamily;
-use App\Modules\Reporting\Application\Contracts\Ports\AuditWindowAggregateWritePort;
-use App\Modules\Reporting\Application\Contracts\Ports\ProjectionIngestReceiptRepositoryPort;
 
 final class AuditWindowAggregateMaterializer implements ProjectionRefreshMaterializerPort
 {

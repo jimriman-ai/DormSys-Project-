@@ -73,7 +73,7 @@ class LotteryProgramTransitionMatrixTest extends TestCase
 
     private function persistProgramInState(string $status): LotteryProgramModel
     {
-        $model = new LotteryProgramModel();
+        $model = new LotteryProgramModel;
         $model->forceFill([
             'id' => UuidGenerator::uuid7(),
             'title' => 'Transition Test Program',

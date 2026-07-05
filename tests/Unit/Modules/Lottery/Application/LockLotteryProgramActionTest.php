@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Modules\Lottery\Application;
 
-use App\Modules\Lottery\Application\Contracts\EmployeeLotteryScorePort;
 use App\Modules\Lottery\Application\Contracts\LotteryEligibleSnapshotRepositoryContract;
 use App\Modules\Lottery\Application\Contracts\LotteryProgramRepositoryContract;
 use App\Modules\Lottery\Application\Contracts\LotteryRegistrationRepositoryContract;
@@ -18,7 +17,6 @@ use App\Modules\Lottery\Domain\Exceptions\ScoringConfigNotFoundException;
 use App\Modules\Lottery\Domain\Models\EligibleSnapshot;
 use App\Modules\Lottery\Domain\Models\LotteryProgram;
 use App\Modules\Lottery\Domain\Models\LotteryRegistration;
-use App\Modules\Lottery\Domain\Services\LotteryScoringEngine;
 use App\Modules\Lottery\Domain\States\LockedState;
 use App\Modules\Lottery\Domain\States\RegistrationClosedState;
 use App\Modules\Lottery\Domain\States\RegistrationOpenState;

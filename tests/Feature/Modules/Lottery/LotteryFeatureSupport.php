@@ -5,9 +5,9 @@ declare(strict_types=1);
 use App\Modules\Lottery\Application\Services\LotteryScoringConfigReader;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Carbon;
 
 const LOTTERY_RESULT_READ_CONTRACT_KEYS = ['program_id', 'winners', 'reserves', 'ranks'];
 

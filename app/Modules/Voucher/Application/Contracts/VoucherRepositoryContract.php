@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Modules\Voucher\Application\Contracts;
 
 use App\Modules\Voucher\Domain\Models\Voucher;
+use App\Modules\Voucher\Domain\ValueObjects\EligibilityOutcomeId;
 use App\Modules\Voucher\Domain\ValueObjects\VoucherCode;
 use App\Modules\Voucher\Domain\ValueObjects\VoucherId;
-use App\Modules\Voucher\Domain\ValueObjects\EligibilityOutcomeId;
 
 interface VoucherRepositoryContract
 {

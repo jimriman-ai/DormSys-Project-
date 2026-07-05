@@ -19,7 +19,6 @@ use App\Modules\Request\Domain\States\ApprovedState;
 use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
 use App\Shared\ValueObjects\SystemActorId;
-use DateTimeImmutable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 

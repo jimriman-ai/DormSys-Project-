@@ -16,7 +16,6 @@ use App\Modules\Lottery\Domain\Models\LotteryRegistration;
 use App\Modules\Lottery\Domain\ValueObjects\EmployeeReferenceId;
 use App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId;
 use App\Modules\Lottery\Domain\ValueObjects\RequestReferenceId;
-use DateTimeImmutable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 

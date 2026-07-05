@@ -13,6 +13,8 @@ use App\Modules\Lottery\Domain\ValueObjects\LotteryRegistrationId;
 use App\Modules\Lottery\Domain\ValueObjects\RequestReferenceId;
 use App\Modules\Lottery\Infrastructure\Persistence\Models\LotteryRegistrationModel;
 use DateTimeImmutable;
+use Illuminate\Support\Carbon;
+
 class LotteryRegistrationRepository implements LotteryRegistrationRepositoryContract
 {
     public function save(LotteryRegistration $registration): LotteryRegistration
@@ -93,6 +95,6 @@ class LotteryRegistrationRepository implements LotteryRegistrationRepositoryCont
 
     private function toImmutable(\DateTimeInterface $value): DateTimeImmutable
     {
-        return \Illuminate\Support\Carbon::instance($value)->utc()->toDateTimeImmutable();
+        return Carbon::instance($value)->utc()->toDateTimeImmutable();
     }
 }

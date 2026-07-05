@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Modules\Request\Application;
 
-use App\Modules\Request\Application\Contracts\Internal\RequestEligibilityGatewayContract;
 use App\Modules\Request\Application\Contracts\DormitoryReadContract;
+use App\Modules\Request\Application\Contracts\Internal\RequestEligibilityGatewayContract;
 use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
 use App\Modules\Request\Domain\Entities\Request;

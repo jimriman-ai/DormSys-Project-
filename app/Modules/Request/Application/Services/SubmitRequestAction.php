@@ -14,7 +14,6 @@ use App\Modules\Request\Domain\Exceptions\RequestNotEligibleException;
 use App\Modules\Request\Domain\Exceptions\RequestNotFoundException;
 use App\Modules\Request\Domain\Exceptions\RequestValidationException;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
-use DateTimeImmutable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 

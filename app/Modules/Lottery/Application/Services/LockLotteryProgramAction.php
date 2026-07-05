@@ -19,7 +19,6 @@ use App\Modules\Lottery\Domain\Services\LotteryScoringEngine;
 use App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId;
 use App\Modules\Lottery\Domain\ValueObjects\ScoringConfig;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
-use DateTimeImmutable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 
