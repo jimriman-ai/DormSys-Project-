@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Lottery\Domain\States;
 
-use App\Modules\Lottery\Infrastructure\Persistence\Models\LotteryProgramModel;
 use Spatie\ModelStates\State;
 use Spatie\ModelStates\StateConfig;
 
-/**
- * @extends State<LotteryProgramModel>
- */
+/** @phpstan-extends State<\App\Modules\Lottery\Infrastructure\Persistence\Models\LotteryProgramModel> */
 abstract class LotteryProgramState extends State
 {
     public static function config(): StateConfig
