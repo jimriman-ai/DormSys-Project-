@@ -19,7 +19,11 @@ test('each module service provider is registered in bootstrap', function (): voi
 });
 
 test('each module service provider is bootable', function (): void {
-    foreach (architectureModuleServiceProviders() as $providerClass) {
+    $providerClasses = architectureModuleServiceProviders();
+
+    expect($providerClasses)->not->toBeEmpty();
+
+    foreach ($providerClasses as $providerClass) {
         $provider = app()->resolveProvider($providerClass);
 
         if (method_exists($provider, 'boot')) {
