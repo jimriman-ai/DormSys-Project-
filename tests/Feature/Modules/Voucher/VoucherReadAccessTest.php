@@ -65,12 +65,21 @@ it('allows employee to view active and historical vouchers with required metadat
     $projections = app(VoucherReadContract::class)->listForEmployee($employeeId);
 
     expect($projections)->toHaveCount(2);
-    expect($projections[0]->employeeId)->toBe($employeeId);
-    expect($projections[0]->code)->toMatch('/^[A-F0-9]{32}$/');
-    expect($projections[0]->dormitoryId)->toBe($dormitoryId);
-    expect($projections[0]->lifecycleState)->toBeIn(['issued', 'expired']);
-    expect($projections[0]->validityStart)->toBe('2026-09-01');
-    expect($projections[0]->validityEnd)->toBe('2026-09-30');
+
+    $activeProjections = array_values(array_filter(
+        $projections,
+        static fn ($projection): bool => $projection->validityStart === '2026-09-01',
+    ));
+
+    expect($activeProjections)->toHaveCount(1);
+
+    $activeProjection = $activeProjections[0];
+    expect($activeProjection->employeeId)->toBe($employeeId);
+    expect($activeProjection->code)->toMatch('/^[A-F0-9]{32}$/');
+    expect($activeProjection->dormitoryId)->toBe($dormitoryId);
+    expect($activeProjection->lifecycleState)->toBe(VoucherLifecycleState::Issued->value);
+    expect($activeProjection->validityStart)->toBe('2026-09-01');
+    expect($activeProjection->validityEnd)->toBe('2026-09-30');
 });
 
 it('filters employee vouchers by lifecycle state', function (): void {

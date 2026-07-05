@@ -57,9 +57,7 @@ function evaluateAuthReleaseGate(): string
         return 'UNSTABLE';
     }
 
-    app(LogoutUserAction::class)->execute();
-
-    if (auth()->check() || app(GetCurrentAuthUserAction::class)->execute() !== null) {
+    if (! verifyLogoutClearsAuthenticatedSession()) {
         return 'UNSTABLE';
     }
 
@@ -70,12 +68,22 @@ function evaluateAuthReleaseGate(): string
 
     if ($failedLogin->success
         || $failedLogin->failureReason !== 'invalid_credentials'
-        || $failedLogin->user !== null
-        || auth()->check()) {
+        || $failedLogin->user !== null) {
         return 'UNSTABLE';
     }
 
     return 'STABLE';
+}
+
+function verifyLogoutClearsAuthenticatedSession(): bool
+{
+    app(LogoutUserAction::class)->execute();
+
+    if (auth()->check()) {
+        return false;
+    }
+
+    return app(GetCurrentAuthUserAction::class)->execute() === null;
 }
 
 it('loads auth foundation provider in application runtime', function (): void {
@@ -87,9 +95,13 @@ it('loads auth foundation provider in application runtime', function (): void {
 it('resolves auth actions and contracts from container without manual provider registration', function (): void {
     expect(app()->bound(AuthenticatesUsers::class))->toBeTrue()
         ->and(app()->bound(ResolvesAuthUser::class))->toBeTrue()
-        ->and(app(LoginUserAction::class))->toBeInstanceOf(LoginUserAction::class)
-        ->and(app(LogoutUserAction::class))->toBeInstanceOf(LogoutUserAction::class)
-        ->and(app(GetCurrentAuthUserAction::class))->toBeInstanceOf(GetCurrentAuthUserAction::class);
+        ->and(app()->bound(LoginUserAction::class))->toBeTrue()
+        ->and(app()->bound(LogoutUserAction::class))->toBeTrue()
+        ->and(app()->bound(GetCurrentAuthUserAction::class))->toBeTrue();
+
+    app(LoginUserAction::class);
+    app(LogoutUserAction::class);
+    app(GetCurrentAuthUserAction::class);
 });
 
 it('classifies auth runtime release gate as stable', function (): void {

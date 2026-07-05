@@ -37,7 +37,8 @@ final class VoucherReadRepository implements VoucherReadRepositoryContract
     {
         $query = VoucherModel::query()
             ->where('employee_id', $employeeId)
-            ->orderByDesc('issued_at');
+            ->orderByDesc('issued_at')
+            ->orderByDesc('id');
 
         if ($lifecycleState !== null) {
             $query->where('lifecycle_state', $lifecycleState->value);

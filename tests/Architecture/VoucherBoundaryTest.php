@@ -67,6 +67,7 @@ arch('voucher infrastructure does not import request domain layers (R8)')
     ->not->toUse('App\Modules\Request\Domain\*');
 
 test('voucher trigger intake contract is bound', function (): void {
+    expect(app()->bound(VoucherTriggerIntakeContract::class))->toBeTrue();
     app(VoucherTriggerIntakeContract::class);
 });
 
