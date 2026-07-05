@@ -36,6 +36,21 @@ afterEach(function (): void {
     Carbon::setTestNow();
 });
 
+function pendingPortTestCheckInDate(): DateTimeImmutable
+{
+    return (new DateTimeImmutable('today', new DateTimeZone('UTC')))->modify('+1 week');
+}
+
+function pendingPortTestCheckOutDate(): DateTimeImmutable
+{
+    return (new DateTimeImmutable('today', new DateTimeZone('UTC')))->modify('+6 months');
+}
+
+function pendingPortTestLaterCheckInDate(): DateTimeImmutable
+{
+    return (new DateTimeImmutable('today', new DateTimeZone('UTC')))->modify('+2 weeks');
+}
+
 function createEmployeeForPendingPortTest(): Employee
 {
     $user = app(CreateUserAction::class)->execute(
@@ -62,8 +77,8 @@ it('returns true when a non-terminal request exists (BT-R08)', function (): void
     app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
         dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
-        checkInDate: new DateTimeImmutable('2026-07-01'),
-        checkOutDate: new DateTimeImmutable('2026-12-31'),
+        checkInDate: pendingPortTestCheckInDate(),
+        checkOutDate: pendingPortTestCheckOutDate(),
     );
 
     expect($port->hasPendingRequest(EmployeeId::fromString($employee->requireId()->value)))->toBeTrue();
@@ -77,8 +92,8 @@ it('returns false for terminal request statuses (BT-R08)', function (): void {
     $draft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
         dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
-        checkInDate: new DateTimeImmutable('2026-07-01'),
-        checkOutDate: new DateTimeImmutable('2026-12-31'),
+        checkInDate: pendingPortTestCheckInDate(),
+        checkOutDate: pendingPortTestCheckOutDate(),
     );
 
     $submitted = app(SubmitRequestAction::class)->execute($draft->requireId());
@@ -114,15 +129,15 @@ it('blocks submit when eligibility detects an existing pending request (CD-013)'
     app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
         dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
-        checkInDate: new DateTimeImmutable('2026-07-01'),
-        checkOutDate: new DateTimeImmutable('2026-12-31'),
+        checkInDate: pendingPortTestCheckInDate(),
+        checkOutDate: pendingPortTestCheckOutDate(),
     );
 
     $secondDraft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
         dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
-        checkInDate: new DateTimeImmutable('2026-08-01'),
-        checkOutDate: new DateTimeImmutable('2026-12-31'),
+        checkInDate: pendingPortTestLaterCheckInDate(),
+        checkOutDate: pendingPortTestCheckOutDate(),
     );
 
     expect(fn () => app(SubmitRequestAction::class)->execute($secondDraft->requireId()))
@@ -145,8 +160,8 @@ it('does not treat cancelled requests as pending (R-04)', function (): void {
     $draft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
         dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
-        checkInDate: new DateTimeImmutable('2026-07-01'),
-        checkOutDate: new DateTimeImmutable('2026-12-31'),
+        checkInDate: pendingPortTestCheckInDate(),
+        checkOutDate: pendingPortTestCheckOutDate(),
     );
 
     $cancelled = app(CancelRequestAction::class)->execute($draft->requireId());
