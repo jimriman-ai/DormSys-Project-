@@ -12,6 +12,7 @@ use App\Modules\Audit\Application\Contracts\AuditPrincipalContextPort;
 use App\Modules\Audit\Application\Contracts\AuditRecordingContract;
 use App\Modules\Audit\Application\Services\AuditEventTypeCatalog;
 use App\Modules\Audit\Application\Services\AuditHistoryReadService;
+use App\Modules\Audit\Application\Services\AuditRetentionSettingsReader;
 use App\Modules\Audit\Application\Services\PayloadHashCalculator;
 use App\Modules\Audit\Application\Services\QueryAuditHistoryAction;
 use App\Modules\Audit\Application\Services\RecordAuditAction;
