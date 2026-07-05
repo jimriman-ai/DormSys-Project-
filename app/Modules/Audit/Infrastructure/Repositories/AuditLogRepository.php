@@ -96,6 +96,14 @@ final class AuditLogRepository implements AuditLogRepositoryContract
                 });
             } elseif ($query->orderAscending) {
                 $builder->where('occurred_at', '>', $query->occurredFrom);
+            } elseif ($query->occurredFromExclusiveAuditLogId !== null) {
+                $builder->where(function ($queryBuilder) use ($query): void {
+                    $queryBuilder->where('occurred_at', '<', $query->occurredFrom)
+                        ->orWhere(function ($tieBreaker) use ($query): void {
+                            $tieBreaker->where('occurred_at', $query->occurredFrom)
+                                ->where('id', '<', $query->occurredFromExclusiveAuditLogId);
+                        });
+                });
             } else {
                 $builder->where('occurred_at', '>=', $query->occurredFrom);
             }

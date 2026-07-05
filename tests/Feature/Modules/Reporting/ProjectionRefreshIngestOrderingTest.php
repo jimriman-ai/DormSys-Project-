@@ -128,6 +128,56 @@ it('handles identical occurred_at values with deterministic id tie-breaker durin
     expect($secondBatch->items[0]->occurredAt->format(DateTimeInterface::ATOM))->toBe('2026-07-01T10:00:00+00:00');
 });
 
+it('handles identical occurred_at values with descending id tie-breaker cursor pagination', function (): void {
+    $entityId = UuidGenerator::uuid7();
+    $sharedOccurredAt = new DateTimeImmutable('2026-07-01T10:00:00+00:00');
+
+    app(AuditRecordingContract::class)->record(AuditEntryDto::fromArray([
+        'correlationId' => 'reporting:desc-cursor:'.UuidGenerator::uuid7(),
+        'eventType' => AuditEventType::RequestSubmitted->value,
+        'entityType' => 'request',
+        'entityId' => $entityId,
+        'actorType' => ActorType::User->value,
+        'actorId' => UuidGenerator::uuid7(),
+        'sourceContext' => 'request',
+        'occurredAt' => $sharedOccurredAt->format(DateTimeInterface::ATOM),
+    ]));
+    app(AuditRecordingContract::class)->record(AuditEntryDto::fromArray([
+        'correlationId' => 'reporting:desc-cursor:'.UuidGenerator::uuid7(),
+        'eventType' => AuditEventType::RequestSubmitted->value,
+        'entityType' => 'request',
+        'entityId' => $entityId,
+        'actorType' => ActorType::User->value,
+        'actorId' => UuidGenerator::uuid7(),
+        'sourceContext' => 'request',
+        'occurredAt' => $sharedOccurredAt->format(DateTimeInterface::ATOM),
+    ]));
+
+    $firstPage = app(AuditHistoryReadContract::class)->query(new AuditHistoryQuery(
+        entityType: 'request',
+        entityId: $entityId,
+        page: 1,
+        perPage: 1,
+    ));
+
+    expect($firstPage->items)->toHaveCount(1);
+
+    $cursorItem = $firstPage->items[0];
+
+    $secondPage = app(AuditHistoryReadContract::class)->query(new AuditHistoryQuery(
+        entityType: 'request',
+        entityId: $entityId,
+        occurredFrom: $cursorItem->occurredAt,
+        occurredFromExclusiveAuditLogId: $cursorItem->auditLogId,
+        page: 1,
+        perPage: 1,
+    ));
+
+    expect($secondPage->items)->toHaveCount(1);
+    expect($secondPage->items[0]->auditLogId)->not->toBe($cursorItem->auditLogId);
+    expect($secondPage->items[0]->occurredAt->format(DateTimeInterface::ATOM))->toBe('2026-07-01T10:00:00+00:00');
+});
+
 it('keeps default audit history reads in descending occurred_at order', function (): void {
     $entityId = UuidGenerator::uuid7();
 
