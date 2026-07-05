@@ -20,12 +20,11 @@ use App\Modules\Request\Presentation\Providers\RequestPresentationServiceProvide
 use App\Modules\Voucher\Infrastructure\Providers\VoucherServiceProvider;
 use App\Modules\Workflow\Infrastructure\Providers\WorkflowServiceProvider;
 use App\Providers\AppServiceProvider;
-use App\Providers\HorizonServiceProvider;
 use App\Providers\IntegrationServiceProvider;
+use Laravel\Horizon\HorizonApplicationServiceProvider;
 
-return [
+$providers = [
     AppServiceProvider::class,
-    HorizonServiceProvider::class,
     IdentityServiceProvider::class,
     IdentityPresentationServiceProvider::class,
     EmployeeServiceProvider::class,
@@ -45,3 +44,9 @@ return [
     ReportingPresentationServiceProvider::class,
     IntegrationServiceProvider::class,
 ];
+
+if (class_exists(HorizonApplicationServiceProvider::class)) {
+    $providers[] = App\Providers\HorizonServiceProvider::class;
+}
+
+return $providers;
