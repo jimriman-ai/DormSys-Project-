@@ -20,12 +20,14 @@ use App\Modules\Request\Presentation\Providers\RequestPresentationServiceProvide
 use App\Modules\Voucher\Infrastructure\Providers\VoucherServiceProvider;
 use App\Modules\Workflow\Infrastructure\Providers\WorkflowServiceProvider;
 use App\Providers\AppServiceProvider;
+use App\Providers\AuthFoundationServiceProvider;
 use App\Providers\HorizonServiceProvider;
 use App\Providers\IntegrationServiceProvider;
 use Laravel\Horizon\HorizonApplicationServiceProvider;
 
 $providers = [
     AppServiceProvider::class,
+    AuthFoundationServiceProvider::class,
     IdentityServiceProvider::class,
     IdentityPresentationServiceProvider::class,
     EmployeeServiceProvider::class,
