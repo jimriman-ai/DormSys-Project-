@@ -10,6 +10,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class ResolveAuditPrincipalMiddleware
 {
+    /**
+     * @param  Closure(Request): Response  $next
+     */
     public function handle(Request $request, Closure $next): Response
     {
         if (! $request->attributes->has('audit_principal_user_id')) {

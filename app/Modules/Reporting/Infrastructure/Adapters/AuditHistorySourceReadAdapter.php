@@ -67,6 +67,7 @@ final class AuditHistorySourceReadAdapter implements AuditHistorySourceReadPort
         ?DateTimeImmutable $occurredAfter,
         int $page,
         int $perPage,
+        ?string $occurredAfterAuditLogId = null,
     ): PaginatedAuditHistoryDto {
         return $this->auditHistoryRead->query(new AuditHistoryQuery(
             eventTypes: $this->eventTypeCatalog->allEventTypes(),
@@ -74,6 +75,8 @@ final class AuditHistorySourceReadAdapter implements AuditHistorySourceReadPort
             includeArchived: $includeArchived,
             page: $page,
             perPage: $perPage,
+            orderAscending: true,
+            occurredFromExclusiveAuditLogId: $occurredAfterAuditLogId,
         ));
     }
 

@@ -17,10 +17,16 @@ class LotteryExceptionsTest extends TestCase
     #[Test]
     public function it_instantiates_lottery_domain_exceptions(): void
     {
-        expect(new LotteryProgramNotFoundException('missing'))->toBeInstanceOf(LotteryProgramNotFoundException::class);
-        expect(new InvalidLotteryTransitionException('invalid'))->toBeInstanceOf(InvalidLotteryTransitionException::class);
-        expect(new RegistrationClosedException('closed'))->toBeInstanceOf(RegistrationClosedException::class);
-        expect(new DrawNotAllowedException('not allowed'))->toBeInstanceOf(DrawNotAllowedException::class);
-        expect(new DuplicateEnrollmentException('duplicate'))->toBeInstanceOf(DuplicateEnrollmentException::class);
+        $notFound = new LotteryProgramNotFoundException('missing');
+        $invalidTransition = new InvalidLotteryTransitionException('invalid');
+        $registrationClosed = new RegistrationClosedException('closed');
+        $drawNotAllowed = new DrawNotAllowedException('not allowed');
+        $duplicateEnrollment = new DuplicateEnrollmentException('duplicate');
+
+        expect($notFound->getMessage())->toBe('missing');
+        expect($invalidTransition->getMessage())->toBe('invalid');
+        expect($registrationClosed->getMessage())->toBe('closed');
+        expect($drawNotAllowed->getMessage())->toBe('not allowed');
+        expect($duplicateEnrollment->getMessage())->toBe('duplicate');
     }
 }

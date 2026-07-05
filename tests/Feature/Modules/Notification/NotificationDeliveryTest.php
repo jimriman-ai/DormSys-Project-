@@ -21,12 +21,13 @@ function registerActiveEmployees(string ...$employeeIds): void
 {
     app()->instance(
         EmployeeExistenceReadPort::class,
-        new InMemoryEmployeeExistenceReadAdapter($employeeIds),
+        new InMemoryEmployeeExistenceReadAdapter(array_values($employeeIds)),
     );
 }
 
 /**
  * @param  array<string, mixed>  $overrides
+ * @return array<string, mixed>
  */
 function notificationIntentPayload(string $employeeId, array $overrides = []): array
 {

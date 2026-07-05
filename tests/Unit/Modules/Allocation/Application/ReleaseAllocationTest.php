@@ -14,8 +14,8 @@ use App\Support\Exceptions\ValidationException;
 use DateTimeImmutable;
 use DateTimeZone;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Mockery;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\Support\MockeryTest;
 use Tests\TestCase;
 
 class ReleaseAllocationTest extends TestCase
@@ -90,9 +90,8 @@ class ReleaseAllocationTest extends TestCase
             end: new DateTimeImmutable('2026-11-30', new DateTimeZone('UTC')),
         );
 
-        $repository = Mockery::mock(AllocationRepositoryContract::class);
-        $repository->shouldReceive('findById')
-            ->once()
+        $repository = MockeryTest::mock(AllocationRepositoryContract::class);
+        MockeryTest::expectOnce($repository, 'findById')
             ->andReturn($allocation);
         $repository->shouldNotReceive('save');
 

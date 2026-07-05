@@ -6,11 +6,13 @@ use App\Modules\Allocation\Application\Services\CreateAllocationFromRequestActio
 use App\Modules\Allocation\Domain\Enums\AllocationMethod;
 use App\Modules\Allocation\Domain\Enums\AllocationStatus;
 use App\Modules\Employee\Application\Services\CreateEmployeeAction;
+use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Request\Application\Services\ApproveRequestStageAction;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
+use App\Modules\Request\Domain\Entities\Request;
 use App\Modules\Request\Domain\States\ApprovedState;
 use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
@@ -30,6 +32,9 @@ afterEach(function (): void {
     Carbon::setTestNow();
 });
 
+/**
+ * @return array{0: Employee, 1: Request, 2: string}
+ */
 function createApprovedPersonalRequestForAllocationTest(): array
 {
     $user = app(CreateUserAction::class)->execute(

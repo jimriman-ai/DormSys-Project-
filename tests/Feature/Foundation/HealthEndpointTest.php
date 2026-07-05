@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Foundation;
 
+use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
-use Mockery;
 use PDO;
+use Tests\Support\MockeryTest;
 use Tests\TestCase;
 
 class HealthEndpointTest extends TestCase
@@ -95,10 +96,9 @@ class HealthEndpointTest extends TestCase
 
     private function mockHealthyDatabase(): void
     {
-        $pdo = Mockery::mock(PDO::class);
-        $databaseConnection = Mockery::mock();
-        /** @phpstan-ignore method.notFound */
-        $databaseConnection->shouldReceive('getPdo')->andReturn($pdo);
+        $pdo = MockeryTest::mock(PDO::class);
+        $databaseConnection = MockeryTest::mock(Connection::class);
+        MockeryTest::expect($databaseConnection, 'getPdo')->andReturn($pdo);
 
         DB::shouldReceive('connection')->andReturn($databaseConnection);
     }

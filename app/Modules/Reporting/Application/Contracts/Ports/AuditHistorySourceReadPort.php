@@ -42,6 +42,7 @@ interface AuditHistorySourceReadPort
         ?DateTimeImmutable $occurredAfter,
         int $page,
         int $perPage,
+        ?string $occurredAfterAuditLogId = null,
     ): PaginatedAuditHistoryDto;
 
     /**

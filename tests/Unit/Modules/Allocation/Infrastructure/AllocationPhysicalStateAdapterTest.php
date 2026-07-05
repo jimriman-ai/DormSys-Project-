@@ -7,8 +7,8 @@ namespace Tests\Unit\Modules\Allocation\Infrastructure;
 use App\Modules\Allocation\Application\Contracts\Ports\PhysicalStateSignalPort;
 use App\Modules\Allocation\Infrastructure\Adapters\AllocationPhysicalStateAdapter;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
-use Mockery;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\Support\MockeryTest;
 use Tests\TestCase;
 
 class AllocationPhysicalStateAdapterTest extends TestCase
@@ -19,9 +19,9 @@ class AllocationPhysicalStateAdapterTest extends TestCase
         $bedId = UuidGenerator::uuid7();
         $signalReferenceId = UuidGenerator::uuid7();
 
-        $port = Mockery::mock(PhysicalStateSignalPort::class);
-        $port->shouldReceive('reserveBed')->once()->with($bedId, $signalReferenceId);
-        $port->shouldReceive('occupyBed')->once()->with($bedId, $signalReferenceId);
+        $port = MockeryTest::mock(PhysicalStateSignalPort::class);
+        MockeryTest::expectOnce($port, 'reserveBed')->with($bedId, $signalReferenceId);
+        MockeryTest::expectOnce($port, 'occupyBed')->with($bedId, $signalReferenceId);
         $port->shouldNotReceive('releaseBed');
 
         $adapter = new AllocationPhysicalStateAdapter($port);
@@ -34,8 +34,8 @@ class AllocationPhysicalStateAdapterTest extends TestCase
         $bedId = UuidGenerator::uuid7();
         $signalReferenceId = UuidGenerator::uuid7();
 
-        $port = Mockery::mock(PhysicalStateSignalPort::class);
-        $port->shouldReceive('releaseBed')->once()->with($bedId, $signalReferenceId);
+        $port = MockeryTest::mock(PhysicalStateSignalPort::class);
+        MockeryTest::expectOnce($port, 'releaseBed')->with($bedId, $signalReferenceId);
         $port->shouldNotReceive('reserveBed');
         $port->shouldNotReceive('occupyBed');
 

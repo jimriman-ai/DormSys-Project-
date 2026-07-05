@@ -36,8 +36,10 @@ it('persists a draft request with draft status', function (): void {
     expect($saved->status)->toBe(DraftState::$name);
 
     $reloaded = app(RequestRepositoryContract::class)->findById($saved->requireId());
+    if (! $reloaded instanceof Request) {
+        throw new UnexpectedValueException('Expected reloaded request.');
+    }
 
-    expect($reloaded)->not->toBeNull();
     expect($reloaded->code->equals($code))->toBeTrue();
     expect($reloaded->status)->toBe(DraftState::$name);
 });

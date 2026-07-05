@@ -36,6 +36,10 @@ beforeEach(function (): void {
     request()->attributes->set('audit_principal_user_id', $model->id);
 });
 
+/**
+ * @param  array<string, mixed>  $overrides
+ * @return array{correlationId: string, actorType: string, actorId: string}
+ */
 function seedProjectionBackedAuditEntry(array $overrides = []): array
 {
     $correlationId = $overrides['correlationId'] ?? 'reporting:projection:'.UuidGenerator::uuid7();

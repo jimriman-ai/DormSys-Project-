@@ -127,7 +127,12 @@ it('archives idempotently when the job runs more than once', function (): void {
     $secondArchivedAt = AuditLogModel::query()->findOrFail($auditLog->id)->archived_at;
 
     expect($firstArchivedAt)->not->toBeNull();
-    expect($secondArchivedAt?->equalTo($firstArchivedAt))->toBeTrue();
+    expect($secondArchivedAt)->not->toBeNull();
+    if ($firstArchivedAt === null || $secondArchivedAt === null) {
+        throw new UnexpectedValueException('Expected archived timestamps.');
+    }
+
+    expect($secondArchivedAt->equalTo($firstArchivedAt))->toBeTrue();
 });
 
 it('keeps activity bridge disabled by default', function (): void {

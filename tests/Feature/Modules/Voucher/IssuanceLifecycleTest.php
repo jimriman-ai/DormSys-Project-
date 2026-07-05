@@ -14,6 +14,7 @@ use App\Modules\Voucher\Domain\Enums\AccommodationClassification;
 use App\Modules\Voucher\Domain\Enums\TriggerSource;
 use App\Modules\Voucher\Domain\Enums\VoucherLifecycleState;
 use App\Modules\Voucher\Domain\Exceptions\VoucherReissuanceRejectedException;
+use App\Modules\Voucher\Domain\Models\Voucher;
 use App\Modules\Voucher\Domain\Services\VoucherCodeGenerator;
 use App\Modules\Voucher\Domain\ValueObjects\VoucherCode;
 use App\Modules\Voucher\Infrastructure\Adapters\InMemoryAccommodationClassificationReadAdapter;
@@ -31,7 +32,7 @@ function issueEligibleVoucher(
     string $stayStart = '2026-09-01',
     string $stayEnd = '2026-09-30',
     TriggerSource $source = TriggerSource::Lottery,
-): object {
+): Voucher {
     app()->instance(
         AccommodationClassificationReadPort::class,
         new InMemoryAccommodationClassificationReadAdapter([

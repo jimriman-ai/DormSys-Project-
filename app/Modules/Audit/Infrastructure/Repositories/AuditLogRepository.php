@@ -59,7 +59,13 @@ final class AuditLogRepository implements AuditLogRepositoryContract
 
     public function queryHistory(AuditHistoryQuery $query): PaginatedAuditHistoryDto
     {
-        $builder = AuditLogModel::query()->orderByDesc('occurred_at');
+        $builder = AuditLogModel::query();
+
+        if ($query->orderAscending) {
+            $builder->orderBy('occurred_at')->orderBy('id');
+        } else {
+            $builder->orderByDesc('occurred_at')->orderByDesc('id');
+        }
 
         if (! $query->includeArchived) {
             $builder->whereNull('archived_at');
@@ -80,7 +86,19 @@ final class AuditLogRepository implements AuditLogRepositoryContract
         }
 
         if ($query->occurredFrom !== null) {
-            $builder->where('occurred_at', '>=', $query->occurredFrom);
+            if ($query->orderAscending && $query->occurredFromExclusiveAuditLogId !== null) {
+                $builder->where(function ($queryBuilder) use ($query): void {
+                    $queryBuilder->where('occurred_at', '>', $query->occurredFrom)
+                        ->orWhere(function ($tieBreaker) use ($query): void {
+                            $tieBreaker->where('occurred_at', $query->occurredFrom)
+                                ->where('id', '>', $query->occurredFromExclusiveAuditLogId);
+                        });
+                });
+            } elseif ($query->orderAscending) {
+                $builder->where('occurred_at', '>', $query->occurredFrom);
+            } else {
+                $builder->where('occurred_at', '>=', $query->occurredFrom);
+            }
         }
 
         if ($query->occurredTo !== null) {

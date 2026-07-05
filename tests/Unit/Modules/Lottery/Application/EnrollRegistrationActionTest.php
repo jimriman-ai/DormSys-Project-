@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\Support\MockeryTest;
 use Tests\TestCase;
 
 class EnrollRegistrationActionTest extends TestCase
@@ -85,14 +86,13 @@ class EnrollRegistrationActionTest extends TestCase
             status: RegistrationClosedState::$name,
         );
 
-        $programs = Mockery::mock(LotteryProgramRepositoryContract::class);
-        $programs->shouldReceive('findById')->once()->with($programId)->andReturn($openProgram);
-        $programs->shouldReceive('findByIdForUpdate')->once()->with($programId)->andReturn($closedProgram);
+        $programs = MockeryTest::mock(LotteryProgramRepositoryContract::class);
+        MockeryTest::expectOnce($programs, 'findById')->with($programId)->andReturn($openProgram);
+        MockeryTest::expectOnce($programs, 'findByIdForUpdate')->with($programId)->andReturn($closedProgram);
         $this->app->instance(LotteryProgramRepositoryContract::class, $programs);
 
-        $requests = Mockery::mock(LotteryRequestReadPort::class);
-        $requests->shouldReceive('findApprovedLotteryRegistration')
-            ->once()
+        $requests = MockeryTest::mock(LotteryRequestReadPort::class);
+        MockeryTest::expectOnce($requests, 'findApprovedLotteryRegistration')
             ->with($requestId)
             ->andReturn(new ApprovedLotteryRequestDTO(
                 requestId: $requestId->value,
@@ -101,7 +101,7 @@ class EnrollRegistrationActionTest extends TestCase
             ));
         $this->app->instance(LotteryRequestReadPort::class, $requests);
 
-        $registrations = Mockery::mock(LotteryRegistrationRepositoryContract::class);
+        $registrations = MockeryTest::mock(LotteryRegistrationRepositoryContract::class);
         $registrations->shouldNotReceive('save');
         $this->app->instance(LotteryRegistrationRepositoryContract::class, $registrations);
 
@@ -126,14 +126,13 @@ class EnrollRegistrationActionTest extends TestCase
             enrolledAt: new DateTimeImmutable('2026-06-30', new DateTimeZone('UTC')),
         );
 
-        $programs = Mockery::mock(LotteryProgramRepositoryContract::class);
-        $programs->shouldReceive('findById')->once()->with($programId)->andReturn($program);
-        $programs->shouldReceive('findByIdForUpdate')->once()->with($programId)->andReturn($program);
+        $programs = MockeryTest::mock(LotteryProgramRepositoryContract::class);
+        MockeryTest::expectOnce($programs, 'findById')->with($programId)->andReturn($program);
+        MockeryTest::expectOnce($programs, 'findByIdForUpdate')->with($programId)->andReturn($program);
         $this->app->instance(LotteryProgramRepositoryContract::class, $programs);
 
-        $requests = Mockery::mock(LotteryRequestReadPort::class);
-        $requests->shouldReceive('findApprovedLotteryRegistration')
-            ->once()
+        $requests = MockeryTest::mock(LotteryRequestReadPort::class);
+        MockeryTest::expectOnce($requests, 'findApprovedLotteryRegistration')
             ->with($requestId)
             ->andReturn(new ApprovedLotteryRequestDTO(
                 requestId: $requestId->value,
@@ -142,9 +141,8 @@ class EnrollRegistrationActionTest extends TestCase
             ));
         $this->app->instance(LotteryRequestReadPort::class, $requests);
 
-        $registrations = Mockery::mock(LotteryRegistrationRepositoryContract::class);
-        $registrations->shouldReceive('findByProgramAndRequest')
-            ->once()
+        $registrations = MockeryTest::mock(LotteryRegistrationRepositoryContract::class);
+        MockeryTest::expectOnce($registrations, 'findByProgramAndRequest')
             ->with($programId, $requestId)
             ->andReturn($existing);
         $registrations->shouldNotReceive('save');
@@ -165,9 +163,8 @@ class EnrollRegistrationActionTest extends TestCase
         $program = $this->openProgram($programId, $dormitoryId);
         $this->mockProgramRepository($program);
 
-        $requests = Mockery::mock(LotteryRequestReadPort::class);
-        $requests->shouldReceive('findApprovedLotteryRegistration')
-            ->once()
+        $requests = MockeryTest::mock(LotteryRequestReadPort::class);
+        MockeryTest::expectOnce($requests, 'findApprovedLotteryRegistration')
             ->with($requestId)
             ->andReturn(null);
         $this->app->instance(LotteryRequestReadPort::class, $requests);
@@ -187,9 +184,8 @@ class EnrollRegistrationActionTest extends TestCase
         $program = $this->openProgram($programId, $dormitoryId);
         $this->mockProgramRepository($program);
 
-        $requests = Mockery::mock(LotteryRequestReadPort::class);
-        $requests->shouldReceive('findApprovedLotteryRegistration')
-            ->once()
+        $requests = MockeryTest::mock(LotteryRequestReadPort::class);
+        MockeryTest::expectOnce($requests, 'findApprovedLotteryRegistration')
             ->with($requestId)
             ->andReturn(new ApprovedLotteryRequestDTO(
                 requestId: $requestId->value,
@@ -216,9 +212,8 @@ class EnrollRegistrationActionTest extends TestCase
         $program = $this->openProgram($programId, $dormitoryId);
         $this->mockProgramRepository($program, forUpdate: true);
 
-        $requests = Mockery::mock(LotteryRequestReadPort::class);
-        $requests->shouldReceive('findApprovedLotteryRegistration')
-            ->once()
+        $requests = MockeryTest::mock(LotteryRequestReadPort::class);
+        MockeryTest::expectOnce($requests, 'findApprovedLotteryRegistration')
             ->with($requestId)
             ->andReturn(new ApprovedLotteryRequestDTO(
                 requestId: $requestId->value,
@@ -236,12 +231,11 @@ class EnrollRegistrationActionTest extends TestCase
             enrolledAt: new DateTimeImmutable('2026-06-30', new DateTimeZone('UTC')),
         );
 
-        $registrations = Mockery::mock(LotteryRegistrationRepositoryContract::class);
-        $registrations->shouldReceive('findByProgramAndRequest')
-            ->once()
+        $registrations = MockeryTest::mock(LotteryRegistrationRepositoryContract::class);
+        MockeryTest::expectOnce($registrations, 'findByProgramAndRequest')
             ->with($programId, $requestId)
             ->andReturn(null);
-        $registrations->shouldReceive('save')->once()->andReturn($persisted);
+        MockeryTest::expectOnce($registrations, 'save')->andReturn($persisted);
         $this->app->instance(LotteryRegistrationRepositoryContract::class, $registrations);
 
         $result = app(EnrollRegistrationAction::class)->execute($programId, $requestId);
@@ -272,27 +266,18 @@ class EnrollRegistrationActionTest extends TestCase
 
     private function mockProgramRepository(LotteryProgram $program, bool $forUpdate = false): void
     {
-        $programs = Mockery::mock(LotteryProgramRepositoryContract::class);
-        $programs->shouldReceive('findById')
-            ->once()
+        $programs = MockeryTest::mock(LotteryProgramRepositoryContract::class);
+        MockeryTest::expectOnce($programs, 'findById')
             ->with($program->requireId())
             ->andReturn($program);
 
         if ($forUpdate) {
-            $programs->shouldReceive('findByIdForUpdate')
-                ->once()
+            MockeryTest::expectOnce($programs, 'findByIdForUpdate')
                 ->with($program->requireId())
                 ->andReturn($program);
         }
 
         $this->app->instance(LotteryProgramRepositoryContract::class, $programs);
-    }
-
-    private function mockRegistrationRepository(?LotteryRegistration $existing): void
-    {
-        $registrations = Mockery::mock(LotteryRegistrationRepositoryContract::class);
-        $registrations->shouldReceive('findByProgramAndRequest')->andReturn($existing);
-        $this->app->instance(LotteryRegistrationRepositoryContract::class, $registrations);
     }
 
     protected function tearDown(): void

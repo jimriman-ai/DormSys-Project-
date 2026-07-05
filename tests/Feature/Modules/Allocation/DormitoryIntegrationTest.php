@@ -14,6 +14,7 @@ use App\Modules\Allocation\Infrastructure\Adapters\DormitoryReadAdapter;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
+use Tests\Support\MockeryTest;
 
 uses(RefreshDatabase::class);
 
@@ -23,10 +24,10 @@ it('emits integration events and physical state signals on assign and release', 
     $bedId = UuidGenerator::uuid7();
     $personId = UuidGenerator::uuid7();
 
-    $port = Mockery::mock(PhysicalStateSignalPort::class);
-    $port->shouldReceive('reserveBed')->once();
-    $port->shouldReceive('occupyBed')->once();
-    $port->shouldReceive('releaseBed')->once();
+    $port = MockeryTest::mock(PhysicalStateSignalPort::class);
+    MockeryTest::expectOnce($port, 'reserveBed');
+    MockeryTest::expectOnce($port, 'occupyBed');
+    MockeryTest::expectOnce($port, 'releaseBed');
 
     app()->instance(PhysicalStateSignalPort::class, $port);
     app()->forgetInstance(AllocationPhysicalStateAdapter::class);
@@ -54,9 +55,8 @@ it('rejects allocation when bed is not assignable', function (): void {
     $bedId = UuidGenerator::uuid7();
     $personId = UuidGenerator::uuid7();
 
-    $dormitory = Mockery::mock(DormitoryReadPort::class);
-    $dormitory->shouldReceive('isBedAssignable')
-        ->once()
+    $dormitory = MockeryTest::mock(DormitoryReadPort::class);
+    MockeryTest::expectOnce($dormitory, 'isBedAssignable')
         ->with($bedId)
         ->andReturn(false);
 

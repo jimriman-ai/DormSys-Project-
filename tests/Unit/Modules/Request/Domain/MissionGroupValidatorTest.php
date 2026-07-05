@@ -11,8 +11,6 @@ it('accepts a valid three-member mission group', function (): void {
         ['employeeId' => '22222222-2222-4222-8222-222222222222', 'isLeader' => false],
         ['employeeId' => '33333333-3333-4333-8333-333333333333', 'isLeader' => false],
     ]);
-
-    expect(true)->toBeTrue();
 });
 
 it('rejects mission groups outside the 2-20 member range', function (int $count): void {

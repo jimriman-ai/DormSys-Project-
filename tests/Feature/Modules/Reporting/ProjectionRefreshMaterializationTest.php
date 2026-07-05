@@ -11,6 +11,7 @@ use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Modules\Reporting\Application\Contracts\Ports\ProjectionRefreshMaterializerPort;
 use App\Modules\Reporting\Application\Contracts\Ports\ProjectionRefreshRunnerPort;
+use App\Modules\Reporting\Application\DTOs\ProjectionCursorDto;
 use App\Modules\Reporting\Application\DTOs\ProjectionRefreshRequestDto;
 use App\Modules\Reporting\Application\Services\ProjectionRefreshMaterializerRegistry;
 use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
@@ -38,6 +39,9 @@ beforeEach(function (): void {
     request()->attributes->set('audit_principal_user_id', $model->id);
 });
 
+/**
+ * @param  array<string, mixed>  $overrides
+ */
 function seedMaterializationAuditEntry(array $overrides = []): void
 {
     app(AuditRecordingContract::class)->record(AuditEntryDto::fromArray(array_merge([
@@ -121,7 +125,9 @@ it('keeps repeated correlation batch processing idempotent', function (): void {
         ProjectionFamily::Correlation,
         ArchiveVisibilityTier::ActiveOnly,
     );
-    expect($cursor)->not->toBeNull();
+    if (! $cursor instanceof ProjectionCursorDto) {
+        throw new UnexpectedValueException('Expected projection cursor.');
+    }
 
     $countAfterFirst = CorrelationProjectionEntryModel::query()->count();
     expect($countAfterFirst)->toBeGreaterThan(0);

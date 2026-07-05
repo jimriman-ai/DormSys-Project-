@@ -14,6 +14,7 @@ use App\Modules\Voucher\Application\Services\VoucherReadService;
 use App\Modules\Voucher\Domain\Enums\AccommodationClassification;
 use App\Modules\Voucher\Domain\Enums\TriggerSource;
 use App\Modules\Voucher\Domain\Enums\VoucherLifecycleState;
+use App\Modules\Voucher\Domain\Models\Voucher;
 use App\Modules\Voucher\Infrastructure\Adapters\InMemoryAccommodationClassificationReadAdapter;
 use App\Modules\Voucher\Infrastructure\Persistence\Models\VoucherModel;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
@@ -28,7 +29,7 @@ function issueVoucherForReadAccess(
     string $dormitoryId,
     string $stayStart = '2026-09-01',
     string $stayEnd = '2026-09-30',
-): object {
+): Voucher {
     app()->instance(
         AccommodationClassificationReadPort::class,
         new InMemoryAccommodationClassificationReadAdapter([
@@ -138,7 +139,11 @@ it('does not mutate voucher lifecycle state during inquiry paths', function (): 
 
     expect($after->lifecycle_state)->toBe($before->lifecycle_state);
     expect($after->code)->toBe($before->code);
-    expect($after->updated_at?->eq($before->updated_at))->toBeTrue();
+    if ($after->updated_at === null || $before->updated_at === null) {
+        throw new UnexpectedValueException('Expected voucher timestamps.');
+    }
+
+    expect($after->updated_at->equalTo($before->updated_at))->toBeTrue();
 });
 
 it('rejects invalid lifecycle state filters', function (): void {
@@ -153,6 +158,11 @@ it('uses a read-only service without lifecycle or issuance command dependencies'
     $parameters = $constructor?->getParameters() ?? [];
 
     expect($parameters)->toHaveCount(1);
-    expect($parameters[0]->getType()?->getName())
-        ->toBe(VoucherReadRepositoryContract::class);
+
+    $parameterType = $parameters[0]->getType();
+    if (! $parameterType instanceof ReflectionNamedType) {
+        throw new UnexpectedValueException('Expected voucher read repository parameter type.');
+    }
+
+    expect($parameterType->getName())->toBe(VoucherReadRepositoryContract::class);
 });

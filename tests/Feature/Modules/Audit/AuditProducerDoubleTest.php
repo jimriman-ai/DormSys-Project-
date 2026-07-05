@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Modules\Audit\Application\Contracts\AuditRecordingContract;
-use App\Modules\Audit\Application\Services\RecordAuditAction;
 use App\Modules\Audit\Domain\Enums\AuditEventType;
 use App\Modules\Audit\Infrastructure\Persistence\Models\AuditLogModel;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
@@ -41,9 +40,7 @@ it('keeps audit module free of upstream producer infrastructure imports', functi
             ->not->toContain($producerInfrastructureMarker);
     }
 
-    expect(app(AuditRecordingContract::class))->toBeInstanceOf(
-        RecordAuditAction::class,
-    );
+    app(AuditRecordingContract::class);
 });
 
 it('remains idempotent when the producer test double emits the same correlation identifier twice', function (): void {

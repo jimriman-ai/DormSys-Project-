@@ -33,16 +33,28 @@ arch('request module does not import lottery infrastructure (BT-R05)')
     ->expect('App\Modules\Request')
     ->not->toUse('App\Modules\Lottery\Infrastructure\*');
 
-arch('request application imports employee only through application contracts (BT-R05)')
+arch('request application does not import employee domain (BT-R05)')
     ->expect('App\Modules\Request\Application')
-    ->not->toUse('App\Modules\Employee\Domain')
+    ->not->toUse('App\Modules\Employee\Domain');
+
+arch('request application does not import employee infrastructure (BT-R05)')
+    ->expect('App\Modules\Request\Application')
     ->not->toUse('App\Modules\Employee\Infrastructure');
 
-arch('request domain does not import foreign modules (BT-R05)')
+arch('request domain does not import employee modules (BT-R05)')
     ->expect('App\Modules\Request\Domain')
-    ->not->toUse('App\Modules\Employee\*')
-    ->not->toUse('App\Modules\Dormitory\*')
-    ->not->toUse('App\Modules\Allocation\*')
+    ->not->toUse('App\Modules\Employee\*');
+
+arch('request domain does not import dormitory modules (BT-R05)')
+    ->expect('App\Modules\Request\Domain')
+    ->not->toUse('App\Modules\Dormitory\*');
+
+arch('request domain does not import allocation modules (BT-R05)')
+    ->expect('App\Modules\Request\Domain')
+    ->not->toUse('App\Modules\Allocation\*');
+
+arch('request domain does not import lottery modules (BT-R05)')
+    ->expect('App\Modules\Request\Domain')
     ->not->toUse('App\Modules\Lottery\*');
 
 test('pending request read adapter implements only the employee read port (BT-R09 / OA-05-09)', function (): void {

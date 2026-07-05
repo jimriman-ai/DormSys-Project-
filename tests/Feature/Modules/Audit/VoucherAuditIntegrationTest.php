@@ -13,6 +13,7 @@ use App\Modules\Voucher\Application\DTOs\InboundTriggerFactsDto;
 use App\Modules\Voucher\Domain\Enums\AccommodationClassification;
 use App\Modules\Voucher\Domain\Enums\TriggerSource;
 use App\Modules\Voucher\Domain\Enums\VoucherLifecycleState;
+use App\Modules\Voucher\Domain\Models\Voucher;
 use App\Modules\Voucher\Infrastructure\Adapters\InMemoryAccommodationClassificationReadAdapter;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -23,7 +24,7 @@ beforeEach(function (): void {
     config(['audit.sync_in_tests' => true]);
 });
 
-function issueVoucherForAuditTest(string $correlationId, TriggerSource $source = TriggerSource::Lottery): object
+function issueVoucherForAuditTest(string $correlationId, TriggerSource $source = TriggerSource::Lottery): Voucher
 {
     $employeeId = UuidGenerator::uuid7();
     $dormitoryId = UuidGenerator::uuid7();
@@ -69,13 +70,19 @@ it('records voucher issued audit entry from lifecycle transition adapter', funct
         ->first();
 
     expect($entry)->not->toBeNull();
+    $entry = $entry ?? throw new RuntimeException('Voucher issued audit entry not found');
     expect($entry->source_context)->toBe('voucher');
     expect($entry->actor_type)->toBe(ActorType::System);
     expect($entry->actor_id)->toBe('system:lottery_draw');
     expect($entry->correlation_id)->toBe('voucher:voucher:'.$voucherId.':voucher.issued:issued');
     expect($entry->new_values)->toBe(['lifecycle_state' => VoucherLifecycleState::Issued->value]);
-    expect($entry->metadata['employee_id'])->toBe($voucher->employeeId);
-    expect($entry->metadata['upstream_source'])->toBe(TriggerSource::Lottery->value);
+    $metadata = $entry->metadata;
+    expect($metadata)->not->toBeNull();
+    $metadata = $metadata ?? throw new RuntimeException('Voucher issued audit metadata not found');
+    expect($metadata)->toHaveKey('employee_id');
+    expect($metadata)->toHaveKey('upstream_source');
+    expect($metadata['employee_id'])->toBe($voucher->employeeId);
+    expect($metadata['upstream_source'])->toBe(TriggerSource::Lottery->value);
 });
 
 it('maps allocation upstream source to reserve promotion system actor', function (): void {
@@ -88,6 +95,11 @@ it('maps allocation upstream source to reserve promotion system actor', function
         ->first();
 
     expect($entry)->not->toBeNull();
+    $entry = $entry ?? throw new RuntimeException('Voucher issued audit entry not found');
     expect($entry->actor_id)->toBe('system:reserve_promotion');
-    expect($entry->metadata['upstream_source'])->toBe(TriggerSource::Allocation->value);
+    $metadata = $entry->metadata;
+    expect($metadata)->not->toBeNull();
+    $metadata = $metadata ?? throw new RuntimeException('Voucher issued audit metadata not found');
+    expect($metadata)->toHaveKey('upstream_source');
+    expect($metadata['upstream_source'])->toBe(TriggerSource::Allocation->value);
 });

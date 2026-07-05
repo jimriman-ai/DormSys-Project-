@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\Support\MockeryTest;
 use Tests\TestCase;
 
 class ExecuteDrawActionTest extends TestCase
@@ -47,12 +48,12 @@ class ExecuteDrawActionTest extends TestCase
         $programId = LotteryProgramId::fromString(UuidGenerator::uuid7());
         $program = $this->lockedProgram($programId, RegistrationOpenState::$name);
 
-        $programs = Mockery::mock(LotteryProgramRepositoryContract::class);
-        $programs->shouldReceive('findById')->once()->with($programId)->andReturn($program);
+        $programs = MockeryTest::mock(LotteryProgramRepositoryContract::class);
+        MockeryTest::expectOnce($programs, 'findById')->with($programId)->andReturn($program);
         $this->app->instance(LotteryProgramRepositoryContract::class, $programs);
 
-        $results = Mockery::mock(LotteryResultRepositoryContract::class);
-        $results->shouldReceive('existsForProgram')->once()->with($programId)->andReturn(false);
+        $results = MockeryTest::mock(LotteryResultRepositoryContract::class);
+        MockeryTest::expectOnce($results, 'existsForProgram')->with($programId)->andReturn(false);
         $this->app->instance(LotteryResultRepositoryContract::class, $results);
 
         $this->expectException(DrawNotAllowedException::class);
@@ -68,20 +69,20 @@ class ExecuteDrawActionTest extends TestCase
         $programId = LotteryProgramId::fromString(UuidGenerator::uuid7());
         $completed = $this->lockedProgram($programId, CompletedState::$name);
 
-        $programs = Mockery::mock(LotteryProgramRepositoryContract::class);
-        $programs->shouldReceive('findById')->twice()->with($programId)->andReturn($completed);
+        $programs = MockeryTest::mock(LotteryProgramRepositoryContract::class);
+        MockeryTest::expect($programs, 'findById')->twice()->with($programId)->andReturn($completed);
         $this->app->instance(LotteryProgramRepositoryContract::class, $programs);
 
-        $results = Mockery::mock(LotteryResultRepositoryContract::class);
-        $results->shouldReceive('existsForProgram')->once()->with($programId)->andReturn(true);
+        $results = MockeryTest::mock(LotteryResultRepositoryContract::class);
+        MockeryTest::expectOnce($results, 'existsForProgram')->with($programId)->andReturn(true);
         $results->shouldNotReceive('save');
         $this->app->instance(LotteryResultRepositoryContract::class, $results);
 
-        $snapshots = Mockery::mock(LotteryEligibleSnapshotRepositoryContract::class);
+        $snapshots = MockeryTest::mock(LotteryEligibleSnapshotRepositoryContract::class);
         $snapshots->shouldNotReceive('findByProgramId');
         $this->app->instance(LotteryEligibleSnapshotRepositoryContract::class, $snapshots);
 
-        $allocations = Mockery::mock(ProposedAllocationPort::class);
+        $allocations = MockeryTest::mock(ProposedAllocationPort::class);
         $allocations->shouldNotReceive('emitProposedAllocations');
         $this->app->instance(ProposedAllocationPort::class, $allocations);
 
@@ -123,16 +124,16 @@ class ExecuteDrawActionTest extends TestCase
             scoringConfig: new ScoringConfig('1.0.0', 1.0, 0.05, 100.0, 1.0),
         );
 
-        $programs = Mockery::mock(LotteryProgramRepositoryContract::class);
-        $programs->shouldReceive('findById')->once()->with($programId)->andReturn($program);
-        $programs->shouldReceive('save')->twice()->andReturnUsing(
+        $programs = MockeryTest::mock(LotteryProgramRepositoryContract::class);
+        MockeryTest::expectOnce($programs, 'findById')->with($programId)->andReturn($program);
+        MockeryTest::expect($programs, 'save')->twice()->andReturnUsing(
             static fn (LotteryProgram $saved): LotteryProgram => $saved,
         );
         $this->app->instance(LotteryProgramRepositoryContract::class, $programs);
 
-        $results = Mockery::mock(LotteryResultRepositoryContract::class);
-        $results->shouldReceive('existsForProgram')->twice()->with($programId)->andReturn(false);
-        $results->shouldReceive('save')->twice()->andReturnUsing(
+        $results = MockeryTest::mock(LotteryResultRepositoryContract::class);
+        MockeryTest::expect($results, 'existsForProgram')->twice()->with($programId)->andReturn(false);
+        MockeryTest::expect($results, 'save')->twice()->andReturnUsing(
             static fn (LotteryResult $result): LotteryResult => new LotteryResult(
                 id: LotteryResultId::fromString(UuidGenerator::uuid7()),
                 programId: $result->programId,
@@ -143,12 +144,12 @@ class ExecuteDrawActionTest extends TestCase
         );
         $this->app->instance(LotteryResultRepositoryContract::class, $results);
 
-        $snapshots = Mockery::mock(LotteryEligibleSnapshotRepositoryContract::class);
-        $snapshots->shouldReceive('findByProgramId')->once()->with($programId)->andReturn($snapshot);
+        $snapshots = MockeryTest::mock(LotteryEligibleSnapshotRepositoryContract::class);
+        MockeryTest::expectOnce($snapshots, 'findByProgramId')->with($programId)->andReturn($snapshot);
         $this->app->instance(LotteryEligibleSnapshotRepositoryContract::class, $snapshots);
 
-        $allocations = Mockery::mock(ProposedAllocationPort::class);
-        $allocations->shouldReceive('emitProposedAllocations')->once()->with(Mockery::on(
+        $allocations = MockeryTest::mock(ProposedAllocationPort::class);
+        MockeryTest::expectOnce($allocations, 'emitProposedAllocations')->with(Mockery::on(
             static fn (array $payload): bool => count($payload) === 1
                 && $payload[0]['registration_id'] === $registrationId
                 && $payload[0]['rank'] === 1,
@@ -170,20 +171,20 @@ class ExecuteDrawActionTest extends TestCase
         $programId = LotteryProgramId::fromString(UuidGenerator::uuid7());
         $program = $this->lockedProgram($programId, CompletedState::$name);
 
-        $programs = Mockery::mock(LotteryProgramRepositoryContract::class);
-        $programs->shouldReceive('findById')->times(4)->with($programId)->andReturn($program);
+        $programs = MockeryTest::mock(LotteryProgramRepositoryContract::class);
+        MockeryTest::expect($programs, 'findById')->times(4)->with($programId)->andReturn($program);
         $this->app->instance(LotteryProgramRepositoryContract::class, $programs);
 
-        $results = Mockery::mock(LotteryResultRepositoryContract::class);
-        $results->shouldReceive('existsForProgram')->twice()->with($programId)->andReturn(true);
+        $results = MockeryTest::mock(LotteryResultRepositoryContract::class);
+        MockeryTest::expect($results, 'existsForProgram')->twice()->with($programId)->andReturn(true);
         $results->shouldNotReceive('save');
         $this->app->instance(LotteryResultRepositoryContract::class, $results);
 
-        $snapshots = Mockery::mock(LotteryEligibleSnapshotRepositoryContract::class);
+        $snapshots = MockeryTest::mock(LotteryEligibleSnapshotRepositoryContract::class);
         $snapshots->shouldNotReceive('findByProgramId');
         $this->app->instance(LotteryEligibleSnapshotRepositoryContract::class, $snapshots);
 
-        $allocations = Mockery::mock(ProposedAllocationPort::class);
+        $allocations = MockeryTest::mock(ProposedAllocationPort::class);
         $allocations->shouldNotReceive('emitProposedAllocations');
         $this->app->instance(ProposedAllocationPort::class, $allocations);
 

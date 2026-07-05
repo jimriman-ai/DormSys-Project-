@@ -37,6 +37,9 @@ function authenticateReportingApiReader(string $role = IdentityRoleSeeder::ROLE_
     return $model;
 }
 
+/**
+ * @param  array<string, mixed>  $overrides
+ */
 function seedReportingApiAuditEntry(array $overrides = []): string
 {
     $entityId = $overrides['entityId'] ?? UuidGenerator::uuid7();
@@ -201,7 +204,9 @@ it('returns 422 for invalid reporting api query parameters', function (): void {
 });
 
 it('registers all six reporting api endpoints', function (): void {
-    $routes = collect(app('router')->getRoutes())
+    /** @var \Illuminate\Routing\Router $router */
+    $router = app('router');
+    $routes = collect($router->getRoutes()->getRoutes())
         ->filter(static fn ($route) => str_starts_with($route->uri(), 'api/reporting/'))
         ->map(static fn ($route) => $route->uri())
         ->values()

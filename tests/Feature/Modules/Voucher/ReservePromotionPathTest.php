@@ -15,6 +15,7 @@ use App\Modules\Voucher\Domain\Enums\AccommodationClassification;
 use App\Modules\Voucher\Domain\Enums\ReservePromotionDisposition;
 use App\Modules\Voucher\Domain\Enums\TriggerIntakeStatus;
 use App\Modules\Voucher\Domain\Enums\VoucherLifecycleState;
+use App\Modules\Voucher\Domain\Models\Voucher;
 use App\Modules\Voucher\Infrastructure\Adapters\InMemoryAccommodationClassificationReadAdapter;
 use App\Modules\Voucher\Infrastructure\Persistence\Models\VoucherIssuanceTriggerModel;
 use App\Modules\Voucher\Infrastructure\Persistence\Models\VoucherModel;
@@ -23,6 +24,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+/**
+ * @param  array<string, AccommodationClassification>  $classifications
+ */
 function bindReservePromotionClassifications(array $classifications): void
 {
     app()->instance(
@@ -35,7 +39,7 @@ function issueEligibleVoucherForReservePromotion(
     string $correlationId,
     string $employeeId,
     string $dormitoryId,
-): object {
+): Voucher {
     $trigger = app(VoucherTriggerIntakeContract::class)->accept(
         InboundTriggerFactsDto::fromLotteryFacts([
             'correlation_id' => $correlationId,
@@ -50,17 +54,20 @@ function issueEligibleVoucherForReservePromotion(
     return app(VoucherIssuanceContract::class)->issueFromEligibility($eligibility->requireId());
 }
 
-function issueExternalLotteryWinner(string $correlationId, string $employeeId, string $dormitoryId): object
+function issueExternalLotteryWinner(string $correlationId, string $employeeId, string $dormitoryId): Voucher
 {
     bindReservePromotionClassifications([$dormitoryId => AccommodationClassification::External]);
 
     return issueEligibleVoucherForReservePromotion($correlationId, $employeeId, $dormitoryId);
 }
 
+/**
+ * @param  array<string, mixed>|null  $reserve
+ */
 function reservePromotionFacts(
     string $promotionCorrelationId,
     string $programId,
-    object $priorWinnerVoucher,
+    Voucher $priorWinnerVoucher,
     ?array $reserve = null,
     string $programType = 'external',
 ): ReservePromotionTriggerFactsDto {
@@ -102,8 +109,10 @@ it('accepts reserve promotion trigger facts for external lottery programs', func
     $stored = VoucherIssuanceTriggerModel::query()
         ->where('correlation_id', 'promo-accept-001')
         ->first();
+    if (! $stored instanceof VoucherIssuanceTriggerModel) {
+        throw new UnexpectedValueException('Expected stored reserve promotion trigger.');
+    }
 
-    expect($stored)->not->toBeNull();
     expect($stored->upstream_facts['trigger_kind'])->toBe('reserve_promotion');
 });
 
@@ -126,8 +135,8 @@ it('supersedes active winner voucher before reserve issuance', function (): void
     expect($result->disposition)->toBe(ReservePromotionDisposition::Issued);
     expect($result->priorWinnerVoucher?->lifecycleState)->toBe(VoucherLifecycleState::Superseded);
 
-    $storedWinner = VoucherModel::query()->find($winner->requireId()->value);
-    expect($storedWinner?->lifecycle_state)->toBe(VoucherLifecycleState::Superseded);
+    $storedWinner = VoucherModel::query()->findOrFail($winner->requireId()->value);
+    expect($storedWinner->lifecycle_state)->toBe(VoucherLifecycleState::Superseded);
 
     $transitions = app(VoucherLifecycleTransitionRepositoryContract::class)
         ->findByVoucherId($winner->requireId());

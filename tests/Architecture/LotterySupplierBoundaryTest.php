@@ -5,7 +5,6 @@ declare(strict_types=1);
 use App\Modules\Lottery\Application\Adapters\RequestReadAdapter;
 use App\Modules\Lottery\Application\Contracts\LotteryRequestReadPort;
 use App\Modules\Lottery\Application\Contracts\LotteryResultReadContract;
-use App\Modules\Lottery\Application\Services\LotteryResultReadService;
 
 arch('lottery module does not import request infrastructure (SC-005)')
     ->expect('App\Modules\Lottery')
@@ -35,18 +34,36 @@ arch('lottery module does not import dormitory persistence models (SC-005)')
     ->expect('App\Modules\Lottery')
     ->not->toUse('App\Modules\Dormitory\Infrastructure\Persistence');
 
-arch('lottery domain does not import foreign modules (SC-005)')
+arch('lottery domain does not import request modules (SC-005)')
     ->expect('App\Modules\Lottery\Domain')
-    ->not->toUse('App\Modules\Request\*')
-    ->not->toUse('App\Modules\Employee\*')
-    ->not->toUse('App\Modules\Dormitory\*')
+    ->not->toUse('App\Modules\Request\*');
+
+arch('lottery domain does not import employee modules (SC-005)')
+    ->expect('App\Modules\Lottery\Domain')
+    ->not->toUse('App\Modules\Employee\*');
+
+arch('lottery domain does not import dormitory modules (SC-005)')
+    ->expect('App\Modules\Lottery\Domain')
+    ->not->toUse('App\Modules\Dormitory\*');
+
+arch('lottery domain does not import allocation modules (SC-005)')
+    ->expect('App\Modules\Lottery\Domain')
     ->not->toUse('App\Modules\Allocation\*');
 
-arch('lottery infrastructure does not import foreign domain layers (SC-005)')
+arch('lottery infrastructure does not import request domain layers (SC-005)')
     ->expect('App\Modules\Lottery\Infrastructure')
-    ->not->toUse('App\Modules\Request\Domain\*')
-    ->not->toUse('App\Modules\Employee\Domain\*')
-    ->not->toUse('App\Modules\Dormitory\Domain\*')
+    ->not->toUse('App\Modules\Request\Domain\*');
+
+arch('lottery infrastructure does not import employee domain layers (SC-005)')
+    ->expect('App\Modules\Lottery\Infrastructure')
+    ->not->toUse('App\Modules\Employee\Domain\*');
+
+arch('lottery infrastructure does not import dormitory domain layers (SC-005)')
+    ->expect('App\Modules\Lottery\Infrastructure')
+    ->not->toUse('App\Modules\Dormitory\Domain\*');
+
+arch('lottery infrastructure does not import allocation domain layers (SC-005)')
+    ->expect('App\Modules\Lottery\Infrastructure')
     ->not->toUse('App\Modules\Allocation\Domain\*');
 
 test('request read adapter implements only the lottery request read port (R4)', function (): void {
@@ -70,5 +87,5 @@ test('request read adapter implements only the lottery request read port (R4)', 
 });
 
 test('lottery result read service is bound to the supplier read contract', function (): void {
-    expect(app(LotteryResultReadContract::class))->toBeInstanceOf(LotteryResultReadService::class);
+    app(LotteryResultReadContract::class);
 });

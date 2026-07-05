@@ -42,6 +42,7 @@ it('records identity user created audit entry with system actor when no principa
         ->first();
 
     expect($entry)->not->toBeNull();
+    $entry = $entry ?? throw new RuntimeException('Identity user created audit entry not found');
     expect($entry->source_context)->toBe('identity');
     expect($entry->actor_type)->toBe(ActorType::System);
     expect($entry->actor_id)->toBe('system:scheduler');
@@ -67,6 +68,7 @@ it('records identity role changed audit entry with authenticated actor', functio
         ->first();
 
     expect($entry)->not->toBeNull();
+    $entry = $entry ?? throw new RuntimeException('Identity role changed audit entry not found');
     expect($entry->actor_type)->toBe(ActorType::User);
     expect($entry->actor_id)->toBe($actor->id);
     expect($entry->metadata)->toMatchArray(['assignmentAction' => 'assigned']);
@@ -93,6 +95,7 @@ it('records identity role revoked and user deactivated audit entries', function 
         ->first();
 
     expect($revoked)->not->toBeNull();
+    $revoked = $revoked ?? throw new RuntimeException('Identity role revoked audit entry not found');
     expect($revoked->old_values)->toBe(['role' => IdentityRoleSeeder::ROLE_ADMINISTRATOR]);
 
     app(DeactivateUserAction::class)->execute($target->requireId());
@@ -103,6 +106,7 @@ it('records identity role revoked and user deactivated audit entries', function 
         ->first();
 
     expect($deactivated)->not->toBeNull();
+    $deactivated = $deactivated ?? throw new RuntimeException('Identity user deactivated audit entry not found');
     expect($deactivated->old_values)->toBe(['status' => 'active']);
     expect($deactivated->new_values)->toBe(['status' => 'disabled']);
 });

@@ -139,6 +139,8 @@ final readonly class AuditHistoryQuery
         public bool $includeArchived = false,
         public int $page = 1,
         public int $perPage = 50,
+        public bool $orderAscending = false,
+        public ?string $occurredFromExclusiveAuditLogId = null,
     ) {
         if ($perPage < 1) {
             throw new ValidationException('perPage must be at least 1.');

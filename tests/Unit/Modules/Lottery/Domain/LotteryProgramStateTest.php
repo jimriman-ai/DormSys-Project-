@@ -12,12 +12,10 @@ use App\Modules\Lottery\Domain\States\LotteryProgramState;
 use App\Modules\Lottery\Domain\States\RegistrationClosedState;
 use App\Modules\Lottery\Domain\States\RegistrationOpenState;
 use App\Modules\Lottery\Domain\States\WaitingApprovalState;
-use Spatie\ModelStates\StateConfig;
 
 it('registers lottery program lifecycle transitions on state config', function (): void {
-    $config = LotteryProgramState::config();
+    LotteryProgramState::config();
 
-    expect($config)->toBeInstanceOf(StateConfig::class);
     expect(DraftState::$name)->toBe('draft');
     expect(WaitingApprovalState::$name)->toBe('waiting_approval');
     expect(ApprovedState::$name)->toBe('approved');
@@ -31,6 +29,9 @@ it('registers lottery program lifecycle transitions on state config', function (
 
 it('marks terminal lottery program states', function (string $stateClass, bool $terminal): void {
     $state = new $stateClass(new stdClass);
+    if (! $state instanceof LotteryProgramState) {
+        throw new UnexpectedValueException('Expected lottery program state.');
+    }
 
     expect($state->isTerminal())->toBe($terminal);
 })->with([

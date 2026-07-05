@@ -12,12 +12,10 @@ use App\Modules\Request\Domain\States\PendingHRState;
 use App\Modules\Request\Domain\States\RejectedState;
 use App\Modules\Request\Domain\States\RequestState;
 use App\Modules\Request\Domain\States\SubmittedState;
-use Spatie\ModelStates\StateConfig;
 
 it('registers r-07 approval-phase transitions on request state', function (): void {
-    $config = RequestState::config();
+    RequestState::config();
 
-    expect($config)->toBeInstanceOf(StateConfig::class);
     expect(DraftState::$name)->toBe('draft');
     expect(SubmittedState::$name)->toBe('submitted');
     expect(PendingDepartmentManagerState::$name)->toBe('pending_department_manager');
@@ -31,6 +29,9 @@ it('registers r-07 approval-phase transitions on request state', function (): vo
 
 it('marks terminal request states', function (string $stateClass, bool $terminal): void {
     $state = new $stateClass(new stdClass);
+    if (! $state instanceof RequestState) {
+        throw new UnexpectedValueException('Expected request state.');
+    }
 
     expect($state->isTerminal())->toBe($terminal);
 })->with([

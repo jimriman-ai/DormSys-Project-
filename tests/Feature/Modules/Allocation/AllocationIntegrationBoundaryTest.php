@@ -21,6 +21,7 @@ use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use App\Support\ValueObjects\Identity\NationalCode;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Event;
+use Tests\Support\MockeryTest;
 
 beforeEach(function (): void {
     Carbon::setTestNow('2026-07-01 12:00:00');
@@ -68,9 +69,9 @@ it('round-trips request read assign dormitory signal and read contract', functio
 
     expect($request->status)->toBe(ApprovedState::$name);
 
-    $port = Mockery::mock(PhysicalStateSignalPort::class);
-    $port->shouldReceive('reserveBed')->once();
-    $port->shouldReceive('occupyBed')->once();
+    $port = MockeryTest::mock(PhysicalStateSignalPort::class);
+    MockeryTest::expectOnce($port, 'reserveBed');
+    MockeryTest::expectOnce($port, 'occupyBed');
 
     app()->instance(PhysicalStateSignalPort::class, $port);
     app()->forgetInstance(AllocationPhysicalStateAdapter::class);
@@ -90,5 +91,7 @@ it('round-trips request read assign dormitory signal and read contract', functio
     $summary = $read->getAllocationSummary($allocation->requireId()->value);
 
     expect($summary)->not->toBeNull();
+    $summary = $summary ?? throw new RuntimeException('Allocation summary not found');
+    expect($summary)->toHaveKey('allocationId');
     expect($summary['allocationId'])->toBe($allocation->requireId()->value);
 });

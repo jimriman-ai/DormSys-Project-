@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\Support\MockeryTest;
 use Tests\TestCase;
 
 class LockLotteryProgramActionTest extends TestCase
@@ -52,8 +53,8 @@ class LockLotteryProgramActionTest extends TestCase
         $programId = LotteryProgramId::fromString(UuidGenerator::uuid7());
         $program = $this->programInState($programId, RegistrationOpenState::$name);
 
-        $programs = Mockery::mock(LotteryProgramRepositoryContract::class);
-        $programs->shouldReceive('findById')->once()->with($programId)->andReturn($program);
+        $programs = MockeryTest::mock(LotteryProgramRepositoryContract::class);
+        MockeryTest::expectOnce($programs, 'findById')->with($programId)->andReturn($program);
         $this->app->instance(LotteryProgramRepositoryContract::class, $programs);
 
         $this->expectException(InvalidLotteryTransitionException::class);
@@ -67,12 +68,12 @@ class LockLotteryProgramActionTest extends TestCase
         $programId = LotteryProgramId::fromString(UuidGenerator::uuid7());
         $program = $this->programInState($programId, RegistrationClosedState::$name);
 
-        $programs = Mockery::mock(LotteryProgramRepositoryContract::class);
-        $programs->shouldReceive('findById')->once()->with($programId)->andReturn($program);
+        $programs = MockeryTest::mock(LotteryProgramRepositoryContract::class);
+        MockeryTest::expectOnce($programs, 'findById')->with($programId)->andReturn($program);
         $this->app->instance(LotteryProgramRepositoryContract::class, $programs);
 
-        $reader = Mockery::mock(LotteryScoringConfigReader::class);
-        $reader->shouldReceive('load')->once()->andThrow(new ScoringConfigNotFoundException('missing'));
+        $reader = MockeryTest::mock(LotteryScoringConfigReader::class);
+        MockeryTest::expectOnce($reader, 'load')->andThrow(new ScoringConfigNotFoundException('missing'));
         $this->app->instance(LotteryScoringConfigReader::class, $reader);
 
         $this->expectException(ScoringConfigNotFoundException::class);
@@ -111,40 +112,40 @@ class LockLotteryProgramActionTest extends TestCase
 
         $this->mockConfigReader($config);
 
-        $programs = Mockery::mock(LotteryProgramRepositoryContract::class);
-        $programs->shouldReceive('findById')->once()->with($programId)->andReturn($program);
-        $programs->shouldReceive('save')->once()->with(Mockery::on(
+        $programs = MockeryTest::mock(LotteryProgramRepositoryContract::class);
+        MockeryTest::expectOnce($programs, 'findById')->with($programId)->andReturn($program);
+        MockeryTest::expectOnce($programs, 'save')->with(Mockery::on(
             fn (LotteryProgram $locked): bool => $locked->status === LockedState::$name
                 && $locked->randomSeed !== null
                 && $locked->scoringConfigVersion === $config->version,
         ))->andReturnUsing(fn (LotteryProgram $locked): LotteryProgram => $locked);
         $this->app->instance(LotteryProgramRepositoryContract::class, $programs);
 
-        $registrations = Mockery::mock(LotteryRegistrationRepositoryContract::class);
-        $registrations->shouldReceive('findByProgramId')->once()->with($programId)->andReturn([
+        $registrations = MockeryTest::mock(LotteryRegistrationRepositoryContract::class);
+        MockeryTest::expectOnce($registrations, 'findByProgramId')->with($programId)->andReturn([
             $validRegistration,
             $invalidRegistration,
         ]);
-        $registrations->shouldReceive('save')->once()->andReturnUsing(
+        MockeryTest::expectOnce($registrations, 'save')->andReturnUsing(
             fn (LotteryRegistration $registration): LotteryRegistration => $registration,
         );
         $this->app->instance(LotteryRegistrationRepositoryContract::class, $registrations);
 
-        $requests = Mockery::mock(LotteryRequestReadPort::class);
-        $requests->shouldReceive('findApprovedLotteryRegistration')
+        $requests = MockeryTest::mock(LotteryRequestReadPort::class);
+        MockeryTest::expect($requests, 'findApprovedLotteryRegistration')
             ->with($validRequestId)
             ->andReturn(new ApprovedLotteryRequestDTO(
                 requestId: $validRequestId->value,
                 employeeId: $employeeId->value,
                 dormitoryId: $dormitoryId->value,
             ));
-        $requests->shouldReceive('findApprovedLotteryRegistration')
+        MockeryTest::expect($requests, 'findApprovedLotteryRegistration')
             ->with($invalidRequestId)
             ->andReturn(null);
         $this->app->instance(LotteryRequestReadPort::class, $requests);
 
-        $snapshots = Mockery::mock(LotteryEligibleSnapshotRepositoryContract::class);
-        $snapshots->shouldReceive('save')->once()->with(Mockery::on(
+        $snapshots = MockeryTest::mock(LotteryEligibleSnapshotRepositoryContract::class);
+        MockeryTest::expectOnce($snapshots, 'save')->with(Mockery::on(
             function (EligibleSnapshot $snapshot) use ($invalidRegistration): bool {
                 $excluded = $snapshot->payload['excluded'] ?? [];
 
@@ -196,8 +197,8 @@ class LockLotteryProgramActionTest extends TestCase
 
     private function mockConfigReader(ScoringConfig $config): void
     {
-        $reader = Mockery::mock(LotteryScoringConfigReader::class);
-        $reader->shouldReceive('load')->once()->andReturn($config);
+        $reader = MockeryTest::mock(LotteryScoringConfigReader::class);
+        MockeryTest::expectOnce($reader, 'load')->andReturn($config);
         $this->app->instance(LotteryScoringConfigReader::class, $reader);
     }
 

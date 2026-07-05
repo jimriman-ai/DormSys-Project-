@@ -43,10 +43,10 @@ final class VoucherReadRepository implements VoucherReadRepositoryContract
             $query->where('lifecycle_state', $lifecycleState->value);
         }
 
-        return $query
+        return array_values($query
             ->get()
             ->map(fn (VoucherModel $model): Voucher => $this->toDomain($model))
-            ->all();
+            ->all());
     }
 
     private function toDomain(VoucherModel $model): Voucher

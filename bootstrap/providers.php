@@ -20,6 +20,7 @@ use App\Modules\Request\Presentation\Providers\RequestPresentationServiceProvide
 use App\Modules\Voucher\Infrastructure\Providers\VoucherServiceProvider;
 use App\Modules\Workflow\Infrastructure\Providers\WorkflowServiceProvider;
 use App\Providers\AppServiceProvider;
+use App\Providers\HorizonServiceProvider;
 use App\Providers\IntegrationServiceProvider;
 use Laravel\Horizon\HorizonApplicationServiceProvider;
 
@@ -46,7 +47,7 @@ $providers = [
 ];
 
 if (class_exists(HorizonApplicationServiceProvider::class)) {
-    $providers[] = App\Providers\HorizonServiceProvider::class;
+    $providers[] = HorizonServiceProvider::class;
 }
 
 return $providers;

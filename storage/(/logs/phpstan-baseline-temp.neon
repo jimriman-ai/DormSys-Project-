@@ -1,0 +1,925 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method App\\Modules\\Audit\\Presentation\\Http\\Middleware\\ResolveAuditPrincipalMiddleware\:\:handle\(\) has parameter \$next with no signature specified for Closure\.$#'
+			identifier: missingType.callable
+			count: 1
+			path: ../../../app/Modules/Audit/Presentation/Http/Middleware/ResolveAuditPrincipalMiddleware.php
+
+		-
+			message: '#^Class App\\Modules\\Lottery\\Domain\\States\\LotteryProgramState extends generic class Spatie\\ModelStates\\State but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../../../app/Modules/Lottery/Domain/States/LotteryProgramState.php
+
+		-
+			message: '#^Class App\\Modules\\Request\\Domain\\States\\RequestState extends generic class Spatie\\ModelStates\\State but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: ../../../app/Modules/Request/Domain/States/RequestState.php
+
+		-
+			message: '#^PHPDoc tag @var with type array\<string, mixed\>\|null is not subtype of native type non\-empty\-array\<mixed, mixed\>\|null\.$#'
+			identifier: varTag.nativeType
+			count: 1
+			path: ../../../app/Modules/Voucher/Application/DTOs/ReservePromotionTriggerFactsDto.php
+
+		-
+			message: '#^Method App\\Modules\\Voucher\\Infrastructure\\Repositories\\VoucherReadRepository\:\:findByEmployeeId\(\) should return list\<App\\Modules\\Voucher\\Domain\\Models\\Voucher\> but returns array\<int, App\\Modules\\Voucher\\Domain\\Models\\Voucher\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../../../app/Modules/Voucher/Infrastructure/Repositories/VoucherReadRepository.php
+
+		-
+			message: '#^Calling toBeInstanceOf\(\) on Expectation\<App\\Modules\\Allocation\\Application\\Services\\AllocationReadService\>; assertion is redundant\.$#'
+			identifier: pest.expectation.redundant
+			count: 1
+			path: ../../../tests/Architecture/AllocationBoundaryTest.php
+
+		-
+			message: '#^Calling toBeInstanceOf\(\) on Expectation\<App\\Modules\\Audit\\Application\\Services\\AuditHistoryReadService\>; assertion is redundant\.$#'
+			identifier: pest.expectation.redundant
+			count: 1
+			path: ../../../tests/Architecture/AuditBoundaryTest.php
+
+		-
+			message: '#^Calling toBeInstanceOf\(\) on Expectation\<App\\Modules\\Audit\\Application\\Services\\RecordAuditAction\>; assertion is redundant\.$#'
+			identifier: pest.expectation.redundant
+			count: 1
+			path: ../../../tests/Architecture/AuditBoundaryTest.php
+
+		-
+			message: '#^Offset int\<0, max\>\|null might not exist on list\<class\-string\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: ../../../tests/Architecture/IntegrationCompositionRootTest.php
+
+		-
+			message: '#^Parameter \#1 \$filename of function file_get_contents expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../tests/Architecture/IntegrationCompositionRootTest.php
+
+		-
+			message: '#^Possibly invalid array key type int\<0, max\>\|null\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: ../../../tests/Architecture/IntegrationCompositionRootTest.php
+
+		-
+			message: '#^Access to an undefined property Pest\\Arch\\Contracts\\ArchExpectation\:\:\$not\.$#'
+			identifier: property.notFound
+			count: 2
+			path: ../../../tests/Architecture/LotterySupplierBoundaryTest.php
+
+		-
+			message: '#^Calling toBeInstanceOf\(\) on Expectation\<App\\Modules\\Lottery\\Application\\Services\\LotteryResultReadService\>; assertion is redundant\.$#'
+			identifier: pest.expectation.redundant
+			count: 1
+			path: ../../../tests/Architecture/LotterySupplierBoundaryTest.php
+
+		-
+			message: '#^Calling toBeInstanceOf\(\) on Expectation\<App\\Modules\\Notification\\Application\\Services\\DeliverNotificationAction\>; assertion is redundant\.$#'
+			identifier: pest.expectation.redundant
+			count: 1
+			path: ../../../tests/Architecture/NotificationBoundaryTest.php
+
+		-
+			message: '#^Calling toBeInstanceOf\(\) on Expectation\<App\\Modules\\Notification\\Application\\Services\\NotificationInboxReadService\>; assertion is redundant\.$#'
+			identifier: pest.expectation.redundant
+			count: 1
+			path: ../../../tests/Architecture/NotificationBoundaryTest.php
+
+		-
+			message: '#^Access to an undefined property Pest\\Arch\\Contracts\\ArchExpectation\:\:\$not\.$#'
+			identifier: property.notFound
+			count: 2
+			path: ../../../tests/Architecture/RequestConsumerBoundaryTest.php
+
+		-
+			message: '#^Access to an undefined property Pest\\Arch\\Contracts\\ArchExpectation\:\:\$not\.$#'
+			identifier: property.notFound
+			count: 3
+			path: ../../../tests/Architecture/VoucherBoundaryTest.php
+
+		-
+			message: '#^Call to an undefined method ReflectionType\:\:getName\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: ../../../tests/Architecture/VoucherBoundaryTest.php
+
+		-
+			message: '#^Calling toBeInstanceOf\(\) on Expectation\<App\\Modules\\Voucher\\Application\\Services\\AcceptTriggerFactsAction\>; assertion is redundant\.$#'
+			identifier: pest.expectation.redundant
+			count: 1
+			path: ../../../tests/Architecture/VoucherBoundaryTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function expect$#'
+			identifier: argument.templateType
+			count: 1
+			path: ../../../tests/Architecture/VoucherBoundaryTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:once\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: ../../../tests/Feature/Modules/Allocation/AllocationIntegrationBoundaryTest.php
+
+		-
+			message: '#^Offset ''allocationId'' might not exist on array\{allocationId\: string, personId\: string, bedId\: string, status\: string, dateRangeStart\: string, dateRangeEnd\: string\}\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: ../../../tests/Feature/Modules/Allocation/AllocationIntegrationBoundaryTest.php
+
+		-
+			message: '#^Calling toBeInstanceOf\(\) on Expectation\<App\\Modules\\Allocation\\Application\\Services\\AllocationReadService\>; assertion is redundant\.$#'
+			identifier: pest.expectation.redundant
+			count: 1
+			path: ../../../tests/Feature/Modules/Allocation/AllocationReadContractTest.php
+
+		-
+			message: '#^Offset ''allocationId'' might not exist on array\{allocationId\: string, personId\: string, bedId\: string, status\: string, dateRangeStart\: string, dateRangeEnd\: string\}\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: ../../../tests/Feature/Modules/Allocation/AllocationReadContractTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:once\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: ../../../tests/Feature/Modules/Allocation/DormitoryIntegrationTest.php
+
+		-
+			message: '#^Calling toBeInstanceOf\(\) on Expectation\<App\\Modules\\Allocation\\Application\\Services\\ProposedAllocationConsumer\>; assertion is redundant\.$#'
+			identifier: pest.expectation.redundant
+			count: 1
+			path: ../../../tests/Feature/Modules/Allocation/LotteryDrivenAllocationTest.php
+
+		-
+			message: '#^Cannot access property \$bedId on App\\Modules\\Allocation\\Domain\\Models\\Allocation\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Allocation/LotteryDrivenAllocationTest.php
+
+		-
+			message: '#^Cannot access property \$method on App\\Modules\\Allocation\\Domain\\Models\\Allocation\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Allocation/LotteryDrivenAllocationTest.php
+
+		-
+			message: '#^Cannot access property \$sourceLotteryResultId on App\\Modules\\Allocation\\Domain\\Models\\Allocation\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Allocation/LotteryDrivenAllocationTest.php
+
+		-
+			message: '#^Cannot access property \$status on App\\Modules\\Allocation\\Domain\\Models\\Allocation\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Allocation/LotteryDrivenAllocationTest.php
+
+		-
+			message: '#^Function createApprovedPersonalRequestForAllocationTest\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../tests/Feature/Modules/Allocation/RequestDrivenAllocationTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:once\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: ../../../tests/Feature/Modules/Allocation/RequestLifecycleHandoffTest.php
+
+		-
+			message: '#^Function createApprovedRequestForLifecycleHandoffTest\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../tests/Feature/Modules/Allocation/RequestLifecycleHandoffTest.php
+
+		-
+			message: '#^Calling toBeInstanceOf\(\) on Expectation\<App\\Modules\\Audit\\Application\\Services\\RecordAuditAction\>; assertion is redundant\.$#'
+			identifier: pest.expectation.redundant
+			count: 1
+			path: ../../../tests/Feature/Modules/Audit/AuditProducerDoubleTest.php
+
+		-
+			message: '#^Parameter \#1 \$date of method Carbon\\Carbon\:\:equalTo\(\) expects DateTimeInterface\|string, Illuminate\\Support\\Carbon\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../tests/Feature/Modules/Audit/AuditRetentionTest.php
+
+		-
+			message: '#^Cannot access property \$actor_id on App\\Modules\\Audit\\Infrastructure\\Persistence\\Models\\AuditLogModel\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: ../../../tests/Feature/Modules/Audit/IdentityAuditIntegrationTest.php
+
+		-
+			message: '#^Cannot access property \$actor_type on App\\Modules\\Audit\\Infrastructure\\Persistence\\Models\\AuditLogModel\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: ../../../tests/Feature/Modules/Audit/IdentityAuditIntegrationTest.php
+
+		-
+			message: '#^Cannot access property \$correlation_id on App\\Modules\\Audit\\Infrastructure\\Persistence\\Models\\AuditLogModel\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Audit/IdentityAuditIntegrationTest.php
+
+		-
+			message: '#^Cannot access property \$metadata on App\\Modules\\Audit\\Infrastructure\\Persistence\\Models\\AuditLogModel\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Audit/IdentityAuditIntegrationTest.php
+
+		-
+			message: '#^Cannot access property \$new_values on App\\Modules\\Audit\\Infrastructure\\Persistence\\Models\\AuditLogModel\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: ../../../tests/Feature/Modules/Audit/IdentityAuditIntegrationTest.php
+
+		-
+			message: '#^Cannot access property \$old_values on App\\Modules\\Audit\\Infrastructure\\Persistence\\Models\\AuditLogModel\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: ../../../tests/Feature/Modules/Audit/IdentityAuditIntegrationTest.php
+
+		-
+			message: '#^Cannot access property \$source_context on App\\Modules\\Audit\\Infrastructure\\Persistence\\Models\\AuditLogModel\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Audit/IdentityAuditIntegrationTest.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$employeeId\.$#'
+			identifier: property.notFound
+			count: 1
+			path: ../../../tests/Feature/Modules/Audit/VoucherAuditIntegrationTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:requireId\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: ../../../tests/Feature/Modules/Audit/VoucherAuditIntegrationTest.php
+
+		-
+			message: '#^Cannot access property \$actor_id on App\\Modules\\Audit\\Infrastructure\\Persistence\\Models\\AuditLogModel\|null\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: ../../../tests/Feature/Modules/Audit/VoucherAuditIntegrationTest.php
+
+		-
+			message: '#^Cannot access property \$actor_type on App\\Modules\\Audit\\Infrastructure\\Persistence\\Models\\AuditLogModel\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Audit/VoucherAuditIntegrationTest.php
+
+		-
+			message: '#^Cannot access property \$correlation_id on App\\Modules\\Audit\\Infrastructure\\Persistence\\Models\\AuditLogModel\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Audit/VoucherAuditIntegrationTest.php
+
+		-
+			message: '#^Cannot access property \$metadata on App\\Modules\\Audit\\Infrastructure\\Persistence\\Models\\AuditLogModel\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: ../../../tests/Feature/Modules/Audit/VoucherAuditIntegrationTest.php
+
+		-
+			message: '#^Cannot access property \$new_values on App\\Modules\\Audit\\Infrastructure\\Persistence\\Models\\AuditLogModel\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Audit/VoucherAuditIntegrationTest.php
+
+		-
+			message: '#^Cannot access property \$source_context on App\\Modules\\Audit\\Infrastructure\\Persistence\\Models\\AuditLogModel\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Audit/VoucherAuditIntegrationTest.php
+
+		-
+			message: '#^Offset ''employee_id'' might not exist on array\<string, mixed\>\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: ../../../tests/Feature/Modules/Audit/VoucherAuditIntegrationTest.php
+
+		-
+			message: '#^Offset ''upstream_source'' might not exist on array\<string, mixed\>\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 2
+			path: ../../../tests/Feature/Modules/Audit/VoucherAuditIntegrationTest.php
+
+		-
+			message: '#^Function assertLotteryResultReadContractShape\(\) has parameter \$payload with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../tests/Feature/Modules/Lottery/LotteryFeatureSupport.php
+
+		-
+			message: '#^Cannot access property \$capacity on App\\Modules\\Lottery\\Domain\\Models\\LotteryProgram\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Lottery/LotteryFoundationTest.php
+
+		-
+			message: '#^Cannot access property \$title on App\\Modules\\Lottery\\Domain\\Models\\LotteryProgram\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Lottery/LotteryFoundationTest.php
+
+		-
+			message: '#^Cannot access property \$randomSeed on App\\Modules\\Lottery\\Domain\\Models\\EligibleSnapshot\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Lottery/LotteryProgramLockTest.php
+
+		-
+			message: '#^Cannot access property \$deepLinkRoute on App\\Modules\\Notification\\Application\\DTOs\\NotificationProjectionDto\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Notification/NotificationCheckInReminderTest.php
+
+		-
+			message: '#^Cannot access property \$entityId on App\\Modules\\Notification\\Application\\DTOs\\NotificationProjectionDto\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Notification/NotificationCheckInReminderTest.php
+
+		-
+			message: '#^Cannot access property \$notificationType on App\\Modules\\Notification\\Application\\DTOs\\NotificationProjectionDto\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Notification/NotificationCheckInReminderTest.php
+
+		-
+			message: '#^Parameter \#1 \$activeEmployeeIds of class App\\Modules\\Notification\\Infrastructure\\Adapters\\InMemoryEmployeeExistenceReadAdapter constructor expects list\<string\>, array\<int\<0, max\>\|string, string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../tests/Feature/Modules/Notification/NotificationCheckInReminderTest.php
+
+		-
+			message: '#^Cannot access property \$deepLinkRoute on App\\Modules\\Notification\\Application\\DTOs\\NotificationProjectionDto\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: ../../../tests/Feature/Modules/Notification/NotificationDeepLinkTest.php
+
+		-
+			message: '#^Cannot access property \$entityId on App\\Modules\\Notification\\Application\\DTOs\\NotificationProjectionDto\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: ../../../tests/Feature/Modules/Notification/NotificationDeepLinkTest.php
+
+		-
+			message: '#^Cannot access property \$entityType on App\\Modules\\Notification\\Application\\DTOs\\NotificationProjectionDto\|null\.$#'
+			identifier: property.nonObject
+			count: 3
+			path: ../../../tests/Feature/Modules/Notification/NotificationDeepLinkTest.php
+
+		-
+			message: '#^Cannot access property \$isRead on App\\Modules\\Notification\\Application\\DTOs\\NotificationProjectionDto\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Notification/NotificationDeepLinkTest.php
+
+		-
+			message: '#^Parameter \#1 \$activeEmployeeIds of class App\\Modules\\Notification\\Infrastructure\\Adapters\\InMemoryEmployeeExistenceReadAdapter constructor expects list\<string\>, array\<int\<0, max\>\|string, string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../tests/Feature/Modules/Notification/NotificationDeepLinkTest.php
+
+		-
+			message: '#^Function notificationIntentPayload\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../tests/Feature/Modules/Notification/NotificationDeliveryTest.php
+
+		-
+			message: '#^Parameter \#1 \$activeEmployeeIds of class App\\Modules\\Notification\\Infrastructure\\Adapters\\InMemoryEmployeeExistenceReadAdapter constructor expects list\<string\>, array\<int\<0, max\>\|string, string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../tests/Feature/Modules/Notification/NotificationDeliveryTest.php
+
+		-
+			message: '#^Parameter \#1 \$activeEmployeeIds of class App\\Modules\\Notification\\Infrastructure\\Adapters\\InMemoryEmployeeExistenceReadAdapter constructor expects list\<string\>, array\<int\<0, max\>\|string, string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../tests/Feature/Modules/Notification/NotificationIdempotencyTest.php
+
+		-
+			message: '#^Cannot access property \$isRead on App\\Modules\\Notification\\Application\\DTOs\\NotificationProjectionDto\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Notification/NotificationInboxTest.php
+
+		-
+			message: '#^Cannot access property \$readAt on App\\Modules\\Notification\\Application\\DTOs\\NotificationProjectionDto\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Notification/NotificationInboxTest.php
+
+		-
+			message: '#^Parameter \#1 \$activeEmployeeIds of class App\\Modules\\Notification\\Infrastructure\\Adapters\\InMemoryEmployeeExistenceReadAdapter constructor expects list\<string\>, array\<int\<0, max\>\|string, string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../tests/Feature/Modules/Notification/NotificationInboxTest.php
+
+		-
+			message: '#^Parameter \#1 \$activeEmployeeIds of class App\\Modules\\Notification\\Infrastructure\\Adapters\\InMemoryEmployeeExistenceReadAdapter constructor expects list\<string\>, array\<int\<0, max\>\|string, string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../tests/Feature/Modules/Notification/NotificationRetentionTest.php
+
+		-
+			message: '#^Function seedComplianceExportAuditEntry\(\) has parameter \$overrides with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../tests/Feature/Modules/Reporting/ComplianceExportReadTest.php
+
+		-
+			message: '#^Function seedProjectionBackedAuditEntry\(\) has parameter \$overrides with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../tests/Feature/Modules/Reporting/ProjectionBackedReadTest.php
+
+		-
+			message: '#^Function seedProjectionBackedAuditEntry\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../tests/Feature/Modules/Reporting/ProjectionBackedReadTest.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Modules\\Reporting\\Application\\DTOs\\ProjectionCursorDto\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Reporting/ProjectionRefreshMaterializationTest.php
+
+		-
+			message: '#^Function seedMaterializationAuditEntry\(\) has parameter \$overrides with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../tests/Feature/Modules/Reporting/ProjectionRefreshMaterializationTest.php
+
+		-
+			message: '#^Function seedReportingApiAuditEntry\(\) has parameter \$overrides with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../tests/Feature/Modules/Reporting/ReportingApiTest.php
+
+		-
+			message: '#^Parameter \#1 \$value of function collect expects Illuminate\\Contracts\\Support\\Arrayable\<\(int\|string\), mixed\>\|iterable\<\(int\|string\), mixed\>\|null, Illuminate\\Routing\\RouteCollectionInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../tests/Feature/Modules/Reporting/ReportingApiTest.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: ../../../tests/Feature/Modules/Reporting/ReportingApiTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: ../../../tests/Feature/Modules/Reporting/ReportingApiTest.php
+
+		-
+			message: '#^Parameter \#1 \$exception of method Pest\\Mixins\\Expectation\<Closure\>\:\:toThrow\(\) expects \(Closure\(Throwable\)\: mixed\)\|string\|Throwable, Closure\(App\\Modules\\Request\\Domain\\Exceptions\\RequestNotEligibleException\)\: bool given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../tests/Feature/Modules/Request/PendingRequestReadPortTest.php
+
+		-
+			message: '#^Parameter \#1 \$exception of method Pest\\Mixins\\Expectation\<Closure\>\:\:toThrow\(\) expects \(Closure\(Throwable\)\: mixed\)\|string\|Throwable, Closure\(App\\Modules\\Request\\Domain\\Exceptions\\RequestNotEligibleException\)\: bool given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../../../tests/Feature/Modules/Request/PersonalRequestTest.php
+
+		-
+			message: '#^Cannot access property \$decision on App\\Modules\\Request\\Infrastructure\\Persistence\\Models\\RequestApprovalModel\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Request/RequestApprovalTest.php
+
+		-
+			message: '#^Cannot access property \$reason on App\\Modules\\Request\\Infrastructure\\Persistence\\Models\\RequestApprovalModel\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Request/RequestApprovalTest.php
+
+		-
+			message: '#^Cannot access property \$code on App\\Modules\\Request\\Domain\\Entities\\Request\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Request/RequestFoundationTest.php
+
+		-
+			message: '#^Cannot access property \$status on App\\Modules\\Request\\Domain\\Entities\\Request\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Request/RequestFoundationTest.php
+
+		-
+			message: '#^Cannot access property \$employeeId on App\\Modules\\Request\\Application\\DTOs\\RequestSummaryDTO\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Request/RequestReadContractTest.php
+
+		-
+			message: '#^Cannot access property \$id on App\\Modules\\Request\\Application\\DTOs\\RequestSummaryDTO\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Request/RequestReadContractTest.php
+
+		-
+			message: '#^Cannot access property \$status on App\\Modules\\Request\\Application\\DTOs\\RequestSummaryDTO\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Request/RequestReadContractTest.php
+
+		-
+			message: '#^Cannot access property \$submittedAt on App\\Modules\\Request\\Application\\DTOs\\RequestSummaryDTO\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Request/RequestReadContractTest.php
+
+		-
+			message: '#^Cannot access property \$type on App\\Modules\\Request\\Application\\DTOs\\RequestSummaryDTO\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Request/RequestReadContractTest.php
+
+		-
+			message: '#^Function createApprovedPersonalRequestForReadTest\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../tests/Feature/Modules/Request/RequestReadContractTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:requireId\(\)\.$#'
+			identifier: method.notFound
+			count: 6
+			path: ../../../tests/Feature/Modules/Voucher/EligibilityEvaluationTest.php
+
+		-
+			message: '#^Function acceptLotteryTrigger\(\) has parameter \$extraFacts with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/EligibilityEvaluationTest.php
+
+		-
+			message: '#^Function bindClassificationAdapter\(\) has parameter \$classifications with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/EligibilityEvaluationTest.php
+
+		-
+			message: '#^Cannot access property \$dormitory_id on App\\Modules\\Voucher\\Infrastructure\\Persistence\\Models\\VoucherModel\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/ExternalLotteryWinnerPathTest.php
+
+		-
+			message: '#^Cannot access property \$upstream_facts on App\\Modules\\Voucher\\Infrastructure\\Persistence\\Models\\VoucherIssuanceTriggerModel\|null\.$#'
+			identifier: property.nonObject
+			count: 6
+			path: ../../../tests/Feature/Modules/Voucher/ExternalLotteryWinnerPathTest.php
+
+		-
+			message: '#^Function bindExternalLotteryClassifications\(\) has parameter \$classifications with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/ExternalLotteryWinnerPathTest.php
+
+		-
+			message: '#^Function externalLotteryBatch\(\) has parameter \$winners with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/ExternalLotteryWinnerPathTest.php
+
+		-
+			message: '#^Function externalLotteryWinnerFacts\(\) has parameter \$extra with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/ExternalLotteryWinnerPathTest.php
+
+		-
+			message: '#^Function externalLotteryWinnerFacts\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/ExternalLotteryWinnerPathTest.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 2
+			path: ../../../tests/Feature/Modules/Voucher/IssuanceLifecycleTest.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$dormitoryId\.$#'
+			identifier: property.notFound
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/IssuanceLifecycleTest.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$eligibilityOutcomeId\.$#'
+			identifier: property.notFound
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/IssuanceLifecycleTest.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$employeeId\.$#'
+			identifier: property.notFound
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/IssuanceLifecycleTest.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$lifecycleState\.$#'
+			identifier: property.notFound
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/IssuanceLifecycleTest.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$upstreamSource\.$#'
+			identifier: property.notFound
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/IssuanceLifecycleTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:requireId\(\)\.$#'
+			identifier: method.notFound
+			count: 6
+			path: ../../../tests/Feature/Modules/Voucher/IssuanceLifecycleTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function expect$#'
+			identifier: argument.templateType
+			count: 4
+			path: ../../../tests/Feature/Modules/Voucher/IssuanceLifecycleTest.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\Voucher\\Infrastructure\\Persistence\\Models\\VoucherModel\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Modules\\Voucher\\Infrastructure\\Persistence\\Models\\VoucherModel\>\:\:\$lifecycle_state\.$#'
+			identifier: property.notFound
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/ReservePromotionPathTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:requireId\(\)\.$#'
+			identifier: method.notFound
+			count: 5
+			path: ../../../tests/Feature/Modules/Voucher/ReservePromotionPathTest.php
+
+		-
+			message: '#^Cannot access property \$upstream_facts on App\\Modules\\Voucher\\Infrastructure\\Persistence\\Models\\VoucherIssuanceTriggerModel\|null\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/ReservePromotionPathTest.php
+
+		-
+			message: '#^Function bindReservePromotionClassifications\(\) has parameter \$classifications with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/ReservePromotionPathTest.php
+
+		-
+			message: '#^Function reservePromotionFacts\(\) has parameter \$reserve with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/ReservePromotionPathTest.php
+
+		-
+			message: '#^Cannot access property \$upstream_facts on App\\Modules\\Voucher\\Infrastructure\\Persistence\\Models\\VoucherIssuanceTriggerModel\|null\.$#'
+			identifier: property.nonObject
+			count: 4
+			path: ../../../tests/Feature/Modules/Voucher/VoucherBoundaryClosureTest.php
+
+		-
+			message: '#^Function bindBoundaryClassification\(\) has parameter \$classifications with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/VoucherBoundaryClosureTest.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\Voucher\\Infrastructure\\Persistence\\Models\\VoucherModel\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Modules\\Voucher\\Infrastructure\\Persistence\\Models\\VoucherModel\>\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 2
+			path: ../../../tests/Feature/Modules/Voucher/VoucherReadAccessTest.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\Voucher\\Infrastructure\\Persistence\\Models\\VoucherModel\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Modules\\Voucher\\Infrastructure\\Persistence\\Models\\VoucherModel\>\:\:\$lifecycle_state\.$#'
+			identifier: property.notFound
+			count: 2
+			path: ../../../tests/Feature/Modules/Voucher/VoucherReadAccessTest.php
+
+		-
+			message: '#^Access to an undefined property App\\Modules\\Voucher\\Infrastructure\\Persistence\\Models\\VoucherModel\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Modules\\Voucher\\Infrastructure\\Persistence\\Models\\VoucherModel\>\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/VoucherReadAccessTest.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 3
+			path: ../../../tests/Feature/Modules/Voucher/VoucherReadAccessTest.php
+
+		-
+			message: '#^Call to an undefined method ReflectionType\:\:getName\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/VoucherReadAccessTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:requireId\(\)\.$#'
+			identifier: method.notFound
+			count: 7
+			path: ../../../tests/Feature/Modules/Voucher/VoucherReadAccessTest.php
+
+		-
+			message: '#^Parameter \#1 \$date of method Carbon\\Carbon\:\:eq\(\) expects DateTimeInterface\|string, Carbon\\Carbon\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/VoucherReadAccessTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function expect$#'
+			identifier: argument.templateType
+			count: 1
+			path: ../../../tests/Feature/Modules/Voucher/VoucherReadAccessTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:once\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: ../../../tests/Unit/Modules/Allocation/Application/ReleaseAllocationTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:once\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: ../../../tests/Unit/Modules/Allocation/Infrastructure/AllocationPhysicalStateAdapterTest.php
+
+		-
+			message: '#^Parameter \#1 \$physicalState of class App\\Modules\\Allocation\\Infrastructure\\Adapters\\AllocationPhysicalStateAdapter constructor expects App\\Modules\\Allocation\\Application\\Contracts\\Ports\\PhysicalStateSignalPort, Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../../../tests/Unit/Modules/Allocation/Infrastructure/AllocationPhysicalStateAdapterTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:once\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: ../../../tests/Unit/Modules/Lottery/Application/Adapters/RequestReadAdapterTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:andReturn\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: ../../../tests/Unit/Modules/Lottery/Application/EnrollRegistrationActionTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:once\(\)\.$#'
+			identifier: method.notFound
+			count: 14
+			path: ../../../tests/Unit/Modules/Lottery/Application/EnrollRegistrationActionTest.php
+
+		-
+			message: '#^Method Tests\\Unit\\Modules\\Lottery\\Application\\EnrollRegistrationActionTest\:\:mockRegistrationRepository\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: ../../../tests/Unit/Modules/Lottery/Application/EnrollRegistrationActionTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:once\(\)\.$#'
+			identifier: method.notFound
+			count: 6
+			path: ../../../tests/Unit/Modules/Lottery/Application/ExecuteDrawActionTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:times\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: ../../../tests/Unit/Modules/Lottery/Application/ExecuteDrawActionTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:twice\(\)\.$#'
+			identifier: method.notFound
+			count: 5
+			path: ../../../tests/Unit/Modules/Lottery/Application/ExecuteDrawActionTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:once\(\)\.$#'
+			identifier: method.notFound
+			count: 9
+			path: ../../../tests/Unit/Modules/Lottery/Application/LockLotteryProgramActionTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:with\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: ../../../tests/Unit/Modules/Lottery/Application/LockLotteryProgramActionTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:once\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: ../../../tests/Unit/Modules/Lottery/Application/LotteryProgramActionsTest.php
+
+		-
+			message: '#^Calling toBeInstanceOf\(\) on Expectation\<App\\Modules\\Lottery\\Domain\\Exceptions\\DrawNotAllowedException\>; assertion is redundant\.$#'
+			identifier: pest.expectation.redundant
+			count: 1
+			path: ../../../tests/Unit/Modules/Lottery/Domain/LotteryExceptionsTest.php
+
+		-
+			message: '#^Calling toBeInstanceOf\(\) on Expectation\<App\\Modules\\Lottery\\Domain\\Exceptions\\DuplicateEnrollmentException\>; assertion is redundant\.$#'
+			identifier: pest.expectation.redundant
+			count: 1
+			path: ../../../tests/Unit/Modules/Lottery/Domain/LotteryExceptionsTest.php
+
+		-
+			message: '#^Calling toBeInstanceOf\(\) on Expectation\<App\\Modules\\Lottery\\Domain\\Exceptions\\InvalidLotteryTransitionException\>; assertion is redundant\.$#'
+			identifier: pest.expectation.redundant
+			count: 1
+			path: ../../../tests/Unit/Modules/Lottery/Domain/LotteryExceptionsTest.php
+
+		-
+			message: '#^Calling toBeInstanceOf\(\) on Expectation\<App\\Modules\\Lottery\\Domain\\Exceptions\\LotteryProgramNotFoundException\>; assertion is redundant\.$#'
+			identifier: pest.expectation.redundant
+			count: 1
+			path: ../../../tests/Unit/Modules/Lottery/Domain/LotteryExceptionsTest.php
+
+		-
+			message: '#^Calling toBeInstanceOf\(\) on Expectation\<App\\Modules\\Lottery\\Domain\\Exceptions\\RegistrationClosedException\>; assertion is redundant\.$#'
+			identifier: pest.expectation.redundant
+			count: 1
+			path: ../../../tests/Unit/Modules/Lottery/Domain/LotteryExceptionsTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:isTerminal\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: ../../../tests/Unit/Modules/Lottery/Domain/LotteryProgramStateTest.php
+
+		-
+			message: '#^Calling toBeInstanceOf\(\) on Expectation\<Spatie\\ModelStates\\StateConfig\>; assertion is redundant\.$#'
+			identifier: pest.expectation.redundant
+			count: 1
+			path: ../../../tests/Unit/Modules/Lottery/Domain/LotteryProgramStateTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function expect$#'
+			identifier: argument.templateType
+			count: 1
+			path: ../../../tests/Unit/Modules/Lottery/Domain/LotteryProgramStateTest.php
+
+		-
+			message: '#^Parameter \$dormitoryRead of class App\\Modules\\Request\\Application\\Services\\SubmitRequestAction constructor expects App\\Modules\\Request\\Application\\Contracts\\DormitoryReadContract, Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../tests/Unit/Modules/Request/Application/SubmitDateValidationTest.php
+
+		-
+			message: '#^Parameter \$eligibility of class App\\Modules\\Request\\Application\\Services\\SubmitRequestAction constructor expects App\\Modules\\Request\\Application\\Contracts\\Internal\\RequestEligibilityGatewayContract, Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../tests/Unit/Modules/Request/Application/SubmitDateValidationTest.php
+
+		-
+			message: '#^Parameter \$requests of class App\\Modules\\Request\\Application\\Services\\SubmitRequestAction constructor expects App\\Modules\\Request\\Application\\Contracts\\RequestRepositoryContract, Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../tests/Unit/Modules/Request/Application/SubmitDateValidationTest.php
+
+		-
+			message: '#^Calling toBeTrue\(\) on Expectation\<true\>; assertion is redundant\.$#'
+			identifier: pest.expectation.redundant
+			count: 1
+			path: ../../../tests/Unit/Modules/Request/Domain/MissionGroupValidatorTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:isTerminal\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: ../../../tests/Unit/Modules/Request/Domain/RequestStateTest.php
+
+		-
+			message: '#^Calling toBeInstanceOf\(\) on Expectation\<Spatie\\ModelStates\\StateConfig\>; assertion is redundant\.$#'
+			identifier: pest.expectation.redundant
+			count: 1
+			path: ../../../tests/Unit/Modules/Request/Domain/RequestStateTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function expect$#'
+			identifier: argument.templateType
+			count: 1
+			path: ../../../tests/Unit/Modules/Request/Domain/RequestStateTest.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$stateClass$#'
+			identifier: parameter.notFound
+			count: 1
+			path: ../../../tests/Unit/Modules/Request/Domain/RequestTransitionMatrixTest.php

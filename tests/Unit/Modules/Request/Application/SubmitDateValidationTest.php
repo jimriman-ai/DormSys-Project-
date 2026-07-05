@@ -22,6 +22,7 @@ use DateTimeZone;
 use Illuminate\Support\Carbon;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\Support\MockeryTest;
 use Tests\TestCase;
 
 class SubmitDateValidationTest extends TestCase
@@ -81,9 +82,9 @@ class SubmitDateValidationTest extends TestCase
     private function submitAction(): SubmitRequestAction
     {
         return new SubmitRequestAction(
-            requests: Mockery::mock(RequestRepositoryContract::class),
-            eligibility: Mockery::mock(RequestEligibilityGatewayContract::class),
-            dormitoryRead: Mockery::mock(DormitoryReadContract::class),
+            requests: MockeryTest::mock(RequestRepositoryContract::class),
+            eligibility: MockeryTest::mock(RequestEligibilityGatewayContract::class),
+            dormitoryRead: MockeryTest::mock(DormitoryReadContract::class),
         );
     }
 

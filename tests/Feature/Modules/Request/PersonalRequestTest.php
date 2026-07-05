@@ -84,8 +84,9 @@ it('rejects submit for an ineligible employee with stable reason codes', functio
     );
 
     expect(fn () => app(SubmitRequestAction::class)->execute($draft->requireId()))
-        ->toThrow(function (RequestNotEligibleException $exception): bool {
-            return in_array('employee_inactive', $exception->reasonCodes, true);
+        ->toThrow(function (Throwable $exception): bool {
+            return $exception instanceof RequestNotEligibleException
+                && in_array('employee_inactive', $exception->reasonCodes, true);
         });
 
     $unchanged = app(RequestRepositoryContract::class)->findById($draft->requireId());
@@ -113,7 +114,8 @@ it('rejects submit when eligibility contract reports pending request exists', fu
     );
 
     expect(fn () => app(SubmitRequestAction::class)->execute($draft->requireId()))
-        ->toThrow(function (RequestNotEligibleException $exception): bool {
-            return $exception->reasonCodes === ['pending_request_exists'];
+        ->toThrow(function (Throwable $exception): bool {
+            return $exception instanceof RequestNotEligibleException
+                && $exception->reasonCodes === ['pending_request_exists'];
         });
 });

@@ -115,9 +115,6 @@ class RequestTransitionMatrixTest extends TestCase
         return $model->refresh();
     }
 
-    /**
-     * @param  class-string  $stateClass
-     */
     private function resolveStateClass(string $status): string
     {
         return match ($status) {

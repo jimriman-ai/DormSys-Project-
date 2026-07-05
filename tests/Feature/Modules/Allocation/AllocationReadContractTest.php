@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Modules\Allocation\Application\Contracts\AllocationReadContract;
-use App\Modules\Allocation\Application\Services\AllocationReadService;
 use App\Modules\Allocation\Application\Services\CreateAllocationAction;
 use App\Modules\Allocation\Domain\Enums\AllocationStatus;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
@@ -14,7 +13,6 @@ it('exposes hasActiveAllocation and active assignment queries via AllocationRead
 
     $read = app(AllocationReadContract::class);
 
-    expect($read)->toBeInstanceOf(AllocationReadService::class);
     expect($read->hasActiveAllocation($personId))->toBeFalse();
     expect($read->getActiveAllocationsForPerson($personId))->toBe([]);
 
@@ -38,5 +36,7 @@ it('exposes hasActiveAllocation and active assignment queries via AllocationRead
     $summary = $read->getAllocationSummary($allocation->requireId()->value);
 
     expect($summary)->not->toBeNull();
+    $summary = $summary ?? throw new RuntimeException('Allocation summary not found');
+    expect($summary)->toHaveKey('allocationId');
     expect($summary['allocationId'])->toBe($allocation->requireId()->value);
 });

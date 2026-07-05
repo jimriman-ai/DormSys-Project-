@@ -34,6 +34,9 @@ beforeEach(function (): void {
     request()->attributes->set('audit_principal_user_id', $model->id);
 });
 
+/**
+ * @param  array<string, mixed>  $overrides
+ */
 function seedComplianceExportAuditEntry(array $overrides = []): AuditLogModel
 {
     $payload = array_merge([

@@ -57,8 +57,12 @@ test('integration service provider registers all approved integration ports', fu
 test('integration service provider remains the last bootstrap provider', function (): void {
     /** @var list<class-string> $providers */
     $providers = require base_path('bootstrap/providers.php');
+    $lastKey = array_key_last($providers);
+    if ($lastKey === null) {
+        throw new UnexpectedValueException('Expected at least one bootstrap provider.');
+    }
 
-    expect($providers[array_key_last($providers)])->toBe(IntegrationServiceProvider::class);
+    expect($providers[$lastKey])->toBe(IntegrationServiceProvider::class);
 });
 
 test('integration service provider registers bindings in register not boot', function (): void {
@@ -73,7 +77,12 @@ test('integration service provider registers bindings in register not boot', fun
         );
     }
 
-    $registerSource = file_get_contents($reflection->getFileName());
+    $fileName = $reflection->getFileName();
+    if ($fileName === false) {
+        throw new UnexpectedValueException('Expected integration service provider file name.');
+    }
+
+    $registerSource = file_get_contents($fileName);
 
     expect($registerSource)->not->toBeFalse();
     expect($registerSource)->toContain('singleton(');

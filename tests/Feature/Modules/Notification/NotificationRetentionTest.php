@@ -20,7 +20,7 @@ function retentionActiveEmployees(string ...$employeeIds): void
 {
     app()->instance(
         EmployeeExistenceReadPort::class,
-        new InMemoryEmployeeExistenceReadAdapter($employeeIds),
+        new InMemoryEmployeeExistenceReadAdapter(array_values($employeeIds)),
     );
 }
 

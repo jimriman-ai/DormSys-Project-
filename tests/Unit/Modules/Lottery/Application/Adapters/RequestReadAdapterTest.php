@@ -11,6 +11,7 @@ use App\Modules\Request\Application\DTOs\RequestSummaryDTO;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\Support\MockeryTest;
 use Tests\TestCase;
 
 class RequestReadAdapterTest extends TestCase
@@ -22,9 +23,8 @@ class RequestReadAdapterTest extends TestCase
         $employeeId = UuidGenerator::uuid7();
         $dormitoryId = UuidGenerator::uuid7();
 
-        $requests = Mockery::mock(RequestReadContract::class);
-        $requests->shouldReceive('listApprovedByType')
-            ->once()
+        $requests = MockeryTest::mock(RequestReadContract::class);
+        MockeryTest::expectOnce($requests, 'listApprovedByType')
             ->with('lottery_registration')
             ->andReturn([
                 new RequestSummaryDTO(
@@ -54,9 +54,8 @@ class RequestReadAdapterTest extends TestCase
     #[Test]
     public function it_returns_null_when_request_is_not_in_approved_lottery_list(): void
     {
-        $requests = Mockery::mock(RequestReadContract::class);
-        $requests->shouldReceive('listApprovedByType')
-            ->once()
+        $requests = MockeryTest::mock(RequestReadContract::class);
+        MockeryTest::expectOnce($requests, 'listApprovedByType')
             ->with('lottery_registration')
             ->andReturn([]);
         $this->app->instance(RequestReadContract::class, $requests);

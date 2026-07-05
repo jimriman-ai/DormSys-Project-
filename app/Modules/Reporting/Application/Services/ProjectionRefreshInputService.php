@@ -42,6 +42,7 @@ final class ProjectionRefreshInputService implements ProjectionRefreshInputPort
             occurredAfter: $cursor->lastOccurredAt,
             page: $request->page,
             perPage: $request->perPage,
+            occurredAfterAuditLogId: $cursor->lastSourceAuditLogId,
         );
 
         $items = $this->filterAlreadyProcessedItems($page->items, $cursor->lastSourceAuditLogId);

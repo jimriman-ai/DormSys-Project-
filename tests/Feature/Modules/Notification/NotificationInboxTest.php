@@ -7,6 +7,7 @@ use App\Modules\Notification\Application\Contracts\MarkNotificationReadContract;
 use App\Modules\Notification\Application\Contracts\NotificationDeliveryContract;
 use App\Modules\Notification\Application\Contracts\NotificationInboxReadContract;
 use App\Modules\Notification\Application\DTOs\NotificationIntentDto;
+use App\Modules\Notification\Application\DTOs\NotificationProjectionDto;
 use App\Modules\Notification\Domain\Enums\NotificationType;
 use App\Modules\Notification\Infrastructure\Adapters\InMemoryEmployeeExistenceReadAdapter;
 use App\Modules\Notification\Infrastructure\Persistence\Models\NotificationLogModel;
@@ -20,7 +21,7 @@ function inboxActiveEmployees(string ...$employeeIds): void
 {
     app()->instance(
         EmployeeExistenceReadPort::class,
-        new InMemoryEmployeeExistenceReadAdapter($employeeIds),
+        new InMemoryEmployeeExistenceReadAdapter(array_values($employeeIds)),
     );
 }
 
@@ -89,8 +90,10 @@ it('marks a notification as read', function (): void {
     );
 
     $projection = app(NotificationInboxReadContract::class)->findByIdForRecipient($notificationId, $employeeId);
+    if (! $projection instanceof NotificationProjectionDto) {
+        throw new UnexpectedValueException('Expected inbox projection.');
+    }
 
-    expect($projection)->not->toBeNull();
     expect($projection->isRead)->toBeTrue();
     expect($projection->readAt?->format(DateTimeImmutable::ATOM))->toBe('2026-07-02T12:00:00+00:00');
 });

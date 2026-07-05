@@ -21,6 +21,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+/**
+ * @param  array<string, AccommodationClassification>  $classifications
+ */
 function bindBoundaryClassification(array $classifications): void
 {
     app()->instance(
@@ -52,8 +55,10 @@ it('persists upstream trigger facts without upstream operational data ownership 
     $stored = VoucherIssuanceTriggerModel::query()
         ->where('correlation_id', 'boundary-facts-001')
         ->first();
+    if (! $stored instanceof VoucherIssuanceTriggerModel) {
+        throw new UnexpectedValueException('Expected stored trigger facts.');
+    }
 
-    expect($stored)->not->toBeNull();
     expect($stored->upstream_facts)->toHaveKey('lottery_result_id', $lotteryResultId);
     expect($stored->upstream_facts)->toHaveKey('upstream_claims_eligible', true);
     expect($stored->upstream_facts)->not->toHaveKey('allocation_id');

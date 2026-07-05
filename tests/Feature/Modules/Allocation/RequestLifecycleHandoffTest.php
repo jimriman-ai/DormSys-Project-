@@ -5,11 +5,13 @@ declare(strict_types=1);
 use App\Modules\Allocation\Application\Contracts\RequestLifecycleCommandPort;
 use App\Modules\Allocation\Application\Services\CreateAllocationFromRequestAction;
 use App\Modules\Employee\Application\Services\CreateEmployeeAction;
+use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Request\Application\Services\ApproveRequestStageAction;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
+use App\Modules\Request\Domain\Entities\Request;
 use App\Modules\Request\Domain\States\ApprovedState;
 use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
@@ -17,6 +19,8 @@ use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use App\Support\ValueObjects\Identity\NationalCode;
 use Illuminate\Support\Carbon;
+use Mockery;
+use Tests\Support\MockeryTest;
 
 beforeEach(function (): void {
     Carbon::setTestNow('2026-07-01 12:00:00');
@@ -26,6 +30,9 @@ afterEach(function (): void {
     Carbon::setTestNow();
 });
 
+/**
+ * @return array{0: Employee, 1: Request, 2: string}
+ */
 function createApprovedRequestForLifecycleHandoffTest(): array
 {
     $user = app(CreateUserAction::class)->execute(
@@ -69,9 +76,8 @@ function createApprovedRequestForLifecycleHandoffTest(): array
 it('invokes RequestLifecycleCommandPort on successful allocation from request source', function (): void {
     [$employee, $request, $bedId] = createApprovedRequestForLifecycleHandoffTest();
 
-    $lifecycle = Mockery::mock(RequestLifecycleCommandPort::class);
-    $lifecycle->shouldReceive('markAllocated')
-        ->once()
+    $lifecycle = MockeryTest::mock(RequestLifecycleCommandPort::class);
+    MockeryTest::expectOnce($lifecycle, 'markAllocated')
         ->with(
             $request->requireId()->value,
             Mockery::type('string'),

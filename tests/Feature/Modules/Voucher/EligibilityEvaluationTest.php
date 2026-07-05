@@ -10,6 +10,7 @@ use App\Modules\Voucher\Domain\Enums\AccommodationClassification;
 use App\Modules\Voucher\Domain\Enums\DeferredReasonCode;
 use App\Modules\Voucher\Domain\Enums\EligibilityOutcome;
 use App\Modules\Voucher\Domain\Enums\IneligibilityReasonCode;
+use App\Modules\Voucher\Domain\Models\VoucherIssuanceTrigger;
 use App\Modules\Voucher\Infrastructure\Adapters\InMemoryAccommodationClassificationReadAdapter;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -17,6 +18,9 @@ use Illuminate\Support\Facades\Schema;
 
 uses(RefreshDatabase::class);
 
+/**
+ * @param  array<string, AccommodationClassification>  $classifications
+ */
 function bindClassificationAdapter(array $classifications): void
 {
     app()->instance(
@@ -25,12 +29,15 @@ function bindClassificationAdapter(array $classifications): void
     );
 }
 
+/**
+ * @param  array<string, mixed>  $extraFacts
+ */
 function acceptLotteryTrigger(
     string $correlationId,
     string $employeeId,
     ?string $dormitoryId = null,
     array $extraFacts = [],
-): object {
+): VoucherIssuanceTrigger {
     return app(VoucherTriggerIntakeContract::class)->accept(
         InboundTriggerFactsDto::fromLotteryFacts(array_merge([
             'correlation_id' => $correlationId,

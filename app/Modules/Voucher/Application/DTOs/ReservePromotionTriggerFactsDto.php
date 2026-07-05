@@ -58,7 +58,6 @@ final readonly class ReservePromotionTriggerFactsDto
             throw new ValidationException('Reserve promotion reserve facts must be an object when provided.');
         }
 
-        /** @var array<string, mixed>|null $reserveFacts */
         $reserveFacts = is_array($reserve) && $reserve !== [] ? $reserve : null;
 
         return new self(

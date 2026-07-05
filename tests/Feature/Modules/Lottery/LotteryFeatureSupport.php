@@ -55,6 +55,9 @@ function teardownLotteryFeatureTests(): void
     Carbon::setTestNow();
 }
 
+/**
+ * @param  array<string, mixed>  $payload
+ */
 function assertLotteryResultReadContractShape(array $payload): void
 {
     expect(array_keys($payload))->toEqual(LOTTERY_RESULT_READ_CONTRACT_KEYS);

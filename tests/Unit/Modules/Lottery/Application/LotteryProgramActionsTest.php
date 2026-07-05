@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\Support\MockeryTest;
 use Tests\TestCase;
 
 class LotteryProgramActionsTest extends TestCase
@@ -65,8 +66,8 @@ class LotteryProgramActionsTest extends TestCase
             status: 'locked',
         );
 
-        $repository = Mockery::mock(LotteryProgramRepositoryContract::class);
-        $repository->shouldReceive('findById')->once()->with($programId)->andReturn($locked);
+        $repository = MockeryTest::mock(LotteryProgramRepositoryContract::class);
+        MockeryTest::expectOnce($repository, 'findById')->with($programId)->andReturn($locked);
         $this->app->instance(LotteryProgramRepositoryContract::class, $repository);
 
         $this->expectException(InvalidLotteryTransitionException::class);
@@ -91,9 +92,9 @@ class LotteryProgramActionsTest extends TestCase
         );
         $closed = $open->markRegistrationClosed();
 
-        $repository = Mockery::mock(LotteryProgramRepositoryContract::class);
-        $repository->shouldReceive('findById')->once()->with($programId)->andReturn($open);
-        $repository->shouldReceive('save')->once()->with(Mockery::on(
+        $repository = MockeryTest::mock(LotteryProgramRepositoryContract::class);
+        MockeryTest::expectOnce($repository, 'findById')->with($programId)->andReturn($open);
+        MockeryTest::expectOnce($repository, 'save')->with(Mockery::on(
             fn (LotteryProgram $program): bool => $program->status === RegistrationClosedState::$name,
         ))->andReturn($closed);
         $this->app->instance(LotteryProgramRepositoryContract::class, $repository);
@@ -132,8 +133,8 @@ class LotteryProgramActionsTest extends TestCase
             status: DraftState::$name,
         );
 
-        $repository = Mockery::mock(LotteryProgramRepositoryContract::class);
-        $repository->shouldReceive('save')->once()->andReturn($persisted);
+        $repository = MockeryTest::mock(LotteryProgramRepositoryContract::class);
+        MockeryTest::expectOnce($repository, 'save')->andReturn($persisted);
         $this->app->instance(LotteryProgramRepositoryContract::class, $repository);
 
         app(CreateLotteryProgramAction::class)->execute(

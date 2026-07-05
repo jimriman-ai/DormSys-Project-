@@ -6,6 +6,7 @@ use App\Modules\Notification\Application\Contracts\EmployeeExistenceReadPort;
 use App\Modules\Notification\Application\Contracts\NotificationDeliveryContract;
 use App\Modules\Notification\Application\Contracts\NotificationInboxReadContract;
 use App\Modules\Notification\Application\DTOs\NotificationIntentDto;
+use App\Modules\Notification\Application\DTOs\NotificationProjectionDto;
 use App\Modules\Notification\Domain\Enums\DeliveryPriority;
 use App\Modules\Notification\Domain\Enums\DeliveryResultStatus;
 use App\Modules\Notification\Domain\Enums\NotificationType;
@@ -20,7 +21,7 @@ function reminderActiveEmployees(string ...$employeeIds): void
 {
     app()->instance(
         EmployeeExistenceReadPort::class,
-        new InMemoryEmployeeExistenceReadAdapter($employeeIds),
+        new InMemoryEmployeeExistenceReadAdapter(array_values($employeeIds)),
     );
 }
 
@@ -60,8 +61,10 @@ it('delivers a synthetic check in reminder intent with standard priority', funct
         (string) $result->notificationId,
         $employeeId,
     );
+    if (! $projection instanceof NotificationProjectionDto) {
+        throw new UnexpectedValueException('Expected check-in reminder projection.');
+    }
 
-    expect($projection)->not->toBeNull();
     expect($projection->notificationType)->toBe(NotificationType::CheckInReminder->value);
     expect($projection->entityId)->toBe($allocationId);
     expect($projection->deepLinkRoute)->toBe('check-in.show');

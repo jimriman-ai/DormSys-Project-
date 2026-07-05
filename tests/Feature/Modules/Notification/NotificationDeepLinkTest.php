@@ -20,7 +20,7 @@ function deepLinkActiveEmployees(string ...$employeeIds): void
 {
     app()->instance(
         EmployeeExistenceReadPort::class,
-        new InMemoryEmployeeExistenceReadAdapter($employeeIds),
+        new InMemoryEmployeeExistenceReadAdapter(array_values($employeeIds)),
     );
 }
 
@@ -58,6 +58,7 @@ it('persists entity reference and deep link route on delivery', function (): voi
     );
 
     expect($projection)->not->toBeNull();
+    $projection = $projection ?? throw new RuntimeException('Notification projection not found');
     expect($projection->entityType)->toBe('request');
     expect($projection->entityId)->toBe($requestId);
     expect($projection->deepLinkRoute)->toBe('requests.show');
@@ -88,6 +89,7 @@ it('delivers notifications without entity reference or deep link', function (): 
     );
 
     expect($projection)->not->toBeNull();
+    $projection = $projection ?? throw new RuntimeException('Notification projection not found');
     expect($projection->entityType)->toBeNull();
     expect($projection->entityId)->toBeNull();
     expect($projection->deepLinkRoute)->toBeNull();
@@ -129,6 +131,7 @@ it('does not mutate entity reference when marking a notification as read', funct
 
     $projection = app(NotificationInboxReadContract::class)->findByIdForRecipient($notificationId, $employeeId);
     expect($projection)->not->toBeNull();
+    $projection = $projection ?? throw new RuntimeException('Notification projection not found');
     expect($projection->isRead)->toBeTrue();
     expect($projection->entityType)->toBe('allocation');
     expect($projection->entityId)->toBe($allocationId);

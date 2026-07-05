@@ -22,6 +22,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+/**
+ * @param  array<string, AccommodationClassification>  $classifications
+ */
 function bindExternalLotteryClassifications(array $classifications): void
 {
     app()->instance(
@@ -30,6 +33,10 @@ function bindExternalLotteryClassifications(array $classifications): void
     );
 }
 
+/**
+ * @param  array<string, mixed>  $extra
+ * @return array<string, mixed>
+ */
 function externalLotteryWinnerFacts(
     string $correlationId,
     string $employeeId,
@@ -45,6 +52,9 @@ function externalLotteryWinnerFacts(
     ], $extra);
 }
 
+/**
+ * @param  list<array<string, mixed>>  $winners
+ */
 function externalLotteryBatch(
     string $programId,
     array $winners,
@@ -143,6 +153,7 @@ it('does not store room or bed identifiers from lottery winner facts', function 
         ->first();
 
     expect($trigger)->not->toBeNull();
+    $trigger = $trigger ?? throw new RuntimeException('Voucher issuance trigger not found');
     expect($trigger->upstream_facts)->not->toHaveKey('room_id');
     expect($trigger->upstream_facts)->not->toHaveKey('bed_id');
     expect($trigger->upstream_facts)->not->toHaveKey('room_number');
@@ -152,6 +163,7 @@ it('does not store room or bed identifiers from lottery winner facts', function 
 
     $voucher = VoucherModel::query()->where('correlation_id', 'lottery-sanitize-001')->first();
     expect($voucher)->not->toBeNull();
+    $voucher = $voucher ?? throw new RuntimeException('Voucher not found');
     expect($voucher->dormitory_id)->toBe($dormitoryId);
 });
 

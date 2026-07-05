@@ -7,9 +7,11 @@ use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Request\Application\Contracts\RequestReadContract;
+use App\Modules\Request\Application\DTOs\RequestSummaryDTO;
 use App\Modules\Request\Application\Services\ApproveRequestStageAction;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
+use App\Modules\Request\Domain\Entities\Request;
 use App\Modules\Request\Domain\Enums\RequestType;
 use App\Modules\Request\Domain\States\ApprovedState;
 use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
@@ -48,6 +50,9 @@ function createEmployeeForReadContractTest(): Employee
     );
 }
 
+/**
+ * @return array{0: Employee, 1: Request}
+ */
 function createApprovedPersonalRequestForReadTest(): array
 {
     $employee = createEmployeeForReadContractTest();
@@ -79,8 +84,10 @@ it('returns an approved request summary projection', function (): void {
     $reader = app(RequestReadContract::class);
 
     $summary = $reader->getRequestSummary($request->requireId());
+    if (! $summary instanceof RequestSummaryDTO) {
+        throw new UnexpectedValueException('Expected request summary.');
+    }
 
-    expect($summary)->not->toBeNull();
     expect($summary->id)->toBe($request->requireId()->value);
     expect($summary->employeeId)->toBe($employee->requireId()->value);
     expect($summary->type)->toBe(RequestType::Personal->value);

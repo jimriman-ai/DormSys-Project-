@@ -136,8 +136,14 @@ it('rejects at pending hr with required reason (BT-R04)', function (): void {
         ->get();
 
     expect($rows)->toHaveCount(2);
-    expect($rows->last()->decision)->toBe(ApprovalDecision::Rejected);
-    expect($rows->last()->reason)->toBe($reason);
+
+    $lastApproval = $rows->last();
+    if (! $lastApproval instanceof RequestApprovalModel) {
+        throw new UnexpectedValueException('Expected rejection approval row.');
+    }
+
+    expect($lastApproval->decision)->toBe(ApprovalDecision::Rejected);
+    expect($lastApproval->reason)->toBe($reason);
 
     Event::assertDispatched(RequestRejected::class, function (RequestRejected $event) use ($rejected, $reason): bool {
         return $event->aggregateId === $rejected->requireId()->value

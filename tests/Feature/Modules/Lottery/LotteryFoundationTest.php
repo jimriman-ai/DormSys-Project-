@@ -31,8 +31,10 @@ it('persists a draft lottery program with draft status', function (): void {
     expect($saved->status)->toBe(DraftState::$name);
 
     $reloaded = app(LotteryProgramRepositoryContract::class)->findById($saved->requireId());
+    if (! $reloaded instanceof LotteryProgram) {
+        throw new UnexpectedValueException('Expected reloaded lottery program.');
+    }
 
-    expect($reloaded)->not->toBeNull();
     expect($reloaded->title)->toBe('Summer 2026 Draw');
     expect($reloaded->capacity)->toBe(50);
 });

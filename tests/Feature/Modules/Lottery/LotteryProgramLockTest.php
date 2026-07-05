@@ -10,6 +10,7 @@ use App\Modules\Lottery\Application\Services\EnrollRegistrationAction;
 use App\Modules\Lottery\Application\Services\LockLotteryProgramAction;
 use App\Modules\Lottery\Application\Services\LotteryScoringConfigReader;
 use App\Modules\Lottery\Application\Services\OpenRegistrationAction;
+use App\Modules\Lottery\Domain\Models\EligibleSnapshot;
 use App\Modules\Lottery\Domain\Services\LotteryScoringEngine;
 use App\Modules\Lottery\Domain\States\LockedState;
 use App\Modules\Lottery\Domain\ValueObjects\DormitorySiteId;
@@ -88,7 +89,10 @@ it('locks a program and persists snapshot with stable scores', function (): void
     expect($locked->lockedAt)->not->toBeNull();
 
     $snapshot = app(LotteryEligibleSnapshotRepositoryContract::class)->findByProgramId($locked->requireId());
-    expect($snapshot)->not->toBeNull();
+    if (! $snapshot instanceof EligibleSnapshot) {
+        throw new UnexpectedValueException('Expected eligible snapshot.');
+    }
+
     expect($snapshot->randomSeed)->toBe($locked->randomSeed);
     expect($snapshot->payload['eligible'] ?? [])->toHaveCount(1);
 

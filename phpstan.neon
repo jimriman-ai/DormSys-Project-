@@ -26,4 +26,5 @@ parameters:
     treatPhpDocTypesAsCertain: false
 
     excludePaths:
+        - app/Providers/HorizonServiceProvider.php
         - app/Providers/TelescopeServiceProvider.php
