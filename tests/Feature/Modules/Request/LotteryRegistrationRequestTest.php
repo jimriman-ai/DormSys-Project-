@@ -8,13 +8,11 @@ use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Request\Application\Contracts\RequestReadContract;
 use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
-use App\Modules\Request\Application\Services\ApproveRequestStageAction;
 use App\Modules\Request\Application\Services\CreateLotteryRegistrationRequestAction;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
 use App\Modules\Request\Domain\Enums\RequestType;
 use App\Modules\Request\Domain\States\ApprovedState;
 use App\Modules\Request\Domain\States\PendingDepartmentManagerState;
-use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
@@ -62,15 +60,12 @@ it('persists lottery registration request type through submit and approval', fun
 
     expect($draft->type)->toBe(RequestType::LotteryRegistration);
 
-    $submitted = app(SubmitRequestAction::class)->execute($draft->requireId());
+    $submitted = asRequestOwner($employee, fn () => app(SubmitRequestAction::class)->execute($draft->requireId()));
     expect($submitted->status)->toBe(PendingDepartmentManagerState::$name);
 
     $request = $submitted;
     foreach (range(1, 4) as $_) {
-        $request = app(ApproveRequestStageAction::class)->execute(
-            $request->requireId(),
-            ApproverReferenceId::fromString(UuidGenerator::uuid7()),
-        );
+        $request = approveRequestStageForTest($request);
     }
 
     expect($request->status)->toBe(ApprovedState::$name);

@@ -7,7 +7,6 @@ use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Request\Application\Contracts\RequestApprovalRepositoryContract;
-use App\Modules\Request\Application\Services\ApproveRequestStageAction;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Application\Services\RejectRequestAction;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
@@ -72,12 +71,7 @@ function createSubmittedPersonalRequest(): Request
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
 
-    return app(SubmitRequestAction::class)->execute($draft->requireId());
-}
-
-function approverId(): ApproverReferenceId
-{
-    return ApproverReferenceId::fromString(UuidGenerator::uuid7());
+    return asRequestOwner($employee, fn () => app(SubmitRequestAction::class)->execute($draft->requireId()));
 }
 
 it('approves through four stages to approved with append-only approval rows (BT-R03)', function (): void {
@@ -86,16 +80,16 @@ it('approves through four stages to approved with append-only approval rows (BT-
     $submitted = createSubmittedPersonalRequest();
     expect($submitted->status)->toBe(PendingDepartmentManagerState::$name);
 
-    $request = app(ApproveRequestStageAction::class)->execute($submitted->requireId(), approverId());
+    $request = approveRequestStageForTest($submitted);
     expect($request->status)->toBe(PendingHRState::$name);
 
-    $request = app(ApproveRequestStageAction::class)->execute($request->requireId(), approverId());
+    $request = approveRequestStageForTest($request);
     expect($request->status)->toBe(PendingDormitoryManagerState::$name);
 
-    $request = app(ApproveRequestStageAction::class)->execute($request->requireId(), approverId());
+    $request = approveRequestStageForTest($request);
     expect($request->status)->toBe(PendingDormitoryUnitState::$name);
 
-    $request = app(ApproveRequestStageAction::class)->execute($request->requireId(), approverId());
+    $request = approveRequestStageForTest($request);
     expect($request->status)->toBe(ApprovedState::$name);
 
     expect(app(RequestApprovalRepositoryContract::class)->countForRequest($request->requireId()))->toBe(4);
@@ -118,15 +112,11 @@ it('rejects at pending hr with required reason (BT-R04)', function (): void {
     Event::fake([RequestApprovalRecorded::class, RequestRejected::class]);
 
     $submitted = createSubmittedPersonalRequest();
-    $afterDept = app(ApproveRequestStageAction::class)->execute($submitted->requireId(), approverId());
+    $afterDept = approveRequestStageForTest($submitted);
     expect($afterDept->status)->toBe(PendingHRState::$name);
 
     $reason = 'Insufficient documentation for HR review.';
-    $rejected = app(RejectRequestAction::class)->execute(
-        $afterDept->requireId(),
-        approverId(),
-        $reason,
-    );
+    $rejected = rejectRequestStageForTest($afterDept, $reason);
 
     expect($rejected->status)->toBe(RejectedState::$name);
     expect($rejected->rejectionReason)->toBe($reason);
@@ -154,16 +144,18 @@ it('rejects at pending hr with required reason (BT-R04)', function (): void {
 it('requires a non-empty rejection reason', function (): void {
     $submitted = createSubmittedPersonalRequest();
 
-    expect(fn () => app(RejectRequestAction::class)->execute(
-        $submitted->requireId(),
-        approverId(),
-        '   ',
+    expect(fn () => asMutationApprover(
+        fn (ApproverReferenceId $approverId) => app(RejectRequestAction::class)->execute(
+            $submitted->requireId(),
+            $approverId,
+            '   ',
+        ),
     ))->toThrow(RequestValidationException::class);
 });
 
 it('blocks updates to approval records (R-08)', function (): void {
     $submitted = createSubmittedPersonalRequest();
-    app(ApproveRequestStageAction::class)->execute($submitted->requireId(), approverId());
+    approveRequestStageForTest($submitted);
 
     $approval = RequestApprovalModel::query()->firstOrFail();
 

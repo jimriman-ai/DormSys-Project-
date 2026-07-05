@@ -4,13 +4,19 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Modules\Request\Application;
 
+use App\Application\Mutation\Contracts\MutationAuthorizationPort;
+use App\Application\Mutation\Contracts\MutationPrincipalContextPort;
+use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
+use App\Modules\Employee\Application\Contracts\EmployeeRepositoryContract;
 use App\Modules\Request\Application\Contracts\DormitoryReadContract;
 use App\Modules\Request\Application\Contracts\Internal\RequestEligibilityGatewayContract;
 use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
+use App\Modules\Request\Application\Services\RequestMutationAuthorizationGate;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
 use App\Modules\Request\Domain\Entities\Request;
 use App\Modules\Request\Domain\Enums\RequestType;
 use App\Modules\Request\Domain\Exceptions\RequestValidationException;
+use App\Modules\Request\Domain\Services\ApprovalStageResolver;
 use App\Modules\Request\Domain\States\DraftState;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
@@ -85,6 +91,15 @@ class SubmitDateValidationTest extends TestCase
             requests: MockeryTest::mock(RequestRepositoryContract::class),
             eligibility: MockeryTest::mock(RequestEligibilityGatewayContract::class),
             dormitoryRead: MockeryTest::mock(DormitoryReadContract::class),
+            mutationPolicy: new MutationPolicyEnforcementPoint(
+                principalContext: MockeryTest::mock(MutationPrincipalContextPort::class),
+                authorization: MockeryTest::mock(MutationAuthorizationPort::class),
+            ),
+            requestMutationAuth: new RequestMutationAuthorizationGate(
+                principalContext: MockeryTest::mock(MutationPrincipalContextPort::class),
+                employees: MockeryTest::mock(EmployeeRepositoryContract::class),
+                stageResolver: new ApprovalStageResolver,
+            ),
         );
     }
 

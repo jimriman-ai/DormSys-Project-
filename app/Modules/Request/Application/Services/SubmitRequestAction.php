@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Request\Application\Services;
 
+use App\Application\Mutation\Registry\MutationCapabilityCatalog;
+use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
 use App\Modules\Request\Application\Contracts\DormitoryReadContract;
 use App\Modules\Request\Application\Contracts\Internal\RequestEligibilityGatewayContract;
 use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
@@ -23,6 +25,8 @@ final class SubmitRequestAction
         private readonly RequestRepositoryContract $requests,
         private readonly RequestEligibilityGatewayContract $eligibility,
         private readonly DormitoryReadContract $dormitoryRead,
+        private readonly MutationPolicyEnforcementPoint $mutationPolicy,
+        private readonly RequestMutationAuthorizationGate $requestMutationAuth,
     ) {}
 
     public function execute(RequestId $requestId): Request
@@ -32,6 +36,11 @@ final class SubmitRequestAction
         if ($request === null) {
             throw new RequestNotFoundException('Request not found.');
         }
+
+        $this->mutationPolicy->enforce(MutationCapabilityCatalog::REQUEST_SUBMIT_OWN, [
+            'requestId' => $requestId->value,
+        ]);
+        $this->requestMutationAuth->assertSubmitOwn($request);
 
         if (! $request->isDraft()) {
             throw new InvalidRequestTransitionException('Only draft requests can be submitted.');

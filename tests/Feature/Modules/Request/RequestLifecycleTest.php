@@ -54,23 +54,28 @@ function createActiveEmployeeForLifecycleTest(): Employee
     );
 }
 
-function createDraftPersonalRequest(): Request
+/**
+ * @return array{0: Employee, 1: Request}
+ */
+function createDraftPersonalRequest(): array
 {
     $employee = createActiveEmployeeForLifecycleTest();
 
-    return app(CreatePersonalRequestAction::class)->execute(
+    $draft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
         dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
+
+    return [$employee, $draft];
 }
 
 it('cancels a draft request and dispatches request cancelled', function (): void {
     Event::fake([RequestCancelled::class]);
 
-    $draft = createDraftPersonalRequest();
-    $cancelled = app(CancelRequestAction::class)->execute($draft->requireId());
+    [$employee, $draft] = createDraftPersonalRequest();
+    $cancelled = asRequestOwner($employee, fn () => app(CancelRequestAction::class)->execute($draft->requireId()));
 
     expect($cancelled->status)->toBe(CancelledState::$name);
     expect($cancelled->cancelledAt)->not->toBeNull();
@@ -82,7 +87,7 @@ it('cancels a draft request and dispatches request cancelled', function (): void
 });
 
 it('cancels a submitted request before approval entry', function (): void {
-    $draft = createDraftPersonalRequest();
+    [$employee, $draft] = createDraftPersonalRequest();
     $repository = app(RequestRepositoryContract::class);
 
     $submitted = $repository->save(new Request(
@@ -99,18 +104,18 @@ it('cancels a submitted request before approval entry', function (): void {
 
     expect($submitted->status)->toBe(SubmittedState::$name);
 
-    $cancelled = app(CancelRequestAction::class)->execute($submitted->requireId());
+    $cancelled = asRequestOwner($employee, fn () => app(CancelRequestAction::class)->execute($submitted->requireId()));
 
     expect($cancelled->status)->toBe(CancelledState::$name);
 });
 
 it('rejects cancel from a pending approval stage', function (): void {
-    $draft = createDraftPersonalRequest();
-    $submitted = app(SubmitRequestAction::class)->execute($draft->requireId());
+    [$employee, $draft] = createDraftPersonalRequest();
+    $submitted = asRequestOwner($employee, fn () => app(SubmitRequestAction::class)->execute($draft->requireId()));
 
     expect($submitted->status)->toBe(PendingDepartmentManagerState::$name);
 
-    expect(fn () => app(CancelRequestAction::class)->execute($submitted->requireId()))
+    expect(fn () => asRequestOwner($employee, fn () => app(CancelRequestAction::class)->execute($submitted->requireId())))
         ->toThrow(InvalidRequestTransitionException::class);
 
     $unchanged = app(RequestRepositoryContract::class)->findById($submitted->requireId());
@@ -118,7 +123,7 @@ it('rejects cancel from a pending approval stage', function (): void {
 });
 
 it('rejects cancel from a terminal rejected request', function (): void {
-    $draft = createDraftPersonalRequest();
+    [$employee, $draft] = createDraftPersonalRequest();
     $repository = app(RequestRepositoryContract::class);
 
     $rejected = $repository->save(new Request(
@@ -136,15 +141,15 @@ it('rejects cancel from a terminal rejected request', function (): void {
 
     expect($rejected->isTerminal())->toBeTrue();
 
-    expect(fn () => app(CancelRequestAction::class)->execute($rejected->requireId()))
+    expect(fn () => asRequestOwner($employee, fn () => app(CancelRequestAction::class)->execute($rejected->requireId())))
         ->toThrow(InvalidRequestTransitionException::class);
 });
 
 it('dispatches request submitted after successful submit', function (): void {
     Event::fake([RequestSubmitted::class]);
 
-    $draft = createDraftPersonalRequest();
-    app(SubmitRequestAction::class)->execute($draft->requireId());
+    [$employee, $draft] = createDraftPersonalRequest();
+    asRequestOwner($employee, fn () => app(SubmitRequestAction::class)->execute($draft->requireId()));
 
     Event::assertDispatched(RequestSubmitted::class);
 });

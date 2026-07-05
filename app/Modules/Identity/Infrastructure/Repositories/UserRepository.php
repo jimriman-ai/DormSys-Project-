@@ -57,6 +57,13 @@ class UserRepository implements UserRepositoryContract
         return UserModel::query()->where('email', $email)->exists();
     }
 
+    public function findByEmail(string $email): ?User
+    {
+        $model = UserModel::query()->where('email', $email)->first();
+
+        return $model === null ? null : $this->toDomain($model);
+    }
+
     public function countActiveSystemAdministrators(): int
     {
         return UserModel::query()

@@ -12,6 +12,7 @@ use App\Modules\Audit\Application\Contracts\AuditPrincipalContextPort;
 use App\Modules\Audit\Application\Contracts\AuditRecordingContract;
 use App\Modules\Audit\Application\Services\AuditEventTypeCatalog;
 use App\Modules\Audit\Application\Services\AuditHistoryReadService;
+use App\Modules\Audit\Application\Services\AuditReadPolicyEnforcementPoint;
 use App\Modules\Audit\Application\Services\AuditRetentionSettingsReader;
 use App\Modules\Audit\Application\Services\PayloadHashCalculator;
 use App\Modules\Audit\Application\Services\QueryAuditHistoryAction;
@@ -36,6 +37,7 @@ class AuditServiceProvider extends ServiceProvider
 
         $this->app->singleton(AuditPrincipalContextPort::class, RequestAuditPrincipalContext::class);
         $this->app->singleton(AuditAuthorizationPort::class, AuditAuthorizationAdapter::class);
+        $this->app->singleton(AuditReadPolicyEnforcementPoint::class);
         $this->app->singleton(QueryAuditHistoryAction::class);
         $this->app->singleton(AuditHistoryReadService::class);
         $this->app->singleton(AuditHistoryReadContract::class, AuditHistoryReadService::class);

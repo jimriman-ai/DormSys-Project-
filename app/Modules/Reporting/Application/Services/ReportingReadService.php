@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Reporting\Application\Services;
 
-use App\Modules\Audit\Application\Contracts\AuditAuthorizationPort;
+use App\Modules\Audit\Application\Services\AuditReadPolicyEnforcementPoint;
 use App\Modules\Reporting\Application\Contracts\Ports\AggregateDrillDownPort;
 use App\Modules\Reporting\Application\Contracts\ReportingReadContract;
 use App\Modules\Reporting\Application\DTOs\ActorTimelineQuery;
@@ -24,7 +24,7 @@ use App\Modules\Reporting\Application\DTOs\SecurityAuditEventReadModel;
 final class ReportingReadService implements ReportingReadContract
 {
     public function __construct(
-        private readonly AuditAuthorizationPort $authorization,
+        private readonly AuditReadPolicyEnforcementPoint $auditReadPolicy,
         private readonly ReportingArchiveVisibilityGuard $archiveVisibility,
         private readonly QueryEntityAuditTimelineAction $queryEntityAuditTimeline,
         private readonly QueryActorAuditTimelineAction $queryActorAuditTimeline,
@@ -37,7 +37,7 @@ final class ReportingReadService implements ReportingReadContract
 
     public function entityTimeline(EntityTimelineQuery $query): EntityAuditTimelineReadModel
     {
-        $this->authorization->authorizeRead();
+        $this->enforceSensitiveReadAccess();
 
         $includeArchived = $this->archiveVisibility->resolveIncludeArchived($query->includeArchived);
 
@@ -46,7 +46,7 @@ final class ReportingReadService implements ReportingReadContract
 
     public function actorTimeline(ActorTimelineQuery $query): EntityAuditTimelineReadModel
     {
-        $this->authorization->authorizeRead();
+        $this->enforceSensitiveReadAccess();
 
         $includeArchived = $this->archiveVisibility->resolveIncludeArchived($query->includeArchived);
 
@@ -55,7 +55,7 @@ final class ReportingReadService implements ReportingReadContract
 
     public function drillDown(AggregateDrillDownQuery $query): AggregateDrillDownReadModel
     {
-        $this->authorization->authorizeRead();
+        $this->enforceSensitiveReadAccess();
 
         $includeArchived = $this->archiveVisibility->resolveIncludeArchived($query->includeArchived);
 
@@ -64,7 +64,7 @@ final class ReportingReadService implements ReportingReadContract
 
     public function correlationBundle(CorrelationBundleQuery $query): CorrelationAuditBundleReadModel
     {
-        $this->authorization->authorizeRead();
+        $this->enforceSensitiveReadAccess();
 
         $includeArchived = $this->archiveVisibility->resolveIncludeArchived($query->includeArchived);
 
@@ -73,7 +73,7 @@ final class ReportingReadService implements ReportingReadContract
 
     public function auditWindowSummary(AuditWindowSummaryQuery $query): AuditWindowSummaryReadModel
     {
-        $this->authorization->authorizeRead();
+        $this->enforceSensitiveReadAccess();
 
         $includeArchived = $this->archiveVisibility->resolveIncludeArchived($query->includeArchived);
 
@@ -82,7 +82,7 @@ final class ReportingReadService implements ReportingReadContract
 
     public function securityActorActivity(SecurityActorActivityQuery $query): SecurityAuditEventReadModel
     {
-        $this->authorization->authorizeRead();
+        $this->enforceSensitiveReadAccess();
 
         $includeArchived = $this->archiveVisibility->resolveIncludeArchived($query->includeArchived);
 
@@ -91,11 +91,16 @@ final class ReportingReadService implements ReportingReadContract
 
     public function complianceExport(ComplianceExportQuery $query): ComplianceExportReadModel
     {
-        $this->authorization->authorizeRead();
+        $this->enforceSensitiveReadAccess();
 
         $includeArchived = $this->archiveVisibility->resolveIncludeArchived($query->includeArchived);
 
         return $this->queryComplianceExport->execute($this->withIncludeArchivedForComplianceExport($query, $includeArchived));
+    }
+
+    private function enforceSensitiveReadAccess(): void
+    {
+        $this->auditReadPolicy->enforce();
     }
 
     private function withIncludeArchivedForComplianceExport(ComplianceExportQuery $query, bool $includeArchived): ComplianceExportQuery

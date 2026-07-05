@@ -8,13 +8,11 @@ use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Request\Application\Contracts\RequestReadContract;
 use App\Modules\Request\Application\DTOs\RequestSummaryDTO;
-use App\Modules\Request\Application\Services\ApproveRequestStageAction;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
 use App\Modules\Request\Domain\Entities\Request;
 use App\Modules\Request\Domain\Enums\RequestType;
 use App\Modules\Request\Domain\States\ApprovedState;
-use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
@@ -64,14 +62,11 @@ function createApprovedPersonalRequestForReadTest(): array
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
 
-    $submitted = app(SubmitRequestAction::class)->execute($draft->requireId());
+    $submitted = asRequestOwner($employee, fn () => app(SubmitRequestAction::class)->execute($draft->requireId()));
     $request = $submitted;
 
     foreach (range(1, 4) as $_) {
-        $request = app(ApproveRequestStageAction::class)->execute(
-            $request->requireId(),
-            ApproverReferenceId::fromString(UuidGenerator::uuid7()),
-        );
+        $request = approveRequestStageForTest($request);
     }
 
     expect($request->status)->toBe(ApprovedState::$name);

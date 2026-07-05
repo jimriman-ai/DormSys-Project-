@@ -23,6 +23,7 @@ use App\Modules\Request\Application\Services\CreateMissionRequestAction;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Application\Services\RejectRequestAction;
 use App\Modules\Request\Application\Services\RequestCodeGenerator;
+use App\Modules\Request\Application\Services\RequestMutationAuthorizationGate;
 use App\Modules\Request\Application\Services\RequestReadService;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
 use App\Modules\Request\Domain\Services\ApprovalStageResolver;
@@ -52,6 +53,7 @@ class RequestServiceProvider extends ServiceProvider
         $this->app->singleton(RequestApprovalRepositoryContract::class, RequestApprovalRepository::class);
         $this->app->singleton(ApprovalStageResolver::class);
         $this->app->singleton(AutoApprovalSettingsReader::class);
+        $this->app->singleton(RequestMutationAuthorizationGate::class);
         $this->app->singleton(RequestReadQueryPort::class, RequestReadQuery::class);
         $this->app->singleton(PendingRequestQueryPort::class, PendingRequestQuery::class);
         $this->app->singleton(RequestReadContract::class, RequestReadService::class);

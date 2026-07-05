@@ -23,11 +23,13 @@ use App\Providers\AppServiceProvider;
 use App\Providers\AuthFoundationServiceProvider;
 use App\Providers\HorizonServiceProvider;
 use App\Providers\IntegrationServiceProvider;
+use App\Providers\MutationAuthorizationServiceProvider;
 use Laravel\Horizon\HorizonApplicationServiceProvider;
 
 $providers = [
     AppServiceProvider::class,
     AuthFoundationServiceProvider::class,
+    MutationAuthorizationServiceProvider::class,
     IdentityServiceProvider::class,
     IdentityPresentationServiceProvider::class,
     EmployeeServiceProvider::class,

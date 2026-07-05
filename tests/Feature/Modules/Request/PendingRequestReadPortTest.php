@@ -9,7 +9,6 @@ use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Modules\Identity\Application\Services\CreateUserAction;
-use App\Modules\Request\Application\Services\ApproveRequestStageAction;
 use App\Modules\Request\Application\Services\CancelRequestAction;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
@@ -17,7 +16,6 @@ use App\Modules\Request\Domain\Exceptions\RequestNotEligibleException;
 use App\Modules\Request\Domain\States\ApprovedState;
 use App\Modules\Request\Domain\States\CancelledState;
 use App\Modules\Request\Domain\States\PendingDepartmentManagerState;
-use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
@@ -80,16 +78,13 @@ it('returns false for terminal request statuses (BT-R08)', function (): void {
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
 
-    $submitted = app(SubmitRequestAction::class)->execute($draft->requireId());
+    $submitted = asRequestOwner($employee, fn () => app(SubmitRequestAction::class)->execute($draft->requireId()));
     expect($submitted->status)->toBe(PendingDepartmentManagerState::$name);
     expect($port->hasPendingRequest($employeeId))->toBeTrue();
 
     $request = $submitted;
     foreach (range(1, 4) as $_) {
-        $request = app(ApproveRequestStageAction::class)->execute(
-            $request->requireId(),
-            ApproverReferenceId::fromString(UuidGenerator::uuid7()),
-        );
+        $request = approveRequestStageForTest($request);
     }
 
     expect($request->status)->toBe(ApprovedState::$name);
@@ -124,7 +119,7 @@ it('blocks submit when eligibility detects an existing pending request (CD-013)'
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
 
-    expect(fn () => app(SubmitRequestAction::class)->execute($secondDraft->requireId()))
+    expect(fn () => asRequestOwner($employee, fn () => app(SubmitRequestAction::class)->execute($secondDraft->requireId())))
         ->toThrow(RequestNotEligibleException::class);
 
     $eligibility = app(EmployeeEligibilityContract::class)->computeRequestEligibility(
@@ -146,7 +141,7 @@ it('does not treat cancelled requests as pending (R-04)', function (): void {
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
 
-    $cancelled = app(CancelRequestAction::class)->execute($draft->requireId());
+    $cancelled = asRequestOwner($employee, fn () => app(CancelRequestAction::class)->execute($draft->requireId()));
     expect($cancelled->status)->toBe(CancelledState::$name);
 
     expect(app(PendingRequestReadPort::class)->hasPendingRequest($employeeId))->toBeFalse();

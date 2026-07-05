@@ -10,11 +10,9 @@ use App\Modules\Allocation\Infrastructure\Adapters\AllocationPhysicalStateAdapte
 use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Modules\Identity\Application\Services\CreateUserAction;
-use App\Modules\Request\Application\Services\ApproveRequestStageAction;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
 use App\Modules\Request\Domain\States\ApprovedState;
-use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
@@ -58,13 +56,10 @@ it('round-trips request read assign dormitory signal and read contract', functio
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
 
-    $request = app(SubmitRequestAction::class)->execute($draft->requireId());
+    $request = asRequestOwner($employee, fn () => app(SubmitRequestAction::class)->execute($draft->requireId()));
 
     foreach (range(1, 4) as $_) {
-        $request = app(ApproveRequestStageAction::class)->execute(
-            $request->requireId(),
-            ApproverReferenceId::fromString(UuidGenerator::uuid7()),
-        );
+        $request = approveRequestStageForTest($request);
     }
 
     expect($request->status)->toBe(ApprovedState::$name);

@@ -16,11 +16,9 @@ use App\Modules\Lottery\Domain\Exceptions\RegistrationClosedException;
 use App\Modules\Lottery\Domain\States\RegistrationOpenState;
 use App\Modules\Lottery\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Lottery\Domain\ValueObjects\RequestReferenceId;
-use App\Modules\Request\Application\Services\ApproveRequestStageAction;
 use App\Modules\Request\Application\Services\CreateLotteryRegistrationRequestAction;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
 use App\Modules\Request\Domain\States\ApprovedState;
-use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId as RequestDormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
@@ -65,13 +63,10 @@ function createApprovedLotteryRegistrationRequest(Employee $employee, string $do
         checkOutDate: now('UTC')->addMonths(6)->startOfDay()->toDateTimeImmutable(),
     );
 
-    $request = app(SubmitRequestAction::class)->execute($draft->requireId());
+    $request = asRequestOwner($employee, fn () => app(SubmitRequestAction::class)->execute($draft->requireId()));
 
     foreach (range(1, 4) as $_) {
-        $request = app(ApproveRequestStageAction::class)->execute(
-            $request->requireId(),
-            ApproverReferenceId::fromString(UuidGenerator::uuid7()),
-        );
+        $request = approveRequestStageForTest($request);
     }
 
     expect($request->status)->toBe(ApprovedState::$name);

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Reporting\Application\Services;
 
-use App\Modules\Audit\Application\Contracts\AuditAuthorizationPort;
 use App\Modules\Audit\Application\DTOs\AuditHistoryItemDto;
+use App\Modules\Audit\Application\Services\AuditReadPolicyEnforcementPoint;
 use App\Modules\Reporting\Application\Contracts\Ports\AuditHistorySourceReadPort;
 use App\Modules\Reporting\Application\Contracts\Ports\ProjectionCursorControlPort;
 use App\Modules\Reporting\Application\Contracts\Ports\ProjectionRefreshInputPort;
@@ -16,7 +16,7 @@ use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
 final class ProjectionRefreshInputService implements ProjectionRefreshInputPort
 {
     public function __construct(
-        private readonly AuditAuthorizationPort $authorization,
+        private readonly AuditReadPolicyEnforcementPoint $auditReadPolicy,
         private readonly ReportingArchiveVisibilityGuard $archiveVisibility,
         private readonly ProjectionCursorControlPort $cursorControl,
         private readonly AuditHistorySourceReadPort $auditHistorySource,
@@ -24,7 +24,7 @@ final class ProjectionRefreshInputService implements ProjectionRefreshInputPort
 
     public function fetchNextBatch(ProjectionRefreshRequestDto $request): ProjectionRefreshBatchDto
     {
-        $this->authorization->authorizeRead();
+        $this->auditReadPolicy->enforce();
 
         $cursor = $this->cursorControl->resolveCursor(
             $request->projectionFamily,

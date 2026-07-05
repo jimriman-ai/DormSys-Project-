@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Request\Application\Services;
 
+use App\Application\Mutation\Registry\MutationCapabilityCatalog;
+use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
 use App\Modules\Request\Application\Contracts\RequestApprovalRepositoryContract;
 use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
 use App\Modules\Request\Domain\Entities\Request;
@@ -26,6 +28,8 @@ final class RejectRequestAction
         private readonly RequestRepositoryContract $requests,
         private readonly RequestApprovalRepositoryContract $approvals,
         private readonly ApprovalStageResolver $stageResolver,
+        private readonly MutationPolicyEnforcementPoint $mutationPolicy,
+        private readonly RequestMutationAuthorizationGate $requestMutationAuth,
     ) {}
 
     public function execute(RequestId $requestId, ApproverReferenceId $approverId, string $reason): Request
@@ -36,8 +40,17 @@ final class RejectRequestAction
             throw new RequestValidationException('Rejection reason is required.');
         }
 
-        return DB::transaction(function () use ($requestId, $approverId, $reason): Request {
-            $request = $this->loadPendingRequest($requestId);
+        $request = $this->loadPendingRequest($requestId);
+        $stage = $this->stageResolver->stageForStatus($request->status);
+
+        $this->mutationPolicy->enforce(MutationCapabilityCatalog::REQUEST_REJECT, [
+            'requestId' => $requestId->value,
+            'approverId' => $approverId->value,
+            'stage' => $stage?->value,
+        ]);
+        $this->requestMutationAuth->assertReject($request, $approverId);
+
+        return DB::transaction(function () use ($request, $approverId, $reason): Request {
             $stage = $this->stageResolver->stageForStatus($request->status);
 
             if ($stage === null) {

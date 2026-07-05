@@ -36,3 +36,32 @@ test('only audit history source adapter references audit history read contract',
 
     expect($violations)->toBe([]);
 });
+
+test('reporting inner read actions do not reference audit authorization port directly', function (): void {
+    $allowed = [
+        'ReportingReadService.php',
+        'ProjectionRefreshInputService.php',
+    ];
+    $servicesPath = app_path('Modules/Reporting/Application/Services');
+    $violations = [];
+
+    foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($servicesPath)) as $file) {
+        if ($file->getExtension() !== 'php') {
+            continue;
+        }
+
+        $basename = $file->getBasename();
+
+        if (in_array($basename, $allowed, true)) {
+            continue;
+        }
+
+        $contents = file_get_contents($file->getPathname());
+
+        if ($contents !== false && str_contains($contents, 'AuditAuthorizationPort')) {
+            $violations[] = $file->getPathname();
+        }
+    }
+
+    expect($violations)->toBe([]);
+});

@@ -2,15 +2,19 @@
 
 declare(strict_types=1);
 
+use App\Application\Mutation\Exceptions\UnauthorizedMutationException;
 use App\Modules\Audit\Domain\Exceptions\UnauthorizedAuditAccessException;
 use App\Modules\Audit\Presentation\Http\Middleware\ResolveAuditPrincipalMiddleware;
 use App\Modules\Reporting\Domain\Exceptions\UnauthorizedArchiveVisibilityException;
 use App\Support\Exceptions\ValidationException as DomainValidationException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Validation\ValidationException as HttpValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -22,6 +26,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->api(prepend: [
+            EncryptCookies::class,
+            AddQueuedCookiesToResponse::class,
+            StartSession::class,
+        ]);
+
         $middleware->alias([
             'audit.principal' => ResolveAuditPrincipalMiddleware::class,
         ]);
@@ -43,6 +53,17 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (UnauthorizedAuditAccessException $exception, Request $request) {
+            if (! $request->is('api/*')) {
+                return null;
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], Response::HTTP_FORBIDDEN);
+        });
+
+        $exceptions->render(function (UnauthorizedMutationException $exception, Request $request) {
             if (! $request->is('api/*')) {
                 return null;
             }
@@ -94,6 +115,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             if ($exception instanceof AuthenticationException
                 || $exception instanceof UnauthorizedAuditAccessException
+                || $exception instanceof UnauthorizedMutationException
                 || $exception instanceof UnauthorizedArchiveVisibilityException
                 || $exception instanceof DomainValidationException
                 || $exception instanceof HttpValidationException) {

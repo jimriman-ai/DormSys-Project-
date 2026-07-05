@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Request\Application\Services;
 
+use App\Application\Mutation\Registry\MutationCapabilityCatalog;
+use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
 use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
 use App\Modules\Request\Domain\Entities\Request;
 use App\Modules\Request\Domain\Events\RequestCancelled;
@@ -17,6 +19,8 @@ final class CancelRequestAction
 {
     public function __construct(
         private readonly RequestRepositoryContract $requests,
+        private readonly MutationPolicyEnforcementPoint $mutationPolicy,
+        private readonly RequestMutationAuthorizationGate $requestMutationAuth,
     ) {}
 
     public function execute(RequestId $requestId): Request
@@ -26,6 +30,11 @@ final class CancelRequestAction
         if ($request === null) {
             throw new RequestNotFoundException('Request not found.');
         }
+
+        $this->mutationPolicy->enforce(MutationCapabilityCatalog::REQUEST_CANCEL_OWN, [
+            'requestId' => $requestId->value,
+        ]);
+        $this->requestMutationAuth->assertCancelOwn($request);
 
         if (! $request->isCancellable()) {
             throw new InvalidRequestTransitionException('Only draft or submitted requests can be cancelled.');

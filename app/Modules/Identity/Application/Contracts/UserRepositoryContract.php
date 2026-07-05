@@ -15,6 +15,8 @@ interface UserRepositoryContract
 
     public function existsByEmail(string $email): bool;
 
+    public function findByEmail(string $email): ?User;
+
     public function countActiveSystemAdministrators(): int;
 
     public function userHasRole(UserId $id, string $roleName): bool;

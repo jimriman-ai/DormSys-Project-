@@ -60,7 +60,7 @@ it('submits an eligible personal request into the approval pipeline', function (
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
 
-    $submitted = app(SubmitRequestAction::class)->execute($draft->requireId());
+    $submitted = asRequestOwner($employee, fn () => app(SubmitRequestAction::class)->execute($draft->requireId()));
 
     expect($submitted->status)->toBe(PendingDepartmentManagerState::$name);
     expect($submitted->submittedAt)->not->toBeNull();
@@ -84,7 +84,7 @@ it('rejects submit for an ineligible employee with stable reason codes', functio
     );
 
     try {
-        app(SubmitRequestAction::class)->execute($draft->requireId());
+        asRequestOwner($employee, fn () => app(SubmitRequestAction::class)->execute($draft->requireId()));
         test()->fail('Expected RequestNotEligibleException to be thrown.');
     } catch (RequestNotEligibleException $exception) {
         expect($exception->reasonCodes)->toContain('employee_inactive');
@@ -115,7 +115,7 @@ it('rejects submit when eligibility contract reports pending request exists', fu
     );
 
     try {
-        app(SubmitRequestAction::class)->execute($draft->requireId());
+        asRequestOwner($employee, fn () => app(SubmitRequestAction::class)->execute($draft->requireId()));
         test()->fail('Expected RequestNotEligibleException to be thrown.');
     } catch (RequestNotEligibleException $exception) {
         expect($exception->reasonCodes)->toBe(['pending_request_exists']);
