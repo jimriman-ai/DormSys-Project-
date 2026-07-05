@@ -12,6 +12,7 @@ use App\Modules\Reporting\Domain\Enums\WindowGranularity;
 use App\Modules\Reporting\Infrastructure\Persistence\Models\AuditWindowAggregateModel;
 use DateTimeImmutable;
 use DateTimeZone;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
 final class AuditWindowAggregateRepository implements AuditWindowAggregateWritePort
@@ -73,16 +74,18 @@ final class AuditWindowAggregateRepository implements AuditWindowAggregateWriteP
         string $trackedEntityType,
         string $trackedActorType,
     ): void {
-        $model = AuditWindowAggregateModel::query()
+        $builder = AuditWindowAggregateModel::query()
             ->where('window_start', Carbon::instance($windowStart))
             ->where('window_end', Carbon::instance($windowEnd))
             ->where('granularity', WindowGranularity::Day->value)
-            ->where('event_type', $eventType)
-            ->where('source_context', $sourceContext)
-            ->where('actor_type', $actorType)
-            ->where('entity_type', $entityType)
-            ->where('archive_visibility_tier', $archiveVisibilityTier->value)
-            ->first();
+            ->where('archive_visibility_tier', $archiveVisibilityTier->value);
+
+        $this->whereNullableDimension($builder, 'event_type', $eventType);
+        $this->whereNullableDimension($builder, 'source_context', $sourceContext);
+        $this->whereNullableDimension($builder, 'actor_type', $actorType);
+        $this->whereNullableDimension($builder, 'entity_type', $entityType);
+
+        $model = $builder->first();
 
         if ($model === null) {
             AuditWindowAggregateModel::query()->create([
@@ -165,6 +168,20 @@ final class AuditWindowAggregateRepository implements AuditWindowAggregateWriteP
         }
 
         return array_values($builder->orderBy('window_start')->get()->all());
+    }
+
+    /**
+     * @param  Builder<AuditWindowAggregateModel>  $builder
+     */
+    private function whereNullableDimension(Builder $builder, string $column, ?string $value): void
+    {
+        if ($value === null) {
+            $builder->whereNull($column);
+
+            return;
+        }
+
+        $builder->where($column, $value);
     }
 
     private function entityRef(string $entityType, string $entityId): string
