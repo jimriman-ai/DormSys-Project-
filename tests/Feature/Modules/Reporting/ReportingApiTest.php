@@ -17,6 +17,7 @@ use App\Modules\Reporting\Domain\Enums\WindowGranularity;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Database\Seeders\IdentityRoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Artisan;
 
 uses(RefreshDatabase::class);
@@ -204,7 +205,7 @@ it('returns 422 for invalid reporting api query parameters', function (): void {
 });
 
 it('registers all six reporting api endpoints', function (): void {
-    /** @var \Illuminate\Routing\Router $router */
+    /** @var Router $router */
     $router = app('router');
     $routes = collect($router->getRoutes()->getRoutes())
         ->filter(static fn ($route) => str_starts_with($route->uri(), 'api/reporting/'))
