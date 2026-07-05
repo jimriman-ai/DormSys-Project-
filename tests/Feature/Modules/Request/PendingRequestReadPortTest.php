@@ -20,7 +20,7 @@ use App\Modules\Request\Domain\States\PendingDepartmentManagerState;
 use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
-use App\Modules\Request\Infrastructure\Adapters\PendingRequestReadAdapter;
+use App\Integrations\Request\PendingRequestReadBridge;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use App\Support\ValueObjects\Identity\NationalCode;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -98,7 +98,7 @@ it('returns false for terminal request statuses (BT-R08)', function (): void {
 });
 
 it('exposes only the read-only port surface (BT-R09 / OA-05-09)', function (): void {
-    $adapterReflection = new \ReflectionClass(PendingRequestReadAdapter::class);
+    $adapterReflection = new \ReflectionClass(PendingRequestReadBridge::class);
     $publicAdapterMethods = array_filter(
         $adapterReflection->getMethods(\ReflectionMethod::IS_PUBLIC),
         static fn (\ReflectionMethod $method): bool => ! $method->isConstructor() && ! $method->isStatic(),

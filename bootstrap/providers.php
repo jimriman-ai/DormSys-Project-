@@ -20,6 +20,7 @@ use App\Modules\Voucher\Infrastructure\Providers\VoucherServiceProvider;
 use App\Modules\Workflow\Infrastructure\Providers\WorkflowServiceProvider;
 use App\Providers\AppServiceProvider;
 use App\Providers\HorizonServiceProvider;
+use App\Providers\IntegrationServiceProvider;
 
 return [
     AppServiceProvider::class,
@@ -40,4 +41,5 @@ return [
     NotificationServiceProvider::class,
     AuditServiceProvider::class,
     ReportingServiceProvider::class,
+    IntegrationServiceProvider::class,
 ];

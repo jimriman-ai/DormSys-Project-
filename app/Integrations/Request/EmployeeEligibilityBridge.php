@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Request\Infrastructure\Adapters;
+namespace App\Integrations\Request;
 
 use App\Modules\Employee\Application\Contracts\EmployeeEligibilityContract;
 use App\Modules\Employee\Application\DTOs\EligibilityResultDTO;
 use App\Modules\Employee\Domain\ValueObjects\EmployeeId;
 use App\Modules\Request\Application\Contracts\Internal\RequestEligibilityGatewayContract;
 
-final class EmployeeEligibilityGateway implements RequestEligibilityGatewayContract
+final class EmployeeEligibilityBridge implements RequestEligibilityGatewayContract
 {
     public function __construct(
         private readonly EmployeeEligibilityContract $eligibility,
