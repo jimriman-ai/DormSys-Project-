@@ -23,6 +23,8 @@ use Illuminate\Support\Carbon;
  * @property int $event_count
  * @property int $distinct_entity_count
  * @property int $distinct_actor_count
+ * @property list<string> $distinct_entity_refs
+ * @property list<string> $distinct_actor_refs
  * @property array<string, int>|null $top_event_types
  * @property Carbon $refreshed_at
  * @property string $projection_version
@@ -50,6 +52,8 @@ class AuditWindowAggregateModel extends Model
         'event_count',
         'distinct_entity_count',
         'distinct_actor_count',
+        'distinct_entity_refs',
+        'distinct_actor_refs',
         'top_event_types',
         'refreshed_at',
         'projection_version',
@@ -65,6 +69,8 @@ class AuditWindowAggregateModel extends Model
             'window_end' => 'datetime',
             'granularity' => WindowGranularity::class,
             'archive_visibility_tier' => ArchiveVisibilityTier::class,
+            'distinct_entity_refs' => 'array',
+            'distinct_actor_refs' => 'array',
             'top_event_types' => 'array',
             'refreshed_at' => 'datetime',
         ];

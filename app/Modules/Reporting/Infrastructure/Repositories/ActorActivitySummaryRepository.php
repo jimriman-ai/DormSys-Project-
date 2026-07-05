@@ -43,6 +43,7 @@ final class ActorActivitySummaryRepository implements ActorActivitySummaryWriteP
                 'granularity' => WindowGranularity::Day,
                 'event_count' => 1,
                 'distinct_event_types' => [$item->eventType],
+                'distinct_entity_refs' => [$this->entityRef($item)],
                 'distinct_entities_touched' => 1,
                 'archive_visibility_tier' => $archiveVisibilityTier,
                 'refreshed_at' => Carbon::instance($refreshedAt),
@@ -59,7 +60,14 @@ final class ActorActivitySummaryRepository implements ActorActivitySummaryWriteP
             $model->distinct_event_types = $eventTypes;
         }
 
-        $model->distinct_entities_touched = max($model->distinct_entities_touched, 1);
+        $entityRefs = $model->distinct_entity_refs;
+        $entityRef = $this->entityRef($item);
+        if (! in_array($entityRef, $entityRefs, true)) {
+            $entityRefs[] = $entityRef;
+            $model->distinct_entity_refs = $entityRefs;
+        }
+
+        $model->distinct_entities_touched = count($entityRefs);
         $model->refreshed_at = Carbon::instance($refreshedAt);
         $model->projection_version = $projectionVersion;
         $model->save();
@@ -82,5 +90,10 @@ final class ActorActivitySummaryRepository implements ActorActivitySummaryWriteP
                 ->get()
                 ->all(),
         );
+    }
+
+    private function entityRef(AuditHistoryItemDto $item): string
+    {
+        return $item->entityType.':'.$item->entityId;
     }
 }

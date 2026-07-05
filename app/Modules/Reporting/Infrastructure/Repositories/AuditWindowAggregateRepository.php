@@ -37,6 +37,8 @@ final class AuditWindowAggregateRepository implements AuditWindowAggregateWriteP
             refreshedAt: $refreshedAt,
             entityId: $item->entityId,
             actorId: $item->actorId,
+            trackedEntityType: $item->entityType,
+            trackedActorType: $item->actorType,
         );
 
         $this->incrementRow(
@@ -51,6 +53,8 @@ final class AuditWindowAggregateRepository implements AuditWindowAggregateWriteP
             refreshedAt: $refreshedAt,
             entityId: $item->entityId,
             actorId: $item->actorId,
+            trackedEntityType: $item->entityType,
+            trackedActorType: $item->actorType,
         );
     }
 
@@ -66,6 +70,8 @@ final class AuditWindowAggregateRepository implements AuditWindowAggregateWriteP
         DateTimeImmutable $refreshedAt,
         string $entityId,
         string $actorId,
+        string $trackedEntityType,
+        string $trackedActorType,
     ): void {
         $model = AuditWindowAggregateModel::query()
             ->where('window_start', Carbon::instance($windowStart))
@@ -89,6 +95,8 @@ final class AuditWindowAggregateRepository implements AuditWindowAggregateWriteP
                 'entity_type' => $entityType,
                 'archive_visibility_tier' => $archiveVisibilityTier,
                 'event_count' => 1,
+                'distinct_entity_refs' => [$this->entityRef($trackedEntityType, $entityId)],
+                'distinct_actor_refs' => [$this->actorRef($trackedActorType, $actorId)],
                 'distinct_entity_count' => 1,
                 'distinct_actor_count' => 1,
                 'top_event_types' => $eventType === null ? null : [$eventType => 1],
@@ -100,8 +108,23 @@ final class AuditWindowAggregateRepository implements AuditWindowAggregateWriteP
         }
 
         $model->event_count++;
-        $model->distinct_entity_count = max($model->distinct_entity_count, 1);
-        $model->distinct_actor_count = max($model->distinct_actor_count, 1);
+
+        $entityRefs = $model->distinct_entity_refs;
+        $entityRef = $this->entityRef($trackedEntityType, $entityId);
+        if (! in_array($entityRef, $entityRefs, true)) {
+            $entityRefs[] = $entityRef;
+            $model->distinct_entity_refs = $entityRefs;
+        }
+
+        $actorRefs = $model->distinct_actor_refs;
+        $actorRef = $this->actorRef($trackedActorType, $actorId);
+        if (! in_array($actorRef, $actorRefs, true)) {
+            $actorRefs[] = $actorRef;
+            $model->distinct_actor_refs = $actorRefs;
+        }
+
+        $model->distinct_entity_count = count($entityRefs);
+        $model->distinct_actor_count = count($actorRefs);
 
         if ($eventType !== null) {
             $histogram = $model->top_event_types ?? [];
@@ -142,5 +165,15 @@ final class AuditWindowAggregateRepository implements AuditWindowAggregateWriteP
         }
 
         return array_values($builder->orderBy('window_start')->get()->all());
+    }
+
+    private function entityRef(string $entityType, string $entityId): string
+    {
+        return $entityType.':'.$entityId;
+    }
+
+    private function actorRef(string $actorType, string $actorId): string
+    {
+        return $actorType.':'.$actorId;
     }
 }
