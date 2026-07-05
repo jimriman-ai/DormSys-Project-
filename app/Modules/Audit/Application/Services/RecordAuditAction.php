@@ -17,6 +17,7 @@ use DateTimeImmutable;
 use DateTimeZone;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 final class RecordAuditAction implements AuditRecordingContract
 {
@@ -27,8 +28,8 @@ final class RecordAuditAction implements AuditRecordingContract
 
     public function record(AuditEntryDto $entry): AuditRecordResultDto
     {
-        if (! $this->isRecordingEnabled()) {
-            throw new \RuntimeException('Audit recording is disabled.');
+        if (!$this->isRecordingEnabled()) {
+            throw new RuntimeException('Audit recording is disabled.');
         }
 
         $guarded = $this->payloadHashCalculator->guardSnapshots($entry);
@@ -98,7 +99,7 @@ final class RecordAuditAction implements AuditRecordingContract
         try {
             $saved = $this->auditLogs->insert($auditLog);
         } catch (QueryException $exception) {
-            if (! $this->isDuplicateKeyViolation($exception)) {
+            if (!$this->isDuplicateKeyViolation($exception)) {
                 throw $exception;
             }
 

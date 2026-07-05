@@ -16,7 +16,7 @@ class AutoApprovalSettingsReaderTest extends TestCase
     #[DataProvider('booleanValueProvider')]
     public function it_normalizes_settings_values_to_boolean(mixed $value, bool $expected): void
     {
-        $reader = new AutoApprovalSettingsReader;
+        $reader = new AutoApprovalSettingsReader();
         $method = new ReflectionMethod(AutoApprovalSettingsReader::class, 'normalizeBool');
         $method->setAccessible(true);
 

@@ -12,6 +12,7 @@ use App\Modules\Audit\Domain\ValueObjects\CorrelationId;
 use App\Modules\Audit\Domain\ValueObjects\EntityReference;
 use App\Support\Exceptions\ValidationException;
 use DateTimeImmutable;
+use DateTimeZone;
 use Ramsey\Uuid\Uuid;
 
 final readonly class AuditEntryDto
@@ -77,7 +78,7 @@ final readonly class AuditEntryDto
     private static function requireFields(array $payload, array $fields): void
     {
         foreach ($fields as $field) {
-            if (! array_key_exists($field, $payload)) {
+            if (!array_key_exists($field, $payload)) {
                 throw new ValidationException('Missing required audit entry field: '.$field.'.');
             }
         }
@@ -92,7 +93,7 @@ final readonly class AuditEntryDto
             return null;
         }
 
-        if (! is_array($value)) {
+        if (!is_array($value)) {
             throw new ValidationException('Snapshot values must be an object.');
         }
 
@@ -109,7 +110,7 @@ final readonly class AuditEntryDto
             return new DateTimeImmutable($value);
         }
 
-        return new DateTimeImmutable('now', new \DateTimeZone('UTC'));
+        return new DateTimeImmutable('now', new DateTimeZone('UTC'));
     }
 }
 
@@ -151,11 +152,11 @@ final readonly class AuditHistoryQuery
             throw new ValidationException('page must be at least 1.');
         }
 
-        if ($entityId !== null && ! Uuid::isValid($entityId)) {
+        if ($entityId !== null && !Uuid::isValid($entityId)) {
             throw new ValidationException('Invalid entity identifier filter.');
         }
 
-        if (! $this->hasFilterDimension()) {
+        if (!$this->hasFilterDimension()) {
             throw new ValidationException('At least one filter dimension is required.');
         }
     }
