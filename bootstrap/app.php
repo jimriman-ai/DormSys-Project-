@@ -12,6 +12,11 @@ use App\Modules\Allocation\Domain\Exceptions\AllocationOverlapException;
 use App\Modules\Allocation\Domain\Exceptions\BedNotAssignableException;
 use App\Modules\Allocation\Domain\Exceptions\InvalidAllocationTransitionException;
 use App\Modules\Allocation\Presentation\Http\Support\AllocationApiExceptionResponse;
+use App\Modules\CheckIn\Domain\Exceptions\AllocationNotActiveException as CheckInAllocationNotActiveException;
+use App\Modules\CheckIn\Domain\Exceptions\NoOpenCheckInRecordException;
+use App\Modules\CheckIn\Domain\Exceptions\OpenCheckInRecordExistsException;
+use App\Modules\CheckIn\Domain\Exceptions\OperatorRoleRequiredException;
+use App\Modules\CheckIn\Presentation\Http\Support\CheckInApiExceptionResponse;
 use App\Modules\Reporting\Domain\Exceptions\UnauthorizedArchiveVisibilityException;
 use App\Modules\Request\Domain\Exceptions\InvalidRequestTransitionException;
 use App\Modules\Request\Domain\Exceptions\RequestNotEligibleException;
@@ -184,6 +189,20 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             return AllocationApiExceptionResponse::fromAllocationException($exception);
+        });
+
+        $exceptions->render(function (
+            CheckInAllocationNotActiveException
+            |NoOpenCheckInRecordException
+            |OpenCheckInRecordExistsException
+            |OperatorRoleRequiredException $exception,
+            Request $request,
+        ) {
+            if (! $request->is('api/check-in', 'api/check-in/*')) {
+                return null;
+            }
+
+            return CheckInApiExceptionResponse::fromDomainException($exception);
         });
 
         $exceptions->render(function (Throwable $exception, Request $request) {

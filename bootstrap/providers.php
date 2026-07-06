@@ -6,6 +6,7 @@ use App\Modules\Allocation\Infrastructure\Providers\AllocationServiceProvider;
 use App\Modules\Allocation\Presentation\Providers\AllocationPresentationServiceProvider;
 use App\Modules\Audit\Infrastructure\Providers\AuditServiceProvider;
 use App\Modules\CheckIn\Infrastructure\Providers\CheckInServiceProvider;
+use App\Modules\CheckIn\Presentation\Providers\CheckInPresentationServiceProvider;
 use App\Modules\Dormitory\Infrastructure\Providers\DormitoryServiceProvider;
 use App\Modules\Employee\Infrastructure\Providers\EmployeeServiceProvider;
 use App\Modules\Employee\Presentation\Providers\EmployeePresentationServiceProvider;
@@ -42,6 +43,7 @@ $providers = [
     AllocationServiceProvider::class,
     AllocationPresentationServiceProvider::class,
     CheckInServiceProvider::class,
+    CheckInPresentationServiceProvider::class,
     LotteryServiceProvider::class,
     LotteryPresentationServiceProvider::class,
     VoucherServiceProvider::class,
