@@ -6,6 +6,13 @@ namespace App\Modules\CheckIn\Application\Services;
 
 use App\Modules\CheckIn\Application\Contracts\CheckInCommandPort;
 
+/**
+ * Check-in command port implementation.
+ *
+ * Propagation: caller must establish an explicit user principal via HTTP
+ * audit_principal_user_id or MutationPrincipalContext before invocation.
+ * This service does not establish or broaden mutation authority.
+ */
 final class CheckInService implements CheckInCommandPort
 {
     public function __construct(

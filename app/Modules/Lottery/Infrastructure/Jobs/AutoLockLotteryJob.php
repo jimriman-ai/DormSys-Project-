@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Lottery\Infrastructure\Jobs;
 
+use App\Application\Mutation\Support\MutationPrincipalContext;
 use App\Modules\Lottery\Application\Contracts\LotteryProgramRepositoryContract;
 use App\Modules\Lottery\Application\Services\CloseRegistrationAction;
 use App\Modules\Lottery\Application\Services\LockLotteryProgramAction;
@@ -27,11 +28,13 @@ final class AutoLockLotteryJob implements ShouldQueue
         CloseRegistrationAction $closeRegistration,
         LockLotteryProgramAction $lockProgram,
     ): void {
-        $asOf = now('UTC')->toDateTimeImmutable();
+        MutationPrincipalContext::runJobAsSystem(function () use ($programs, $closeRegistration, $lockProgram): void {
+            $asOf = now('UTC')->toDateTimeImmutable();
 
-        foreach ($programs->findPastRegistrationEndEligibleForAutoLock($asOf) as $program) {
-            $this->processProgram($program, $programs, $closeRegistration, $lockProgram);
-        }
+            foreach ($programs->findPastRegistrationEndEligibleForAutoLock($asOf) as $program) {
+                $this->processProgram($program, $programs, $closeRegistration, $lockProgram);
+            }
+        });
     }
 
     private function processProgram(

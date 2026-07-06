@@ -126,7 +126,7 @@ it('validates the full request to read contract integration boundary', function 
     }
 
     $drawJob = new ExecuteLotteryDrawJob($locked->requireId()->value);
-    runLotterySystemMutation(fn () => app()->call([$drawJob, 'handle']));
+    app()->call([$drawJob, 'handle']);
     expect(app(LotteryResultRepositoryContract::class)->findByProgramId($locked->requireId()))->toHaveCount(2);
 });
 
@@ -152,8 +152,8 @@ it('preserves idempotency when auto lock and draw jobs retry after manual comple
     Carbon::setTestNow('2026-07-15 12:00:00');
 
     $autoLockJob = app(AutoLockLotteryJob::class);
-    runLotterySystemMutation(fn () => app()->call([$autoLockJob, 'handle']));
-    runLotterySystemMutation(fn () => app()->call([$autoLockJob, 'handle']));
+    app()->call([$autoLockJob, 'handle']);
+    app()->call([$autoLockJob, 'handle']);
 
     $locked = app(LotteryProgramRepositoryContract::class)
         ->findById($opened->requireId());
@@ -161,8 +161,8 @@ it('preserves idempotency when auto lock and draw jobs retry after manual comple
     expect($locked?->status)->toBe(LockedState::$name);
 
     $drawJob = new ExecuteLotteryDrawJob($opened->requireId()->value);
-    runLotteryMutation(fn () => app()->call([$drawJob, 'handle']));
-    runLotteryMutation(fn () => app()->call([$drawJob, 'handle']));
+    app()->call([$drawJob, 'handle']);
+    app()->call([$drawJob, 'handle']);
 
     $payload = app(LotteryResultReadContract::class)->resultsForProgram($opened->requireId());
     assertLotteryResultReadContractShape($payload);

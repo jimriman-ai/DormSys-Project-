@@ -77,8 +77,8 @@ it('auto-locks past-deadline programs idempotently', function (): void {
     ));
 
     $job = app(AutoLockLotteryJob::class);
-    runLotterySystemMutation(fn () => app()->call([$job, 'handle']));
-    runLotterySystemMutation(fn () => app()->call([$job, 'handle']));
+    app()->call([$job, 'handle']);
+    app()->call([$job, 'handle']);
 
     $reloaded = app(LotteryProgramRepositoryContract::class)
         ->findById($opened->requireId());
@@ -110,12 +110,12 @@ it('executes draw job idempotently for locked programs', function (): void {
         RequestReferenceId::fromString($requestId),
     ));
 
-    runLotterySystemMutation(fn () => app()->call([app(AutoLockLotteryJob::class), 'handle']));
+    app()->call([app(AutoLockLotteryJob::class), 'handle']);
 
     $programId = $opened->requireId()->value;
     $drawJob = new ExecuteLotteryDrawJob($programId);
-    runLotteryMutation(fn () => app()->call([$drawJob, 'handle']));
-    runLotteryMutation(fn () => app()->call([$drawJob, 'handle']));
+    app()->call([$drawJob, 'handle']);
+    app()->call([$drawJob, 'handle']);
 
     $program = app(LotteryProgramRepositoryContract::class)
         ->findById($opened->requireId());

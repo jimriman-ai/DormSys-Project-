@@ -93,11 +93,12 @@ it('renders unauthorized mutation as forbidden json on api routes', function ():
         ->and($response->getContent())->toContain('Mutation denied.');
 });
 
-it('resolves console acting principal from environment variable', function (): void {
+it('does not resolve principal from environment variable', function (): void {
     $principalId = UuidGenerator::uuid7();
     putenv('MUTATION_ACTING_PRINCIPAL='.$principalId);
+    $_ENV['MUTATION_ACTING_PRINCIPAL'] = $principalId;
+    $_SERVER['MUTATION_ACTING_PRINCIPAL'] = $principalId;
 
-    app(MutationPolicyEnforcementPoint::class)->enforce(MutationCapabilityCatalog::REQUEST_SUBMIT_OWN);
-
-    expect(app(MutationPrincipalContextHolder::class)->get())->toBeNull();
+    expect(fn () => app(MutationPolicyEnforcementPoint::class)->enforce(MutationCapabilityCatalog::REQUEST_SUBMIT_OWN))
+        ->toThrow(UnauthorizedMutationException::class, 'Mutation requires an authorized principal.');
 });

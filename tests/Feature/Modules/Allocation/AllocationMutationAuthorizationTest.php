@@ -12,6 +12,7 @@ use App\Modules\Allocation\Application\Services\CreateAllocationFromRequestActio
 use App\Modules\Allocation\Application\Services\ReleaseAllocationAction;
 use App\Modules\Allocation\Domain\Enums\AllocationStatus;
 use App\Modules\Allocation\Domain\ValueObjects\AllocationId;
+use App\Modules\Allocation\Domain\ValueObjects\PersonAllocationRef;
 use App\Modules\Identity\Application\Contracts\IdentityUserReadContract;
 use App\Modules\Identity\Domain\ValueObjects\UserId;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
@@ -68,6 +69,20 @@ it('denies allocation create when principal is inactive', function (): void {
     )))->toThrow(UnauthorizedMutationException::class, 'Mutation actor must be an active identity user.');
 
     expect(app(IdentityUserReadContract::class)->isUserActive($actorId))->toBeFalse();
+});
+
+it('does not mutate allocation state when create is unauthorized', function (): void {
+    $personId = UuidGenerator::uuid7();
+    $bedId = UuidGenerator::uuid7();
+
+    expect(fn () => app(CreateAllocationAction::class)->execute(
+        personId: $personId,
+        bedId: $bedId,
+        start: new DateTimeImmutable('2026-08-01', new DateTimeZone('UTC')),
+        end: new DateTimeImmutable('2026-08-31', new DateTimeZone('UTC')),
+    ))->toThrow(UnauthorizedMutationException::class);
+
+    expect(app(AllocationRepositoryContract::class)->findActiveByPersonId(PersonAllocationRef::fromString($personId)))->toBeEmpty();
 });
 
 it('denies allocation release without a mutation principal', function (): void {

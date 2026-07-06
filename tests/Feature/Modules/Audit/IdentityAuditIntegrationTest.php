@@ -31,7 +31,7 @@ function authenticateIdentityActor(): UserModel
     return $model;
 }
 
-it('records identity user created audit entry with system actor when no principal is set', function (): void {
+it('records identity user created audit entry with mutation actor when helper establishes principal', function (): void {
     $user = createIdentityUserThroughMutation('Created Audit User', 'created-audit@example.com');
     $userId = $user->requireId()->value;
 
@@ -44,8 +44,8 @@ it('records identity user created audit entry with system actor when no principa
     expect($entry)->not->toBeNull();
     $entry = $entry ?? throw new RuntimeException('Identity user created audit entry not found');
     expect($entry->source_context)->toBe('identity');
-    expect($entry->actor_type)->toBe(ActorType::System);
-    expect($entry->actor_id)->toBe('system:scheduler');
+    expect($entry->actor_type)->toBe(ActorType::User);
+    expect($entry->actor_id)->not->toBe('system:scheduler');
     expect($entry->correlation_id)->toBe('identity:identity_user:'.$userId.':identity.user_created:created');
     expect($entry->new_values)->toBe(['status' => 'active']);
 });

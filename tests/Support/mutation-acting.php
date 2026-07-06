@@ -178,5 +178,5 @@ function withAllocationMutationActor(callable $callback, ?string $actorId = null
  */
 function asLotterySystemMutation(callable $callback): mixed
 {
-    return mutationActingAs(SystemActorId::VALUE, $callback);
+    return MutationPrincipalContext::runAsSystem($callback);
 }

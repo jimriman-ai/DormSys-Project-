@@ -27,12 +27,6 @@ final class CompositeMutationPrincipalContextAdapter implements MutationPrincipa
             return $fromRequest;
         }
 
-        $fromEnvironment = getenv('MUTATION_ACTING_PRINCIPAL');
-
-        if (is_string($fromEnvironment) && $fromEnvironment !== '') {
-            return $fromEnvironment;
-        }
-
         return null;
     }
 }

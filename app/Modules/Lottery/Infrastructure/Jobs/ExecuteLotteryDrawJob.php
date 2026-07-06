@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Lottery\Infrastructure\Jobs;
 
+use App\Application\Mutation\Support\MutationPrincipalContext;
 use App\Modules\Lottery\Application\Contracts\LotteryProgramRepositoryContract;
 use App\Modules\Lottery\Application\Services\ExecuteDrawAction;
 use App\Modules\Lottery\Domain\Exceptions\DrawNotAllowedException;
@@ -29,15 +30,17 @@ final class ExecuteLotteryDrawJob implements ShouldQueue
         LotteryProgramRepositoryContract $programs,
         ExecuteDrawAction $draw,
     ): void {
-        if ($this->programId !== null) {
-            $this->executeDraw(LotteryProgramId::fromString($this->programId), $draw);
+        MutationPrincipalContext::runJobAsSystem(function () use ($programs, $draw): void {
+            if ($this->programId !== null) {
+                $this->executeDraw(LotteryProgramId::fromString($this->programId), $draw);
 
-            return;
-        }
+                return;
+            }
 
-        foreach ($programs->findLockedReadyForDraw() as $program) {
-            $this->executeDraw($program->requireId(), $draw);
-        }
+            foreach ($programs->findLockedReadyForDraw() as $program) {
+                $this->executeDraw($program->requireId(), $draw);
+            }
+        });
     }
 
     private function executeDraw(LotteryProgramId $programId, ExecuteDrawAction $draw): void

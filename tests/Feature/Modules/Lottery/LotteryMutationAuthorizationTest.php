@@ -18,6 +18,7 @@ use App\Modules\Lottery\Application\Services\ExecuteDrawAction;
 use App\Modules\Lottery\Application\Services\LockLotteryProgramAction;
 use App\Modules\Lottery\Application\Services\OpenRegistrationAction;
 use App\Modules\Lottery\Domain\ValueObjects\DormitorySiteId;
+use App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId;
 use App\Modules\Lottery\Domain\ValueObjects\RequestReferenceId;
 use App\Modules\Request\Application\Services\CreateLotteryRegistrationRequestAction;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
@@ -95,7 +96,7 @@ it('denies lottery program create without a mutation principal', function (): vo
     ))->toThrow(UnauthorizedMutationException::class);
 
     expect(app(LotteryProgramRepositoryContract::class)->findById(
-        \App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId::fromString(UuidGenerator::uuid7()),
+        LotteryProgramId::fromString(UuidGenerator::uuid7()),
     ))->toBeNull();
 });
 
@@ -164,6 +165,26 @@ it('allows enrollment when principal owns the request', function (): void {
     ));
 
     expect($registration->employeeId->value)->toBe($employee->requireId()->value);
+});
+
+it('does not mutate program state when open registration is unauthorized', function (): void {
+    $actorId = createLotteryMutationActor();
+    $dormitoryId = DormitorySiteId::fromString(UuidGenerator::uuid7());
+
+    $program = mutationActingAs($actorId, fn () => app(CreateLotteryProgramAction::class)->execute(
+        title: 'Unauthorized Open Program',
+        dormitoryId: $dormitoryId,
+        capacity: 5,
+        registrationStartsAt: new DateTimeImmutable('2026-07-01 00:00:00', new DateTimeZone('UTC')),
+        registrationEndsAt: new DateTimeImmutable('2026-07-31 23:59:59', new DateTimeZone('UTC')),
+    ));
+
+    expect(fn () => app(OpenRegistrationAction::class)->execute($program->requireId()))
+        ->toThrow(UnauthorizedMutationException::class);
+
+    $reloaded = app(LotteryProgramRepositoryContract::class)->findById($program->requireId());
+
+    expect($reloaded?->isDraft())->toBeTrue();
 });
 
 it('denies program lifecycle mutations without a mutation principal', function (): void {

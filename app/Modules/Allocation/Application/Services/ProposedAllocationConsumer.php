@@ -9,6 +9,13 @@ use App\Modules\Lottery\Application\Contracts\ProposedAllocationPort;
 use DateTimeImmutable;
 use DateTimeZone;
 
+/**
+ * Consumes lottery draw winners and delegates allocation creation.
+ *
+ * Propagation: inherits the caller-established mutation principal from
+ * {@see MutationPrincipalContextHolder}; does not establish authority itself.
+ * Authoritative enforcement remains at {@see CreateAllocationAction} via MPEP.
+ */
 final class ProposedAllocationConsumer implements ProposedAllocationPort
 {
     public function __construct(

@@ -7,56 +7,48 @@ use App\Modules\Employee\Application\Contracts\EmployeeRepositoryContract;
 use App\Modules\Identity\Application\Contracts\IdentityUserReadContract;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use App\Shared\ValueObjects\SystemActorId;
+use Tests\Support\MockeryTest;
 
 function seedMutationAuthorizationBypassPrincipal(): string
 {
     $principalId = UuidGenerator::uuid7();
-    putenv('MUTATION_ACTING_PRINCIPAL='.$principalId);
-    $_ENV['MUTATION_ACTING_PRINCIPAL'] = $principalId;
-    $_SERVER['MUTATION_ACTING_PRINCIPAL'] = $principalId;
+    app(MutationPrincipalContextHolder::class)->set($principalId);
 
     return $principalId;
 }
 
 function bypassLotteryMutationAuthorization(): void
 {
-    putenv('MUTATION_ACTING_PRINCIPAL='.SystemActorId::VALUE);
-    $_ENV['MUTATION_ACTING_PRINCIPAL'] = SystemActorId::VALUE;
-    $_SERVER['MUTATION_ACTING_PRINCIPAL'] = SystemActorId::VALUE;
+    app(MutationPrincipalContextHolder::class)->set(SystemActorId::VALUE);
 }
 
 function bypassAllocationMutationAuthorization(): void
 {
     $principalId = seedMutationAuthorizationBypassPrincipal();
 
-    $identityRead = \Mockery::mock(IdentityUserReadContract::class);
-    $identityRead->shouldReceive('isUserActive')->with($principalId)->andReturn(true);
-    $identityRead->shouldReceive('isUserActive')->withAnyArgs()->andReturn(true);
+    $identityRead = MockeryTest::mock(IdentityUserReadContract::class);
+    MockeryTest::expect($identityRead, 'isUserActive')->with($principalId)->andReturn(true);
+    MockeryTest::expect($identityRead, 'isUserActive')->withAnyArgs()->andReturn(true);
     app()->instance(IdentityUserReadContract::class, $identityRead);
 }
 
 function configureLotteryEnrollMutationAuthorization(string $principalId, string $employeeId): void
 {
-    putenv('MUTATION_ACTING_PRINCIPAL='.$principalId);
-    $_ENV['MUTATION_ACTING_PRINCIPAL'] = $principalId;
-    $_SERVER['MUTATION_ACTING_PRINCIPAL'] = $principalId;
+    app(MutationPrincipalContextHolder::class)->set($principalId);
 
-    $employees = \Mockery::mock(EmployeeRepositoryContract::class);
-    $employees->shouldReceive('findEmployeeIdByIdentityUserId')
+    $employees = MockeryTest::mock(EmployeeRepositoryContract::class);
+    MockeryTest::expect($employees, 'findEmployeeIdByIdentityUserId')
         ->with($principalId)
         ->andReturn($employeeId);
     app()->instance(EmployeeRepositoryContract::class, $employees);
 
-    $identityRead = \Mockery::mock(IdentityUserReadContract::class);
-    $identityRead->shouldReceive('isUserActive')->with($principalId)->andReturn(true);
+    $identityRead = MockeryTest::mock(IdentityUserReadContract::class);
+    MockeryTest::expect($identityRead, 'isUserActive')->with($principalId)->andReturn(true);
     app()->instance(IdentityUserReadContract::class, $identityRead);
 }
 
 function resetMutationAuthorizationTestState(): void
 {
-    putenv('MUTATION_ACTING_PRINCIPAL');
-    unset($_ENV['MUTATION_ACTING_PRINCIPAL'], $_SERVER['MUTATION_ACTING_PRINCIPAL']);
-
     app()->forgetInstance(EmployeeRepositoryContract::class);
     app()->forgetInstance(IdentityUserReadContract::class);
 
