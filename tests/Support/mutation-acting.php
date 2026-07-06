@@ -19,7 +19,6 @@ use App\Modules\Identity\Application\Services\RevokeRoleFromUserAction;
 use App\Modules\Identity\Domain\Entities\User;
 use App\Modules\Identity\Domain\ValueObjects\UserId;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
-use App\Shared\ValueObjects\SystemActorId;
 use App\Support\ValueObjects\Identity\NationalCode;
 
 /**

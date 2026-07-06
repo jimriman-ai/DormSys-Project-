@@ -26,6 +26,10 @@ final class ExecuteLotteryDrawJob implements ShouldQueue
         public readonly ?string $programId = null,
     ) {}
 
+    /**
+     * System principal is established via {@see MutationPrincipalContext::runJobAsSystem()}.
+     * Authorization denial propagates; only draw race conflicts are swallowed.
+     */
     public function handle(
         LotteryProgramRepositoryContract $programs,
         ExecuteDrawAction $draw,

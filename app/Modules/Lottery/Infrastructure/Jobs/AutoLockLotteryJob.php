@@ -23,6 +23,10 @@ final class AutoLockLotteryJob implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
+    /**
+     * System principal is established via {@see MutationPrincipalContext::runJobAsSystem()}.
+     * Authorization denial propagates; only domain transition races are swallowed.
+     */
     public function handle(
         LotteryProgramRepositoryContract $programs,
         CloseRegistrationAction $closeRegistration,

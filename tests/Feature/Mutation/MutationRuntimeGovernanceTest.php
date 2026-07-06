@@ -3,26 +3,30 @@
 declare(strict_types=1);
 
 use App\Application\Mutation\Exceptions\UnauthorizedMutationException;
+use App\Application\Mutation\Registry\MutationCapabilityCatalog;
 use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
 use App\Application\Mutation\Support\MutationPrincipalContext;
 use App\Application\Mutation\Support\MutationPrincipalContextHolder;
 use App\Modules\Allocation\Application\Contracts\AllocationRepositoryContract;
 use App\Modules\Allocation\Application\Services\CreateAllocationAction;
 use App\Modules\Allocation\Domain\ValueObjects\PersonAllocationRef;
-use App\Modules\Employee\Domain\Entities\Employee;
-use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Modules\Lottery\Application\Contracts\LotteryProgramRepositoryContract;
 use App\Modules\Lottery\Application\Contracts\LotteryRegistrationRepositoryContract;
 use App\Modules\Lottery\Application\Services\EnrollRegistrationAction;
+use App\Modules\Lottery\Application\Services\LotteryScoringConfigReader;
 use App\Modules\Lottery\Application\Services\OpenRegistrationAction;
+use App\Modules\Lottery\Domain\States\CompletedState;
 use App\Modules\Lottery\Domain\States\LockedState;
 use App\Modules\Lottery\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Lottery\Domain\ValueObjects\RequestReferenceId;
 use App\Modules\Lottery\Infrastructure\Jobs\AutoLockLotteryJob;
 use App\Modules\Lottery\Infrastructure\Jobs\ExecuteLotteryDrawJob;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 uses(RefreshDatabase::class);
 
@@ -63,7 +67,7 @@ it('does not treat injected environment principal as production runtime authorit
     putenv('MUTATION_ACTING_PRINCIPAL='.UuidGenerator::uuid7());
 
     expect(fn () => app(MutationPolicyEnforcementPoint::class)->enforce(
-        \App\Application\Mutation\Registry\MutationCapabilityCatalog::ALLOCATION_CREATE,
+        MutationCapabilityCatalog::ALLOCATION_CREATE,
     ))->toThrow(UnauthorizedMutationException::class);
 });
 
@@ -121,7 +125,7 @@ it('executes draw job with explicit approved system actor without test wrappers'
     app()->call([new ExecuteLotteryDrawJob($opened->requireId()->value), 'handle']);
 
     expect(app(LotteryProgramRepositoryContract::class)->findById($opened->requireId())?->status)
-        ->toBe(\App\Modules\Lottery\Domain\States\CompletedState::$name);
+        ->toBe(CompletedState::$name);
 });
 
 it('denies user-bound lottery enrollment for approved system actor', function (): void {
@@ -165,8 +169,8 @@ it('allows system-driven allocation creation only through approved system actor 
 
 function seedLotterySettingsForBackgroundJobs(): void
 {
-    if (! Illuminate\Support\Facades\Schema::hasTable('settings')) {
-        Illuminate\Support\Facades\Schema::create('settings', function (Illuminate\Database\Schema\Blueprint $table): void {
+    if (! Schema::hasTable('settings')) {
+        Schema::create('settings', function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->string('key')->unique();
             $table->json('value');
@@ -174,8 +178,8 @@ function seedLotterySettingsForBackgroundJobs(): void
         });
     }
 
-    Illuminate\Support\Facades\DB::table('settings')->updateOrInsert(
-        ['key' => \App\Modules\Lottery\Application\Services\LotteryScoringConfigReader::SETTINGS_KEY],
+    DB::table('settings')->updateOrInsert(
+        ['key' => LotteryScoringConfigReader::SETTINGS_KEY],
         [
             'id' => UuidGenerator::uuid7(),
             'value' => json_encode([
