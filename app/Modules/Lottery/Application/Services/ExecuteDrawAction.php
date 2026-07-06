@@ -17,7 +17,9 @@ use App\Modules\Lottery\Domain\Exceptions\EligibleSnapshotNotFoundException;
 use App\Modules\Lottery\Domain\Exceptions\LotteryProgramNotFoundException;
 use App\Modules\Lottery\Domain\Models\LotteryProgram;
 use App\Modules\Lottery\Domain\Models\LotteryResult;
+use App\Modules\Lottery\Domain\Services\LockedLotterySemanticContract;
 use App\Modules\Lottery\Domain\Services\LotteryDrawSelector;
+use App\Modules\Lottery\Domain\Services\LotteryScoringEngine;
 use App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId;
 use App\Modules\Lottery\Domain\ValueObjects\LotteryRegistrationId;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +32,7 @@ final class ExecuteDrawAction
         private readonly LotteryEligibleSnapshotRepositoryContract $snapshots,
         private readonly LotteryResultRepositoryContract $results,
         private readonly LotteryDrawSelector $drawSelector,
+        private readonly LotteryScoringEngine $scoringEngine,
         private readonly ProposedAllocationPort $proposedAllocations,
         private readonly MutationPolicyEnforcementPoint $mutationPolicy,
         private readonly LotteryMutationAuthorizationGate $lotteryMutationAuth,
@@ -63,8 +66,11 @@ final class ExecuteDrawAction
             throw new EligibleSnapshotNotFoundException('Eligible snapshot not found for locked program.');
         }
 
+        LockedLotterySemanticContract::assertProgramAligned($program, $snapshot);
+
         /** @var list<array<string, mixed>> $eligible */
         $eligible = $snapshot->payload['eligible'] ?? [];
+        LockedLotterySemanticContract::assertScoresReproducible($eligible, $snapshot, $this->scoringEngine);
 
         if ($eligible === []) {
             return $this->completeDrawWithoutResults($program);
@@ -72,13 +78,16 @@ final class ExecuteDrawAction
 
         $drawnAt = now('UTC')->toDateTimeImmutable();
 
-        return DB::transaction(function () use ($program, $programId, $eligible, $drawnAt): LotteryProgram {
+        return DB::transaction(function () use ($program, $programId, $snapshot, $drawnAt): LotteryProgram {
             if ($this->results->existsForProgram($programId)) {
                 return $this->programs->findById($programId)
                     ?? throw new LotteryProgramNotFoundException('Lottery program not found.');
             }
 
-            $selections = $this->drawSelector->select($program->capacity, $this->normalizeEligible($eligible));
+            $selections = $this->drawSelector->select(
+                $program->capacity,
+                LockedLotterySemanticContract::drawEligibleRows($snapshot),
+            );
             $winnerPayload = [];
 
             foreach ($selections as $selection) {
@@ -126,22 +135,6 @@ final class ExecuteDrawAction
 
             return $persistedCompleted;
         });
-    }
-
-    /**
-     * @param  list<array<string, mixed>>  $eligible
-     * @return list<array{registration_id: string, employee_id: string, weighted_score: float}>
-     */
-    private function normalizeEligible(array $eligible): array
-    {
-        return array_map(
-            static fn (array $row): array => [
-                'registration_id' => (string) $row['registration_id'],
-                'employee_id' => (string) ($row['employee_id'] ?? ''),
-                'weighted_score' => (float) ($row['weighted_score'] ?? 0.0),
-            ],
-            $eligible,
-        );
     }
 
     private function completeDrawWithoutResults(LotteryProgram $program): LotteryProgram

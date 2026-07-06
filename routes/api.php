@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use App\Http\Controllers\ApiAuthSessionController;
 use App\Http\Controllers\HealthController;
-use App\Modules\Reporting\Presentation\Providers\ReportingPresentationServiceProvider;
 use App\Modules\Lottery\Presentation\Providers\LotteryPresentationServiceProvider;
+use App\Modules\Reporting\Presentation\Providers\ReportingPresentationServiceProvider;
 use App\Modules\Request\Presentation\Providers\RequestPresentationServiceProvider;
 use Illuminate\Support\Facades\Route;
 

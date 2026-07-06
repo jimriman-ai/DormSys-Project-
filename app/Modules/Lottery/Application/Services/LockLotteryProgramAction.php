@@ -17,6 +17,7 @@ use App\Modules\Lottery\Domain\Exceptions\LotteryProgramNotFoundException;
 use App\Modules\Lottery\Domain\Models\EligibleSnapshot;
 use App\Modules\Lottery\Domain\Models\LotteryProgram;
 use App\Modules\Lottery\Domain\Models\LotteryRegistration;
+use App\Modules\Lottery\Domain\Services\LockedLotterySemanticContract;
 use App\Modules\Lottery\Domain\Services\LotteryScoringEngine;
 use App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId;
 use App\Modules\Lottery\Domain\ValueObjects\ScoringConfig;
@@ -75,10 +76,14 @@ final class LockLotteryProgramAction
 
             $snapshot = EligibleSnapshot::capture(
                 programId: $programId,
-                payload: [
-                    'eligible' => $eligibleRows,
-                    'excluded' => $excludedRows,
-                ],
+                payload: LockedLotterySemanticContract::buildPayload(
+                    eligible: $eligibleRows,
+                    excluded: $excludedRows,
+                    lockedAtIso: $lockedAt->format(DATE_ATOM),
+                    programCapacity: $program->capacity,
+                    randomSeed: $randomSeed,
+                    scoringConfig: $config,
+                ),
                 randomSeed: $randomSeed,
                 scoringConfig: $config,
             );
@@ -130,23 +135,29 @@ final class LockLotteryProgramAction
                 continue;
             }
 
+            $baseScore = $this->employeeScores->baseScoreFor($registration->employeeId);
+            $departmentPriority = $this->employeeScores->departmentPriorityFor($registration->employeeId);
+
             $weightedScore = $this->scoringEngine->computeWeightedScore(
                 config: $config,
                 randomSeed: $randomSeed,
                 registrationId: $registration->requireId()->value,
-                baseScore: $this->employeeScores->baseScoreFor($registration->employeeId),
-                departmentPriority: $this->employeeScores->departmentPriorityFor($registration->employeeId),
+                baseScore: $baseScore,
+                departmentPriority: $departmentPriority,
             );
 
             $scored = $registration->withWeightedScore($weightedScore);
             $scoredRegistrations[] = $scored;
 
-            $eligibleRows[] = [
-                'registration_id' => $scored->requireId()->value,
-                'request_id' => $scored->requestId->value,
-                'employee_id' => $scored->employeeId->value,
-                'weighted_score' => $weightedScore,
-            ];
+            $eligibleRows[] = LockedLotterySemanticContract::materializeEligibleRow(
+                registrationId: $scored->requireId()->value,
+                requestId: $scored->requestId->value,
+                employeeId: $scored->employeeId->value,
+                dormitoryId: $approvedRequest->dormitoryId,
+                baseScore: $baseScore,
+                departmentPriority: $departmentPriority,
+                weightedScore: $weightedScore,
+            );
         }
 
         return [$eligibleRows, $excludedRows, $scoredRegistrations];

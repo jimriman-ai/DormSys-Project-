@@ -11,7 +11,6 @@ use App\Modules\Lottery\Domain\States\RegistrationClosedState;
 use App\Modules\Lottery\Domain\States\RegistrationOpenState;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Carbon;
 
 uses(RefreshDatabase::class);
 
@@ -101,7 +100,7 @@ describe('http end-to-end lottery flow', function (): void {
             ->json('data');
 
         $employeeOne = createEmployeeForLotteryEnrollmentTest();
-        $employeeTwo = \Tests\Feature\Modules\Lottery\LotteryTestFactory::createSecondEmployee();
+        $employeeTwo = Tests\Feature\Modules\Lottery\LotteryTestFactory::createSecondEmployee();
         $requestOne = createApprovedLotteryRegistrationRequest($employeeOne, $dormitoryId);
         $requestTwo = createApprovedLotteryRegistrationRequest($employeeTwo, $dormitoryId);
 
@@ -225,7 +224,7 @@ describe('http domain failures', function (): void {
             ->assertOk();
 
         $owner = createEmployeeForLotteryEnrollmentTest();
-        $other = \Tests\Feature\Modules\Lottery\LotteryTestFactory::createSecondEmployee();
+        $other = Tests\Feature\Modules\Lottery\LotteryTestFactory::createSecondEmployee();
         $requestId = createApprovedLotteryRegistrationRequest($owner, $dormitoryId);
 
         authenticateLotteryHttpUser(

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Lottery\Infrastructure\Repositories;
 
 use App\Modules\Lottery\Application\Contracts\LotteryEligibleSnapshotRepositoryContract;
-use App\Modules\Lottery\Domain\Exceptions\LotteryProgramNotFoundException;
+use App\Modules\Lottery\Domain\Exceptions\LotteryValidationException;
 use App\Modules\Lottery\Domain\Models\EligibleSnapshot;
 use App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId;
 use App\Modules\Lottery\Domain\ValueObjects\LotterySnapshotId;
@@ -16,26 +16,11 @@ class LotteryEligibleSnapshotRepository implements LotteryEligibleSnapshotReposi
 {
     public function save(EligibleSnapshot $snapshot): EligibleSnapshot
     {
-        if ($snapshot->id === null) {
-            $model = new LotteryEligibleSnapshotModel([
-                'program_id' => $snapshot->programId->value,
-                'payload' => $snapshot->payload,
-                'random_seed' => $snapshot->randomSeed,
-                'scoring_config' => $snapshot->scoringConfig->toArray(),
-                'scoring_config_version' => $snapshot->scoringConfig->version,
-            ]);
-            $model->save();
-
-            return $this->toDomain($model);
+        if ($snapshot->id !== null) {
+            throw new LotteryValidationException('Eligible snapshot is immutable after capture.');
         }
 
-        $model = LotteryEligibleSnapshotModel::query()->find($snapshot->requireId()->value);
-
-        if ($model === null) {
-            throw new LotteryProgramNotFoundException('Eligible snapshot not found.');
-        }
-
-        $model->fill([
+        $model = new LotteryEligibleSnapshotModel([
             'program_id' => $snapshot->programId->value,
             'payload' => $snapshot->payload,
             'random_seed' => $snapshot->randomSeed,

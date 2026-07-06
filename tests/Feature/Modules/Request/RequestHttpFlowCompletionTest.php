@@ -141,7 +141,7 @@ describe('http end-to-end lifecycle', function (): void {
         }
 
         expect(app(RequestApprovalRepositoryContract::class)->countForRequest(
-            \App\Modules\Request\Domain\ValueObjects\RequestId::fromString($currentId),
+            App\Modules\Request\Domain\ValueObjects\RequestId::fromString($currentId),
         ))->toBe(4);
     });
 });

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Lottery\Infrastructure\Persistence\Models;
 
+use App\Modules\Lottery\Domain\Exceptions\LotteryValidationException;
 use App\Support\Models\BaseModel;
 
 /**
@@ -38,5 +39,16 @@ class LotteryEligibleSnapshotModel extends BaseModel
             'payload' => 'array',
             'scoring_config' => 'array',
         ]);
+    }
+
+    protected static function booted(): void
+    {
+        static::updating(static function (): void {
+            throw new LotteryValidationException('Eligible snapshot is immutable after capture.');
+        });
+
+        static::deleting(static function (): void {
+            throw new LotteryValidationException('Eligible snapshot is immutable after capture.');
+        });
     }
 }

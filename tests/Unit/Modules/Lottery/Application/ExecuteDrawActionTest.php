@@ -14,6 +14,8 @@ use App\Modules\Lottery\Domain\Exceptions\DrawNotAllowedException;
 use App\Modules\Lottery\Domain\Models\EligibleSnapshot;
 use App\Modules\Lottery\Domain\Models\LotteryProgram;
 use App\Modules\Lottery\Domain\Models\LotteryResult;
+use App\Modules\Lottery\Domain\Services\LockedLotterySemanticContract;
+use App\Modules\Lottery\Domain\Services\LotteryScoringEngine;
 use App\Modules\Lottery\Domain\States\CompletedState;
 use App\Modules\Lottery\Domain\States\LockedState;
 use App\Modules\Lottery\Domain\States\RegistrationOpenState;
@@ -101,29 +103,40 @@ class ExecuteDrawActionTest extends TestCase
 
         $programId = LotteryProgramId::fromString(UuidGenerator::uuid7());
         $registrationId = UuidGenerator::uuid7();
-        $program = $this->lockedProgram($programId, LockedState::$name, capacity: 1);
+        $registrationIdTwo = UuidGenerator::uuid7();
+        $randomSeed = UuidGenerator::uuid7();
+        $config = new ScoringConfig('1.0.0', 1.0, 0.05, 100.0, 1.0);
+        $engine = app(LotteryScoringEngine::class);
+        $program = $this->lockedProgram($programId, LockedState::$name, capacity: 1, randomSeed: $randomSeed);
 
         $snapshot = new EligibleSnapshot(
             id: LotterySnapshotId::fromString(UuidGenerator::uuid7()),
             programId: $programId,
             payload: [
+                'semantic_contract_version' => LockedLotterySemanticContract::PAYLOAD_VERSION,
                 'eligible' => [
-                    [
-                        'registration_id' => $registrationId,
-                        'request_id' => UuidGenerator::uuid7(),
-                        'employee_id' => UuidGenerator::uuid7(),
-                        'weighted_score' => 3.5,
-                    ],
-                    [
-                        'registration_id' => UuidGenerator::uuid7(),
-                        'request_id' => UuidGenerator::uuid7(),
-                        'employee_id' => UuidGenerator::uuid7(),
-                        'weighted_score' => 1.0,
-                    ],
+                    LockedLotterySemanticContract::materializeEligibleRow(
+                        registrationId: $registrationId,
+                        requestId: UuidGenerator::uuid7(),
+                        employeeId: UuidGenerator::uuid7(),
+                        dormitoryId: UuidGenerator::uuid7(),
+                        baseScore: 0.0,
+                        departmentPriority: 0,
+                        weightedScore: $engine->computeWeightedScore($config, $randomSeed, $registrationId, 0.0, 0),
+                    ),
+                    LockedLotterySemanticContract::materializeEligibleRow(
+                        registrationId: $registrationIdTwo,
+                        requestId: UuidGenerator::uuid7(),
+                        employeeId: UuidGenerator::uuid7(),
+                        dormitoryId: UuidGenerator::uuid7(),
+                        baseScore: 0.0,
+                        departmentPriority: 0,
+                        weightedScore: $engine->computeWeightedScore($config, $randomSeed, $registrationIdTwo, 0.0, 0),
+                    ),
                 ],
             ],
-            randomSeed: UuidGenerator::uuid7(),
-            scoringConfig: new ScoringConfig('1.0.0', 1.0, 0.05, 100.0, 1.0),
+            randomSeed: $randomSeed,
+            scoringConfig: $config,
         );
 
         $programs = MockeryTest::mock(LotteryProgramRepositoryContract::class);
@@ -153,7 +166,7 @@ class ExecuteDrawActionTest extends TestCase
         $allocations = MockeryTest::mock(ProposedAllocationPort::class);
         MockeryTest::expectOnce($allocations, 'emitProposedAllocations')->with(Mockery::on(
             static fn (array $payload): bool => count($payload) === 1
-                && $payload[0]['registration_id'] === $registrationId
+                && in_array($payload[0]['registration_id'], [$registrationId, $registrationIdTwo], true)
                 && $payload[0]['rank'] === 1,
         ));
         $this->app->instance(ProposedAllocationPort::class, $allocations);
@@ -203,7 +216,10 @@ class ExecuteDrawActionTest extends TestCase
         LotteryProgramId $programId,
         string $status,
         int $capacity = 20,
+        ?string $randomSeed = null,
     ): LotteryProgram {
+        $randomSeed ??= UuidGenerator::uuid7();
+
         return new LotteryProgram(
             id: $programId,
             title: 'Draw Program',
@@ -212,7 +228,7 @@ class ExecuteDrawActionTest extends TestCase
             registrationStartsAt: new DateTimeImmutable('2026-07-01', new DateTimeZone('UTC')),
             registrationEndsAt: new DateTimeImmutable('2026-07-31', new DateTimeZone('UTC')),
             status: $status,
-            randomSeed: UuidGenerator::uuid7(),
+            randomSeed: $randomSeed,
             scoringConfigVersion: '1.0.0',
             lockedAt: new DateTimeImmutable('2026-06-30', new DateTimeZone('UTC')),
             drawnAt: $status === CompletedState::$name
