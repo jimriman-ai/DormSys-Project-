@@ -32,6 +32,16 @@ final class RequestReadQuery implements RequestReadQueryPort
         return $this->toSummaryDto($model);
     }
 
+    public function listByEmployee(string $employeeId): array
+    {
+        return $this->mapSummaries(
+            RequestModel::query()
+                ->where('employee_id', $employeeId)
+                ->orderByDesc('created_at')
+                ->get(),
+        );
+    }
+
     public function listApprovedByEmployee(string $employeeId): array
     {
         return $this->mapSummaries(
@@ -81,6 +91,8 @@ final class RequestReadQuery implements RequestReadQueryPort
             checkInDate: $model->check_in_date->format('Y-m-d'),
             checkOutDate: $model->check_out_date->format('Y-m-d'),
             submittedAt: $model->submitted_at?->format(DATE_ATOM),
+            cancelledAt: $model->cancelled_at?->format(DATE_ATOM),
+            rejectionReason: $model->rejection_reason,
             memberCount: null,
             dependentCount: null,
         );

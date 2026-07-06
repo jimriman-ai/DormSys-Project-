@@ -6,7 +6,12 @@ use App\Application\Mutation\Exceptions\UnauthorizedMutationException;
 use App\Modules\Audit\Domain\Exceptions\UnauthorizedAuditAccessException;
 use App\Modules\Audit\Presentation\Http\Middleware\ResolveAuditPrincipalMiddleware;
 use App\Modules\Reporting\Domain\Exceptions\UnauthorizedArchiveVisibilityException;
+use App\Modules\Request\Domain\Exceptions\InvalidRequestTransitionException;
+use App\Modules\Request\Domain\Exceptions\RequestNotEligibleException;
+use App\Modules\Request\Domain\Exceptions\RequestNotFoundException;
+use App\Modules\Request\Domain\Exceptions\RequestValidationException;
 use App\Modules\Request\Presentation\Http\Middleware\EnforceSessionMutationPrincipalMiddleware;
+use App\Modules\Request\Presentation\Http\Support\RequestApiExceptionResponse;
 use App\Support\Exceptions\ValidationException as DomainValidationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -108,6 +113,38 @@ return Application::configure(basePath: dirname(__DIR__))
                 'message' => 'Validation failed.',
                 'errors' => $exception->errors(),
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        });
+
+        $exceptions->render(function (RequestNotFoundException $exception, Request $request) {
+            if (! $request->is('api/requests/*')) {
+                return null;
+            }
+
+            return RequestApiExceptionResponse::fromDomainException($exception);
+        });
+
+        $exceptions->render(function (RequestValidationException $exception, Request $request) {
+            if (! $request->is('api/requests/*')) {
+                return null;
+            }
+
+            return RequestApiExceptionResponse::fromDomainException($exception);
+        });
+
+        $exceptions->render(function (RequestNotEligibleException $exception, Request $request) {
+            if (! $request->is('api/requests/*')) {
+                return null;
+            }
+
+            return RequestApiExceptionResponse::fromDomainException($exception);
+        });
+
+        $exceptions->render(function (InvalidRequestTransitionException $exception, Request $request) {
+            if (! $request->is('api/requests/*')) {
+                return null;
+            }
+
+            return RequestApiExceptionResponse::fromDomainException($exception);
         });
 
         $exceptions->render(function (Throwable $exception, Request $request) {

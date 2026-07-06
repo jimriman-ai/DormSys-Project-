@@ -16,6 +16,11 @@ interface RequestReadQueryPort
     /**
      * @return list<RequestSummaryDTO>
      */
+    public function listByEmployee(string $employeeId): array;
+
+    /**
+     * @return list<RequestSummaryDTO>
+     */
     public function listApprovedByEmployee(string $employeeId): array;
 
     /**

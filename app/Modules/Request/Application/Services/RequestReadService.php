@@ -28,6 +28,11 @@ final class RequestReadService implements RequestReadContract
         return $this->queries->findSummaryById($id);
     }
 
+    public function listByEmployee(string $employeeId): array
+    {
+        return $this->queries->listByEmployee($employeeId);
+    }
+
     public function listApprovedByEmployee(string $employeeId): array
     {
         return $this->queries->listApprovedByEmployee($employeeId);

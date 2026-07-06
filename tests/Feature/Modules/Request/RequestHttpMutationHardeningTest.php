@@ -177,7 +177,7 @@ describe('replay and duplicate safety', function (): void {
             ->assertOk();
 
         $this->postJson(requestHttpMutationUrl($draft->requireId()->value, 'submit'))
-            ->assertServerError();
+            ->assertConflict();
 
         $reloaded = app(RequestRepositoryContract::class)->findById($draft->requireId());
         expect($reloaded?->status)->toBe(PendingDepartmentManagerState::$name);
@@ -193,7 +193,7 @@ describe('replay and duplicate safety', function (): void {
             ->assertOk();
 
         $this->postJson(requestHttpMutationUrl($draft->requireId()->value, 'cancel'))
-            ->assertServerError();
+            ->assertConflict();
 
         $reloaded = app(RequestRepositoryContract::class)->findById($draft->requireId());
         expect($reloaded?->status)->toBe(CancelledState::$name);
@@ -220,7 +220,7 @@ describe('replay and duplicate safety', function (): void {
         );
 
         $this->postJson(requestHttpMutationUrl($request->requireId()->value, 'approve'))
-            ->assertServerError();
+            ->assertConflict();
 
         $reloaded = app(RequestRepositoryContract::class)->findById($request->requireId());
         expect($reloaded?->status)->toBe(ApprovedState::$name);
@@ -246,7 +246,7 @@ describe('replay and duplicate safety', function (): void {
 
         $this->postJson(requestHttpMutationUrl($submitted['id'], 'reject'), [
             'reason' => 'Duplicate reject attempt',
-        ])->assertServerError();
+        ])->assertConflict();
 
         $reloaded = app(RequestRepositoryContract::class)->findById($draft->requireId());
         expect($reloaded?->status)->toBe(RejectedState::$name);

@@ -16,6 +16,8 @@ final readonly class RequestSummaryDTO
         public string $checkInDate,
         public string $checkOutDate,
         public ?string $submittedAt,
+        public ?string $cancelledAt = null,
+        public ?string $rejectionReason = null,
         public ?int $memberCount = null,
         public ?int $dependentCount = null,
     ) {}

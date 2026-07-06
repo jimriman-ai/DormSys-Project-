@@ -103,7 +103,9 @@ describe('authorization', function (): void {
         authenticateRequestHttpMutationUser($actor['identity']);
 
         $this->postJson(requestHttpMutationUrl($draft->requireId()->value, 'approve'))
-            ->assertServerError();
+            ->assertConflict()
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('message', 'Request is not awaiting approval.');
 
         $reloaded = app(RequestRepositoryContract::class)->findById($draft->requireId());
         expect($reloaded?->status)->toBe(DraftState::$name);
@@ -117,7 +119,9 @@ describe('authorization', function (): void {
 
         $this->postJson(requestHttpMutationUrl($draft->requireId()->value, 'reject'), [
             'reason' => 'Insufficient documentation',
-        ])->assertServerError();
+        ])->assertConflict()
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('message', 'Request is not awaiting approval.');
 
         $reloaded = app(RequestRepositoryContract::class)->findById($draft->requireId());
         expect($reloaded?->status)->toBe(DraftState::$name);
@@ -292,7 +296,10 @@ it('registers request mutation routes on the authenticated api surface', functio
         }
     }
 
-    expect($routes)->toContain('api/requests/{requestId}/submit')
+    expect($routes)->toContain('api/requests/personal')
+        ->and($routes)->toContain('api/requests/mine')
+        ->and($routes)->toContain('api/requests/{requestId}')
+        ->and($routes)->toContain('api/requests/{requestId}/submit')
         ->and($routes)->toContain('api/requests/{requestId}/cancel')
         ->and($routes)->toContain('api/requests/{requestId}/approve')
         ->and($routes)->toContain('api/requests/{requestId}/reject');
