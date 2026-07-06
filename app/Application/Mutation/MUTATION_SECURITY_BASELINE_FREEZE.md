@@ -1,15 +1,7 @@
-# Mutation Security Baseline Freeze
+Mutation Security Hard Freeze — 2026-07-06. Final stop note. Do not extend.
 
-Effective: 2026-07-06. This note is final. It is not a roadmap and must not be extended.
+Runtime behavior. The system currently allows mutation only through existing adopted application and runtime entry paths. Mutation without approved principal context fails closed. Explicit system execution exists only in already-approved runtime cases. No further mutation-security design work is active or required for the current project context.
 
-## Baseline Declaration
+Project context. DormSys is an internal organizational system used in controlled intranet/internal-network conditions. Primary concern is internal misuse, application-flow error, bypass, or execution ambiguity. Internet-hostile, public SaaS, multi-tenant, and high-assurance assumptions are not active design assumptions.
 
-DormSys mutation enforcement is performed through the existing implemented application/runtime model: authoritative enforcement at adopted mutation action entry via MPEP and domain-local gates; mutation execution requires an approved principal context (explicit user principal or explicit approved system actor) or fails closed; system actor usage is limited to explicitly approved runtime paths (`MutationPrincipalContext::runJobAsSystem` on lottery background jobs). No additional mutation-security architecture is required for the project's actual operating context. Future mutation-security changes are permitted only for a confirmed defect, confirmed bypass, confirmed operational ambiguity, or a deployment-context change that materially alters threat assumptions.
-
-## Threat Context
-
-DormSys is an internal organizational application operated in a controlled intranet context. It is not a public SaaS platform, not a hostile multi-tenant environment, and not a high-assurance target. Mutation security is sufficient when it reliably prevents accidental internal misuse, unauthorized mutation through incorrect application flow, principal ambiguity in runtime execution, programmer-introduced mutation bypass, and uncontrolled background mutation execution.
-
-## Freeze Rule
-
-No new mutation-security capability, layer, rule-set, or architectural control may be added based on theoretical concern alone. Any future change must be triggered by a confirmed defect, confirmed exposure, concrete operational ambiguity, or a material change in deployment threat assumptions. This document is not a development plan.
+Hard freeze. No further mutation-security evolution is allowed. Only direct bug fixes to existing implemented behavior are acceptable if a real defect is confirmed. This artifact is final and is not a roadmap, plan, or future security reference point.
