@@ -11,6 +11,10 @@ use DateTimeImmutable;
 use DateTimeZone;
 use Illuminate\Console\Command;
 
+/**
+ * CLI exposure for a pending (not yet MPEP-adopted) request create mutation.
+ * This command is not a governed adopted mutation surface.
+ */
 class CreatePersonalRequestCommand extends Command
 {
     protected $signature = 'request:create-personal
