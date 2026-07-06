@@ -1,0 +1,19 @@
+<?php
+
+declare(strict_types=1);
+
+use App\Modules\Request\Presentation\Http\Controllers\RequestMutationController;
+use Illuminate\Support\Facades\Route;
+
+Route::post('/{requestId}/submit', [RequestMutationController::class, 'submit'])
+    ->whereUuid('requestId')
+    ->name('requests.mutations.submit');
+Route::post('/{requestId}/cancel', [RequestMutationController::class, 'cancel'])
+    ->whereUuid('requestId')
+    ->name('requests.mutations.cancel');
+Route::post('/{requestId}/approve', [RequestMutationController::class, 'approve'])
+    ->whereUuid('requestId')
+    ->name('requests.mutations.approve');
+Route::post('/{requestId}/reject', [RequestMutationController::class, 'reject'])
+    ->whereUuid('requestId')
+    ->name('requests.mutations.reject');

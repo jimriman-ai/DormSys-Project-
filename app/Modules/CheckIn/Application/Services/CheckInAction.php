@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\CheckIn\Application\Services;
 
+use App\Application\Mutation\Registry\MutationCapabilityCatalog;
+use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
 use App\Modules\CheckIn\Application\Contracts\AllocationAssignmentReadPort;
 use App\Modules\CheckIn\Application\Contracts\CheckInRecordRepositoryContract;
 use App\Modules\CheckIn\Domain\Events\CheckedIn;
@@ -20,10 +22,22 @@ final class CheckInAction
         private readonly AllocationAssignmentReadPort $allocations,
         private readonly CheckInRecordRepositoryContract $records,
         private readonly OperatorRoleGate $operatorGate,
+        private readonly MutationPolicyEnforcementPoint $mutationPolicy,
+        private readonly CheckInMutationAuthorizationGate $checkInMutationAuth,
     ) {}
 
     public function execute(string $allocationId, string $operatorId): CheckInRecord
     {
+        $this->mutationPolicy->enforce(MutationCapabilityCatalog::CHECKIN_CREATE, [
+            'allocationId' => $allocationId,
+            'operatorId' => $operatorId,
+        ]);
+        $this->mutationPolicy->enforce(MutationCapabilityCatalog::CHECKIN_OPERATE, [
+            'allocationId' => $allocationId,
+            'operatorId' => $operatorId,
+        ]);
+        $this->checkInMutationAuth->assertCreate($operatorId);
+        $this->checkInMutationAuth->assertOperate($operatorId);
         $this->operatorGate->assertOperator($operatorId);
 
         if (! $this->allocations->hasActiveAllocation($allocationId)) {

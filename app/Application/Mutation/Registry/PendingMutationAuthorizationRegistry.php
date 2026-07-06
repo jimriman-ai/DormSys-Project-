@@ -7,8 +7,6 @@ namespace App\Application\Mutation\Registry;
 use App\Modules\Allocation\Application\Services\CreateAllocationAction;
 use App\Modules\Allocation\Application\Services\CreateAllocationFromRequestAction;
 use App\Modules\Allocation\Application\Services\ReleaseAllocationAction;
-use App\Modules\CheckIn\Application\Services\CheckInAction;
-use App\Modules\CheckIn\Application\Services\CheckOutAction;
 use App\Modules\Employee\Application\Services\AssignDepartmentToEmployeeAction;
 use App\Modules\Employee\Application\Services\CreateDepartmentAction;
 use App\Modules\Employee\Application\Services\CreateEmployeeAction;
@@ -49,8 +47,6 @@ final class PendingMutationAuthorizationRegistry
         AssignDepartmentToEmployeeAction::class,
         AssignRoleToUserAction::class,
         CancelLotteryProgramAction::class,
-        CheckInAction::class,
-        CheckOutAction::class,
         CloseRegistrationAction::class,
         CreateAllocationAction::class,
         CreateAllocationFromRequestAction::class,

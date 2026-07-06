@@ -75,6 +75,15 @@ class EmployeeRepository implements EmployeeRepositoryContract
         return $model === null ? null : $this->toDomain($model);
     }
 
+    public function findEmployeeIdByIdentityUserId(string $identityUserId): ?string
+    {
+        $model = EmployeeModel::query()
+            ->where('identity_id', $identityUserId)
+            ->first();
+
+        return $model?->getId();
+    }
+
     public function existsByIdentityId(IdentityUserId $identityId): bool
     {
         return EmployeeModel::query()

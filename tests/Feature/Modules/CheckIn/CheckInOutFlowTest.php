@@ -45,7 +45,7 @@ it('checks in and out on an active allocation', function (): void {
     $operatorId = createCheckInOperator();
     $allocationId = $allocation->requireId()->value;
 
-    app(CheckInCommandPort::class)->checkIn($allocationId, $operatorId);
+    asCheckInOperator($operatorId, fn () => app(CheckInCommandPort::class)->checkIn($allocationId, $operatorId));
 
     $openRecord = app(CheckInRecordRepositoryContract::class)->findOpenByAllocationId($allocationId);
 
@@ -55,7 +55,7 @@ it('checks in and out on an active allocation', function (): void {
 
     Event::assertDispatched(CheckedIn::class);
 
-    app(CheckInCommandPort::class)->checkOut($allocationId, $operatorId);
+    asCheckInOperator($operatorId, fn () => app(CheckInCommandPort::class)->checkOut($allocationId, $operatorId));
 
     $closedRecord = CheckInRecordModel::query()
         ->where('allocation_id', $allocationId)

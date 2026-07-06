@@ -7,7 +7,6 @@ namespace App\Modules\Request\Application\Services;
 use App\Application\Mutation\Contracts\MutationPrincipalContextPort;
 use App\Application\Mutation\Exceptions\UnauthorizedMutationException;
 use App\Modules\Employee\Application\Contracts\EmployeeRepositoryContract;
-use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Modules\Request\Domain\Entities\Request;
 use App\Modules\Request\Domain\Services\ApprovalStageResolver;
 use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
@@ -45,9 +44,9 @@ final class RequestMutationAuthorizationGate
     private function assertOwnerMatchesRequest(Request $request): void
     {
         $principalId = $this->requirePrincipalId();
-        $employee = $this->employees->findByIdentityId(IdentityUserId::fromString($principalId));
+        $employeeId = $this->employees->findEmployeeIdByIdentityUserId($principalId);
 
-        if ($employee === null || $employee->requireId()->value !== $request->employeeId->value) {
+        if ($employeeId === null || $employeeId !== $request->employeeId->value) {
             throw new UnauthorizedMutationException('Mutation actor must own the request.');
         }
     }

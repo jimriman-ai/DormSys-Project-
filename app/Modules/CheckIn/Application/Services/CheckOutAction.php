@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\CheckIn\Application\Services;
 
+use App\Application\Mutation\Registry\MutationCapabilityCatalog;
+use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
 use App\Modules\CheckIn\Application\Contracts\CheckInRecordRepositoryContract;
 use App\Modules\CheckIn\Domain\Events\CheckedOut;
 use App\Modules\CheckIn\Domain\Exceptions\NoOpenCheckInRecordException;
@@ -17,10 +19,17 @@ final class CheckOutAction
     public function __construct(
         private readonly CheckInRecordRepositoryContract $records,
         private readonly OperatorRoleGate $operatorGate,
+        private readonly MutationPolicyEnforcementPoint $mutationPolicy,
+        private readonly CheckInMutationAuthorizationGate $checkInMutationAuth,
     ) {}
 
     public function execute(string $allocationId, string $operatorId): CheckInRecord
     {
+        $this->mutationPolicy->enforce(MutationCapabilityCatalog::CHECKIN_CLOSE, [
+            'allocationId' => $allocationId,
+            'operatorId' => $operatorId,
+        ]);
+        $this->checkInMutationAuth->assertClose($operatorId);
         $this->operatorGate->assertOperator($operatorId);
 
         $openRecord = $this->records->findOpenByAllocationId($allocationId);

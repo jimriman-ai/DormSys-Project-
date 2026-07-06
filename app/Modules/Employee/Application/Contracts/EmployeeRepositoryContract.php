@@ -16,5 +16,7 @@ interface EmployeeRepositoryContract
 
     public function findByIdentityId(IdentityUserId $identityId): ?Employee;
 
+    public function findEmployeeIdByIdentityUserId(string $identityUserId): ?string;
+
     public function existsByIdentityId(IdentityUserId $identityId): bool;
 }

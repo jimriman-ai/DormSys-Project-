@@ -6,6 +6,7 @@ use App\Application\Mutation\Exceptions\UnauthorizedMutationException;
 use App\Modules\Audit\Domain\Exceptions\UnauthorizedAuditAccessException;
 use App\Modules\Audit\Presentation\Http\Middleware\ResolveAuditPrincipalMiddleware;
 use App\Modules\Reporting\Domain\Exceptions\UnauthorizedArchiveVisibilityException;
+use App\Modules\Request\Presentation\Http\Middleware\EnforceSessionMutationPrincipalMiddleware;
 use App\Support\Exceptions\ValidationException as DomainValidationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -34,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'audit.principal' => ResolveAuditPrincipalMiddleware::class,
+            'request.mutation.principal' => EnforceSessionMutationPrincipalMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

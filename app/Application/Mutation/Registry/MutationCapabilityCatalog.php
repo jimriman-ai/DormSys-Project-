@@ -16,6 +16,12 @@ final class MutationCapabilityCatalog
 
     public const string REQUEST_REJECT = 'request.reject';
 
+    public const string CHECKIN_CREATE = 'checkin.create';
+
+    public const string CHECKIN_OPERATE = 'checkin.operate';
+
+    public const string CHECKIN_CLOSE = 'checkin.close';
+
     /**
      * @return list<string>
      */
@@ -26,6 +32,9 @@ final class MutationCapabilityCatalog
             self::REQUEST_CANCEL_OWN,
             self::REQUEST_APPROVE,
             self::REQUEST_REJECT,
+            self::CHECKIN_CREATE,
+            self::CHECKIN_OPERATE,
+            self::CHECKIN_CLOSE,
         ];
     }
 

@@ -32,7 +32,7 @@ it('rejects check-in when no active allocation exists', function (): void {
     $operatorId = createBoundaryTestOperator();
     $missingAllocationId = UuidGenerator::uuid7();
 
-    expect(fn () => app(CheckInCommandPort::class)->checkIn($missingAllocationId, $operatorId))
+    expect(fn () => asCheckInMutationPrincipal($operatorId, fn () => app(CheckInCommandPort::class)->checkIn($missingAllocationId, $operatorId)))
         ->toThrow(AllocationNotActiveException::class);
 });
 
@@ -44,6 +44,8 @@ it('rejects check-in when the user is not an operator', function (): void {
 
     $allocationId = UuidGenerator::uuid7();
 
-    expect(fn () => app(CheckInCommandPort::class)->checkIn($allocationId, $user->requireId()->value))
+    $userId = $user->requireId()->value;
+
+    expect(fn () => asCheckInMutationPrincipal($userId, fn () => app(CheckInCommandPort::class)->checkIn($allocationId, $userId)))
         ->toThrow(OperatorRoleRequiredException::class);
 });

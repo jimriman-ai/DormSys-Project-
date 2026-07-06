@@ -17,6 +17,8 @@ use Tests\TestCase;
 
 require_once __DIR__.'/Architecture/architecture.php';
 require_once __DIR__.'/Feature/Modules/Request/support/mutation-principal.php';
+require_once __DIR__.'/Feature/Modules/Request/support/http-mutation.php';
+require_once __DIR__.'/Feature/Modules/CheckIn/support/mutation-principal.php';
 
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)

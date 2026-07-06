@@ -19,4 +19,9 @@ class RequestPresentationServiceProvider extends ServiceProvider
             ]);
         }
     }
+
+    public static function requestRoutePath(): string
+    {
+        return app_path('Modules/Request/Presentation/Routes/requests.php');
+    }
 }

@@ -7,6 +7,7 @@ namespace App\Modules\CheckIn\Infrastructure\Providers;
 use App\Modules\CheckIn\Application\Contracts\CheckInCommandPort;
 use App\Modules\CheckIn\Application\Contracts\CheckInRecordRepositoryContract;
 use App\Modules\CheckIn\Application\Services\CheckInAction;
+use App\Modules\CheckIn\Application\Services\CheckInMutationAuthorizationGate;
 use App\Modules\CheckIn\Application\Services\CheckInService;
 use App\Modules\CheckIn\Application\Services\CheckOutAction;
 use App\Modules\CheckIn\Application\Services\OperatorRoleGate;
@@ -19,6 +20,7 @@ class CheckInServiceProvider extends ServiceProvider
     {
         $this->app->singleton(CheckInRecordRepositoryContract::class, CheckInRecordRepository::class);
         $this->app->singleton(OperatorRoleGate::class);
+        $this->app->singleton(CheckInMutationAuthorizationGate::class);
         $this->app->singleton(CheckInAction::class);
         $this->app->singleton(CheckOutAction::class);
         $this->app->singleton(CheckInService::class);
