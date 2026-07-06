@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 use App\Modules\Lottery\Application\Contracts\LotteryResultReadContract;
 use App\Modules\Lottery\Application\Services\CloseRegistrationAction;
-use App\Modules\Lottery\Application\Services\CreateLotteryProgramAction;
 use App\Modules\Lottery\Application\Services\EnrollRegistrationAction;
 use App\Modules\Lottery\Application\Services\ExecuteDrawAction;
 use App\Modules\Lottery\Application\Services\LockLotteryProgramAction;
-use App\Modules\Lottery\Application\Services\OpenRegistrationAction;
-use App\Modules\Lottery\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId;
 use App\Modules\Lottery\Domain\ValueObjects\RequestReferenceId;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
@@ -36,26 +33,26 @@ it('returns the public contract output shape for a completed draw', function ():
     $requestOne = createApprovedLotteryRegistrationRequest($employeeOne, $dormitoryId);
     $requestTwo = createApprovedLotteryRegistrationRequest($employeeTwo, $dormitoryId);
 
-    $draft = app(CreateLotteryProgramAction::class)->execute(
+    $draft = createLotteryProgramForTest(
         title: 'Contract Read Program',
-        dormitoryId: DormitorySiteId::fromString($dormitoryId),
+        dormitoryId: $dormitoryId,
         capacity: 1,
         registrationStartsAt: new DateTimeImmutable('2026-07-01 00:00:00', new DateTimeZone('UTC')),
         registrationEndsAt: new DateTimeImmutable('2026-07-31 23:59:59', new DateTimeZone('UTC')),
     );
 
-    $opened = app(OpenRegistrationAction::class)->execute($draft->requireId());
-    $registrationOne = app(EnrollRegistrationAction::class)->execute(
+    $opened = openLotteryProgramForTest($draft->requireId());
+    $registrationOne = asRequestOwner($employeeOne, fn () => app(EnrollRegistrationAction::class)->execute(
         $opened->requireId(),
         RequestReferenceId::fromString($requestOne),
-    );
-    $registrationTwo = app(EnrollRegistrationAction::class)->execute(
+    ));
+    $registrationTwo = asRequestOwner($employeeTwo, fn () => app(EnrollRegistrationAction::class)->execute(
         $opened->requireId(),
         RequestReferenceId::fromString($requestTwo),
-    );
-    $closed = app(CloseRegistrationAction::class)->execute($opened->requireId());
-    $locked = app(LockLotteryProgramAction::class)->execute($closed->requireId());
-    $completed = app(ExecuteDrawAction::class)->execute($locked->requireId());
+    ));
+    $closed = runLotteryMutation(fn () => app(CloseRegistrationAction::class)->execute($opened->requireId()));
+    $locked = runLotteryMutation(fn () => app(LockLotteryProgramAction::class)->execute($closed->requireId()));
+    $completed = runLotteryMutation(fn () => app(ExecuteDrawAction::class)->execute($locked->requireId()));
 
     $payload = app(LotteryResultReadContract::class)->resultsForProgram($completed->requireId());
 

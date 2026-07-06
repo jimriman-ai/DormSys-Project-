@@ -72,4 +72,13 @@ abstract class TestCase extends BaseTestCase
         $_ENV[$key] = $value;
         $_SERVER[$key] = $value;
     }
+
+    protected function tearDown(): void
+    {
+        if (function_exists('resetMutationAuthorizationTestState')) {
+            resetMutationAuthorizationTestState();
+        }
+
+        parent::tearDown();
+    }
 }

@@ -34,6 +34,8 @@ class LotteryProgramActionsTest extends TestCase
     {
         parent::setUp();
 
+        bypassLotteryMutationAuthorization();
+
         DB::shouldReceive('transaction')
             ->andReturnUsing(static fn (callable $callback) => $callback());
     }

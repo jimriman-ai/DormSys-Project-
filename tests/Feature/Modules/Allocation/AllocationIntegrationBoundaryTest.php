@@ -70,10 +70,10 @@ it('round-trips request read assign dormitory signal and read contract', functio
     app()->forgetInstance(AllocationPhysicalStateAdapter::class);
     app()->forgetInstance(CreateAllocationFromRequestAction::class);
 
-    $allocation = app(CreateAllocationFromRequestAction::class)->execute(
+    $allocation = runAllocationMutation(fn () => app(CreateAllocationFromRequestAction::class)->execute(
         requestId: $request->requireId()->value,
         bedId: $bedId,
-    );
+    ));
 
     Event::assertDispatched(AllocationAssigned::class);
 

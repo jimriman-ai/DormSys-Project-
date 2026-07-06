@@ -79,10 +79,10 @@ it('invokes RequestLifecycleCommandPort on successful allocation from request so
     app()->instance(RequestLifecycleCommandPort::class, $lifecycle);
     app()->forgetInstance(CreateAllocationFromRequestAction::class);
 
-    $allocation = app(CreateAllocationFromRequestAction::class)->execute(
+    $allocation = runAllocationMutation(fn () => app(CreateAllocationFromRequestAction::class)->execute(
         requestId: $request->requireId()->value,
         bedId: $bedId,
-    );
+    ));
 
     expect($allocation->personId->value)->toBe($employee->requireId()->value);
 });

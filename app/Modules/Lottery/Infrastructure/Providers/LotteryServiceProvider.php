@@ -18,6 +18,7 @@ use App\Modules\Lottery\Application\Services\CreateLotteryProgramAction;
 use App\Modules\Lottery\Application\Services\EnrollRegistrationAction;
 use App\Modules\Lottery\Application\Services\ExecuteDrawAction;
 use App\Modules\Lottery\Application\Services\LockLotteryProgramAction;
+use App\Modules\Lottery\Application\Services\LotteryMutationAuthorizationGate;
 use App\Modules\Lottery\Application\Services\LotteryResultReadService;
 use App\Modules\Lottery\Application\Services\LotteryScoringConfigReader;
 use App\Modules\Lottery\Application\Services\OpenRegistrationAction;
@@ -66,6 +67,7 @@ class LotteryServiceProvider extends ServiceProvider
 
     private function registerWriteActions(): void
     {
+        $this->app->singleton(LotteryMutationAuthorizationGate::class);
         $this->app->singleton(CreateLotteryProgramAction::class);
         $this->app->singleton(OpenRegistrationAction::class);
         $this->app->singleton(CloseRegistrationAction::class);

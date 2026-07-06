@@ -5,15 +5,12 @@ declare(strict_types=1);
 use App\Modules\Lottery\Application\Contracts\LotteryResultReadContract;
 use App\Modules\Lottery\Application\Contracts\LotteryResultRepositoryContract;
 use App\Modules\Lottery\Application\Services\CloseRegistrationAction;
-use App\Modules\Lottery\Application\Services\CreateLotteryProgramAction;
 use App\Modules\Lottery\Application\Services\EnrollRegistrationAction;
 use App\Modules\Lottery\Application\Services\ExecuteDrawAction;
 use App\Modules\Lottery\Application\Services\LockLotteryProgramAction;
 use App\Modules\Lottery\Application\Services\LotteryScoringConfigReader;
-use App\Modules\Lottery\Application\Services\OpenRegistrationAction;
 use App\Modules\Lottery\Domain\Enums\LotteryResultOutcome;
 use App\Modules\Lottery\Domain\States\CompletedState;
-use App\Modules\Lottery\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Lottery\Domain\ValueObjects\RequestReferenceId;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Database\Schema\Blueprint;
@@ -64,24 +61,24 @@ it('runs full lifecycle through draw with queryable results', function (): void 
     $dormitoryId = UuidGenerator::uuid7();
     $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
 
-    $draft = app(CreateLotteryProgramAction::class)->execute(
+    $draft = createLotteryProgramForTest(
         title: 'Draw Lifecycle Program',
-        dormitoryId: DormitorySiteId::fromString($dormitoryId),
+        dormitoryId: $dormitoryId,
         capacity: 1,
         registrationStartsAt: new DateTimeImmutable('2026-07-01 00:00:00', new DateTimeZone('UTC')),
         registrationEndsAt: new DateTimeImmutable('2026-07-31 23:59:59', new DateTimeZone('UTC')),
     );
 
-    $opened = app(OpenRegistrationAction::class)->execute($draft->requireId());
-    $registration = app(EnrollRegistrationAction::class)->execute(
+    $opened = openLotteryProgramForTest($draft->requireId());
+    $registration = asRequestOwner($employee, fn () => app(EnrollRegistrationAction::class)->execute(
         $opened->requireId(),
         RequestReferenceId::fromString($requestId),
-    );
-    $closed = app(CloseRegistrationAction::class)->execute($opened->requireId());
-    $locked = app(LockLotteryProgramAction::class)->execute($closed->requireId());
+    ));
+    $closed = runLotteryMutation(fn () => app(CloseRegistrationAction::class)->execute($opened->requireId()));
+    $locked = runLotteryMutation(fn () => app(LockLotteryProgramAction::class)->execute($closed->requireId()));
 
-    $completed = app(ExecuteDrawAction::class)->execute($locked->requireId());
-    $retry = app(ExecuteDrawAction::class)->execute($locked->requireId());
+    $completed = runLotteryMutation(fn () => app(ExecuteDrawAction::class)->execute($locked->requireId()));
+    $retry = runLotteryMutation(fn () => app(ExecuteDrawAction::class)->execute($locked->requireId()));
 
     expect($completed->status)->toBe(CompletedState::$name);
     expect($completed->drawnAt)->not->toBeNull();
@@ -108,24 +105,24 @@ it('does not duplicate results when draw is retried', function (): void {
     $dormitoryId = UuidGenerator::uuid7();
     $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
 
-    $draft = app(CreateLotteryProgramAction::class)->execute(
+    $draft = createLotteryProgramForTest(
         title: 'Idempotent Draw Program',
-        dormitoryId: DormitorySiteId::fromString($dormitoryId),
+        dormitoryId: $dormitoryId,
         capacity: 5,
         registrationStartsAt: new DateTimeImmutable('2026-07-01 00:00:00', new DateTimeZone('UTC')),
         registrationEndsAt: new DateTimeImmutable('2026-07-31 23:59:59', new DateTimeZone('UTC')),
     );
 
-    $opened = app(OpenRegistrationAction::class)->execute($draft->requireId());
-    app(EnrollRegistrationAction::class)->execute(
+    $opened = openLotteryProgramForTest($draft->requireId());
+    asRequestOwner($employee, fn () => app(EnrollRegistrationAction::class)->execute(
         $opened->requireId(),
         RequestReferenceId::fromString($requestId),
-    );
-    $closed = app(CloseRegistrationAction::class)->execute($opened->requireId());
-    $locked = app(LockLotteryProgramAction::class)->execute($closed->requireId());
+    ));
+    $closed = runLotteryMutation(fn () => app(CloseRegistrationAction::class)->execute($opened->requireId()));
+    $locked = runLotteryMutation(fn () => app(LockLotteryProgramAction::class)->execute($closed->requireId()));
 
-    app(ExecuteDrawAction::class)->execute($locked->requireId());
-    app(ExecuteDrawAction::class)->execute($locked->requireId());
+    runLotteryMutation(fn () => app(ExecuteDrawAction::class)->execute($locked->requireId()));
+    runLotteryMutation(fn () => app(ExecuteDrawAction::class)->execute($locked->requireId()));
 
     $results = app(LotteryResultRepositoryContract::class)->findByProgramId($locked->requireId());
     expect($results)->toHaveCount(1);

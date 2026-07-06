@@ -16,12 +16,12 @@ it('exposes hasActiveAllocation and active assignment queries via AllocationRead
     expect($read->hasActiveAllocation($personId))->toBeFalse();
     expect($read->getActiveAllocationsForPerson($personId))->toBe([]);
 
-    $allocation = app(CreateAllocationAction::class)->execute(
+    $allocation = runAllocationMutation(fn () => app(CreateAllocationAction::class)->execute(
         personId: $personId,
         bedId: $bedId,
         start: new DateTimeImmutable('2026-08-01', new DateTimeZone('UTC')),
         end: new DateTimeImmutable('2026-08-31', new DateTimeZone('UTC')),
-    );
+    ));
 
     expect($read->hasActiveAllocation($personId))->toBeTrue();
 

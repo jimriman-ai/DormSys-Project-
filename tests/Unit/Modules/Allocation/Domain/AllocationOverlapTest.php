@@ -19,6 +19,13 @@ class AllocationOverlapTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        bypassAllocationMutationAuthorization();
+    }
+
     #[Test]
     public function it_allows_non_overlapping_assignments_for_the_same_person(): void
     {

@@ -20,7 +20,7 @@ it('creates allocations from lottery proposed allocation payloads', function ():
     $registrationId = UuidGenerator::uuid7();
     $programId = UuidGenerator::uuid7();
 
-    app(ProposedAllocationConsumer::class)->emitProposedAllocations([
+    runAllocationMutation(fn () => app(ProposedAllocationConsumer::class)->emitProposedAllocations([
         [
             'program_id' => $programId,
             'registration_id' => $registrationId,
@@ -28,7 +28,7 @@ it('creates allocations from lottery proposed allocation payloads', function ():
             'dormitory_id' => $dormitoryId,
             'rank' => 1,
         ],
-    ]);
+    ]));
 
     $allocationId = DB::table('allocations')
         ->where('person_id', $employeeId)

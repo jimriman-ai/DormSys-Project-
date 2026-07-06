@@ -8,15 +8,12 @@ use App\Modules\Lottery\Application\Contracts\LotteryRegistrationRepositoryContr
 use App\Modules\Lottery\Application\Contracts\LotteryResultReadContract;
 use App\Modules\Lottery\Application\Contracts\LotteryResultRepositoryContract;
 use App\Modules\Lottery\Application\Services\CloseRegistrationAction;
-use App\Modules\Lottery\Application\Services\CreateLotteryProgramAction;
 use App\Modules\Lottery\Application\Services\EnrollRegistrationAction;
 use App\Modules\Lottery\Application\Services\ExecuteDrawAction;
 use App\Modules\Lottery\Application\Services\LockLotteryProgramAction;
-use App\Modules\Lottery\Application\Services\OpenRegistrationAction;
 use App\Modules\Lottery\Domain\Services\LotteryScoringEngine;
 use App\Modules\Lottery\Domain\States\CompletedState;
 use App\Modules\Lottery\Domain\States\LockedState;
-use App\Modules\Lottery\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Lottery\Domain\ValueObjects\RequestReferenceId;
 use App\Modules\Lottery\Domain\ValueObjects\ScoringConfig;
 use App\Modules\Lottery\Infrastructure\Jobs\AutoLockLotteryJob;
@@ -46,26 +43,26 @@ it('validates the full request to read contract integration boundary', function 
     $requestOne = createApprovedLotteryRegistrationRequest($employeeOne, $dormitoryId);
     $requestTwo = createApprovedLotteryRegistrationRequest($employeeTwo, $dormitoryId);
 
-    $draft = app(CreateLotteryProgramAction::class)->execute(
+    $draft = createLotteryProgramForTest(
         title: 'Integration Boundary Program',
-        dormitoryId: DormitorySiteId::fromString($dormitoryId),
+        dormitoryId: $dormitoryId,
         capacity: 1,
         registrationStartsAt: new DateTimeImmutable('2026-07-01 00:00:00', new DateTimeZone('UTC')),
         registrationEndsAt: new DateTimeImmutable('2026-07-31 23:59:59', new DateTimeZone('UTC')),
     );
 
-    $opened = app(OpenRegistrationAction::class)->execute($draft->requireId());
-    $registrationOne = app(EnrollRegistrationAction::class)->execute(
+    $opened = openLotteryProgramForTest($draft->requireId());
+    $registrationOne = asRequestOwner($employeeOne, fn () => app(EnrollRegistrationAction::class)->execute(
         $opened->requireId(),
         RequestReferenceId::fromString($requestOne),
-    );
-    $registrationTwo = app(EnrollRegistrationAction::class)->execute(
+    ));
+    $registrationTwo = asRequestOwner($employeeTwo, fn () => app(EnrollRegistrationAction::class)->execute(
         $opened->requireId(),
         RequestReferenceId::fromString($requestTwo),
-    );
+    ));
 
-    $closed = app(CloseRegistrationAction::class)->execute($opened->requireId());
-    $locked = app(LockLotteryProgramAction::class)->execute($closed->requireId());
+    $closed = runLotteryMutation(fn () => app(CloseRegistrationAction::class)->execute($opened->requireId()));
+    $locked = runLotteryMutation(fn () => app(LockLotteryProgramAction::class)->execute($closed->requireId()));
 
     expect($locked->status)->toBe(LockedState::$name);
 
@@ -74,8 +71,8 @@ it('validates the full request to read contract integration boundary', function 
     expect($snapshotAfterLock?->payload['eligible'] ?? [])->toHaveCount(2);
     $frozenPayload = $snapshotAfterLock?->payload;
 
-    $completed = app(ExecuteDrawAction::class)->execute($locked->requireId());
-    $drawRetry = app(ExecuteDrawAction::class)->execute($locked->requireId());
+    $completed = runLotteryMutation(fn () => app(ExecuteDrawAction::class)->execute($locked->requireId()));
+    $drawRetry = runLotteryMutation(fn () => app(ExecuteDrawAction::class)->execute($locked->requireId()));
 
     expect($completed->status)->toBe(CompletedState::$name);
     expect($drawRetry->status)->toBe(CompletedState::$name);
@@ -129,7 +126,7 @@ it('validates the full request to read contract integration boundary', function 
     }
 
     $drawJob = new ExecuteLotteryDrawJob($locked->requireId()->value);
-    app()->call([$drawJob, 'handle']);
+    runLotterySystemMutation(fn () => app()->call([$drawJob, 'handle']));
     expect(app(LotteryResultRepositoryContract::class)->findByProgramId($locked->requireId()))->toHaveCount(2);
 });
 
@@ -138,25 +135,25 @@ it('preserves idempotency when auto lock and draw jobs retry after manual comple
     $dormitoryId = UuidGenerator::uuid7();
     $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
 
-    $draft = app(CreateLotteryProgramAction::class)->execute(
+    $draft = createLotteryProgramForTest(
         title: 'Job Idempotency Integration Program',
-        dormitoryId: DormitorySiteId::fromString($dormitoryId),
+        dormitoryId: $dormitoryId,
         capacity: 1,
         registrationStartsAt: new DateTimeImmutable('2026-07-01 00:00:00', new DateTimeZone('UTC')),
         registrationEndsAt: new DateTimeImmutable('2026-07-10 23:59:59', new DateTimeZone('UTC')),
     );
 
-    $opened = app(OpenRegistrationAction::class)->execute($draft->requireId());
-    app(EnrollRegistrationAction::class)->execute(
+    $opened = openLotteryProgramForTest($draft->requireId());
+    asRequestOwner($employee, fn () => app(EnrollRegistrationAction::class)->execute(
         $opened->requireId(),
         RequestReferenceId::fromString($requestId),
-    );
+    ));
 
     Carbon::setTestNow('2026-07-15 12:00:00');
 
     $autoLockJob = app(AutoLockLotteryJob::class);
-    app()->call([$autoLockJob, 'handle']);
-    app()->call([$autoLockJob, 'handle']);
+    runLotterySystemMutation(fn () => app()->call([$autoLockJob, 'handle']));
+    runLotterySystemMutation(fn () => app()->call([$autoLockJob, 'handle']));
 
     $locked = app(LotteryProgramRepositoryContract::class)
         ->findById($opened->requireId());
@@ -164,8 +161,8 @@ it('preserves idempotency when auto lock and draw jobs retry after manual comple
     expect($locked?->status)->toBe(LockedState::$name);
 
     $drawJob = new ExecuteLotteryDrawJob($opened->requireId()->value);
-    app()->call([$drawJob, 'handle']);
-    app()->call([$drawJob, 'handle']);
+    runLotteryMutation(fn () => app()->call([$drawJob, 'handle']));
+    runLotteryMutation(fn () => app()->call([$drawJob, 'handle']));
 
     $payload = app(LotteryResultReadContract::class)->resultsForProgram($opened->requireId());
     assertLotteryResultReadContractShape($payload);

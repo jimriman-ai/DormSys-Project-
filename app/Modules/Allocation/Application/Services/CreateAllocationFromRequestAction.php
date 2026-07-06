@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Allocation\Application\Services;
 
+use App\Application\Mutation\Registry\MutationCapabilityCatalog;
+use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
 use App\Modules\Allocation\Application\Contracts\Ports\ApprovedRequestReadPort;
 use App\Modules\Allocation\Application\Contracts\RequestLifecycleCommandPort;
 use App\Modules\Allocation\Domain\Enums\AllocationMethod;
@@ -17,10 +19,17 @@ final class CreateAllocationFromRequestAction
         private readonly ApprovedRequestReadPort $requests,
         private readonly CreateAllocationAction $createAllocation,
         private readonly RequestLifecycleCommandPort $requestLifecycle,
+        private readonly MutationPolicyEnforcementPoint $mutationPolicy,
+        private readonly AllocationMutationAuthorizationGate $allocationMutationAuth,
     ) {}
 
     public function execute(string $requestId, ?string $bedId = null): Allocation
     {
+        $this->mutationPolicy->enforce(MutationCapabilityCatalog::ALLOCATION_CREATE_FROM_REQUEST, [
+            'requestId' => $requestId,
+        ]);
+        $this->allocationMutationAuth->assertCreateFromRequest();
+
         $summary = $this->requests->getApprovedSummary($requestId);
 
         if ($summary === null) {

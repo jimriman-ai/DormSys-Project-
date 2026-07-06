@@ -5,14 +5,11 @@ declare(strict_types=1);
 use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Modules\Lottery\Application\Contracts\LotteryRegistrationRepositoryContract;
-use App\Modules\Lottery\Application\Services\CreateLotteryProgramAction;
 use App\Modules\Lottery\Application\Services\EnrollRegistrationAction;
-use App\Modules\Lottery\Application\Services\OpenRegistrationAction;
 use App\Modules\Lottery\Domain\Events\LotteryRegistrationCreated;
 use App\Modules\Lottery\Domain\Exceptions\DuplicateEnrollmentException;
 use App\Modules\Lottery\Domain\Exceptions\RegistrationClosedException;
 use App\Modules\Lottery\Domain\States\RegistrationOpenState;
-use App\Modules\Lottery\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Lottery\Domain\ValueObjects\RequestReferenceId;
 use App\Modules\Request\Application\Services\CreateLotteryRegistrationRequestAction;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
@@ -79,21 +76,21 @@ it('enrolls an approved lottery registration request into an open program', func
     $dormitoryId = UuidGenerator::uuid7();
     $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
 
-    $draft = app(CreateLotteryProgramAction::class)->execute(
+    $draft = createLotteryProgramForTest(
         title: 'Enrollment Test Program',
-        dormitoryId: DormitorySiteId::fromString($dormitoryId),
+        dormitoryId: $dormitoryId,
         capacity: 20,
         registrationStartsAt: new DateTimeImmutable('2026-07-01 00:00:00', new DateTimeZone('UTC')),
         registrationEndsAt: new DateTimeImmutable('2026-07-31 23:59:59', new DateTimeZone('UTC')),
     );
 
-    $program = app(OpenRegistrationAction::class)->execute($draft->requireId());
+    $program = openLotteryProgramForTest($draft->requireId());
     expect($program->status)->toBe(RegistrationOpenState::$name);
 
-    $registration = app(EnrollRegistrationAction::class)->execute(
+    $registration = asRequestOwner($employee, fn () => app(EnrollRegistrationAction::class)->execute(
         $program->requireId(),
         RequestReferenceId::fromString($requestId),
-    );
+    ));
 
     expect($registration->programId->value)->toBe($program->requireId()->value);
     expect($registration->requestId->value)->toBe($requestId);
@@ -114,20 +111,20 @@ it('rejects duplicate enrollment for the same request', function (): void {
     $dormitoryId = UuidGenerator::uuid7();
     $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
 
-    $draft = app(CreateLotteryProgramAction::class)->execute(
+    $draft = createLotteryProgramForTest(
         title: 'Duplicate Enrollment Program',
-        dormitoryId: DormitorySiteId::fromString($dormitoryId),
+        dormitoryId: $dormitoryId,
         capacity: 20,
         registrationStartsAt: new DateTimeImmutable('2026-07-01 00:00:00', new DateTimeZone('UTC')),
         registrationEndsAt: new DateTimeImmutable('2026-07-31 23:59:59', new DateTimeZone('UTC')),
     );
 
-    $program = app(OpenRegistrationAction::class)->execute($draft->requireId());
+    $program = openLotteryProgramForTest($draft->requireId());
     $reference = RequestReferenceId::fromString($requestId);
 
-    app(EnrollRegistrationAction::class)->execute($program->requireId(), $reference);
+    asRequestOwner($employee, fn () => app(EnrollRegistrationAction::class)->execute($program->requireId(), $reference));
 
-    app(EnrollRegistrationAction::class)->execute($program->requireId(), $reference);
+    asRequestOwner($employee, fn () => app(EnrollRegistrationAction::class)->execute($program->requireId(), $reference));
 })->throws(DuplicateEnrollmentException::class);
 
 it('rejects enrollment when program registration is closed', function (): void {
@@ -135,16 +132,16 @@ it('rejects enrollment when program registration is closed', function (): void {
     $dormitoryId = UuidGenerator::uuid7();
     $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
 
-    $draft = app(CreateLotteryProgramAction::class)->execute(
+    $draft = createLotteryProgramForTest(
         title: 'Closed Enrollment Program',
-        dormitoryId: DormitorySiteId::fromString($dormitoryId),
+        dormitoryId: $dormitoryId,
         capacity: 20,
         registrationStartsAt: new DateTimeImmutable('2026-07-01 00:00:00', new DateTimeZone('UTC')),
         registrationEndsAt: new DateTimeImmutable('2026-07-31 23:59:59', new DateTimeZone('UTC')),
     );
 
-    app(EnrollRegistrationAction::class)->execute(
+    asRequestOwner($employee, fn () => app(EnrollRegistrationAction::class)->execute(
         $draft->requireId(),
         RequestReferenceId::fromString($requestId),
-    );
+    ));
 })->throws(RegistrationClosedException::class);

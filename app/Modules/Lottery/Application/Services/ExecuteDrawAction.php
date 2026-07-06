@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Lottery\Application\Services;
 
+use App\Application\Mutation\Registry\MutationCapabilityCatalog;
+use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
 use App\Modules\Lottery\Application\Contracts\LotteryEligibleSnapshotRepositoryContract;
 use App\Modules\Lottery\Application\Contracts\LotteryProgramRepositoryContract;
 use App\Modules\Lottery\Application\Contracts\LotteryResultRepositoryContract;
@@ -29,10 +31,17 @@ final class ExecuteDrawAction
         private readonly LotteryResultRepositoryContract $results,
         private readonly LotteryDrawSelector $drawSelector,
         private readonly ProposedAllocationPort $proposedAllocations,
+        private readonly MutationPolicyEnforcementPoint $mutationPolicy,
+        private readonly LotteryMutationAuthorizationGate $lotteryMutationAuth,
     ) {}
 
     public function execute(LotteryProgramId $programId): LotteryProgram
     {
+        $this->mutationPolicy->enforce(MutationCapabilityCatalog::LOTTERY_PROGRAM_DRAW, [
+            'programId' => $programId->value,
+        ]);
+        $this->lotteryMutationAuth->assertManageProgram();
+
         $program = $this->programs->findById($programId);
 
         if ($program === null) {

@@ -4,16 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\Mutation\Registry;
 
-use App\Modules\Allocation\Application\Services\CreateAllocationAction;
-use App\Modules\Allocation\Application\Services\CreateAllocationFromRequestAction;
-use App\Modules\Allocation\Application\Services\ReleaseAllocationAction;
-use App\Modules\Lottery\Application\Services\CancelLotteryProgramAction;
-use App\Modules\Lottery\Application\Services\CloseRegistrationAction;
-use App\Modules\Lottery\Application\Services\CreateLotteryProgramAction;
-use App\Modules\Lottery\Application\Services\EnrollRegistrationAction;
-use App\Modules\Lottery\Application\Services\ExecuteDrawAction;
-use App\Modules\Lottery\Application\Services\LockLotteryProgramAction;
-use App\Modules\Lottery\Application\Services\OpenRegistrationAction;
 use App\Modules\Notification\Application\Services\DeliverNotificationAction;
 use App\Modules\Notification\Application\Services\MarkNotificationReadAction;
 use App\Modules\Request\Application\Services\CreateFamilyDirectRequestAction;
@@ -36,26 +26,16 @@ final class PendingMutationAuthorizationRegistry
      */
     private const PENDING = [
         AcceptTriggerFactsAction::class,
-        CancelLotteryProgramAction::class,
-        CloseRegistrationAction::class,
-        CreateAllocationAction::class,
-        CreateAllocationFromRequestAction::class,
         CreateFamilyDirectRequestAction::class,
-        CreateLotteryProgramAction::class,
         CreateLotteryRegistrationRequestAction::class,
         CreateMissionRequestAction::class,
         CreatePersonalRequestAction::class,
         DeliverNotificationAction::class,
-        EnrollRegistrationAction::class,
         EvaluateVoucherEligibilityAction::class,
-        ExecuteDrawAction::class,
         IssueVoucherAction::class,
-        LockLotteryProgramAction::class,
         MarkNotificationReadAction::class,
-        OpenRegistrationAction::class,
         ProcessExternalLotteryWinnerAction::class,
         ProcessReservePromotionAction::class,
-        ReleaseAllocationAction::class,
         VoucherLifecycleAction::class,
     ];
 

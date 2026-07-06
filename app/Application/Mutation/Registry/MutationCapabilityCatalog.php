@@ -38,6 +38,26 @@ final class MutationCapabilityCatalog
 
     public const string EMPLOYEE_DEPARTMENT_ASSIGN = 'employee.department.assign';
 
+    public const string LOTTERY_PROGRAM_CREATE = 'lottery.program.create';
+
+    public const string LOTTERY_PROGRAM_OPEN_REGISTRATION = 'lottery.program.open_registration';
+
+    public const string LOTTERY_PROGRAM_CLOSE_REGISTRATION = 'lottery.program.close_registration';
+
+    public const string LOTTERY_PROGRAM_CANCEL = 'lottery.program.cancel';
+
+    public const string LOTTERY_PROGRAM_LOCK = 'lottery.program.lock';
+
+    public const string LOTTERY_PROGRAM_DRAW = 'lottery.program.draw';
+
+    public const string LOTTERY_ENROLL_OWN = 'lottery.enroll.own';
+
+    public const string ALLOCATION_CREATE = 'allocation.create';
+
+    public const string ALLOCATION_CREATE_FROM_REQUEST = 'allocation.create.from_request';
+
+    public const string ALLOCATION_RELEASE = 'allocation.release';
+
     /**
      * @return list<string>
      */
@@ -59,6 +79,16 @@ final class MutationCapabilityCatalog
             self::EMPLOYEE_DEPARTMENT_CREATE,
             self::EMPLOYEE_DEPARTMENT_DEACTIVATE,
             self::EMPLOYEE_DEPARTMENT_ASSIGN,
+            self::LOTTERY_PROGRAM_CREATE,
+            self::LOTTERY_PROGRAM_OPEN_REGISTRATION,
+            self::LOTTERY_PROGRAM_CLOSE_REGISTRATION,
+            self::LOTTERY_PROGRAM_CANCEL,
+            self::LOTTERY_PROGRAM_LOCK,
+            self::LOTTERY_PROGRAM_DRAW,
+            self::LOTTERY_ENROLL_OWN,
+            self::ALLOCATION_CREATE,
+            self::ALLOCATION_CREATE_FROM_REQUEST,
+            self::ALLOCATION_RELEASE,
         ];
     }
 

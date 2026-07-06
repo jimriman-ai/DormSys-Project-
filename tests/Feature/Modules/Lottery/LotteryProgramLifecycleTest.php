@@ -25,20 +25,20 @@ it('creates a draft program and opens registration', function (): void {
 
     $dormitoryId = DormitorySiteId::fromString(UuidGenerator::uuid7());
 
-    $draft = app(CreateLotteryProgramAction::class)->execute(
+    $draft = runLotteryMutation(fn () => app(CreateLotteryProgramAction::class)->execute(
         title: 'Summer 2026 Lottery',
         dormitoryId: $dormitoryId,
         capacity: 30,
         registrationStartsAt: new DateTimeImmutable('2026-07-01 00:00:00', new DateTimeZone('UTC')),
         registrationEndsAt: new DateTimeImmutable('2026-07-31 23:59:59', new DateTimeZone('UTC')),
-    );
+    ));
 
     expect($draft->isDraft())->toBeTrue();
     expect($draft->status)->toBe(DraftState::$name);
 
     Event::assertDispatched(LotteryProgramCreated::class);
 
-    $opened = app(OpenRegistrationAction::class)->execute($draft->requireId());
+    $opened = runLotteryMutation(fn () => app(OpenRegistrationAction::class)->execute($draft->requireId()));
 
     expect($opened->status)->toBe(RegistrationOpenState::$name);
     expect($opened->canAcceptEnrollment())->toBeTrue();
@@ -53,16 +53,16 @@ it('creates a draft program and opens registration', function (): void {
 it('closes registration after opening', function (): void {
     $dormitoryId = DormitorySiteId::fromString(UuidGenerator::uuid7());
 
-    $draft = app(CreateLotteryProgramAction::class)->execute(
+    $draft = runLotteryMutation(fn () => app(CreateLotteryProgramAction::class)->execute(
         title: 'Close Test Lottery',
         dormitoryId: $dormitoryId,
         capacity: 15,
         registrationStartsAt: new DateTimeImmutable('2026-07-01 00:00:00', new DateTimeZone('UTC')),
         registrationEndsAt: new DateTimeImmutable('2026-07-31 23:59:59', new DateTimeZone('UTC')),
-    );
+    ));
 
-    $opened = app(OpenRegistrationAction::class)->execute($draft->requireId());
-    $closed = app(CloseRegistrationAction::class)->execute($opened->requireId());
+    $opened = runLotteryMutation(fn () => app(OpenRegistrationAction::class)->execute($draft->requireId()));
+    $closed = runLotteryMutation(fn () => app(CloseRegistrationAction::class)->execute($opened->requireId()));
 
     expect($closed->status)->toBe(RegistrationClosedState::$name);
     expect($closed->canLock())->toBeTrue();
@@ -71,19 +71,19 @@ it('closes registration after opening', function (): void {
 it('cancels an open program with reason', function (): void {
     $dormitoryId = DormitorySiteId::fromString(UuidGenerator::uuid7());
 
-    $draft = app(CreateLotteryProgramAction::class)->execute(
+    $draft = runLotteryMutation(fn () => app(CreateLotteryProgramAction::class)->execute(
         title: 'Cancel Test Lottery',
         dormitoryId: $dormitoryId,
         capacity: 10,
         registrationStartsAt: new DateTimeImmutable('2026-07-01 00:00:00', new DateTimeZone('UTC')),
         registrationEndsAt: new DateTimeImmutable('2026-07-31 23:59:59', new DateTimeZone('UTC')),
-    );
+    ));
 
-    $opened = app(OpenRegistrationAction::class)->execute($draft->requireId());
-    $cancelled = app(CancelLotteryProgramAction::class)->execute(
+    $opened = runLotteryMutation(fn () => app(OpenRegistrationAction::class)->execute($draft->requireId()));
+    $cancelled = runLotteryMutation(fn () => app(CancelLotteryProgramAction::class)->execute(
         $opened->requireId(),
         'Insufficient dormitory capacity',
-    );
+    ));
 
     expect($cancelled->status)->toBe(CancelledState::$name);
     expect($cancelled->cancelledReason)->toBe('Insufficient dormitory capacity');
@@ -93,13 +93,13 @@ it('cancels an open program with reason', function (): void {
 it('rejects closing registration when not open', function (): void {
     $dormitoryId = DormitorySiteId::fromString(UuidGenerator::uuid7());
 
-    $draft = app(CreateLotteryProgramAction::class)->execute(
+    $draft = runLotteryMutation(fn () => app(CreateLotteryProgramAction::class)->execute(
         title: 'Invalid Close Lottery',
         dormitoryId: $dormitoryId,
         capacity: 10,
         registrationStartsAt: new DateTimeImmutable('2026-07-01 00:00:00', new DateTimeZone('UTC')),
         registrationEndsAt: new DateTimeImmutable('2026-07-31 23:59:59', new DateTimeZone('UTC')),
-    );
+    ));
 
-    app(CloseRegistrationAction::class)->execute($draft->requireId());
+    runLotteryMutation(fn () => app(CloseRegistrationAction::class)->execute($draft->requireId()));
 })->throws(InvalidLotteryTransitionException::class);

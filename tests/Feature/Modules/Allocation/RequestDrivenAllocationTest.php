@@ -71,10 +71,10 @@ function createApprovedPersonalRequestForAllocationTest(): array
 it('creates an allocation from an approved request via read contract', function (): void {
     [$employee, $request, $bedId] = createApprovedPersonalRequestForAllocationTest();
 
-    $allocation = app(CreateAllocationFromRequestAction::class)->execute(
+    $allocation = runAllocationMutation(fn () => app(CreateAllocationFromRequestAction::class)->execute(
         requestId: $request->requireId()->value,
         bedId: $bedId,
-    );
+    ));
 
     expect($allocation->status)->toBe(AllocationStatus::Active);
     expect($allocation->method)->toBe(AllocationMethod::RequestSourced);

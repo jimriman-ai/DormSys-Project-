@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Lottery\Application\Services;
 
+use App\Application\Mutation\Registry\MutationCapabilityCatalog;
+use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
 use App\Modules\Lottery\Application\Contracts\LotteryProgramRepositoryContract;
 use App\Modules\Lottery\Domain\Events\LotteryProgramStateChanged;
 use App\Modules\Lottery\Domain\Exceptions\InvalidLotteryTransitionException;
@@ -18,10 +20,17 @@ final class CancelLotteryProgramAction
 {
     public function __construct(
         private readonly LotteryProgramRepositoryContract $programs,
+        private readonly MutationPolicyEnforcementPoint $mutationPolicy,
+        private readonly LotteryMutationAuthorizationGate $lotteryMutationAuth,
     ) {}
 
     public function execute(LotteryProgramId $programId, string $reason): LotteryProgram
     {
+        $this->mutationPolicy->enforce(MutationCapabilityCatalog::LOTTERY_PROGRAM_CANCEL, [
+            'programId' => $programId->value,
+        ]);
+        $this->lotteryMutationAuth->assertManageProgram();
+
         if (trim($reason) === '') {
             throw new LotteryValidationException('Cancellation reason is required.');
         }

@@ -22,6 +22,13 @@ class ReleaseAllocationTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        bypassAllocationMutationAuthorization();
+    }
+
     #[Test]
     public function it_rejects_release_when_allocation_is_not_found(): void
     {

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Lottery\Application\Services;
 
+use App\Application\Mutation\Registry\MutationCapabilityCatalog;
+use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
 use App\Modules\Lottery\Application\Contracts\LotteryProgramRepositoryContract;
 use App\Modules\Lottery\Application\Contracts\LotteryRegistrationRepositoryContract;
 use App\Modules\Lottery\Application\Contracts\LotteryRequestReadPort;
@@ -25,12 +27,27 @@ final class EnrollRegistrationAction
         private readonly LotteryProgramRepositoryContract $programs,
         private readonly LotteryRegistrationRepositoryContract $registrations,
         private readonly LotteryRequestReadPort $requests,
+        private readonly MutationPolicyEnforcementPoint $mutationPolicy,
+        private readonly LotteryMutationAuthorizationGate $lotteryMutationAuth,
     ) {}
 
     public function execute(
         LotteryProgramId $programId,
         RequestReferenceId $requestId,
     ): LotteryRegistration {
+        $this->mutationPolicy->enforce(MutationCapabilityCatalog::LOTTERY_ENROLL_OWN, [
+            'programId' => $programId->value,
+            'requestId' => $requestId->value,
+        ]);
+
+        $approvedRequest = $this->requests->findApprovedLotteryRegistration($requestId);
+
+        if ($approvedRequest === null) {
+            throw new LotteryValidationException('Approved lottery registration request not found.');
+        }
+
+        $this->lotteryMutationAuth->assertEnrollOwn($approvedRequest->employeeId);
+
         $program = $this->programs->findById($programId);
 
         if ($program === null) {
@@ -39,12 +56,6 @@ final class EnrollRegistrationAction
 
         if (! $program->canAcceptEnrollment()) {
             throw new RegistrationClosedException('Registration is not open for this program.');
-        }
-
-        $approvedRequest = $this->requests->findApprovedLotteryRegistration($requestId);
-
-        if ($approvedRequest === null) {
-            throw new LotteryValidationException('Approved lottery registration request not found.');
         }
 
         if ($approvedRequest->dormitoryId !== $program->dormitoryId->value) {

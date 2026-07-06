@@ -19,6 +19,7 @@ use App\Modules\Identity\Application\Services\RevokeRoleFromUserAction;
 use App\Modules\Identity\Domain\Entities\User;
 use App\Modules\Identity\Domain\ValueObjects\UserId;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
+use App\Shared\ValueObjects\SystemActorId;
 use App\Support\ValueObjects\Identity\NationalCode;
 
 /**
@@ -145,4 +146,37 @@ function deactivateDepartmentThroughMutation(DepartmentId $departmentId, ?string
         fn () => app(DeactivateDepartmentAction::class)->execute($departmentId),
         $actorId,
     );
+}
+
+/**
+ * @template TReturn
+ *
+ * @param  callable(): TReturn  $callback
+ * @return TReturn
+ */
+function withLotteryMutationActor(callable $callback, ?string $actorId = null): mixed
+{
+    return withMutationActor($callback, $actorId);
+}
+
+/**
+ * @template TReturn
+ *
+ * @param  callable(): TReturn  $callback
+ * @return TReturn
+ */
+function withAllocationMutationActor(callable $callback, ?string $actorId = null): mixed
+{
+    return withMutationActor($callback, $actorId);
+}
+
+/**
+ * @template TReturn
+ *
+ * @param  callable(): TReturn  $callback
+ * @return TReturn
+ */
+function asLotterySystemMutation(callable $callback): mixed
+{
+    return mutationActingAs(SystemActorId::VALUE, $callback);
 }

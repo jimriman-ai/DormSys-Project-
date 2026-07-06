@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Lottery\Application\Services;
 
+use App\Application\Mutation\Registry\MutationCapabilityCatalog;
+use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
 use App\Modules\Lottery\Application\Contracts\LotteryProgramRepositoryContract;
 use App\Modules\Lottery\Domain\Events\LotteryProgramCreated;
 use App\Modules\Lottery\Domain\Exceptions\LotteryValidationException;
@@ -17,6 +19,8 @@ final class CreateLotteryProgramAction
 {
     public function __construct(
         private readonly LotteryProgramRepositoryContract $programs,
+        private readonly MutationPolicyEnforcementPoint $mutationPolicy,
+        private readonly LotteryMutationAuthorizationGate $lotteryMutationAuth,
     ) {}
 
     public function execute(
@@ -26,6 +30,11 @@ final class CreateLotteryProgramAction
         DateTimeImmutable $registrationStartsAt,
         DateTimeImmutable $registrationEndsAt,
     ): LotteryProgram {
+        $this->mutationPolicy->enforce(MutationCapabilityCatalog::LOTTERY_PROGRAM_CREATE, [
+            'dormitoryId' => $dormitoryId->value,
+        ]);
+        $this->lotteryMutationAuth->assertManageProgram();
+
         $this->validate($capacity, $registrationStartsAt, $registrationEndsAt);
 
         $program = LotteryProgram::createDraft(

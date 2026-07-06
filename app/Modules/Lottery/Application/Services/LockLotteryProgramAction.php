@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Lottery\Application\Services;
 
+use App\Application\Mutation\Registry\MutationCapabilityCatalog;
+use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
 use App\Modules\Lottery\Application\Contracts\EmployeeLotteryScorePort;
 use App\Modules\Lottery\Application\Contracts\LotteryEligibleSnapshotRepositoryContract;
 use App\Modules\Lottery\Application\Contracts\LotteryProgramRepositoryContract;
@@ -32,10 +34,17 @@ final class LockLotteryProgramAction
         private readonly LotteryScoringConfigReader $scoringConfigReader,
         private readonly EmployeeLotteryScorePort $employeeScores,
         private readonly LotteryScoringEngine $scoringEngine,
+        private readonly MutationPolicyEnforcementPoint $mutationPolicy,
+        private readonly LotteryMutationAuthorizationGate $lotteryMutationAuth,
     ) {}
 
     public function execute(LotteryProgramId $programId): LotteryProgram
     {
+        $this->mutationPolicy->enforce(MutationCapabilityCatalog::LOTTERY_PROGRAM_LOCK, [
+            'programId' => $programId->value,
+        ]);
+        $this->lotteryMutationAuth->assertManageProgram();
+
         $program = $this->programs->findById($programId);
 
         if ($program === null) {

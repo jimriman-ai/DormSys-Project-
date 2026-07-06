@@ -60,11 +60,23 @@ class EnrollRegistrationActionTest extends TestCase
             status: DraftState::$name,
         );
 
+        $employeeId = UuidGenerator::uuid7();
+
+        $requests = MockeryTest::mock(LotteryRequestReadPort::class);
+        MockeryTest::expectOnce($requests, 'findApprovedLotteryRegistration')
+            ->with($requestId)
+            ->andReturn(new ApprovedLotteryRequestDTO(
+                requestId: $requestId->value,
+                employeeId: $employeeId,
+                dormitoryId: $dormitoryId->value,
+            ));
+        $this->app->instance(LotteryRequestReadPort::class, $requests);
+
         $this->mockProgramRepository($program);
 
         $this->expectException(RegistrationClosedException::class);
 
-        app(EnrollRegistrationAction::class)->execute($programId, $requestId);
+        $this->executeEnroll($programId, $requestId, $employeeId);
     }
 
     #[Test]
@@ -107,7 +119,7 @@ class EnrollRegistrationActionTest extends TestCase
 
         $this->expectException(RegistrationClosedException::class);
 
-        app(EnrollRegistrationAction::class)->execute($programId, $requestId);
+        $this->executeEnroll($programId, $requestId, $employeeId);
     }
 
     #[Test]
@@ -150,7 +162,7 @@ class EnrollRegistrationActionTest extends TestCase
 
         $this->expectException(DuplicateEnrollmentException::class);
 
-        app(EnrollRegistrationAction::class)->execute($programId, $requestId);
+        $this->executeEnroll($programId, $requestId, $employeeId);
     }
 
     #[Test]
@@ -158,16 +170,14 @@ class EnrollRegistrationActionTest extends TestCase
     {
         $programId = LotteryProgramId::fromString(UuidGenerator::uuid7());
         $requestId = RequestReferenceId::fromString(UuidGenerator::uuid7());
-        $dormitoryId = DormitorySiteId::fromString(UuidGenerator::uuid7());
-
-        $program = $this->openProgram($programId, $dormitoryId);
-        $this->mockProgramRepository($program);
 
         $requests = MockeryTest::mock(LotteryRequestReadPort::class);
         MockeryTest::expectOnce($requests, 'findApprovedLotteryRegistration')
             ->with($requestId)
             ->andReturn(null);
         $this->app->instance(LotteryRequestReadPort::class, $requests);
+
+        bypassLotteryMutationAuthorization();
 
         $this->expectException(LotteryValidationException::class);
 
@@ -184,19 +194,21 @@ class EnrollRegistrationActionTest extends TestCase
         $program = $this->openProgram($programId, $dormitoryId);
         $this->mockProgramRepository($program);
 
+        $employeeId = UuidGenerator::uuid7();
+
         $requests = MockeryTest::mock(LotteryRequestReadPort::class);
         MockeryTest::expectOnce($requests, 'findApprovedLotteryRegistration')
             ->with($requestId)
             ->andReturn(new ApprovedLotteryRequestDTO(
                 requestId: $requestId->value,
-                employeeId: UuidGenerator::uuid7(),
+                employeeId: $employeeId,
                 dormitoryId: UuidGenerator::uuid7(),
             ));
         $this->app->instance(LotteryRequestReadPort::class, $requests);
 
         $this->expectException(LotteryValidationException::class);
 
-        app(EnrollRegistrationAction::class)->execute($programId, $requestId);
+        $this->executeEnroll($programId, $requestId, $employeeId);
     }
 
     #[Test]
@@ -238,7 +250,7 @@ class EnrollRegistrationActionTest extends TestCase
         MockeryTest::expectOnce($registrations, 'save')->andReturn($persisted);
         $this->app->instance(LotteryRegistrationRepositoryContract::class, $registrations);
 
-        $result = app(EnrollRegistrationAction::class)->execute($programId, $requestId);
+        $result = $this->executeEnroll($programId, $requestId, $employeeId);
 
         expect($result->requireId()->value)->toBe($registrationId->value);
         expect($result->employeeId->value)->toBe($employeeId);
@@ -278,6 +290,17 @@ class EnrollRegistrationActionTest extends TestCase
         }
 
         $this->app->instance(LotteryProgramRepositoryContract::class, $programs);
+    }
+
+    private function executeEnroll(
+        LotteryProgramId $programId,
+        RequestReferenceId $requestId,
+        string $employeeId,
+    ): LotteryRegistration {
+        $principalId = UuidGenerator::uuid7();
+        configureLotteryEnrollMutationAuthorization($principalId, $employeeId);
+
+        return app(EnrollRegistrationAction::class)->execute($programId, $requestId);
     }
 
     protected function tearDown(): void

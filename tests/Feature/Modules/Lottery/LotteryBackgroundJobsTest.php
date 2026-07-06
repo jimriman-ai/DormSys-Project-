@@ -5,13 +5,10 @@ declare(strict_types=1);
 use App\Modules\Lottery\Application\Contracts\LotteryEligibleSnapshotRepositoryContract;
 use App\Modules\Lottery\Application\Contracts\LotteryProgramRepositoryContract;
 use App\Modules\Lottery\Application\Contracts\LotteryResultRepositoryContract;
-use App\Modules\Lottery\Application\Services\CreateLotteryProgramAction;
 use App\Modules\Lottery\Application\Services\EnrollRegistrationAction;
 use App\Modules\Lottery\Application\Services\LotteryScoringConfigReader;
-use App\Modules\Lottery\Application\Services\OpenRegistrationAction;
 use App\Modules\Lottery\Domain\States\CompletedState;
 use App\Modules\Lottery\Domain\States\LockedState;
-use App\Modules\Lottery\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Lottery\Domain\ValueObjects\RequestReferenceId;
 use App\Modules\Lottery\Infrastructure\Jobs\AutoLockLotteryJob;
 use App\Modules\Lottery\Infrastructure\Jobs\ExecuteLotteryDrawJob;
@@ -65,23 +62,23 @@ it('auto-locks past-deadline programs idempotently', function (): void {
     $dormitoryId = UuidGenerator::uuid7();
     $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
 
-    $draft = app(CreateLotteryProgramAction::class)->execute(
+    $draft = createLotteryProgramForTest(
         title: 'Auto Lock Program',
-        dormitoryId: DormitorySiteId::fromString($dormitoryId),
+        dormitoryId: $dormitoryId,
         capacity: 5,
         registrationStartsAt: new DateTimeImmutable('2026-07-01 00:00:00', new DateTimeZone('UTC')),
         registrationEndsAt: new DateTimeImmutable('2026-07-10 23:59:59', new DateTimeZone('UTC')),
     );
 
-    $opened = app(OpenRegistrationAction::class)->execute($draft->requireId());
-    app(EnrollRegistrationAction::class)->execute(
+    $opened = openLotteryProgramForTest($draft->requireId());
+    asRequestOwner($employee, fn () => app(EnrollRegistrationAction::class)->execute(
         $opened->requireId(),
         RequestReferenceId::fromString($requestId),
-    );
+    ));
 
     $job = app(AutoLockLotteryJob::class);
-    app()->call([$job, 'handle']);
-    app()->call([$job, 'handle']);
+    runLotterySystemMutation(fn () => app()->call([$job, 'handle']));
+    runLotterySystemMutation(fn () => app()->call([$job, 'handle']));
 
     $reloaded = app(LotteryProgramRepositoryContract::class)
         ->findById($opened->requireId());
@@ -99,26 +96,26 @@ it('executes draw job idempotently for locked programs', function (): void {
     $dormitoryId = UuidGenerator::uuid7();
     $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
 
-    $draft = app(CreateLotteryProgramAction::class)->execute(
+    $draft = createLotteryProgramForTest(
         title: 'Draw Job Program',
-        dormitoryId: DormitorySiteId::fromString($dormitoryId),
+        dormitoryId: $dormitoryId,
         capacity: 1,
         registrationStartsAt: new DateTimeImmutable('2026-07-01 00:00:00', new DateTimeZone('UTC')),
         registrationEndsAt: new DateTimeImmutable('2026-07-10 23:59:59', new DateTimeZone('UTC')),
     );
 
-    $opened = app(OpenRegistrationAction::class)->execute($draft->requireId());
-    app(EnrollRegistrationAction::class)->execute(
+    $opened = openLotteryProgramForTest($draft->requireId());
+    asRequestOwner($employee, fn () => app(EnrollRegistrationAction::class)->execute(
         $opened->requireId(),
         RequestReferenceId::fromString($requestId),
-    );
+    ));
 
-    app()->call([app(AutoLockLotteryJob::class), 'handle']);
+    runLotterySystemMutation(fn () => app()->call([app(AutoLockLotteryJob::class), 'handle']));
 
     $programId = $opened->requireId()->value;
     $drawJob = new ExecuteLotteryDrawJob($programId);
-    app()->call([$drawJob, 'handle']);
-    app()->call([$drawJob, 'handle']);
+    runLotteryMutation(fn () => app()->call([$drawJob, 'handle']));
+    runLotteryMutation(fn () => app()->call([$drawJob, 'handle']));
 
     $program = app(LotteryProgramRepositoryContract::class)
         ->findById($opened->requireId());

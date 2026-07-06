@@ -34,19 +34,19 @@ it('emits integration events and physical state signals on assign and release', 
     app()->forgetInstance(CreateAllocationAction::class);
     app()->forgetInstance(ReleaseAllocationAction::class);
 
-    $allocation = app(CreateAllocationAction::class)->execute(
+    $allocation = runAllocationMutation(fn () => app(CreateAllocationAction::class)->execute(
         personId: $personId,
         bedId: $bedId,
         start: new DateTimeImmutable('2026-08-01', new DateTimeZone('UTC')),
         end: new DateTimeImmutable('2026-08-31', new DateTimeZone('UTC')),
-    );
+    ));
 
     Event::assertDispatched(AllocationAssigned::class);
 
-    app(ReleaseAllocationAction::class)->execute(
+    runAllocationMutation(fn () => app(ReleaseAllocationAction::class)->execute(
         allocationId: $allocation->requireId()->value,
         reason: 'Completed stay',
-    );
+    ));
 
     Event::assertDispatched(AllocationReleased::class);
 });
@@ -64,10 +64,10 @@ it('rejects allocation when bed is not assignable', function (): void {
     app()->forgetInstance(DormitoryReadAdapter::class);
     app()->forgetInstance(CreateAllocationAction::class);
 
-    app(CreateAllocationAction::class)->execute(
+    runAllocationMutation(fn () => app(CreateAllocationAction::class)->execute(
         personId: $personId,
         bedId: $bedId,
         start: new DateTimeImmutable('2026-09-01', new DateTimeZone('UTC')),
         end: new DateTimeImmutable('2026-09-30', new DateTimeZone('UTC')),
-    );
+    ));
 })->throws(BedNotAssignableException::class);

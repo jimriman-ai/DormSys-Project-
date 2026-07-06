@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Allocation\Application\Services;
 
+use App\Application\Mutation\Registry\MutationCapabilityCatalog;
+use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
 use App\Modules\Allocation\Application\Contracts\AllocationRepositoryContract;
 use App\Modules\Allocation\Application\Contracts\Ports\DormitoryReadPort;
 use App\Modules\Allocation\Application\Contracts\Ports\PhysicalStateSignalPort;
@@ -25,6 +27,8 @@ final class CreateAllocationAction
         private readonly AllocationRepositoryContract $allocations,
         private readonly DormitoryReadPort $dormitory,
         private readonly PhysicalStateSignalPort $physicalState,
+        private readonly MutationPolicyEnforcementPoint $mutationPolicy,
+        private readonly AllocationMutationAuthorizationGate $allocationMutationAuth,
     ) {}
 
     public function execute(
@@ -36,6 +40,12 @@ final class CreateAllocationAction
         ?string $sourceRequestId = null,
         ?string $sourceLotteryResultId = null,
     ): Allocation {
+        $this->mutationPolicy->enforce(MutationCapabilityCatalog::ALLOCATION_CREATE, [
+            'personId' => $personId,
+            'bedId' => $bedId,
+        ]);
+        $this->allocationMutationAuth->assertCreate();
+
         if (! $this->dormitory->isBedAssignable($bedId)) {
             throw new BedNotAssignableException('Bed is not assignable.');
         }

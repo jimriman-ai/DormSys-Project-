@@ -17,12 +17,12 @@ it('assigns and releases an allocation on the happy path', function (): void {
     $personId = UuidGenerator::uuid7();
     $bedId = UuidGenerator::uuid7();
 
-    $allocation = app(CreateAllocationAction::class)->execute(
+    $allocation = runAllocationMutation(fn () => app(CreateAllocationAction::class)->execute(
         personId: $personId,
         bedId: $bedId,
         start: new DateTimeImmutable('2026-08-01', new DateTimeZone('UTC')),
         end: new DateTimeImmutable('2026-08-31', new DateTimeZone('UTC')),
-    );
+    ));
 
     expect($allocation->id)->not->toBeNull();
     expect($allocation->status)->toBe(AllocationStatus::Active);
@@ -32,10 +32,10 @@ it('assigns and releases an allocation on the happy path', function (): void {
 
     Event::assertDispatched(AllocationCreated::class);
 
-    $released = app(ReleaseAllocationAction::class)->execute(
+    $released = runAllocationMutation(fn () => app(ReleaseAllocationAction::class)->execute(
         allocationId: $allocation->requireId()->value,
         reason: 'Assignment completed',
-    );
+    ));
 
     expect($released->status)->toBe(AllocationStatus::Released);
     expect($released->releaseReason)->toBe('Assignment completed');

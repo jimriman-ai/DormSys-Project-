@@ -10,6 +10,7 @@ use App\Modules\Allocation\Application\Contracts\Ports\DormitoryReadPort;
 use App\Modules\Allocation\Application\Contracts\Ports\PhysicalStateSignalPort;
 use App\Modules\Allocation\Application\Contracts\RequestLifecycleCommandPort;
 use App\Modules\Allocation\Application\Contracts\VoucherIssuancePort;
+use App\Modules\Allocation\Application\Services\AllocationMutationAuthorizationGate;
 use App\Modules\Allocation\Application\Services\AllocationReadService;
 use App\Modules\Allocation\Application\Services\CreateAllocationAction;
 use App\Modules\Allocation\Application\Services\CreateAllocationFromRequestAction;
@@ -27,6 +28,7 @@ class AllocationServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(AllocationRepositoryContract::class, AllocationRepository::class);
+        $this->app->singleton(AllocationMutationAuthorizationGate::class);
         $this->app->singleton(CreateAllocationAction::class);
         $this->app->singleton(ReleaseAllocationAction::class);
         $this->app->singleton(ProposedAllocationConsumer::class);

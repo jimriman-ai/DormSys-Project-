@@ -5,15 +5,12 @@ declare(strict_types=1);
 use App\Modules\Lottery\Application\Contracts\LotteryEligibleSnapshotRepositoryContract;
 use App\Modules\Lottery\Application\Contracts\LotteryRegistrationRepositoryContract;
 use App\Modules\Lottery\Application\Services\CloseRegistrationAction;
-use App\Modules\Lottery\Application\Services\CreateLotteryProgramAction;
 use App\Modules\Lottery\Application\Services\EnrollRegistrationAction;
 use App\Modules\Lottery\Application\Services\LockLotteryProgramAction;
 use App\Modules\Lottery\Application\Services\LotteryScoringConfigReader;
-use App\Modules\Lottery\Application\Services\OpenRegistrationAction;
 use App\Modules\Lottery\Domain\Models\EligibleSnapshot;
 use App\Modules\Lottery\Domain\Services\LotteryScoringEngine;
 use App\Modules\Lottery\Domain\States\LockedState;
-use App\Modules\Lottery\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Lottery\Domain\ValueObjects\RequestReferenceId;
 use App\Modules\Lottery\Domain\ValueObjects\ScoringConfig;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
@@ -66,22 +63,22 @@ it('locks a program and persists snapshot with stable scores', function (): void
     $dormitoryId = UuidGenerator::uuid7();
     $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
 
-    $draft = app(CreateLotteryProgramAction::class)->execute(
+    $draft = createLotteryProgramForTest(
         title: 'Lock Snapshot Program',
-        dormitoryId: DormitorySiteId::fromString($dormitoryId),
+        dormitoryId: $dormitoryId,
         capacity: 20,
         registrationStartsAt: new DateTimeImmutable('2026-07-01 00:00:00', new DateTimeZone('UTC')),
         registrationEndsAt: new DateTimeImmutable('2026-07-31 23:59:59', new DateTimeZone('UTC')),
     );
 
-    $opened = app(OpenRegistrationAction::class)->execute($draft->requireId());
-    $registration = app(EnrollRegistrationAction::class)->execute(
+    $opened = openLotteryProgramForTest($draft->requireId());
+    $registration = asRequestOwner($employee, fn () => app(EnrollRegistrationAction::class)->execute(
         $opened->requireId(),
         RequestReferenceId::fromString($requestId),
-    );
-    $closed = app(CloseRegistrationAction::class)->execute($opened->requireId());
+    ));
+    $closed = runLotteryMutation(fn () => app(CloseRegistrationAction::class)->execute($opened->requireId()));
 
-    $locked = app(LockLotteryProgramAction::class)->execute($closed->requireId());
+    $locked = runLotteryMutation(fn () => app(LockLotteryProgramAction::class)->execute($closed->requireId()));
 
     expect($locked->status)->toBe(LockedState::$name);
     expect($locked->randomSeed)->not->toBeNull();
