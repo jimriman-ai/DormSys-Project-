@@ -23,7 +23,7 @@ final class CheckInApiResponseFactory
     public static function serialize(CheckInRecord $record): array
     {
         return [
-            'checkInRecordId' => $record->id?->value,
+            'checkInRecordId' => $record->requireId()->value,
             'allocationId' => $record->allocationId,
             'operatorId' => $record->operatorId,
             'checkedInAt' => $record->checkedInAt->format(DATE_ATOM),

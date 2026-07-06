@@ -74,6 +74,10 @@ class LockLotteryProgramActionTest extends TestCase
         MockeryTest::expectOnce($programs, 'findById')->with($programId)->andReturn($program);
         $this->app->instance(LotteryProgramRepositoryContract::class, $programs);
 
+        $snapshots = MockeryTest::mock(LotteryEligibleSnapshotRepositoryContract::class);
+        MockeryTest::expectOnce($snapshots, 'findByProgramId')->with($programId)->andReturn(null);
+        $this->app->instance(LotteryEligibleSnapshotRepositoryContract::class, $snapshots);
+
         $reader = MockeryTest::mock(LotteryScoringConfigReader::class);
         MockeryTest::expectOnce($reader, 'load')->andThrow(new ScoringConfigNotFoundException('missing'));
         $this->app->instance(LotteryScoringConfigReader::class, $reader);
@@ -147,6 +151,7 @@ class LockLotteryProgramActionTest extends TestCase
         $this->app->instance(LotteryRequestReadPort::class, $requests);
 
         $snapshots = MockeryTest::mock(LotteryEligibleSnapshotRepositoryContract::class);
+        MockeryTest::expectOnce($snapshots, 'findByProgramId')->with($programId)->andReturn(null);
         MockeryTest::expectOnce($snapshots, 'save')->with(Mockery::on(
             function (EligibleSnapshot $snapshot) use ($invalidRegistration): bool {
                 $excluded = $snapshot->payload['excluded'] ?? [];

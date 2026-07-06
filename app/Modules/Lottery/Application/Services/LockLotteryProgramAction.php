@@ -58,6 +58,12 @@ final class LockLotteryProgramAction
             );
         }
 
+        if ($this->snapshots->findByProgramId($programId) !== null) {
+            throw new InvalidLotteryTransitionException(
+                'Eligible snapshot already captured for this program.',
+            );
+        }
+
         $config = $this->scoringConfigReader->load();
         $randomSeed = UuidGenerator::uuid7();
         $lockedAt = now('UTC')->toDateTimeImmutable();

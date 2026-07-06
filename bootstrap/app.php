@@ -128,7 +128,7 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (RequestNotFoundException $exception, Request $request) {
-            if (! $request->is('api/requests/*')) {
+            if (! $request->is('api/requests', 'api/requests/*')) {
                 return null;
             }
 
@@ -136,7 +136,7 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (RequestValidationException $exception, Request $request) {
-            if (! $request->is('api/requests/*')) {
+            if (! $request->is('api/requests', 'api/requests/*')) {
                 return null;
             }
 
@@ -144,7 +144,7 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (RequestNotEligibleException $exception, Request $request) {
-            if (! $request->is('api/requests/*')) {
+            if (! $request->is('api/requests', 'api/requests/*')) {
                 return null;
             }
 
@@ -152,7 +152,7 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (InvalidRequestTransitionException $exception, Request $request) {
-            if (! $request->is('api/requests/*')) {
+            if (! $request->is('api/requests', 'api/requests/*')) {
                 return null;
             }
 
@@ -160,7 +160,7 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (LotteryDomainException $exception, Request $request) {
-            if (! $request->is('api/lottery/*')) {
+            if (! $request->is('api/lottery', 'api/lottery/*')) {
                 return null;
             }
 
@@ -176,19 +176,27 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (InvalidAllocationTransitionException|AllocationOverlapException $exception, Request $request) {
-            if (! $request->is('api/allocations', 'api/allocations/*')) {
-                return null;
+            if ($request->is('api/allocations', 'api/allocations/*')) {
+                return AllocationApiExceptionResponse::fromAllocationException($exception);
             }
 
-            return AllocationApiExceptionResponse::fromAllocationException($exception);
+            if ($request->is('api/lottery', 'api/lottery/*')) {
+                return AllocationApiExceptionResponse::fromAllocationException($exception);
+            }
+
+            return null;
         });
 
         $exceptions->render(function (BedNotAssignableException $exception, Request $request) {
-            if (! $request->is('api/allocations', 'api/allocations/*')) {
-                return null;
+            if ($request->is('api/allocations', 'api/allocations/*')) {
+                return AllocationApiExceptionResponse::fromAllocationException($exception);
             }
 
-            return AllocationApiExceptionResponse::fromAllocationException($exception);
+            if ($request->is('api/lottery', 'api/lottery/*')) {
+                return AllocationApiExceptionResponse::fromAllocationException($exception);
+            }
+
+            return null;
         });
 
         $exceptions->render(function (
