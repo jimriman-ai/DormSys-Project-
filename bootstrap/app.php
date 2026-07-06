@@ -7,6 +7,11 @@ use App\Modules\Audit\Domain\Exceptions\UnauthorizedAuditAccessException;
 use App\Modules\Audit\Presentation\Http\Middleware\ResolveAuditPrincipalMiddleware;
 use App\Modules\Lottery\Domain\Exceptions\LotteryDomainException;
 use App\Modules\Lottery\Presentation\Http\Support\LotteryApiExceptionResponse;
+use App\Modules\Allocation\Domain\Exceptions\AllocationNotFoundException;
+use App\Modules\Allocation\Domain\Exceptions\AllocationOverlapException;
+use App\Modules\Allocation\Domain\Exceptions\BedNotAssignableException;
+use App\Modules\Allocation\Domain\Exceptions\InvalidAllocationTransitionException;
+use App\Modules\Allocation\Presentation\Http\Support\AllocationApiExceptionResponse;
 use App\Modules\Reporting\Domain\Exceptions\UnauthorizedArchiveVisibilityException;
 use App\Modules\Request\Domain\Exceptions\InvalidRequestTransitionException;
 use App\Modules\Request\Domain\Exceptions\RequestNotEligibleException;
@@ -155,6 +160,30 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             return LotteryApiExceptionResponse::fromDomainException($exception);
+        });
+
+        $exceptions->render(function (AllocationNotFoundException $exception, Request $request) {
+            if (! $request->is('api/allocations', 'api/allocations/*')) {
+                return null;
+            }
+
+            return AllocationApiExceptionResponse::fromAllocationException($exception);
+        });
+
+        $exceptions->render(function (InvalidAllocationTransitionException|AllocationOverlapException $exception, Request $request) {
+            if (! $request->is('api/allocations', 'api/allocations/*')) {
+                return null;
+            }
+
+            return AllocationApiExceptionResponse::fromAllocationException($exception);
+        });
+
+        $exceptions->render(function (BedNotAssignableException $exception, Request $request) {
+            if (! $request->is('api/allocations', 'api/allocations/*')) {
+                return null;
+            }
+
+            return AllocationApiExceptionResponse::fromAllocationException($exception);
         });
 
         $exceptions->render(function (Throwable $exception, Request $request) {

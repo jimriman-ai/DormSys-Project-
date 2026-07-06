@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Modules\Allocation\Infrastructure\Providers\AllocationServiceProvider;
+use App\Modules\Allocation\Presentation\Providers\AllocationPresentationServiceProvider;
 use App\Modules\Audit\Infrastructure\Providers\AuditServiceProvider;
 use App\Modules\CheckIn\Infrastructure\Providers\CheckInServiceProvider;
 use App\Modules\Dormitory\Infrastructure\Providers\DormitoryServiceProvider;
@@ -39,6 +40,7 @@ $providers = [
     WorkflowServiceProvider::class,
     DormitoryServiceProvider::class,
     AllocationServiceProvider::class,
+    AllocationPresentationServiceProvider::class,
     CheckInServiceProvider::class,
     LotteryServiceProvider::class,
     LotteryPresentationServiceProvider::class,

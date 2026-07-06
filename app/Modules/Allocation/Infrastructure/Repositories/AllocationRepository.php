@@ -17,7 +17,6 @@ use App\Modules\Allocation\Domain\ValueObjects\PersonAllocationRef;
 use App\Modules\Allocation\Infrastructure\Persistence\Models\AllocationItemModel;
 use App\Modules\Allocation\Infrastructure\Persistence\Models\AllocationModel;
 use DateTimeImmutable;
-use Illuminate\Database\QueryException;
 
 class AllocationRepository implements AllocationRepositoryContract
 {
@@ -29,11 +28,11 @@ class AllocationRepository implements AllocationRepositoryContract
             }
 
             return $this->update($allocation);
-        } catch (QueryException $exception) {
+        } catch (\Throwable $exception) {
             if ($this->isOverlapViolation($exception)) {
                 throw new AllocationOverlapException(
                     'An overlapping allocation already exists for this person.',
-                    previous: $exception,
+                    previous: $exception instanceof \Exception ? $exception : null,
                 );
             }
 
@@ -193,8 +192,21 @@ class AllocationRepository implements AllocationRepositoryContract
         );
     }
 
-    private function isOverlapViolation(QueryException $exception): bool
+    private function isOverlapViolation(\Throwable $exception): bool
     {
-        return str_contains($exception->getMessage(), 'allocations_person_date_range_exclusion');
+        $current = $exception;
+
+        while ($current !== null) {
+            $message = $current->getMessage();
+
+            if (str_contains($message, 'allocations_person_date_range_exclusion')
+                || str_contains($message, 'SQLSTATE[23P01]')) {
+                return true;
+            }
+
+            $current = $current->getPrevious();
+        }
+
+        return false;
     }
 }

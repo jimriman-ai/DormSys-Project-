@@ -31,4 +31,21 @@ interface AllocationReadContract
      * }|null
      */
     public function getAllocationSummary(string $allocationId): ?array;
+
+    /**
+     * @return array{
+     *     allocationId: string,
+     *     personId: string,
+     *     bedId: string,
+     *     status: string,
+     *     method: string,
+     *     dateRangeStart: string,
+     *     dateRangeEnd: string,
+     *     sourceRequestId: string|null,
+     *     sourceLotteryResultId: string|null,
+     *     releasedAt: string|null,
+     *     releaseReason: string|null
+     * }|null
+     */
+    public function getAllocationDetail(string $allocationId): ?array;
 }

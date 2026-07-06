@@ -40,6 +40,13 @@ final class AllocationReadService implements AllocationReadContract
         return $allocation === null ? null : $this->toSummary($allocation);
     }
 
+    public function getAllocationDetail(string $allocationId): ?array
+    {
+        $allocation = $this->allocations->findById(AllocationId::fromString($allocationId));
+
+        return $allocation === null ? null : $this->toDetail($allocation);
+    }
+
     /**
      * @return array{
      *     allocationId: string,
@@ -59,6 +66,38 @@ final class AllocationReadService implements AllocationReadContract
             'status' => $allocation->status->value,
             'dateRangeStart' => $allocation->dateRange->start->format('Y-m-d'),
             'dateRangeEnd' => $allocation->dateRange->end->format('Y-m-d'),
+        ];
+    }
+
+    /**
+     * @return array{
+     *     allocationId: string,
+     *     personId: string,
+     *     bedId: string,
+     *     status: string,
+     *     method: string,
+     *     dateRangeStart: string,
+     *     dateRangeEnd: string,
+     *     sourceRequestId: string|null,
+     *     sourceLotteryResultId: string|null,
+     *     releasedAt: string|null,
+     *     releaseReason: string|null
+     * }
+     */
+    private function toDetail(Allocation $allocation): array
+    {
+        return [
+            'allocationId' => $allocation->requireId()->value,
+            'personId' => $allocation->personId->value,
+            'bedId' => $allocation->bedId,
+            'status' => $allocation->status->value,
+            'method' => $allocation->method->value,
+            'dateRangeStart' => $allocation->dateRange->start->format('Y-m-d'),
+            'dateRangeEnd' => $allocation->dateRange->end->format('Y-m-d'),
+            'sourceRequestId' => $allocation->sourceRequestId,
+            'sourceLotteryResultId' => $allocation->sourceLotteryResultId,
+            'releasedAt' => $allocation->releasedAt?->format(DATE_ATOM),
+            'releaseReason' => $allocation->releaseReason,
         ];
     }
 }

@@ -51,3 +51,15 @@ it('creates allocations from lottery proposed allocation payloads', function ():
 it('binds proposed allocation port to the allocation consumer after boot', function (): void {
     app(ProposedAllocationPort::class);
 });
+
+it('rejects lottery winner payloads missing frozen fields', function (): void {
+    expect(fn () => runAllocationMutation(fn () => app(ProposedAllocationConsumer::class)->emitProposedAllocations([
+        [
+            'program_id' => UuidGenerator::uuid7(),
+            'registration_id' => UuidGenerator::uuid7(),
+            'employee_id' => UuidGenerator::uuid7(),
+            'dormitory_id' => UuidGenerator::uuid7(),
+            'rank' => '',
+        ],
+    ])))->toThrow(\App\Support\Exceptions\ValidationException::class);
+});
