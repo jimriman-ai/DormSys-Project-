@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\ApiAuthSessionController;
 use App\Http\Controllers\HealthController;
 use App\Modules\Reporting\Presentation\Providers\ReportingPresentationServiceProvider;
+use App\Modules\Lottery\Presentation\Providers\LotteryPresentationServiceProvider;
 use App\Modules\Request\Presentation\Providers\RequestPresentationServiceProvider;
 use Illuminate\Support\Facades\Route;
 
@@ -22,3 +23,7 @@ Route::middleware(['auth:api', 'audit.principal'])
 Route::middleware(['auth:api', 'request.mutation.principal', 'audit.principal'])
     ->prefix('requests')
     ->group(RequestPresentationServiceProvider::requestRoutePath());
+
+Route::middleware(['auth:api', 'request.mutation.principal', 'audit.principal'])
+    ->prefix('lottery')
+    ->group(LotteryPresentationServiceProvider::lotteryRoutePath());

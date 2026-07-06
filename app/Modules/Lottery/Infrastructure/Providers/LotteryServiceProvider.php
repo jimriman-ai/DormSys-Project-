@@ -9,6 +9,7 @@ use App\Modules\Lottery\Application\Contracts\EmployeeLotteryScorePort;
 use App\Modules\Lottery\Application\Contracts\LotteryEligibleSnapshotRepositoryContract;
 use App\Modules\Lottery\Application\Contracts\LotteryProgramRepositoryContract;
 use App\Modules\Lottery\Application\Contracts\LotteryRegistrationRepositoryContract;
+use App\Modules\Lottery\Application\Contracts\LotteryProgramReadContract;
 use App\Modules\Lottery\Application\Contracts\LotteryRequestReadPort;
 use App\Modules\Lottery\Application\Contracts\LotteryResultReadContract;
 use App\Modules\Lottery\Application\Contracts\LotteryResultRepositoryContract;
@@ -19,6 +20,7 @@ use App\Modules\Lottery\Application\Services\EnrollRegistrationAction;
 use App\Modules\Lottery\Application\Services\ExecuteDrawAction;
 use App\Modules\Lottery\Application\Services\LockLotteryProgramAction;
 use App\Modules\Lottery\Application\Services\LotteryMutationAuthorizationGate;
+use App\Modules\Lottery\Application\Services\LotteryProgramReadService;
 use App\Modules\Lottery\Application\Services\LotteryResultReadService;
 use App\Modules\Lottery\Application\Services\LotteryScoringConfigReader;
 use App\Modules\Lottery\Application\Services\OpenRegistrationAction;
@@ -62,6 +64,7 @@ class LotteryServiceProvider extends ServiceProvider
 
     private function registerOutboundPorts(): void
     {
+        $this->app->singleton(LotteryProgramReadContract::class, LotteryProgramReadService::class);
         $this->app->singleton(LotteryResultReadContract::class, LotteryResultReadService::class);
     }
 

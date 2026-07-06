@@ -22,6 +22,7 @@ require_once __DIR__.'/Feature/Modules/Request/support/mutation-principal.php';
 require_once __DIR__.'/Feature/Modules/Request/support/http-mutation.php';
 require_once __DIR__.'/Feature/Modules/CheckIn/support/mutation-principal.php';
 require_once __DIR__.'/Feature/Modules/Lottery/support/mutation-principal.php';
+require_once __DIR__.'/Feature/Modules/Lottery/support/http-mutation.php';
 require_once __DIR__.'/Feature/Modules/Allocation/support/mutation-principal.php';
 
 pest()->extend(TestCase::class)

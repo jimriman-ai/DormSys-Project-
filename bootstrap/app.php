@@ -12,6 +12,8 @@ use App\Modules\Request\Domain\Exceptions\RequestNotFoundException;
 use App\Modules\Request\Domain\Exceptions\RequestValidationException;
 use App\Modules\Request\Presentation\Http\Middleware\EnforceSessionMutationPrincipalMiddleware;
 use App\Modules\Request\Presentation\Http\Support\RequestApiExceptionResponse;
+use App\Modules\Lottery\Domain\Exceptions\LotteryDomainException;
+use App\Modules\Lottery\Presentation\Http\Support\LotteryApiExceptionResponse;
 use App\Support\Exceptions\ValidationException as DomainValidationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -145,6 +147,14 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             return RequestApiExceptionResponse::fromDomainException($exception);
+        });
+
+        $exceptions->render(function (LotteryDomainException $exception, Request $request) {
+            if (! $request->is('api/lottery/*')) {
+                return null;
+            }
+
+            return LotteryApiExceptionResponse::fromDomainException($exception);
         });
 
         $exceptions->render(function (Throwable $exception, Request $request) {

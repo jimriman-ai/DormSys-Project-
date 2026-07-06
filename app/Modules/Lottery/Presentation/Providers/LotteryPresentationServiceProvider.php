@@ -10,6 +10,11 @@ class LotteryPresentationServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
-        // Routes and Livewire components will be registered in later phases.
+        //
+    }
+
+    public static function lotteryRoutePath(): string
+    {
+        return app_path('Modules/Lottery/Presentation/Routes/lottery.php');
     }
 }
