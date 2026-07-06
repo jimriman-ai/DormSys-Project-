@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Employee\Application\Services;
 
+use App\Application\Mutation\Registry\MutationCapabilityCatalog;
+use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
 use App\Modules\Employee\Application\Contracts\DepartmentRepositoryContract;
 use App\Modules\Employee\Application\Contracts\EmployeeRepositoryContract;
 use App\Modules\Employee\Domain\Entities\Employee;
@@ -19,10 +21,18 @@ final class AssignDepartmentToEmployeeAction
     public function __construct(
         private readonly EmployeeRepositoryContract $employees,
         private readonly DepartmentRepositoryContract $departments,
+        private readonly MutationPolicyEnforcementPoint $mutationPolicy,
+        private readonly EmployeeMutationAuthorizationGate $employeeMutationAuth,
     ) {}
 
     public function execute(EmployeeId $employeeId, DepartmentId $departmentId): Employee
     {
+        $this->mutationPolicy->enforce(MutationCapabilityCatalog::EMPLOYEE_DEPARTMENT_ASSIGN, [
+            'employeeId' => $employeeId->value,
+            'departmentId' => $departmentId->value,
+        ]);
+        $this->employeeMutationAuth->assertAssignDepartment();
+
         $employee = $this->employees->findById($employeeId);
 
         if ($employee === null) {

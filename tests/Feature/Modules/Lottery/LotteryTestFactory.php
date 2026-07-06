@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Modules\Lottery;
 
-use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Support\ValueObjects\Identity\NationalCode;
 use DateTimeImmutable;
 use RuntimeException;
@@ -25,12 +23,12 @@ final class LotteryTestFactory
                 if (NationalCode::isValid($candidate)) {
                     $nationalCode = NationalCode::fromString($candidate);
 
-                    $user = app(CreateUserAction::class)->execute(
+                    $user = createIdentityUserThroughMutation(
                         'Lottery Test User',
                         'lottery.test.'.uniqid('', true).'@example.com',
                     );
 
-                    return app(CreateEmployeeAction::class)->execute(
+                    return createEmployeeThroughMutation(
                         identityId: IdentityUserId::fromString($user->requireId()->value),
                         employeeCode: 'EMP-LT-'.substr(uniqid('', true), -6),
                         firstName: 'Test',

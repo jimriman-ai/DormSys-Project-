@@ -11,7 +11,7 @@ use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
 use App\Application\Mutation\Support\MutationPrincipalContext;
 use App\Application\Mutation\Support\MutationPrincipalContextHolder;
 use App\Modules\Audit\Application\Services\RecordAuditAction;
-use App\Modules\Identity\Application\Services\CreateUserAction;
+use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use App\Shared\ValueObjects\SystemActorId;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -76,8 +76,8 @@ it('registers trusted internal audit write as exempt from mpep requirement', fun
 });
 
 it('registers existing business mutation actions as pending adoption', function (): void {
-    expect(PendingMutationAuthorizationRegistry::isPending(CreateUserAction::class))->toBeTrue();
-    expect(ExemptMutationActionRegistry::isExempt(CreateUserAction::class))->toBeFalse();
+    expect(PendingMutationAuthorizationRegistry::isPending(CreatePersonalRequestAction::class))->toBeTrue();
+    expect(ExemptMutationActionRegistry::isExempt(CreatePersonalRequestAction::class))->toBeFalse();
 });
 
 it('renders unauthorized mutation as forbidden json on api routes', function (): void {

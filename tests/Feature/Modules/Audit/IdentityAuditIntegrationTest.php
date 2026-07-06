@@ -5,10 +5,6 @@ declare(strict_types=1);
 use App\Modules\Audit\Domain\Enums\ActorType;
 use App\Modules\Audit\Domain\Enums\AuditEventType;
 use App\Modules\Audit\Infrastructure\Persistence\Models\AuditLogModel;
-use App\Modules\Identity\Application\Services\AssignRoleToUserAction;
-use App\Modules\Identity\Application\Services\CreateUserAction;
-use App\Modules\Identity\Application\Services\DeactivateUserAction;
-use App\Modules\Identity\Application\Services\RevokeRoleFromUserAction;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use Database\Seeders\IdentityRoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -23,8 +19,12 @@ beforeEach(function (): void {
 
 function authenticateIdentityActor(): UserModel
 {
-    $actor = app(CreateUserAction::class)->execute('Identity Audit Actor', 'identity-audit-actor@example.com');
-    app(AssignRoleToUserAction::class)->execute($actor->requireId(), IdentityRoleSeeder::ROLE_SYSTEM_ADMINISTRATOR);
+    $actor = createIdentityUserThroughMutation('Identity Audit Actor', 'identity-audit-actor@example.com');
+    assignRoleThroughMutation(
+        $actor->requireId(),
+        IdentityRoleSeeder::ROLE_SYSTEM_ADMINISTRATOR,
+        $actor->requireId()->value,
+    );
     $model = UserModel::query()->findOrFail($actor->requireId()->value);
     request()->attributes->set('audit_principal_user_id', $model->id);
 
@@ -32,7 +32,7 @@ function authenticateIdentityActor(): UserModel
 }
 
 it('records identity user created audit entry with system actor when no principal is set', function (): void {
-    $user = app(CreateUserAction::class)->execute('Created Audit User', 'created-audit@example.com');
+    $user = createIdentityUserThroughMutation('Created Audit User', 'created-audit@example.com');
     $userId = $user->requireId()->value;
 
     $entry = AuditLogModel::query()
@@ -53,12 +53,13 @@ it('records identity user created audit entry with system actor when no principa
 it('records identity role changed audit entry with authenticated actor', function (): void {
     $actor = authenticateIdentityActor();
 
-    $target = app(CreateUserAction::class)->execute('Role Target User', 'role-target@example.com');
+    $target = createIdentityUserThroughMutation('Role Target User', 'role-target@example.com');
 
-    app(AssignRoleToUserAction::class)->execute(
+    mutationActingAs($actor->id, fn () => assignRoleThroughMutation(
         $target->requireId(),
         IdentityRoleSeeder::ROLE_ADMINISTRATOR,
-    );
+        $actor->id,
+    ));
 
     $entry = AuditLogModel::query()
         ->where('entity_type', 'identity_user')
@@ -76,18 +77,18 @@ it('records identity role changed audit entry with authenticated actor', functio
 });
 
 it('records identity role revoked and user deactivated audit entries', function (): void {
-    authenticateIdentityActor();
+    $actor = authenticateIdentityActor();
 
-    $adminOne = app(CreateUserAction::class)->execute('Admin One', 'admin-one@example.com');
-    app(AssignRoleToUserAction::class)->execute($adminOne->requireId(), IdentityRoleSeeder::ROLE_SYSTEM_ADMINISTRATOR);
+    $adminOne = createIdentityUserThroughMutation('Admin One', 'admin-one@example.com');
+    assignRoleThroughMutation($adminOne->requireId(), IdentityRoleSeeder::ROLE_SYSTEM_ADMINISTRATOR, $actor->id);
 
-    $adminTwo = app(CreateUserAction::class)->execute('Admin Two', 'admin-two@example.com');
-    app(AssignRoleToUserAction::class)->execute($adminTwo->requireId(), IdentityRoleSeeder::ROLE_SYSTEM_ADMINISTRATOR);
+    $adminTwo = createIdentityUserThroughMutation('Admin Two', 'admin-two@example.com');
+    assignRoleThroughMutation($adminTwo->requireId(), IdentityRoleSeeder::ROLE_SYSTEM_ADMINISTRATOR, $actor->id);
 
-    $target = app(CreateUserAction::class)->execute('Deactivate Target', 'deactivate-target@example.com');
-    app(AssignRoleToUserAction::class)->execute($target->requireId(), IdentityRoleSeeder::ROLE_ADMINISTRATOR);
+    $target = createIdentityUserThroughMutation('Deactivate Target', 'deactivate-target@example.com');
+    assignRoleThroughMutation($target->requireId(), IdentityRoleSeeder::ROLE_ADMINISTRATOR, $actor->id);
 
-    app(RevokeRoleFromUserAction::class)->execute($target->requireId(), IdentityRoleSeeder::ROLE_ADMINISTRATOR);
+    revokeRoleFromUserThroughMutation($target->requireId(), IdentityRoleSeeder::ROLE_ADMINISTRATOR, $actor->id);
 
     $revoked = AuditLogModel::query()
         ->where('entity_id', $target->requireId()->value)
@@ -98,7 +99,7 @@ it('records identity role revoked and user deactivated audit entries', function 
     $revoked = $revoked ?? throw new RuntimeException('Identity role revoked audit entry not found');
     expect($revoked->old_values)->toBe(['role' => IdentityRoleSeeder::ROLE_ADMINISTRATOR]);
 
-    app(DeactivateUserAction::class)->execute($target->requireId());
+    deactivateUserThroughMutation($target->requireId(), $actor->id);
 
     $deactivated = AuditLogModel::query()
         ->where('entity_id', $target->requireId()->value)

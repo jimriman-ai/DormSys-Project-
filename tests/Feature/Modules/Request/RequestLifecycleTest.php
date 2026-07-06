@@ -2,10 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
 use App\Modules\Request\Application\Services\CancelRequestAction;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
@@ -39,12 +37,12 @@ afterEach(function (): void {
 
 function createActiveEmployeeForLifecycleTest(): Employee
 {
-    $user = app(CreateUserAction::class)->execute(
+    $user = createIdentityUserThroughMutation(
         'Lifecycle Test User',
         'lifecycle.test.'.uniqid('', true).'@example.com',
     );
 
-    return app(CreateEmployeeAction::class)->execute(
+    return createEmployeeThroughMutation(
         identityId: IdentityUserId::fromString($user->requireId()->value),
         employeeCode: 'EMP-LC-'.substr(uniqid('', true), -6),
         firstName: 'Lifecycle',

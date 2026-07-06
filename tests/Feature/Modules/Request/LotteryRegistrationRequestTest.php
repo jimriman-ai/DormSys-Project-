@@ -2,10 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Request\Application\Contracts\RequestReadContract;
 use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
 use App\Modules\Request\Application\Services\CreateLotteryRegistrationRequestAction;
@@ -32,12 +30,12 @@ afterEach(function (): void {
 
 function createEmployeeForLotteryRegistrationTest(): Employee
 {
-    $user = app(CreateUserAction::class)->execute(
+    $user = createIdentityUserThroughMutation(
         'Lottery Registration User',
         'lottery.reg.'.uniqid('', true).'@example.com',
     );
 
-    return app(CreateEmployeeAction::class)->execute(
+    return createEmployeeThroughMutation(
         identityId: IdentityUserId::fromString($user->requireId()->value),
         employeeCode: 'EMP-LR-'.substr(uniqid('', true), -6),
         firstName: 'Lottery',

@@ -7,8 +7,6 @@ use App\Modules\Audit\Application\DTOs\AuditEntryDto;
 use App\Modules\Audit\Domain\Enums\ActorType;
 use App\Modules\Audit\Domain\Enums\AuditEventType;
 use App\Modules\Audit\Infrastructure\Persistence\Models\AuditLogModel;
-use App\Modules\Identity\Application\Services\AssignRoleToUserAction;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Modules\Reporting\Application\Contracts\Ports\ProjectionRefreshRunnerPort;
 use App\Modules\Reporting\Application\Contracts\ReportingReadContract;
@@ -28,8 +26,8 @@ beforeEach(function (): void {
     config(['audit.sync_in_tests' => true]);
     Artisan::call('db:seed', ['--class' => IdentityRoleSeeder::class]);
 
-    $user = app(CreateUserAction::class)->execute('Compliance Export Reader', 'compliance-export@example.com');
-    app(AssignRoleToUserAction::class)->execute($user->requireId(), IdentityRoleSeeder::ROLE_ADMINISTRATOR);
+    $user = createIdentityUserThroughMutation('Compliance Export Reader', 'compliance-export@example.com');
+    assignRoleThroughMutation($user->requireId(), IdentityRoleSeeder::ROLE_ADMINISTRATOR);
     $model = UserModel::query()->findOrFail($user->requireId()->value);
     request()->attributes->set('audit_principal_user_id', $model->id);
 });

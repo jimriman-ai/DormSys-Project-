@@ -2,17 +2,15 @@
 
 declare(strict_types=1);
 
-use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\Exceptions\DuplicateIdentityIdException;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Support\ValueObjects\Identity\NationalCode;
 
 it('rejects a second employee for the same identity_id', function (): void {
-    $user = app(CreateUserAction::class)->execute('Duplicate Identity User', 'dup.identity@example.com');
+    $user = createIdentityUserThroughMutation('Duplicate Identity User', 'dup.identity@example.com');
     $identityId = IdentityUserId::fromString($user->requireId()->value);
 
-    app(CreateEmployeeAction::class)->execute(
+    createEmployeeThroughMutation(
         identityId: $identityId,
         employeeCode: 'EMP-DUP-1',
         firstName: 'First',
@@ -21,7 +19,7 @@ it('rejects a second employee for the same identity_id', function (): void {
         hireDate: new DateTimeImmutable('2024-01-01'),
     );
 
-    expect(fn () => app(CreateEmployeeAction::class)->execute(
+    expect(fn () => createEmployeeThroughMutation(
         identityId: $identityId,
         employeeCode: 'EMP-DUP-2',
         firstName: 'Second',

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Identity\Application\Services;
 
+use App\Application\Mutation\Registry\MutationCapabilityCatalog;
+use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
 use App\Modules\Identity\Application\Contracts\UserRepositoryContract;
 use App\Modules\Identity\Domain\Entities\User;
 use App\Modules\Identity\Domain\Events\UserDeactivated;
@@ -19,10 +21,17 @@ class DeactivateUserAction
     public function __construct(
         private readonly UserRepositoryContract $users,
         private readonly IdentityAuditEmitter $auditEmitter,
+        private readonly MutationPolicyEnforcementPoint $mutationPolicy,
+        private readonly IdentityMutationAuthorizationGate $identityMutationAuth,
     ) {}
 
     public function execute(UserId $userId): User
     {
+        $this->mutationPolicy->enforce(MutationCapabilityCatalog::IDENTITY_USER_DEACTIVATE, [
+            'userId' => $userId->value,
+        ]);
+        $this->identityMutationAuth->assertDeactivate();
+
         $user = $this->users->findById($userId);
 
         if ($user === null) {

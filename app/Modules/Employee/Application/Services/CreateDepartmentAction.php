@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Employee\Application\Services;
 
+use App\Application\Mutation\Registry\MutationCapabilityCatalog;
+use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
 use App\Modules\Employee\Application\Contracts\DepartmentRepositoryContract;
 use App\Modules\Employee\Application\Contracts\EmployeeRepositoryContract;
 use App\Modules\Employee\Domain\Entities\Department;
@@ -21,6 +23,8 @@ final class CreateDepartmentAction
     public function __construct(
         private readonly DepartmentRepositoryContract $departments,
         private readonly EmployeeRepositoryContract $employees,
+        private readonly MutationPolicyEnforcementPoint $mutationPolicy,
+        private readonly EmployeeMutationAuthorizationGate $employeeMutationAuth,
     ) {}
 
     public function execute(
@@ -30,6 +34,11 @@ final class CreateDepartmentAction
         ?DepartmentId $parentId = null,
         int $lotteryPriority = 0,
     ): Department {
+        $this->mutationPolicy->enforce(MutationCapabilityCatalog::EMPLOYEE_DEPARTMENT_CREATE, [
+            'code' => $code,
+        ]);
+        $this->employeeMutationAuth->assertCreateDepartment();
+
         if ($this->departments->existsByCode($code)) {
             throw new DuplicateDepartmentCodeException('A department with this code already exists.');
         }

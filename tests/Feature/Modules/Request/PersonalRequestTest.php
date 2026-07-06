@@ -5,10 +5,8 @@ declare(strict_types=1);
 use App\Modules\Employee\Application\Contracts\EmployeeEligibilityContract;
 use App\Modules\Employee\Application\Contracts\EmployeeRepositoryContract;
 use App\Modules\Employee\Application\DTOs\EligibilityResultDTO;
-use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
@@ -26,12 +24,12 @@ uses(RefreshDatabase::class);
 
 function createActiveEmployeeForRequest(): Employee
 {
-    $user = app(CreateUserAction::class)->execute(
+    $user = createIdentityUserThroughMutation(
         'Request Test User',
         'request.test.'.uniqid('', true).'@example.com',
     );
 
-    return app(CreateEmployeeAction::class)->execute(
+    return createEmployeeThroughMutation(
         identityId: IdentityUserId::fromString($user->requireId()->value),
         employeeCode: 'EMP-REQ-'.substr(uniqid('', true), -6),
         firstName: 'Request',

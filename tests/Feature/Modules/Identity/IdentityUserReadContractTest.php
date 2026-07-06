@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 use App\Modules\Identity\Application\Contracts\IdentityUserReadContract;
 use App\Modules\Identity\Application\DTOs\UserSummaryDTO;
-use App\Modules\Identity\Application\Services\AssignRoleToUserAction;
-use App\Modules\Identity\Application\Services\CreateUserAction;
-use App\Modules\Identity\Application\Services\DeactivateUserAction;
 use App\Modules\Identity\Domain\ValueObjects\UserId;
 use App\Support\Exceptions\ValidationException;
 use Ramsey\Uuid\Uuid;
@@ -15,7 +12,7 @@ use Spatie\Permission\Models\Role;
 it('answers existence and active status per contract', function (): void {
     $contract = app(IdentityUserReadContract::class);
 
-    $created = app(CreateUserAction::class)->execute('Read Contract User', 'read@example.com');
+    $created = createIdentityUserThroughMutation('Read Contract User', 'read@example.com');
     $userId = UserId::fromString($created->requireId()->value);
 
     expect($contract->userExists($userId->value))->toBeTrue()
@@ -29,7 +26,7 @@ it('answers existence and active status per contract', function (): void {
         ->and($summary->status)->toBe('active')
         ->and($summary->displayName)->toBe('Read Contract User');
 
-    app(DeactivateUserAction::class)->execute($userId);
+    deactivateUserThroughMutation($userId);
 
     expect($contract->userExists($userId->value))->toBeTrue()
         ->and($contract->isUserActive($userId->value))->toBeFalse();
@@ -51,7 +48,7 @@ it('returns false and null for unknown identifiers without leaking errors', func
 it('reports role membership via userHasRole', function (): void {
     $contract = app(IdentityUserReadContract::class);
 
-    $created = app(CreateUserAction::class)->execute(
+    $created = createIdentityUserThroughMutation(
         'Role Check User',
         'role-check-'.uniqid('', true).'@example.com',
     );
@@ -60,7 +57,7 @@ it('reports role membership via userHasRole', function (): void {
     expect($contract->userHasRole($userId, 'Operator'))->toBeFalse();
 
     Role::findOrCreate('Operator', config('auth.defaults.guard', 'web'));
-    app(AssignRoleToUserAction::class)->execute($created->requireId(), 'Operator');
+    assignRoleThroughMutation($created->requireId(), 'Operator');
 
     expect($contract->userHasRole($userId, 'Operator'))->toBeTrue();
 });

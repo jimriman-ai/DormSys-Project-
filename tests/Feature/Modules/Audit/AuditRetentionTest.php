@@ -10,8 +10,6 @@ use App\Modules\Audit\Domain\Enums\ActorType;
 use App\Modules\Audit\Domain\Enums\AuditEventType;
 use App\Modules\Audit\Infrastructure\Jobs\ArchiveExpiredAuditLogsJob;
 use App\Modules\Audit\Infrastructure\Persistence\Models\AuditLogModel;
-use App\Modules\Identity\Application\Services\AssignRoleToUserAction as IdentityAssignRoleToUserAction;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Database\Seeders\IdentityRoleSeeder;
@@ -59,8 +57,8 @@ function seedRetentionAuditEntry(array $overrides = []): AuditLogModel
 
 function authenticateRetentionAuditReader(): void
 {
-    $user = app(CreateUserAction::class)->execute('Retention Reader', 'retention-reader@example.com');
-    app(IdentityAssignRoleToUserAction::class)->execute($user->requireId(), IdentityRoleSeeder::ROLE_ADMINISTRATOR);
+    $user = createIdentityUserThroughMutation('Retention Reader', 'retention-reader@example.com');
+    assignRoleThroughMutation($user->requireId(), IdentityRoleSeeder::ROLE_ADMINISTRATOR, $user->requireId()->value);
     $model = UserModel::query()->findOrFail($user->requireId()->value);
     request()->attributes->set('audit_principal_user_id', $model->id);
 }

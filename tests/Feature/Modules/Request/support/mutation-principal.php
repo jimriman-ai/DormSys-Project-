@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use App\Application\Mutation\Support\MutationPrincipalContext;
 use App\Modules\Employee\Domain\Entities\Employee;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Request\Application\Services\ApproveRequestStageAction;
 use App\Modules\Request\Application\Services\RejectRequestAction;
 use App\Modules\Request\Domain\Entities\Request;
@@ -37,7 +36,7 @@ function asRequestOwner(Employee $employee, callable $callback): mixed
  */
 function createMutationApprover(): array
 {
-    $user = app(CreateUserAction::class)->execute(
+    $user = createIdentityUserThroughMutation(
         'Mutation Approver',
         'approver.'.uniqid('', true).'@example.com',
     );

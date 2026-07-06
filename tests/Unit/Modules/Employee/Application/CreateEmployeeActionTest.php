@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Modules\Employee\Application;
 
-use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\Events\EmployeeCreated;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Support\ValueObjects\Identity\NationalCode;
 use DateTimeImmutable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,10 +22,10 @@ class CreateEmployeeActionTest extends TestCase
     {
         Event::fake([EmployeeCreated::class]);
 
-        $user = app(CreateUserAction::class)->execute('Action Test User', 'action.test@example.com');
+        $user = createIdentityUserThroughMutation('Action Test User', 'action.test@example.com');
         $identityId = IdentityUserId::fromString($user->requireId()->value);
 
-        $employee = app(CreateEmployeeAction::class)->execute(
+        $employee = createEmployeeThroughMutation(
             identityId: $identityId,
             employeeCode: 'EMP-ACTION',
             firstName: 'Action',

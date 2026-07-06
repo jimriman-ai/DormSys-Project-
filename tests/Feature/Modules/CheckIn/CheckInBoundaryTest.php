@@ -6,8 +6,6 @@ use App\Modules\CheckIn\Application\Contracts\CheckInCommandPort;
 use App\Modules\CheckIn\Domain\CheckInOperationRoles;
 use App\Modules\CheckIn\Domain\Exceptions\AllocationNotActiveException;
 use App\Modules\CheckIn\Domain\Exceptions\OperatorRoleRequiredException;
-use App\Modules\Identity\Application\Services\AssignRoleToUserAction;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Spatie\Permission\Models\Role;
 
@@ -15,12 +13,12 @@ function createBoundaryTestOperator(): string
 {
     Role::findOrCreate(CheckInOperationRoles::OPERATOR, config('auth.defaults.guard', 'web'));
 
-    $user = app(CreateUserAction::class)->execute(
+    $user = createIdentityUserThroughMutation(
         'Boundary Operator',
         'boundary-operator-'.uniqid('', true).'@example.com',
     );
 
-    app(AssignRoleToUserAction::class)->execute(
+    assignRoleThroughMutation(
         $user->requireId(),
         CheckInOperationRoles::OPERATOR,
     );
@@ -37,7 +35,7 @@ it('rejects check-in when no active allocation exists', function (): void {
 });
 
 it('rejects check-in when the user is not an operator', function (): void {
-    $user = app(CreateUserAction::class)->execute(
+    $user = createIdentityUserThroughMutation(
         'Non Operator',
         'non-operator-'.uniqid('', true).'@example.com',
     );

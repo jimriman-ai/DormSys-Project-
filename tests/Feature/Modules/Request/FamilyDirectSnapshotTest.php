@@ -3,10 +3,8 @@
 declare(strict_types=1);
 
 use App\Modules\Employee\Application\Contracts\EmployeeRepositoryContract;
-use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Request\Application\Contracts\DependentSnapshotRepositoryContract;
 use App\Modules\Request\Application\DTOs\DependentSnapshotReadDTO;
 use App\Modules\Request\Application\Services\CreateFamilyDirectRequestAction;
@@ -39,12 +37,12 @@ afterEach(function (): void {
 
 function createEmployeeForFamilyDirectTest(): Employee
 {
-    $user = app(CreateUserAction::class)->execute(
+    $user = createIdentityUserThroughMutation(
         'Family Direct User',
         'family.direct.'.uniqid('', true).'@example.com',
     );
 
-    return app(CreateEmployeeAction::class)->execute(
+    return createEmployeeThroughMutation(
         identityId: IdentityUserId::fromString($user->requireId()->value),
         employeeCode: 'EMP-FD-'.substr(uniqid('', true), -6),
         firstName: 'Family',

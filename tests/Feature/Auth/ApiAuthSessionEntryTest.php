@@ -7,8 +7,6 @@ use App\Modules\Audit\Application\Contracts\AuditRecordingContract;
 use App\Modules\Audit\Application\DTOs\AuditEntryDto;
 use App\Modules\Audit\Domain\Enums\ActorType;
 use App\Modules\Audit\Domain\Enums\AuditEventType;
-use App\Modules\Identity\Application\Services\AssignRoleToUserAction;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Database\Seeders\IdentityRoleSeeder;
@@ -32,8 +30,8 @@ function createApiSessionCredentialPair(
         'password' => $password,
     ]);
 
-    $identityUser = app(CreateUserAction::class)->execute('API Session User', $email);
-    app(AssignRoleToUserAction::class)->execute($identityUser->requireId(), $role);
+    $identityUser = createIdentityUserThroughMutation('API Session User', $email);
+    assignRoleThroughMutation($identityUser->requireId(), $role);
 
     return UserModel::query()->findOrFail($identityUser->requireId()->value);
 }

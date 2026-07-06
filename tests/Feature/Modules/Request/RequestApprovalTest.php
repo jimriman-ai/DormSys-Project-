@@ -2,10 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Request\Application\Contracts\RequestApprovalRepositoryContract;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Application\Services\RejectRequestAction;
@@ -45,12 +43,12 @@ afterEach(function (): void {
 
 function createActiveEmployeeForApprovalTest(): Employee
 {
-    $user = app(CreateUserAction::class)->execute(
+    $user = createIdentityUserThroughMutation(
         'Approval Test User',
         'approval.test.'.uniqid('', true).'@example.com',
     );
 
-    return app(CreateEmployeeAction::class)->execute(
+    return createEmployeeThroughMutation(
         identityId: IdentityUserId::fromString($user->requireId()->value),
         employeeCode: 'EMP-AP-'.substr(uniqid('', true), -6),
         firstName: 'Approval',

@@ -5,10 +5,8 @@ declare(strict_types=1);
 use App\Modules\Allocation\Application\Services\CreateAllocationFromRequestAction;
 use App\Modules\Allocation\Domain\Enums\AllocationMethod;
 use App\Modules\Allocation\Domain\Enums\AllocationStatus;
-use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
 use App\Modules\Request\Domain\Entities\Request;
@@ -35,12 +33,12 @@ afterEach(function (): void {
  */
 function createApprovedPersonalRequestForAllocationTest(): array
 {
-    $user = app(CreateUserAction::class)->execute(
+    $user = createIdentityUserThroughMutation(
         'Allocation Request User',
         'allocation.request.'.uniqid('', true).'@example.com',
     );
 
-    $employee = app(CreateEmployeeAction::class)->execute(
+    $employee = createEmployeeThroughMutation(
         identityId: IdentityUserId::fromString($user->requireId()->value),
         employeeCode: 'EMP-ALLOC-'.substr(uniqid('', true), -6),
         firstName: 'Alloc',

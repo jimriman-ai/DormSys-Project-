@@ -8,8 +8,6 @@ use App\Modules\Audit\Domain\Enums\ActorType;
 use App\Modules\Audit\Domain\Enums\AuditEventType;
 use App\Modules\Audit\Domain\Exceptions\UnauthorizedAuditAccessException;
 use App\Modules\Audit\Infrastructure\Persistence\Models\AuditLogModel;
-use App\Modules\Identity\Application\Services\AssignRoleToUserAction;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Modules\Reporting\Application\Contracts\ReportingReadContract;
 use App\Modules\Reporting\Application\DTOs\ActorTimelineQuery;
@@ -53,8 +51,8 @@ function seedActorTimelineAuditEntry(array $overrides = []): AuditLogModel
 
 function authenticateActorTimelineReader(string $role = IdentityRoleSeeder::ROLE_HR_MGR): UserModel
 {
-    $user = app(CreateUserAction::class)->execute('Actor Timeline Reader', 'actor-timeline-reader@example.com');
-    app(AssignRoleToUserAction::class)->execute($user->requireId(), $role);
+    $user = createIdentityUserThroughMutation('Actor Timeline Reader', 'actor-timeline-reader@example.com');
+    assignRoleThroughMutation($user->requireId(), $role);
     $model = UserModel::query()->findOrFail($user->requireId()->value);
     request()->attributes->set('audit_principal_user_id', $model->id);
 
@@ -96,7 +94,7 @@ it('denies actor timeline access without audit.read permission', function (): vo
     $actorId = UuidGenerator::uuid7();
     seedActorTimelineAuditEntry(['actorId' => $actorId, 'correlationId' => 'actor:deny:001']);
 
-    $user = app(CreateUserAction::class)->execute('No Actor Access', 'no-actor-access@example.com');
+    $user = createIdentityUserThroughMutation('No Actor Access', 'no-actor-access@example.com');
     $model = UserModel::query()->findOrFail($user->requireId()->value);
     request()->attributes->set('audit_principal_user_id', $model->id);
 
@@ -107,7 +105,7 @@ it('denies actor timeline access without audit.read permission', function (): vo
 });
 
 it('denies include archived for actor timeline without audit.read permission', function (): void {
-    $user = app(CreateUserAction::class)->execute('No Actor Archive Access', 'no-actor-archive@example.com');
+    $user = createIdentityUserThroughMutation('No Actor Archive Access', 'no-actor-archive@example.com');
     $model = UserModel::query()->findOrFail($user->requireId()->value);
     request()->attributes->set('audit_principal_user_id', $model->id);
 

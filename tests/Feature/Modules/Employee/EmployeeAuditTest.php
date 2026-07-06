@@ -2,18 +2,16 @@
 
 declare(strict_types=1);
 
-use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Modules\Employee\Infrastructure\Persistence\Models\EmployeeModel;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Support\ValueObjects\Identity\NationalCode;
 use Spatie\Activitylog\Models\Activity;
 
 it('records activity when an employee is created', function (): void {
-    $user = app(CreateUserAction::class)->execute('Audit Employee User', 'audit.employee@example.com');
+    $user = createIdentityUserThroughMutation('Audit Employee User', 'audit.employee@example.com');
     $identityId = IdentityUserId::fromString($user->requireId()->value);
 
-    $employee = app(CreateEmployeeAction::class)->execute(
+    $employee = createEmployeeThroughMutation(
         identityId: $identityId,
         employeeCode: 'EMP-AUDIT',
         firstName: 'Sara',

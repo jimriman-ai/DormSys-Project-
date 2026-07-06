@@ -9,8 +9,6 @@ use App\Modules\CheckIn\Domain\CheckInOperationRoles;
 use App\Modules\CheckIn\Domain\Events\CheckedIn;
 use App\Modules\CheckIn\Domain\Events\CheckedOut;
 use App\Modules\CheckIn\Infrastructure\Persistence\Models\CheckInRecordModel;
-use App\Modules\Identity\Application\Services\AssignRoleToUserAction;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Support\Facades\Event;
 use Spatie\Permission\Models\Role;
@@ -19,12 +17,12 @@ function createCheckInOperator(): string
 {
     Role::findOrCreate(CheckInOperationRoles::OPERATOR, config('auth.defaults.guard', 'web'));
 
-    $user = app(CreateUserAction::class)->execute(
+    $user = createIdentityUserThroughMutation(
         'Check-In Operator',
         'operator-'.uniqid('', true).'@example.com',
     );
 
-    app(AssignRoleToUserAction::class)->execute(
+    assignRoleThroughMutation(
         $user->requireId(),
         CheckInOperationRoles::OPERATOR,
     );

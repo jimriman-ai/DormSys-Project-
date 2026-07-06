@@ -7,9 +7,7 @@ use App\Modules\Allocation\Application\Contracts\Ports\PhysicalStateSignalPort;
 use App\Modules\Allocation\Application\Services\CreateAllocationFromRequestAction;
 use App\Modules\Allocation\Domain\Events\AllocationAssigned;
 use App\Modules\Allocation\Infrastructure\Adapters\AllocationPhysicalStateAdapter;
-use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
 use App\Modules\Request\Domain\States\ApprovedState;
@@ -32,12 +30,12 @@ afterEach(function (): void {
 it('round-trips request read assign dormitory signal and read contract', function (): void {
     Event::fake([AllocationAssigned::class]);
 
-    $user = app(CreateUserAction::class)->execute(
+    $user = createIdentityUserThroughMutation(
         'Integration Boundary User',
         'integration.boundary.'.uniqid('', true).'@example.com',
     );
 
-    $employee = app(CreateEmployeeAction::class)->execute(
+    $employee = createEmployeeThroughMutation(
         identityId: IdentityUserId::fromString($user->requireId()->value),
         employeeCode: 'EMP-INT-'.substr(uniqid('', true), -6),
         firstName: 'Integration',

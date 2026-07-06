@@ -6,8 +6,6 @@ use App\Modules\Audit\Application\Contracts\AuditRecordingContract;
 use App\Modules\Audit\Application\DTOs\AuditEntryDto;
 use App\Modules\Audit\Domain\Enums\ActorType;
 use App\Modules\Audit\Domain\Enums\AuditEventType;
-use App\Modules\Identity\Application\Services\AssignRoleToUserAction;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Modules\Reporting\Application\Contracts\Ports\ProjectionRefreshRunnerPort;
 use App\Modules\Reporting\Application\DTOs\ProjectionRefreshRequestDto;
@@ -29,8 +27,8 @@ beforeEach(function (): void {
 
 function authenticateReportingApiReader(string $role = IdentityRoleSeeder::ROLE_ADMINISTRATOR): UserModel
 {
-    $user = app(CreateUserAction::class)->execute('Reporting API Reader', 'reporting-api@example.com');
-    app(AssignRoleToUserAction::class)->execute($user->requireId(), $role);
+    $user = createIdentityUserThroughMutation('Reporting API Reader', 'reporting-api@example.com');
+    assignRoleThroughMutation($user->requireId(), $role);
     $model = UserModel::query()->findOrFail($user->requireId()->value);
     test()->actingAs($model, 'api');
     request()->attributes->set('audit_principal_user_id', $model->id);
@@ -182,7 +180,7 @@ it('returns 401 for unauthenticated reporting api access', function (): void {
 });
 
 it('returns 403 for authenticated user without audit.read permission', function (): void {
-    $user = app(CreateUserAction::class)->execute('No Audit Read', 'no-audit-read@example.com');
+    $user = createIdentityUserThroughMutation('No Audit Read', 'no-audit-read@example.com');
     $model = UserModel::query()->findOrFail($user->requireId()->value);
     $this->actingAs($model, 'api');
 

@@ -22,6 +22,22 @@ final class MutationCapabilityCatalog
 
     public const string CHECKIN_CLOSE = 'checkin.close';
 
+    public const string IDENTITY_USER_CREATE = 'identity.user.create';
+
+    public const string IDENTITY_USER_DEACTIVATE = 'identity.user.deactivate';
+
+    public const string IDENTITY_ROLE_ASSIGN = 'identity.role.assign';
+
+    public const string IDENTITY_ROLE_REVOKE = 'identity.role.revoke';
+
+    public const string EMPLOYEE_CREATE = 'employee.create';
+
+    public const string EMPLOYEE_DEPARTMENT_CREATE = 'employee.department.create';
+
+    public const string EMPLOYEE_DEPARTMENT_DEACTIVATE = 'employee.department.deactivate';
+
+    public const string EMPLOYEE_DEPARTMENT_ASSIGN = 'employee.department.assign';
+
     /**
      * @return list<string>
      */
@@ -35,6 +51,14 @@ final class MutationCapabilityCatalog
             self::CHECKIN_CREATE,
             self::CHECKIN_OPERATE,
             self::CHECKIN_CLOSE,
+            self::IDENTITY_USER_CREATE,
+            self::IDENTITY_USER_DEACTIVATE,
+            self::IDENTITY_ROLE_ASSIGN,
+            self::IDENTITY_ROLE_REVOKE,
+            self::EMPLOYEE_CREATE,
+            self::EMPLOYEE_DEPARTMENT_CREATE,
+            self::EMPLOYEE_DEPARTMENT_DEACTIVATE,
+            self::EMPLOYEE_DEPARTMENT_ASSIGN,
         ];
     }
 

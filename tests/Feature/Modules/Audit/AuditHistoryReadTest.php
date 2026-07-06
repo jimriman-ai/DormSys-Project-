@@ -10,8 +10,6 @@ use App\Modules\Audit\Domain\Enums\ActorType;
 use App\Modules\Audit\Domain\Enums\AuditEventType;
 use App\Modules\Audit\Domain\Exceptions\UnauthorizedAuditAccessException;
 use App\Modules\Audit\Infrastructure\Persistence\Models\AuditLogModel;
-use App\Modules\Identity\Application\Services\AssignRoleToUserAction;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Database\Seeders\IdentityRoleSeeder;
@@ -53,8 +51,8 @@ function seedAuditEntry(array $overrides = []): AuditLogModel
 
 function authenticateAuditReader(string $role = IdentityRoleSeeder::ROLE_ADMINISTRATOR): UserModel
 {
-    $user = app(CreateUserAction::class)->execute('Audit Reader', 'audit-reader@example.com');
-    app(AssignRoleToUserAction::class)->execute($user->requireId(), $role);
+    $user = createIdentityUserThroughMutation('Audit Reader', 'audit-reader@example.com');
+    assignRoleThroughMutation($user->requireId(), $role);
     $model = UserModel::query()->findOrFail($user->requireId()->value);
     request()->attributes->set('audit_principal_user_id', $model->id);
 
@@ -174,7 +172,7 @@ it('denies audit history access to users without audit.read permission', functio
     $entityId = UuidGenerator::uuid7();
     seedAuditEntry(['entityId' => $entityId, 'correlationId' => 'deny:001']);
 
-    $user = app(CreateUserAction::class)->execute('No Audit Access', 'no-audit@example.com');
+    $user = createIdentityUserThroughMutation('No Audit Access', 'no-audit@example.com');
     $model = UserModel::query()->findOrFail($user->requireId()->value);
     request()->attributes->set('audit_principal_user_id', $model->id);
 

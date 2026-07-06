@@ -4,27 +4,22 @@ declare(strict_types=1);
 
 use App\Modules\Employee\Application\Contracts\DepartmentRepositoryContract;
 use App\Modules\Employee\Application\Contracts\EmployeeRepositoryContract;
-use App\Modules\Employee\Application\Services\AssignDepartmentToEmployeeAction;
-use App\Modules\Employee\Application\Services\CreateDepartmentAction;
-use App\Modules\Employee\Application\Services\CreateEmployeeAction;
-use App\Modules\Employee\Application\Services\DeactivateDepartmentAction;
 use App\Modules\Employee\Domain\Exceptions\InactiveDepartmentAssignmentException;
 use App\Modules\Employee\Domain\ValueObjects\EmployeeId;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Support\ValueObjects\Identity\NationalCode;
 
 function createDepartmentTestIdentityUser(string $name = 'Dept Test User', ?string $email = null): IdentityUserId
 {
     $email ??= strtolower(str_replace(' ', '.', $name)).'@example.com';
-    $user = app(CreateUserAction::class)->execute($name, $email);
+    $user = createIdentityUserThroughMutation($name, $email);
 
     return IdentityUserId::fromString($user->requireId()->value);
 }
 
 function createDepartmentTestEmployee(IdentityUserId $identityId, string $code = 'DEPT-EMP'): EmployeeId
 {
-    $employee = app(CreateEmployeeAction::class)->execute(
+    $employee = createEmployeeThroughMutation(
         identityId: $identityId,
         employeeCode: $code,
         firstName: 'Dept',
@@ -37,7 +32,7 @@ function createDepartmentTestEmployee(IdentityUserId $identityId, string $code =
 }
 
 it('creates a department and persists it', function (): void {
-    $department = app(CreateDepartmentAction::class)->execute(
+    $department = createDepartmentThroughMutation(
         name: 'Human Resources',
         code: 'HR-001',
         lotteryPriority: 5,
@@ -59,12 +54,12 @@ it('assigns an employee to a department and reloads departmentId', function (): 
     $identityId = createDepartmentTestIdentityUser('Assign User');
     $employeeId = createDepartmentTestEmployee($identityId, 'EMP-DEPT-01');
 
-    $department = app(CreateDepartmentAction::class)->execute(
+    $department = createDepartmentThroughMutation(
         name: 'Operations',
         code: 'OPS-001',
     );
 
-    $assigned = app(AssignDepartmentToEmployeeAction::class)->execute(
+    $assigned = assignDepartmentToEmployeeThroughMutation(
         employeeId: $employeeId,
         departmentId: $department->requireId(),
     );
@@ -81,14 +76,14 @@ it('rejects assignment to an inactive department', function (): void {
     $identityId = createDepartmentTestIdentityUser('Inactive Dept User');
     $employeeId = createDepartmentTestEmployee($identityId, 'EMP-DEPT-02');
 
-    $department = app(CreateDepartmentAction::class)->execute(
+    $department = createDepartmentThroughMutation(
         name: 'Legacy Unit',
         code: 'LEG-001',
     );
 
-    app(DeactivateDepartmentAction::class)->execute($department->requireId());
+    deactivateDepartmentThroughMutation($department->requireId());
 
-    app(AssignDepartmentToEmployeeAction::class)->execute(
+    assignDepartmentToEmployeeThroughMutation(
         employeeId: $employeeId,
         departmentId: $department->requireId(),
     );
@@ -98,17 +93,17 @@ it('deactivates a department while keeping existing employee assignments', funct
     $identityId = createDepartmentTestIdentityUser('Deactivate User');
     $employeeId = createDepartmentTestEmployee($identityId, 'EMP-DEPT-03');
 
-    $department = app(CreateDepartmentAction::class)->execute(
+    $department = createDepartmentThroughMutation(
         name: 'Finance',
         code: 'FIN-001',
     );
 
-    app(AssignDepartmentToEmployeeAction::class)->execute(
+    assignDepartmentToEmployeeThroughMutation(
         employeeId: $employeeId,
         departmentId: $department->requireId(),
     );
 
-    $deactivated = app(DeactivateDepartmentAction::class)->execute($department->requireId());
+    $deactivated = deactivateDepartmentThroughMutation($department->requireId());
 
     expect($deactivated->isActive())->toBeFalse();
 

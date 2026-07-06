@@ -3,14 +3,11 @@
 declare(strict_types=1);
 
 use App\Modules\Employee\Application\Contracts\EmployeeRepositoryContract;
-use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\Exceptions\IdentityIdImmutableException;
 use App\Modules\Employee\Domain\Exceptions\UnknownIdentityUserException;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Modules\Employee\Infrastructure\Persistence\Models\EmployeeModel;
-use App\Modules\Identity\Application\Services\CreateUserAction;
-use App\Modules\Identity\Application\Services\DeactivateUserAction;
 use App\Modules\Identity\Domain\ValueObjects\UserId;
 use App\Support\ValueObjects\Identity\NationalCode;
 use Ramsey\Uuid\Uuid;
@@ -18,14 +15,14 @@ use Ramsey\Uuid\Uuid;
 function createIdentityUser(string $name = 'Boundary User', ?string $email = null): IdentityUserId
 {
     $email ??= strtolower(str_replace(' ', '.', $name)).'@example.com';
-    $user = app(CreateUserAction::class)->execute($name, $email);
+    $user = createIdentityUserThroughMutation($name, $email);
 
     return IdentityUserId::fromString($user->requireId()->value);
 }
 
 function createEmployeeForIdentity(IdentityUserId $identityId, string $code = 'EMP001'): Employee
 {
-    return app(CreateEmployeeAction::class)->execute(
+    return createEmployeeThroughMutation(
         identityId: $identityId,
         employeeCode: $code,
         firstName: 'Ali',
@@ -72,7 +69,7 @@ it('BT-03 rejects employee create when identity user is unknown', function (): v
 it('OA-03-02 allows create when identity user is disabled', function (): void {
     $identityId = createIdentityUser('Disabled Identity User', 'disabled.identity@example.com');
 
-    app(DeactivateUserAction::class)->execute(UserId::fromString($identityId->value));
+    deactivateUserThroughMutation(UserId::fromString($identityId->value));
 
     $employee = createEmployeeForIdentity($identityId, 'EMP004');
 
@@ -83,7 +80,7 @@ it('BT-04 keeps employee unchanged when identity user is deactivated after creat
     $identityId = createIdentityUser('BT04 User', 'bt04@example.com');
     $employee = createEmployeeForIdentity($identityId, 'EMP005');
 
-    app(DeactivateUserAction::class)->execute(UserId::fromString($identityId->value));
+    deactivateUserThroughMutation(UserId::fromString($identityId->value));
 
     $reloaded = app(EmployeeRepositoryContract::class)->findById($employee->requireId());
 

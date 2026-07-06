@@ -6,10 +6,8 @@ use App\Application\Mutation\Exceptions\UnauthorizedMutationException;
 use App\Application\Mutation\Registry\MutationCapabilityCatalog;
 use App\Application\Mutation\Registry\PendingMutationAuthorizationRegistry;
 use App\Application\Mutation\Support\MutationPrincipalContextHolder;
-use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Request\Application\Services\ApproveRequestStageAction;
 use App\Modules\Request\Application\Services\CancelRequestAction;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
@@ -38,12 +36,12 @@ afterEach(function (): void {
 
 function createEmployeeForRequestMutationTest(string $nationalCode = '0499370899'): Employee
 {
-    $user = app(CreateUserAction::class)->execute(
+    $user = createIdentityUserThroughMutation(
         'Request Mutation Test User',
         'request.mutation.'.uniqid('', true).'@example.com',
     );
 
-    return app(CreateEmployeeAction::class)->execute(
+    return createEmployeeThroughMutation(
         identityId: IdentityUserId::fromString($user->requireId()->value),
         employeeCode: 'EMP-RM-'.substr(uniqid('', true), -6),
         firstName: 'Mutation',

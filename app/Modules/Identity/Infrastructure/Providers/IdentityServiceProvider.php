@@ -11,6 +11,7 @@ use App\Modules\Identity\Application\Services\AssignRoleToUserAction;
 use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Identity\Application\Services\DeactivateUserAction;
 use App\Modules\Identity\Application\Services\IdentityAuditEmitter;
+use App\Modules\Identity\Application\Services\IdentityMutationAuthorizationGate;
 use App\Modules\Identity\Application\Services\IdentityUserReadService;
 use App\Modules\Identity\Application\Services\RevokeRoleFromUserAction;
 use App\Modules\Identity\Infrastructure\Adapters\SpatieAuditPermissionReadAdapter;
@@ -24,6 +25,7 @@ class IdentityServiceProvider extends ServiceProvider
         $this->app->singleton(UserRepositoryContract::class, UserRepository::class);
         $this->app->singleton(IdentityUserReadContract::class, IdentityUserReadService::class);
         $this->app->singleton(IdentityAuditEmitter::class);
+        $this->app->singleton(IdentityMutationAuthorizationGate::class);
         $this->app->singleton(CreateUserAction::class);
         $this->app->singleton(DeactivateUserAction::class);
         $this->app->singleton(AssignRoleToUserAction::class);

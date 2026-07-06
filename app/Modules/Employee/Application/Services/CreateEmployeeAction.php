@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Employee\Application\Services;
 
+use App\Application\Mutation\Registry\MutationCapabilityCatalog;
+use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
 use App\Modules\Employee\Application\Contracts\EmployeeRepositoryContract;
 use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\Events\EmployeeCreated;
@@ -21,6 +23,8 @@ final class CreateEmployeeAction
     public function __construct(
         private readonly IdentityUserReadContract $identityRead,
         private readonly EmployeeRepositoryContract $employees,
+        private readonly MutationPolicyEnforcementPoint $mutationPolicy,
+        private readonly EmployeeMutationAuthorizationGate $employeeMutationAuth,
     ) {}
 
     public function execute(
@@ -31,6 +35,11 @@ final class CreateEmployeeAction
         NationalCode $nationalCode,
         DateTimeImmutable $hireDate,
     ): Employee {
+        $this->mutationPolicy->enforce(MutationCapabilityCatalog::EMPLOYEE_CREATE, [
+            'identityId' => $identityId->value,
+        ]);
+        $this->employeeMutationAuth->assertCreateEmployee();
+
         if (! $this->identityRead->userExists($identityId->value)) {
             throw new UnknownIdentityUserException('Identity user does not exist.');
         }

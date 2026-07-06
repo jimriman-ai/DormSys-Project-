@@ -11,8 +11,6 @@ use App\Modules\CheckIn\Application\Contracts\CheckInRecordRepositoryContract;
 use App\Modules\CheckIn\Application\Services\CheckInAction;
 use App\Modules\CheckIn\Application\Services\CheckOutAction;
 use App\Modules\CheckIn\Domain\CheckInOperationRoles;
-use App\Modules\Identity\Application\Services\AssignRoleToUserAction;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Role;
@@ -28,12 +26,12 @@ function createCheckInMutationOperator(): string
 {
     Role::findOrCreate(CheckInOperationRoles::OPERATOR, config('auth.defaults.guard', 'web'));
 
-    $user = app(CreateUserAction::class)->execute(
+    $user = createIdentityUserThroughMutation(
         'Check-In Mutation Operator',
         'checkin.mutation.'.uniqid('', true).'@example.com',
     );
 
-    app(AssignRoleToUserAction::class)->execute(
+    assignRoleThroughMutation(
         $user->requireId(),
         CheckInOperationRoles::OPERATOR,
     );
@@ -65,7 +63,7 @@ it('denies check-in create without a mutation principal', function (): void {
 
 it('denies check-in operate when operator does not match mutation actor', function (): void {
     $operatorId = createCheckInMutationOperator();
-    $otherPrincipalId = app(CreateUserAction::class)->execute(
+    $otherPrincipalId = createIdentityUserThroughMutation(
         'Other Check-In Actor',
         'other.checkin.'.uniqid('', true).'@example.com',
     )->requireId()->value;
@@ -79,7 +77,7 @@ it('denies check-in operate when operator does not match mutation actor', functi
 
 it('denies check-out close when operator does not match mutation actor', function (): void {
     $operatorId = createCheckInMutationOperator();
-    $otherPrincipalId = app(CreateUserAction::class)->execute(
+    $otherPrincipalId = createIdentityUserThroughMutation(
         'Other Check-Out Actor',
         'other.checkout.'.uniqid('', true).'@example.com',
     )->requireId()->value;

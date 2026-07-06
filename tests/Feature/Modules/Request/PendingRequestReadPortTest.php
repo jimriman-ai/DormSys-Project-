@@ -5,10 +5,8 @@ declare(strict_types=1);
 use App\Integrations\Request\PendingRequestReadBridge;
 use App\Modules\Employee\Application\Contracts\EmployeeEligibilityContract;
 use App\Modules\Employee\Application\Contracts\Ports\PendingRequestReadPort;
-use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Request\Application\Services\CancelRequestAction;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
@@ -35,12 +33,12 @@ afterEach(function (): void {
 
 function createEmployeeForPendingPortTest(): Employee
 {
-    $user = app(CreateUserAction::class)->execute(
+    $user = createIdentityUserThroughMutation(
         'Pending Port User',
         'pending.port.'.uniqid('', true).'@example.com',
     );
 
-    return app(CreateEmployeeAction::class)->execute(
+    return createEmployeeThroughMutation(
         identityId: IdentityUserId::fromString($user->requireId()->value),
         employeeCode: 'EMP-PP-'.substr(uniqid('', true), -6),
         firstName: 'Pending',

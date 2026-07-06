@@ -22,7 +22,7 @@ class CreateUserActionTest extends TestCase
     {
         Event::fake([UserCreated::class]);
 
-        $user = app(CreateUserAction::class)->execute('Alice Example', 'alice@example.com');
+        $user = createIdentityUserThroughMutation('Alice Example', 'alice@example.com');
 
         $userId = $user->requireId();
 
@@ -40,10 +40,12 @@ class CreateUserActionTest extends TestCase
     public function it_rejects_duplicate_email(): void
     {
         $action = app(CreateUserAction::class);
-        $action->execute('First User', 'dup@example.com');
+        $principalId = mutationBootstrapPrincipalId();
+
+        mutationActingAs($principalId, fn () => $action->execute('First User', 'dup@example.com'));
 
         $this->expectException(DuplicateUserEmailException::class);
 
-        $action->execute('Second User', 'dup@example.com');
+        mutationActingAs($principalId, fn () => $action->execute('Second User', 'dup@example.com'));
     }
 }

@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 use App\Modules\Allocation\Application\Contracts\RequestLifecycleCommandPort;
 use App\Modules\Allocation\Application\Services\CreateAllocationFromRequestAction;
-use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
 use App\Modules\Request\Domain\Entities\Request;
@@ -33,12 +31,12 @@ afterEach(function (): void {
  */
 function createApprovedRequestForLifecycleHandoffTest(): array
 {
-    $user = app(CreateUserAction::class)->execute(
+    $user = createIdentityUserThroughMutation(
         'Lifecycle Handoff User',
         'lifecycle.handoff.'.uniqid('', true).'@example.com',
     );
 
-    $employee = app(CreateEmployeeAction::class)->execute(
+    $employee = createEmployeeThroughMutation(
         identityId: IdentityUserId::fromString($user->requireId()->value),
         employeeCode: 'EMP-LH-'.substr(uniqid('', true), -6),
         firstName: 'Lifecycle',

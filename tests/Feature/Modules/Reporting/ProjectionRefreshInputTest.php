@@ -7,7 +7,6 @@ use App\Modules\Audit\Application\DTOs\AuditEntryDto;
 use App\Modules\Audit\Domain\Enums\ActorType;
 use App\Modules\Audit\Domain\Enums\AuditEventType;
 use App\Modules\Audit\Domain\Exceptions\UnauthorizedAuditAccessException;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Identity\Domain\Enums\UserStatus;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Modules\Reporting\Application\Contracts\Ports\ProjectionCursorControlPort;
@@ -105,7 +104,7 @@ it('resumes refresh ingest after cursor advancement', function (): void {
 it('denies refresh ingest without audit.read permission', function (): void {
     recordRefreshableAuditEntry();
 
-    $user = app(CreateUserAction::class)->execute('No Refresh Access', 'no-refresh@example.com');
+    $user = createIdentityUserThroughMutation('No Refresh Access', 'no-refresh@example.com');
     $model = UserModel::query()->findOrFail($user->requireId()->value);
     request()->attributes->set('audit_principal_user_id', $model->id);
 
@@ -119,7 +118,7 @@ it('denies refresh ingest without audit.read permission', function (): void {
 it('denies include archived refresh tier without audit.read permission', function (): void {
     recordRefreshableAuditEntry();
 
-    $user = app(CreateUserAction::class)->execute('No Archived Refresh', 'no-archived-refresh@example.com');
+    $user = createIdentityUserThroughMutation('No Archived Refresh', 'no-archived-refresh@example.com');
     $model = UserModel::query()->findOrFail($user->requireId()->value);
     request()->attributes->set('audit_principal_user_id', $model->id);
 

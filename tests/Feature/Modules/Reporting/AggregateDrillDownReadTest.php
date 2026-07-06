@@ -7,8 +7,6 @@ use App\Modules\Audit\Application\DTOs\AuditEntryDto;
 use App\Modules\Audit\Domain\Enums\ActorType;
 use App\Modules\Audit\Domain\Enums\AuditEventType;
 use App\Modules\Audit\Infrastructure\Persistence\Models\AuditLogModel;
-use App\Modules\Identity\Application\Services\AssignRoleToUserAction;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Modules\Reporting\Application\Contracts\ReportingReadContract;
 use App\Modules\Reporting\Application\DTOs\AggregateDrillDownQuery;
@@ -52,8 +50,8 @@ function seedDrillDownAuditEntry(array $overrides = []): AuditLogModel
 
 function authenticateDrillDownReader(): UserModel
 {
-    $user = app(CreateUserAction::class)->execute('Drill Down Reader', 'drilldown-reader@example.com');
-    app(AssignRoleToUserAction::class)->execute($user->requireId(), IdentityRoleSeeder::ROLE_HR_MGR);
+    $user = createIdentityUserThroughMutation('Drill Down Reader', 'drilldown-reader@example.com');
+    assignRoleThroughMutation($user->requireId(), IdentityRoleSeeder::ROLE_HR_MGR);
     $model = UserModel::query()->findOrFail($user->requireId()->value);
     request()->attributes->set('audit_principal_user_id', $model->id);
 

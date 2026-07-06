@@ -9,8 +9,6 @@ use App\Modules\Audit\Application\DTOs\AuditHistoryQuery;
 use App\Modules\Audit\Domain\Enums\ActorType;
 use App\Modules\Audit\Domain\Enums\AuditEventType;
 use App\Modules\Audit\Domain\Exceptions\UnauthorizedAuditAccessException;
-use App\Modules\Identity\Application\Services\AssignRoleToUserAction;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Reporting\Application\Contracts\Ports\ProjectionRefreshInputPort;
 use App\Modules\Reporting\Application\Contracts\ReportingReadContract;
 use App\Modules\Reporting\Application\DTOs\EntityTimelineQuery;
@@ -64,8 +62,8 @@ it('denies projection refresh ingest when principal is missing', function (): vo
 });
 
 it('allows audit history read through shared policy enforcement for authorized principals', function (): void {
-    $user = app(CreateUserAction::class)->execute('PEP Reader', 'pep-reader@example.com');
-    app(AssignRoleToUserAction::class)->execute($user->requireId(), IdentityRoleSeeder::ROLE_ADMINISTRATOR);
+    $user = createIdentityUserThroughMutation('PEP Reader', 'pep-reader@example.com');
+    assignRoleThroughMutation($user->requireId(), IdentityRoleSeeder::ROLE_ADMINISTRATOR);
     request()->attributes->set('audit_principal_user_id', $user->requireId()->value);
 
     $entityId = UuidGenerator::uuid7();

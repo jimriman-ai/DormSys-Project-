@@ -3,10 +3,8 @@
 declare(strict_types=1);
 
 use App\Models\User;
-use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Domain\Entities\Request;
@@ -30,8 +28,8 @@ function createRequestHttpMutationEmployee(
         'password' => $password,
     ]);
 
-    $identityUser = app(CreateUserAction::class)->execute('Request HTTP User', $email);
-    $employee = app(CreateEmployeeAction::class)->execute(
+    $identityUser = createIdentityUserThroughMutation('Request HTTP User', $email);
+    $employee = createEmployeeThroughMutation(
         identityId: IdentityUserId::fromString($identityUser->requireId()->value),
         employeeCode: 'EMP-HTTP-'.substr(uniqid('', true), -6),
         firstName: 'HTTP',

@@ -2,10 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
-use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Request\Application\Contracts\MissionDetailsRepositoryContract;
 use App\Modules\Request\Application\Contracts\RequestMemberRepositoryContract;
 use App\Modules\Request\Application\Services\CreateMissionRequestAction;
@@ -52,12 +50,12 @@ function uniqueNationalCodeForMissionTest(): NationalCode
 
 function createEmployeeForMissionTest(string $suffix = ''): Employee
 {
-    $user = app(CreateUserAction::class)->execute(
+    $user = createIdentityUserThroughMutation(
         'Mission Test User '.$suffix,
         'mission.test.'.uniqid('', true).'@example.com',
     );
 
-    return app(CreateEmployeeAction::class)->execute(
+    return createEmployeeThroughMutation(
         identityId: IdentityUserId::fromString($user->requireId()->value),
         employeeCode: 'EMP-MS-'.substr(uniqid('', true), -6),
         firstName: 'Mission',

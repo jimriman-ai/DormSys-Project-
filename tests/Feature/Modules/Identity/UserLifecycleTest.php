@@ -3,17 +3,15 @@
 declare(strict_types=1);
 
 use App\Modules\Identity\Application\Contracts\UserRepositoryContract;
-use App\Modules\Identity\Application\Services\CreateUserAction;
-use App\Modules\Identity\Application\Services\DeactivateUserAction;
 use App\Modules\Identity\Domain\Entities\User;
 use App\Modules\Identity\Domain\Enums\UserStatus;
 
 it('creates and disables a user through the application layer', function (): void {
-    $created = app(CreateUserAction::class)->execute('Lifecycle User', 'lifecycle@example.com');
+    $created = createIdentityUserThroughMutation('Lifecycle User', 'lifecycle@example.com');
 
     expect($created->isActive())->toBeTrue();
 
-    $deactivated = app(DeactivateUserAction::class)->execute($created->requireId());
+    $deactivated = deactivateUserThroughMutation($created->requireId());
 
     expect($deactivated->status)->toBe(UserStatus::Disabled);
 

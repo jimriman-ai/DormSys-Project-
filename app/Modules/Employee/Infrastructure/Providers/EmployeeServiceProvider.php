@@ -12,6 +12,7 @@ use App\Modules\Employee\Application\Services\CreateDepartmentAction;
 use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Application\Services\DeactivateDepartmentAction;
 use App\Modules\Employee\Application\Services\EmployeeEligibilityService;
+use App\Modules\Employee\Application\Services\EmployeeMutationAuthorizationGate;
 use App\Modules\Employee\Infrastructure\Repositories\DepartmentRepository;
 use App\Modules\Employee\Infrastructure\Repositories\EmployeeRepository;
 use Illuminate\Support\ServiceProvider;
@@ -23,6 +24,7 @@ class EmployeeServiceProvider extends ServiceProvider
         $this->app->singleton(EmployeeRepositoryContract::class, EmployeeRepository::class);
         $this->app->singleton(DepartmentRepositoryContract::class, DepartmentRepository::class);
         $this->app->singleton(EmployeeEligibilityContract::class, EmployeeEligibilityService::class);
+        $this->app->singleton(EmployeeMutationAuthorizationGate::class);
         $this->app->singleton(CreateEmployeeAction::class);
         $this->app->singleton(CreateDepartmentAction::class);
         $this->app->singleton(DeactivateDepartmentAction::class);

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Identity\Application\Services;
 
+use App\Application\Mutation\Registry\MutationCapabilityCatalog;
+use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
 use App\Modules\Identity\Application\Contracts\UserRepositoryContract;
 use App\Modules\Identity\Domain\Entities\User;
 use App\Modules\Identity\Domain\Events\UserCreated;
@@ -16,10 +18,15 @@ class CreateUserAction
     public function __construct(
         private readonly UserRepositoryContract $users,
         private readonly IdentityAuditEmitter $auditEmitter,
+        private readonly MutationPolicyEnforcementPoint $mutationPolicy,
+        private readonly IdentityMutationAuthorizationGate $identityMutationAuth,
     ) {}
 
     public function execute(string $displayName, ?string $email = null): User
     {
+        $this->mutationPolicy->enforce(MutationCapabilityCatalog::IDENTITY_USER_CREATE);
+        $this->identityMutationAuth->assertCreate();
+
         if ($email !== null && $this->users->existsByEmail($email)) {
             throw new DuplicateUserEmailException('A user with this email already exists.');
         }
