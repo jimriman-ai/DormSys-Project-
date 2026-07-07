@@ -1,0 +1,46 @@
+contract:
+  id: requests/request-list
+  version: 1.0.0
+  maturity: approved
+  implementation_status: authorized
+  authorization_reason: "Feature Contract Review Gate Passed"
+
+allowed_scope:
+  - Livewire presentation component
+  - Blade views
+  - UI render state handling
+  - Approved read contract consumption
+
+forbidden_scope:
+  - Domain changes
+  - Application service changes
+  - Infrastructure changes
+  - Permission policy/gate changes
+  - Workflow transition changes
+  - Backend validation/capability duplication in UI
+
+backend_authority:
+  read:
+    - RequestsReadContract.list
+
+mutation_scope:
+  allowed: []
+
+permission_authority:
+  source: contract-level
+  implementation_authority: Laravel Gate/Policy
+  ui_rule: "UI consumes permission outcomes only"
+
+review_required:
+  - architecture-review
+  - ui-review
+
+traceability:
+  required_in_ui_create_output:
+    - authority_sources_read
+    - contract_identifier
+    - implementation_lock_identifier
+    - selected_pattern
+    - files_to_modify
+    - assumptions
+    - hard_stops_encountered

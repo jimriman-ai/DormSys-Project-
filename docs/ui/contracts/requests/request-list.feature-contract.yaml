@@ -1,0 +1,27 @@
+feature_name: request_list
+status: approved # Ready for implementation-authorized
+version: 1.0.0
+
+# ... (View Model same as before)
+
+states:
+  ui_render_states: # Replaced ui_projection_states
+    - loading
+    - empty
+    - ready
+    - error
+  domain_workflow_states: # Decoupled from UI
+    - draft
+    - submitted
+    - approved
+    - rejected
+
+mutations:
+  allowed: [] # Explicitly Read-Only for this Pilot view
+  authority: "Backend Command Bus"
+
+permission_authority:
+  source: "Laravel Gate/Policy"
+  implementation: "RequestPolicy@viewAny"
+
+# ... (Rest of the contract remains)
