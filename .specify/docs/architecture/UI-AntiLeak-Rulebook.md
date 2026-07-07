@@ -4,8 +4,10 @@
 
 Document Version: 1.0.0
 
-Scope: PR-N6 (Request Entry), PR-N7 (Lottery/Allocation Execution), PR-N8
-(Check-In Terminal)
+Scope
+
+Applies to all Presentation Layer implementations
+(Blade, Livewire, Alpine.js and future UI technologies)
 
 Target Stack: Laravel 13, Livewire 3, Alpine.js, Tailwind CSS
 

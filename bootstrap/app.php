@@ -3,20 +3,20 @@
 declare(strict_types=1);
 
 use App\Application\Mutation\Exceptions\UnauthorizedMutationException;
-use App\Modules\Audit\Domain\Exceptions\UnauthorizedAuditAccessException;
-use App\Modules\Audit\Presentation\Http\Middleware\ResolveAuditPrincipalMiddleware;
-use App\Modules\Lottery\Domain\Exceptions\LotteryDomainException;
-use App\Modules\Lottery\Presentation\Http\Support\LotteryApiExceptionResponse;
 use App\Modules\Allocation\Domain\Exceptions\AllocationNotFoundException;
 use App\Modules\Allocation\Domain\Exceptions\AllocationOverlapException;
 use App\Modules\Allocation\Domain\Exceptions\BedNotAssignableException;
 use App\Modules\Allocation\Domain\Exceptions\InvalidAllocationTransitionException;
 use App\Modules\Allocation\Presentation\Http\Support\AllocationApiExceptionResponse;
+use App\Modules\Audit\Domain\Exceptions\UnauthorizedAuditAccessException;
+use App\Modules\Audit\Presentation\Http\Middleware\ResolveAuditPrincipalMiddleware;
 use App\Modules\CheckIn\Domain\Exceptions\AllocationNotActiveException as CheckInAllocationNotActiveException;
 use App\Modules\CheckIn\Domain\Exceptions\NoOpenCheckInRecordException;
 use App\Modules\CheckIn\Domain\Exceptions\OpenCheckInRecordExistsException;
 use App\Modules\CheckIn\Domain\Exceptions\OperatorRoleRequiredException;
 use App\Modules\CheckIn\Presentation\Http\Support\CheckInApiExceptionResponse;
+use App\Modules\Lottery\Domain\Exceptions\LotteryDomainException;
+use App\Modules\Lottery\Presentation\Http\Support\LotteryApiExceptionResponse;
 use App\Modules\Reporting\Domain\Exceptions\UnauthorizedArchiveVisibilityException;
 use App\Modules\Request\Domain\Exceptions\InvalidRequestTransitionException;
 use App\Modules\Request\Domain\Exceptions\RequestNotEligibleException;
@@ -54,6 +54,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'audit.principal' => ResolveAuditPrincipalMiddleware::class,
             'request.mutation.principal' => EnforceSessionMutationPrincipalMiddleware::class,
         ]);
+
+        $middleware->redirectGuestsTo('/login');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

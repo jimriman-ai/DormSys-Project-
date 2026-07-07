@@ -6,10 +6,8 @@
 **Authority Level:** Mandatory  
 **Applies To:** Blade, Livewire Components, Alpine.js interactions, UI-facing DTO/ViewModel consumption  
 **Owner:** Architecture  
-Scope
+**Scope:** PR-N6 Request Surface, PR-N7 Execution Visibility, PR-N8 Terminal State Surfaces
 
-Applies to all Presentation Layer implementations
-(Blade, Livewire, Alpine.js and future UI technologies)
 ---
 
 ## 1. Purpose

@@ -24,4 +24,9 @@ class RequestPresentationServiceProvider extends ServiceProvider
     {
         return app_path('Modules/Request/Presentation/Routes/requests.php');
     }
+
+    public static function requestWebRoutePath(): string
+    {
+        return app_path('Modules/Request/Presentation/Routes/web.php');
+    }
 }

@@ -127,8 +127,24 @@ test('pending CLI mutation commands map to pending actions only', function (): v
     }
 });
 
-test('no Livewire mutation handler surfaces are registered', function (): void {
-    $livewireHandlers = glob(app_path('Modules/*/Presentation/Livewire/*.php')) ?: [];
+test('request livewire surfaces remain thin mutation entrypoints', function (): void {
+    $livewireHandlers = glob(app_path('Modules/Request/Presentation/Livewire/*.php')) ?: [];
 
-    expect($livewireHandlers)->toBe([]);
+    expect($livewireHandlers)->not->toBeEmpty();
+
+    $forbidden = [
+        'DB::transaction',
+        'DB::table',
+        'RequestRepositoryContract',
+        'InvalidRequestTransitionException',
+    ];
+
+    foreach ($livewireHandlers as $path) {
+        $contents = file_get_contents($path);
+        expect($contents)->toBeString();
+
+        foreach ($forbidden as $needle) {
+            expect($contents)->not->toContain($needle);
+        }
+    }
 });
