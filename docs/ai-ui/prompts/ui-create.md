@@ -1,88 +1,56 @@
-# PROMPT: UI-CREATE
+# PROMPT: UI-CREATE (v1.1 - Heavyweight Governance)
 
-Role: DormSys UI Executor (Laravel 13 / Livewire / Postgres)
-Mode: Deterministic, Contract-First, Audit-Ready
+Role: DormSys UI Lead/Executor
+Context: Laravel 13, Livewire 3, Tailwind, Postgres 17, DDD Architecture
 
-## Required Read Order (No Skip)
+## 1. MANDATORY KNOWLEDGE BASE (Read Order)
 
-Before implementation, read in this exact order:
+You must load and integrate these authorities before generating any code:
 
-1. `.specify/ARCHITECTURE.md`
-2. `.specify/docs/architecture/UI-ANTI-LEAK-CONTRACT.md`
-3. `docs/ai-ui/AI-UI-ENGINEERING-FRAMEWORK.md`
-4. `docs/ai-ui/AI-EXECUTION-MODEL.md`
-5. `docs/ai-ui/AI-EXECUTION-RULES.md`
-6. Approved Feature Contract (task-specific)
-7. `docs/ui/PATTERN-CATALOG.md`
-8. `docs/ui/UI-DESIGN-SYSTEM.md`
-9. Optional wireframe/reference (inspiration only)
-10. `docs/ui/REVIEW-CHECKLIST.md`
+1. `.specify/ARCHITECTURE.md`: Core system constraints and Layered Architecture.
+2. `system-flow.md`: State machine and workflow transition authority.
+3. `docs/architecture/UI-ANTI-LEAK-CONTRACT.md`: The "Iron Curtain" between UI and Domain.
+4. `docs/ai-ui/AI-UI-ENGINEERING-FRAMEWORK.md`: Operational workflow for AI-UI.
+5. `docs/ai-ui/AI-EXECUTION-MODEL.md`: How to think as a DormSys Executor.
+6. `docs/ai-ui/AI-EXECUTION-RULES.md`: Explicit "Do/Don't" list.
+7. **The Feature Contract**: Task-specific Read/Interaction model.
+8. **The Implementation Lock**: Task-specific scope and authority lock.
+9. `docs/ui/PATTERN-CATALOG.md`: Pre-approved UI structural patterns.
+10. `docs/ui/UI-DESIGN-SYSTEM.md`: Token/Component/UX standards.
 
-## Execution Pipeline
+## 2. GOVERNANCE GATES
 
-1. **Contract Intake**
-   - Confirm Feature Contract exists and is approved.
-   - Extract: view model, actions, backend mappings, permissions, UI states, workflow states.
+### Gate A: Authority Validation
 
-2. **Authority Validation**
-   - Ensure requested change belongs to Presentation layer.
-   - If request implies Application/Domain/Infrastructure change: HARD STOP.
+- Verify `implementation_status` is `authorized` in the Lock file.
+- Verify the task does NOT touch `app/Domain`, `app/Core`, or `database/migrations`.
 
-3. **Interaction Mapping (Backend Interfaces)**
-   - Map UI interactions to repository-defined backend interfaces:
-     - Application Commands
-     - Application Services
-     - Read Contracts
-     - Other approved backend interfaces
-   - Do not invent or infer missing interfaces.
+### Gate B: Interaction Mapping
 
-4. **Pattern & Design Binding**
-   - Select approved pattern from `PATTERN-CATALOG.md`.
-   - Bind to `UI-DESIGN-SYSTEM.md` tokens/components/rules.
+- UI actions must ONLY call:
+  - `Application Services` (Commands)
+  - `Read Contracts` (Queries)
+- Forbidden: Direct Eloquent access, raw SQL, or inventing "Business Logic" in Livewire.
 
-5. **Implementation**
-   - Keep UI mutation-thin.
-   - Preserve repository conventions.
-   - Prefer extending existing components.
-   - Avoid introducing new abstractions unless explicitly required.
+### Gate C: State Mapping
 
-6. **Pre-Review Check**
-   - Validate against `REVIEW-CHECKLIST.md` before final output.
+- UI Render States (loading/empty/ready/error) must be decoupled from Domain Workflow States (draft/submitted).
+- UI must NOT derive a workflow transition; it only reports what the backend permits.
 
-## Hard Stop Conditions (Mandatory)
+## 3. IMPLEMENTATION RULES
 
-Stop immediately if any condition is true:
+- **Mutation-Thin UI**: Livewire components must be "dumb" projectors and command-senders.
+- **Permission Outsourcing**: Do not evaluate `@can`. Check the `permission_outcome` provided by the backend interface or the authorized contract.
+- **Logic Locality**: Keep UI render logic in Blade where possible; keep orchestration in Livewire.
 
-- Feature Contract is missing or not approved.
-- Backend mapping for an action is missing.
-- Permission semantics are missing/ambiguous.
-- Workflow/domain state transition is unclear.
-- Task requires deriving domain logic in UI.
-- Task requires permission evaluation logic in UI.
-- Task requires query/business transformation outside approved contracts.
-- Reference/wireframe conflicts with Feature Contract.
-- Change requires architectural invention (ADR needed).
+## 4. MANDATORY PRE-CODE REPORT (Audit-Grade)
 
-## Anti-Leak Rule (Strict)
+Before any code output, provide this analysis:
 
-UI layer must not own:
-
-- domain decisions
-- workflow derivation
-- permission outcome evaluation
-- backend capability logic
-- duplicated backend validation
-- business data transformation outside approved read contracts
-
-## Mandatory Output Summary
-
-- Authority Sources Read:
-- Feature Contract Used:
-- Backend Interfaces/Mappings Used:
-- Pattern Selected:
-- Design Rules Applied:
-- Assumptions:
-- Hard Stops Encountered:
-- Architectural Deviations:
-- Risks / Open Questions:
-- Ready for UI-Review: [Yes/No]
+- **Lock Reference:** [ID & Version]
+- **Layer Classification:** [Confirming Presentation-only]
+- **Authority Source Mapping:** (e.g., UI Action 'Approve' -> Command 'Requests\ApproveCommand')
+- **Pattern Selected:** [From Pattern Catalog]
+- **Design Tokens Applied:** [Key Design System references]
+- **Hard Stop Analysis:** (List any potential architectural risks detected)
+- **Proceeding:** [YES/NO]

@@ -1,27 +1,93 @@
 feature_name: request_list
-status: approved # Ready for implementation-authorized
+module: requests
 version: 1.0.0
+owner: DormSys Engineering
+status: approved
 
-# ... (View Model same as before)
+lifecycle:
+  canonical: [draft, reviewed, approved, frozen, implementation-authorized]
+  current: approved
+
+view_model:
+  read_contract: RequestReadContract.listByEmployee
+  fields:
+    - key: request_id
+      type: string
+      source: requests.id
+    - key: student_name
+      type: string
+      source: students.full_name
+    - key: dorm_name
+      type: string
+      source: dorms.name
+    - key: status
+      type: enum
+      source: requests.status
+    - key: submitted_at
+      type: datetime
+      source: requests.submitted_at
+  columns: [request_id, student_name, dorm_name, status, submitted_at]
+  filters:
+    - key: status
+      type: single_select
+      options: [draft, submitted, approved, rejected]
+    - key: dorm_id
+      type: single_select
+    - key: submitted_from
+      type: date
+    - key: submitted_to
+      type: date
+  sorting:
+    allowed: [submitted_at, status, request_id]
+    default: { field: submitted_at, direction: desc }
+  pagination:
+    type: offset
+    default_per_page: 15
+    allowed_per_page: [15, 30, 50]
+
+interactions:
+  actions:
+    - name: refresh_list
+      backend_interface: RequestReadContract.listByEmployee
+    - name: apply_filters
+      backend_interface: RequestReadContract.listByEmployee
+    - name: clear_filters
+      backend_interface: RequestReadContract.listByEmployee
+    - name: change_page
+      backend_interface: RequestReadContract.listByEmployee
+    - name: export_csv
+      backend_interface: RequestExportService.exportCsvByEmployee
 
 states:
-  ui_render_states: # Replaced ui_projection_states
-    - loading
-    - empty
-    - ready
-    - error
-  domain_workflow_states: # Decoupled from UI
-    - draft
-    - submitted
-    - approved
-    - rejected
+  ui_render_states: [loading, empty, ready, error]
+  domain_workflow_states: [draft, submitted, approved, rejected]
+  transition_triggers:
+    loading_to_ready: successful_list_response_with_items
+    loading_to_empty: successful_list_response_without_items
+    loading_to_error: backend_error_or_timeout
+    ready_to_loading: filter_sort_pagination_refresh
 
 mutations:
-  allowed: [] # Explicitly Read-Only for this Pilot view
-  authority: "Backend Command Bus"
+  allowed: []
 
 permission_authority:
-  source: "Laravel Gate/Policy"
-  implementation: "RequestPolicy@viewAny"
+  source: contract-level
+  implementation_authority: Laravel Gate/Policy
+  view_permission: requests.viewAny
+  action_permissions:
+    refresh_list: requests.viewAny
+    apply_filters: requests.viewAny
+    clear_filters: requests.viewAny
+    change_page: requests.viewAny
+    export_csv: requests.export
 
-# ... (Rest of the contract remains)
+anti_leak_boundaries:
+  forbidden:
+    - ui_derives_workflow_transitions
+    - ui_computes_permission_outcomes
+    - ui_duplicates_backend_validation
+    - ui_inferrs_backend_capabilities
+
+audit:
+  required: true
+  contract_maturity_required_for_ui_create: approved

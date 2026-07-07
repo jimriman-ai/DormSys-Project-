@@ -3,7 +3,7 @@ contract:
   version: 1.0.0
   maturity: approved
   implementation_status: authorized
-  authorization_reason: "Feature Contract Review Gate Passed"
+  authorization_reason: Feature Contract Review Gate Passed
 
 allowed_scope:
   - Livewire presentation component
@@ -21,7 +21,7 @@ forbidden_scope:
 
 backend_authority:
   read:
-    - RequestsReadContract.list
+    - RequestReadContract.listByEmployee
 
 mutation_scope:
   allowed: []
@@ -29,7 +29,7 @@ mutation_scope:
 permission_authority:
   source: contract-level
   implementation_authority: Laravel Gate/Policy
-  ui_rule: "UI consumes permission outcomes only"
+  ui_rule: UI consumes permission outcomes only
 
 review_required:
   - architecture-review
