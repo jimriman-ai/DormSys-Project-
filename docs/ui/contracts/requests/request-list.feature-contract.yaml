@@ -1,85 +1,207 @@
+id: requests/request-list
 feature_name: request_list
 module: requests
-version: 1.0.0
+version: 1.0.2
 owner: DormSys Engineering
 status: approved
 
 lifecycle:
-  canonical: [draft, reviewed, approved, frozen, implementation-authorized]
+  canonical:
+    - draft
+    - reviewed
+    - approved
+    - frozen
+    - implementation-authorized
   current: approved
 
+description:
+  summary: Read-only employee-scoped request list for pilot implementation.
+  intent: Provide basic request list visibility using repository-authoritative read contract only, without introducing UI-owned logic or unsupported query features.
+
+scope:
+  in_scope:
+    - list rendering
+    - refresh
+    - loading state
+    - empty state
+    - ready state
+    - error state
+  out_of_scope:
+    - filtering
+    - sorting
+    - pagination
+    - csv export
+    - workflow transition execution
+    - request mutation
+    - policy definition
+    - permission evaluation logic
+    - domain/application/infrastructure changes
+    - row navigation
+    - create request entrypoint
+
+backend_authority:
+  read_contract:
+    interface: App\Modules\Request\Application\Contracts\RequestReadContract
+    method: listByEmployee
+
+read_model:
+  authority_type: read-contract
+  authority_ref: App\Modules\Request\Application\Contracts\RequestReadContract::listByEmployee
+  input:
+    employee_id:
+      type: string
+      source:
+        resolver: App\Modules\Request\Application\Services\RequestPrincipalEmployeeResolver
+        method: requireEmployeeId
+  output:
+    collection: App\Modules\Request\Application\DTOs\RequestSummaryDTO[]
+  consistency: eventual
+  null_policy: explicit-nulls-allowed
+
 view_model:
-  read_contract: RequestReadContract.listByEmployee
+  entity: request_summary_item
   fields:
-    - key: request_id
+    - key: id
+      label: ID
+      type: uuid
+      required: true
+      source:
+        dto: App\Modules\Request\Application\DTOs\RequestSummaryDTO
+        field: id
+    - key: code
+      label: Request Code
       type: string
-      source: requests.id
-    - key: student_name
+      required: true
+      source:
+        dto: App\Modules\Request\Application\DTOs\RequestSummaryDTO
+        field: code
+    - key: type
+      label: Request Type
       type: string
-      source: students.full_name
-    - key: dorm_name
-      type: string
-      source: dorms.name
+      required: true
+      source:
+        dto: App\Modules\Request\Application\DTOs\RequestSummaryDTO
+        field: type
     - key: status
-      type: enum
-      source: requests.status
+      label: Status
+      type: string
+      required: true
+      source:
+        dto: App\Modules\Request\Application\DTOs\RequestSummaryDTO
+        field: status
+    - key: dormitory_id
+      label: Dormitory ID
+      type: uuid
+      required: false
+      source:
+        dto: App\Modules\Request\Application\DTOs\RequestSummaryDTO
+        field: dormitoryId
+    - key: check_in_date
+      label: Check-in Date
+      type: date
+      required: false
+      source:
+        dto: App\Modules\Request\Application\DTOs\RequestSummaryDTO
+        field: checkInDate
+    - key: check_out_date
+      label: Check-out Date
+      type: date
+      required: true
+      source:
+        dto: App\Modules\Request\Application\DTOs\RequestSummaryDTO
+        field: checkOutDate
     - key: submitted_at
+      label: Submitted At
       type: datetime
-      source: requests.submitted_at
-  columns: [request_id, student_name, dorm_name, status, submitted_at]
-  filters:
-    - key: status
-      type: single_select
-      options: [draft, submitted, approved, rejected]
-    - key: dorm_id
-      type: single_select
-    - key: submitted_from
-      type: date
-    - key: submitted_to
-      type: date
-  sorting:
-    allowed: [submitted_at, status, request_id]
-    default: { field: submitted_at, direction: desc }
-  pagination:
-    type: offset
-    default_per_page: 15
-    allowed_per_page: [15, 30, 50]
+      required: false
+      source:
+        dto: App\Modules\Request\Application\DTOs\RequestSummaryDTO
+        field: submittedAt
+
+table:
+  columns:
+    - code
+    - type
+    - status
+    - dormitory_id
+    - check_in_date
+    - check_out_date
+    - submitted_at
 
 interactions:
   actions:
     - name: refresh_list
-      backend_interface: RequestReadContract.listByEmployee
-    - name: apply_filters
-      backend_interface: RequestReadContract.listByEmployee
-    - name: clear_filters
-      backend_interface: RequestReadContract.listByEmployee
-    - name: change_page
-      backend_interface: RequestReadContract.listByEmployee
-    - name: export_csv
-      backend_interface: RequestExportService.exportCsvByEmployee
+      type: read
+      backend_interface: App\Modules\Request\Application\Contracts\RequestReadContract::listByEmployee
+      request_shape:
+        params:
+          - employee_id
+      employee_id_source:
+        resolver: App\Modules\Request\Application\Services\RequestPrincipalEmployeeResolver
+        method: requireEmployeeId
+      response_shape:
+        collection: App\Modules\Request\Application\DTOs\RequestSummaryDTO[]
 
 states:
-  ui_render_states: [loading, empty, ready, error]
-  domain_workflow_states: [draft, submitted, approved, rejected]
-  transition_triggers:
-    loading_to_ready: successful_list_response_with_items
-    loading_to_empty: successful_list_response_without_items
-    loading_to_error: backend_error_or_timeout
-    ready_to_loading: filter_sort_pagination_refresh
+  ui_render_states:
+    - loading
+    - empty
+    - ready
+    - error
+
+domain_workflow_states:
+  authority:
+    source: specs/005-request-management/data-model.md
+  rule: Backend workflow definitions are authoritative.
+  consumption_rule: UI displays backend-provided status values only and must not enumerate workflow transitions.
+
+transition_policy:
+  ui_state_transitions:
+    - from: loading
+      to: ready
+      trigger: successful_response_with_items
+    - from: loading
+      to: empty
+      trigger: successful_response_without_items
+    - from: loading
+      to: error
+      trigger: backend_error_or_timeout
+    - from: ready
+      to: loading
+      trigger: manual_refresh
+    - from: empty
+      to: loading
+      trigger: manual_refresh
+    - from: error
+      to: loading
+      trigger: retry_refresh
+  constraint: UI transitions are render-only and must not alter domain workflow state.
+
+permissions:
+  authority_owner: backend
+  implementation_authority: existing_application_authorization_flow
+  view_permission:
+    mechanism: route_middleware
+    bindings:
+      - auth:api
+      - request.mutation.principal
+  action_permissions:
+    refresh_list: inherits_route_access
+  ui_rule: UI consumes backend access boundary only and must not evaluate authorization semantics.
 
 mutations:
   allowed: []
+  statement: This feature is strictly read-only; no command-side mutation is authorized.
 
-permission_authority:
-  source: contract-level
-  implementation_authority: Laravel Gate/Policy
-  view_permission: requests.viewAny
-  action_permissions:
-    refresh_list: requests.viewAny
-    apply_filters: requests.viewAny
-    clear_filters: requests.viewAny
-    change_page: requests.viewAny
-    export_csv: requests.export
+validation:
+  source_of_truth: backend
+  ui_validation_scope: []
+  forbidden_in_ui:
+    - business rule validation
+    - capability inference
+    - workflow legality checks
+    - permission evaluation
+    - data derivation outside returned DTO fields
 
 anti_leak_boundaries:
   forbidden:
@@ -87,7 +209,70 @@ anti_leak_boundaries:
     - ui_computes_permission_outcomes
     - ui_duplicates_backend_validation
     - ui_inferrs_backend_capabilities
+    - ui_joins_external_entities_for_display
+    - ui_introduces_business_transformations_outside_read_contract
+  required:
+    - strict_backend_interface_mapping_for_each_action
+    - dto_field_consumption_only
+    - separation_of_ui_render_state_from_domain_workflow_state
+
+pattern_binding:
+  status: pilot-approved-temporary
+  selected_pattern: basic-data-table
+  approval_reference: Feature Contract Review Pilot Exception
+
+design_system_binding:
+  status: pilot-exempt-pending-design-system
+  constraint: Use existing repository UI primitives only; do not invent new design language in this pilot.
+
+ux:
+  loading_behavior: Render loading state for initial fetch and manual refresh.
+  empty_behavior: Render explicit empty state when collection is empty.
+  error_handling_strategy:
+    mode: inline_error_state
+    retry_action: refresh_list
+
+observability:
+  ui_events:
+    - request_list_loaded
+    - request_list_refresh_triggered
+    - request_list_load_failed
+  error_surface:
+    - inline_error_state
+    - retry_action_available
 
 audit:
   required: true
   contract_maturity_required_for_ui_create: approved
+  traceability:
+    requires:
+      - contract_id
+      - contract_version
+      - authority_refs
+      - action_to_interface_map
+
+acceptance_criteria:
+  - UI reads request data only from RequestReadContract::listByEmployee.
+  - UI renders only DTO-backed fields declared in this contract.
+  - No filters, sorting, pagination, or export behavior exists in implementation.
+  - No mutation pathway exists in UI implementation.
+  - UI supports loading, empty, ready, and error states.
+  - UI does not redefine workflow states or authorization logic.
+  - UI remains within presentation-layer authority only.
+
+open_questions: []
+
+references:
+  architecture_authority:
+    - .specify/ARCHITECTURE.md
+    - .specify/docs/architecture/system-flow.md
+    - .specify/docs/architecture/ui/UI-ANTI-LEAK-CONTRACT.md
+  governance:
+    - docs/ai-ui/AI-UI-ENGINEERING-FRAMEWORK.md
+    - docs/ai-ui/AI-EXECUTION-MODEL.md
+    - docs/ai-ui/AI-EXECUTION-RULES.md
+  repository_truth:
+    - app/Modules/Request/Application/Contracts/RequestReadContract.php
+    - app/Modules/Request/Application/DTOs/RequestSummaryDTO.php
+    - app/Modules/Request/Infrastructure/Queries/RequestReadQuery.php
+    - specs/005-request-management/data-model.md

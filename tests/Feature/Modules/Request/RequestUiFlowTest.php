@@ -6,6 +6,7 @@ use App\Application\Mutation\Support\MutationPrincipalContextHolder;
 use App\Modules\Request\Domain\States\DraftState;
 use App\Modules\Request\Domain\States\PendingDepartmentManagerState;
 use App\Modules\Request\Presentation\Livewire\RequestCreatePage;
+use App\Modules\Request\Presentation\Livewire\RequestListPage;
 use App\Modules\Request\Presentation\Livewire\RequestShowPage;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -65,7 +66,20 @@ describe('request ui access', function (): void {
         $this->get('/requests')
             ->assertOk()
             ->assertSee('درخواست‌های من')
-            ->assertSee('ثبت درخواست جدید');
+            ->assertSee('بروزرسانی')
+            ->assertDontSee('ثبت درخواست جدید')
+            ->assertDontSee('مشاهده');
+    });
+
+    it('renders contract-aligned list states through livewire', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateRequestUiUser($actor['identity']);
+
+        Livewire::actingAs($actor['identity'], 'api')
+            ->test(RequestListPage::class)
+            ->call('refreshList')
+            ->assertSet('uiState', 'empty')
+            ->assertSet('loadError', null);
     });
 
     it('renders the request create page', function (): void {

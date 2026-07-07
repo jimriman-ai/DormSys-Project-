@@ -1,53 +1,65 @@
-<div>
+<div wire:init="refreshList">
     <x-ui.page-header title="درخواست‌های من" description="فهرست درخواست‌های ثبت‌شده شما">
         <x-slot:actions>
-            <a href="{{ route('requests.create') }}">
-                <x-ui.button>ثبت درخواست جدید</x-ui.button>
-            </a>
+            <x-ui.button
+                type="button"
+                variant="secondary"
+                wire:click="refreshList"
+                wire:loading.attr="disabled"
+                wire:target="refreshList"
+            >
+                <span wire:loading.remove wire:target="refreshList">بروزرسانی</span>
+                <span wire:loading wire:target="refreshList">در حال بروزرسانی...</span>
+            </x-ui.button>
         </x-slot:actions>
     </x-ui.page-header>
 
-    @if ($requests === [])
+    @if ($uiState === 'loading')
+        <div class="overflow-hidden rounded-xl border border-slate-200 bg-white" aria-busy="true" aria-live="polite">
+            <div class="animate-pulse space-y-3 p-6">
+                <div class="h-4 w-1/3 rounded bg-slate-200"></div>
+                <div class="h-4 w-full rounded bg-slate-100"></div>
+                <div class="h-4 w-full rounded bg-slate-100"></div>
+                <div class="h-4 w-2/3 rounded bg-slate-100"></div>
+            </div>
+        </div>
+    @elseif ($uiState === 'error')
+        <div class="space-y-4">
+            <x-ui.alert type="error" :message="$loadError ?? 'بارگذاری فهرست درخواست‌ها با خطا مواجه شد.'" />
+
+            <x-ui.button type="button" wire:click="refreshList" wire:loading.attr="disabled" wire:target="refreshList">
+                تلاش مجدد
+            </x-ui.button>
+        </div>
+    @elseif ($uiState === 'empty')
         <x-ui.empty-state
             title="درخواستی ثبت نشده است"
-            description="برای شروع، یک درخواست جدید ثبت کنید."
-        >
-            <x-slot:action>
-                <a href="{{ route('requests.create') }}">
-                    <x-ui.button>ثبت درخواست جدید</x-ui.button>
-                </a>
-            </x-slot:action>
-        </x-ui.empty-state>
+            description="هنوز درخواستی برای نمایش وجود ندارد."
+        />
     @else
         <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
             <table class="min-w-full divide-y divide-slate-200 text-sm">
                 <thead class="bg-slate-50 text-slate-600">
                     <tr>
                         <th class="px-4 py-3 text-right font-medium">کد</th>
-                        <th class="px-4 py-3 text-right font-medium">وضعیت</th>
                         <th class="px-4 py-3 text-right font-medium">نوع</th>
+                        <th class="px-4 py-3 text-right font-medium">وضعیت</th>
+                        <th class="px-4 py-3 text-right font-medium">شناسه خوابگاه</th>
                         <th class="px-4 py-3 text-right font-medium">تاریخ ورود</th>
                         <th class="px-4 py-3 text-right font-medium">تاریخ خروج</th>
-                        <th class="px-4 py-3 text-right font-medium"></th>
+                        <th class="px-4 py-3 text-right font-medium">تاریخ ثبت</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     @foreach ($requests as $request)
                         <tr wire:key="request-{{ $request['id'] }}">
                             <td class="px-4 py-3 font-medium text-slate-900">{{ $request['code'] }}</td>
-                            <td class="px-4 py-3 text-slate-700">{{ $request['status'] }}</td>
                             <td class="px-4 py-3 text-slate-700">{{ $request['type'] }}</td>
-                            <td class="px-4 py-3 text-slate-700">{{ $request['checkInDate'] }}</td>
-                            <td class="px-4 py-3 text-slate-700">{{ $request['checkOutDate'] }}</td>
-                            <td class="px-4 py-3 text-left">
-                                <a
-                                    href="{{ route('requests.show', $request['id']) }}"
-                                    class="text-sky-700 hover:text-sky-900"
-                                    wire:navigate
-                                >
-                                    مشاهده
-                                </a>
-                            </td>
+                            <td class="px-4 py-3 text-slate-700">{{ $request['status'] }}</td>
+                            <td class="px-4 py-3 text-slate-700">{{ $request['dormitory_id'] }}</td>
+                            <td class="px-4 py-3 text-slate-700">{{ $request['check_in_date'] }}</td>
+                            <td class="px-4 py-3 text-slate-700">{{ $request['check_out_date'] }}</td>
+                            <td class="px-4 py-3 text-slate-700">{{ $request['submitted_at'] ?? '—' }}</td>
                         </tr>
                     @endforeach
                 </tbody>

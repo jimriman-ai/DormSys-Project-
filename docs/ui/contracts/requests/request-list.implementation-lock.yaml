@@ -1,46 +1,149 @@
-contract:
+id: requests/request-list-implementation-lock
+feature_contract:
   id: requests/request-list
-  version: 1.0.0
+  version: 1.0.2
+  status: approved
   maturity: approved
-  implementation_status: authorized
-  authorization_reason: Feature Contract Review Gate Passed
+  source: docs/ui/contracts/requests/request-list.feature-contract.yaml
 
-allowed_scope:
-  - Livewire presentation component
-  - Blade views
-  - UI render state handling
-  - Approved read contract consumption
+status: authorized
+implementation_status: authorized
 
-forbidden_scope:
-  - Domain changes
-  - Application service changes
-  - Infrastructure changes
-  - Permission policy/gate changes
-  - Workflow transition changes
-  - Backend validation/capability duplication in UI
+authorization:
+  authorized_by: feature-contract-review
+  confirmed_by: final-confirmation-review
+  authorization_reason: Contract v1.0.2 APPROVED after final confirmation review; authorized for presentation-layer implementation only.
+  ready_for_ui_create: true
 
-backend_authority:
-  read:
-    - RequestReadContract.listByEmployee
+finalization:
+  state: finalized
+  finalized_at: 2026-07-07
+  review_decision: APPROVED
+  scope_change: none
+
+scope_authorization:
+  in_scope:
+    - list rendering
+    - refresh
+    - loading state
+    - empty state
+    - ready state
+    - error state
+  out_of_scope:
+    - filtering
+    - sorting
+    - pagination
+    - csv export
+    - workflow transition execution
+    - request mutation
+    - policy definition
+    - permission evaluation logic
+    - domain/application/infrastructure changes
+    - row navigation
+    - create request entrypoint
+
+backend_bindings:
+  read_contract:
+    interface: App\Modules\Request\Application\Contracts\RequestReadContract
+    method: listByEmployee
+    authority_ref: App\Modules\Request\Application\Contracts\RequestReadContract::listByEmployee
+    signature: listByEmployee(string $employeeId): list<App\Modules\Request\Application\DTOs\RequestSummaryDTO>
+  input_resolution:
+    employee_id_source:
+      resolver: App\Modules\Request\Application\Services\RequestPrincipalEmployeeResolver
+      method: requireEmployeeId
+
+permission_authority:
+  authority_owner: backend
+  implementation_authority: existing_application_authorization_flow
+  view_permission:
+    mechanism: route_middleware
+    bindings:
+      - auth:api
+      - request.mutation.principal
+  action_permissions:
+    refresh_list: inherits_route_access
+  ui_rule: UI consumes backend access boundary only and does not evaluate authorization semantics.
 
 mutation_scope:
   allowed: []
 
-permission_authority:
-  source: contract-level
-  implementation_authority: Laravel Gate/Policy
-  ui_rule: UI consumes permission outcomes only
+view_model_lock:
+  dto: App\Modules\Request\Application\DTOs\RequestSummaryDTO
+  fields:
+    - id
+    - code
+    - type
+    - status
+    - dormitoryId
+    - checkInDate
+    - checkOutDate
+    - submittedAt
+  table_columns:
+    - code
+    - type
+    - status
+    - dormitory_id
+    - check_in_date
+    - check_out_date
+    - submitted_at
 
-review_required:
-  - architecture-review
-  - ui-review
+interaction_lock:
+  allowed_actions:
+    - name: refresh_list
+      type: read
+      backend_interface: App\Modules\Request\Application\Contracts\RequestReadContract::listByEmployee
+  forbidden_actions:
+    - create_request
+    - approve_request
+    - reject_request
+    - change_status
+    - export_csv
+    - filter_list
+    - sort_list
+    - paginate_list
+    - navigate_to_detail
 
-traceability:
-  required_in_ui_create_output:
-    - authority_sources_read
-    - contract_identifier
-    - implementation_lock_identifier
-    - selected_pattern
-    - files_to_modify
-    - assumptions
-    - hard_stops_encountered
+state_lock:
+  ui_render_states:
+    - loading
+    - empty
+    - ready
+    - error
+  workflow_authority:
+    source: specs/005-request-management/data-model.md
+  consumption_rule: UI displays backend-provided status values only and must not enumerate workflow transitions.
+
+anti_leak_lock:
+  forbidden:
+    - ui_derives_workflow_transitions
+    - ui_computes_permission_outcomes
+    - ui_duplicates_backend_validation
+    - ui_inferrs_backend_capabilities
+    - ui_joins_external_entities_for_display
+    - ui_introduces_business_transformations_outside_read_contract
+  required:
+    - dto_field_consumption_only
+    - strict_backend_interface_mapping_for_each_action
+    - separation_of_ui_render_state_from_domain_workflow_state
+
+delivery_constraints:
+  allowed_layer: presentation
+  forbidden_layers:
+    - domain
+    - application
+    - infrastructure
+  mutation_policy: no-mutations-authorized
+  backend_change_policy: backend changes require separate contract and architecture review
+
+audit:
+  traceability_required: true
+  must_match_contract:
+    - feature_contract.id
+    - feature_contract.version
+    - feature_contract.status
+    - permission_authority
+    - backend_bindings.read_contract
+    - interaction_lock.allowed_actions
+    - view_model_lock.dto
+    - mutation_scope.allowed
