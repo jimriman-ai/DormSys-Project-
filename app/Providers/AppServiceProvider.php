@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Modules\Audit\Presentation\Http\Middleware\ResolveAuditPrincipalMiddleware;
+use App\Modules\Request\Presentation\Http\Middleware\EnforceSessionMutationPrincipalMiddleware;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Telescope\TelescopeServiceProvider as TelescopePackageServiceProvider;
+use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,6 +28,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Livewire::addPersistentMiddleware([
+            EnforceSessionMutationPrincipalMiddleware::class,
+            ResolveAuditPrincipalMiddleware::class,
+        ]);
     }
 }

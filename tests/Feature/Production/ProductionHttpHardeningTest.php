@@ -173,14 +173,14 @@ describe('lottery snapshot boundary runtime guard', function (): void {
         $this->postJson(lotteryHttpProgramUrl($program['id'], 'close-registration'))->assertOk();
         $this->postJson(lotteryHttpProgramUrl($program['id'], 'lock'))->assertOk();
 
-        \App\Modules\Lottery\Infrastructure\Persistence\Models\LotteryProgramModel::query()
+        App\Modules\Lottery\Infrastructure\Persistence\Models\LotteryProgramModel::query()
             ->whereKey($program['id'])
             ->update(['status' => RegistrationClosedState::$name]);
 
-        expect(fn () => runLotteryMutation(fn () => app(\App\Modules\Lottery\Application\Services\LockLotteryProgramAction::class)->execute(
-            \App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId::fromString($program['id']),
+        expect(fn () => runLotteryMutation(fn () => app(App\Modules\Lottery\Application\Services\LockLotteryProgramAction::class)->execute(
+            App\Modules\Lottery\Domain\ValueObjects\LotteryProgramId::fromString($program['id']),
         )))->toThrow(
-            \App\Modules\Lottery\Domain\Exceptions\InvalidLotteryTransitionException::class,
+            App\Modules\Lottery\Domain\Exceptions\InvalidLotteryTransitionException::class,
             'Eligible snapshot already captured for this program.',
         );
     });

@@ -49,7 +49,7 @@ it('rejects check-in when the user is not an operator', function (): void {
 });
 
 it('rejects duplicate check-in on the same allocation', function (): void {
-    $allocation = runAllocationMutation(fn () => app(\App\Modules\Allocation\Application\Services\CreateAllocationAction::class)->execute(
+    $allocation = runAllocationMutation(fn () => app(App\Modules\Allocation\Application\Services\CreateAllocationAction::class)->execute(
         personId: UuidGenerator::uuid7(),
         bedId: UuidGenerator::uuid7(),
         start: new DateTimeImmutable('2026-08-01', new DateTimeZone('UTC')),
@@ -62,7 +62,7 @@ it('rejects duplicate check-in on the same allocation', function (): void {
     asCheckInOperator($operatorId, fn () => app(CheckInCommandPort::class)->checkIn($allocationId, $operatorId));
 
     expect(fn () => asCheckInOperator($operatorId, fn () => app(CheckInCommandPort::class)->checkIn($allocationId, $operatorId)))
-        ->toThrow(\App\Modules\CheckIn\Domain\Exceptions\OpenCheckInRecordExistsException::class);
+        ->toThrow(App\Modules\CheckIn\Domain\Exceptions\OpenCheckInRecordExistsException::class);
 });
 
 it('rejects check-out when no open check-in record exists', function (): void {
@@ -70,5 +70,5 @@ it('rejects check-out when no open check-in record exists', function (): void {
     $allocationId = UuidGenerator::uuid7();
 
     expect(fn () => asCheckInOperator($operatorId, fn () => app(CheckInCommandPort::class)->checkOut($allocationId, $operatorId)))
-        ->toThrow(\App\Modules\CheckIn\Domain\Exceptions\NoOpenCheckInRecordException::class);
+        ->toThrow(App\Modules\CheckIn\Domain\Exceptions\NoOpenCheckInRecordException::class);
 });

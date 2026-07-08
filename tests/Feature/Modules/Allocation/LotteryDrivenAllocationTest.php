@@ -61,5 +61,5 @@ it('rejects lottery winner payloads missing frozen fields', function (): void {
             'dormitory_id' => UuidGenerator::uuid7(),
             'rank' => '',
         ],
-    ])))->toThrow(\App\Support\Exceptions\ValidationException::class);
+    ])))->toThrow(App\Support\Exceptions\ValidationException::class);
 });

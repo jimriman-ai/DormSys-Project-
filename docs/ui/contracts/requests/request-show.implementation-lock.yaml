@@ -1,0 +1,204 @@
+id: request-show
+feature: request-show
+version: 0.1.0
+status: approved
+lock_type: ui_feature_implementation
+
+feature_contract:
+  id: request-show
+  version: 0.2.1
+  status: approved
+
+lifecycle:
+  previous_artifact: request-show.feature-contract.yaml
+  current_phase: approved
+  next_expected_status: implementation-authorization
+  implementation_authorized: true
+
+scope:
+  includes:
+    - implement read-only request detail page
+    - render approved request summary fields
+    - render approval history
+    - render empty approval history state
+    - provide back navigation to request list
+    - support direct detail URL
+    - support browser refresh on detail page
+
+  excludes:
+    - workflow mutation actions
+    - workflow capability presentation
+    - submit action
+    - cancel action
+    - approve action
+    - reject action
+    - mutation forms
+    - mutation validation flows
+    - mutation success/error flows
+    - request list behavior changes
+    - new authorization logic in UI
+    - UI-derived permission decisions
+
+contract_traceability:
+  governing_contract: request-show.feature-contract.yaml
+  governed_route:
+    name: requests.show
+    path: /requests/{requestId}
+    method: GET
+
+allowed_files:
+  may_create:
+    - app/Modules/Request/Presentation/Livewire/RequestShowPage.php
+    - resources/views/livewire/request/request-show-page.blade.php
+    - tests/Feature/Modules/Request/RequestShowUiFlowTest.php
+
+  may_modify:
+    - path: routes/web.php
+      reason: "Register requests.show GET route only"
+
+  may_reference_only:
+    - app/Modules/Request/Presentation/Livewire/RequestListPage.php
+    - resources/views/livewire/request/request-list-page.blade.php
+    - tests/Feature/Modules/Request/RequestUiFlowTest.php
+
+modification_scope:
+  - "Only register requests.show route."
+  - "No existing route behavior changes."
+  - "No middleware changes."
+  - "No refactor of route structure."
+
+forbidden_files:
+  do_not_modify:
+    - app/Modules/Request/Presentation/Livewire/RequestListPage.php
+    - resources/views/livewire/request/request-list-page.blade.php
+    - tests/Feature/Modules/Request/RequestUiFlowTest.php
+
+implementation_boundaries:
+  ui:
+    - UI must remain presentation-only.
+    - UI must render only approved backend/view-model data.
+    - UI must not infer ownership.
+    - UI must not infer permission.
+    - UI must not infer workflow capability.
+    - UI must not infer action visibility from status or type.
+    - UI must not introduce workflow mutation controls.
+
+  backend:
+    - Backend remains source of truth for authorization.
+    - Backend remains source of truth for request detail read model.
+    - Backend must provide approved summary fields.
+    - Backend must provide approval history.
+    - Not found or inaccessible outcome remains framework/backend-owned.
+
+  display:
+    - request_status must render as raw backend value.
+    - request_type must render as raw backend value.
+    - UI must not create semantic labels for status or type.
+    - UI must not derive workflow behavior from raw values.
+
+dependency_authority:
+  allowed_sources:
+    - approved backend read contracts
+    - approved view models / DTOs
+    - backend authorization outcomes
+
+  forbidden_sources:
+    - authorization policy definitions
+    - direct policy evaluation from UI
+    - database queries from UI
+    - domain entities inside presentation
+    - duplicated business rules
+
+governance_constraints:
+  read_authority:
+    owner: backend
+    rule: "Approved read authority for request detail and approval history remains backend-owned."
+    ui_consumption: "Presentation may consume only approved backend read contract output and mapped view-model fields."
+
+  route_governance:
+    canonical_route_name: requests.show
+    canonical_route_path: /requests/{requestId}
+    canonical_method: GET
+    registration_rule: "Route registration for requests.show must not conflict with existing route governance."
+    modification_limit: "Only register requests.show; no middleware changes; no route refactor."
+
+view_model_mapping:
+  request:
+    required:
+      - request_id
+      - request_code
+      - request_status
+      - request_type
+      - dormitory_reference
+      - check_in_date
+      - check_out_date
+    optional:
+      - submitted_at
+      - cancelled_at
+      - rejection_reason
+
+  approval_history:
+    type: list
+    item_required:
+      - stage
+      - decision
+      - approver_reference
+      - decision_reason
+      - decided_at
+
+route_lock:
+  route:
+    name: requests.show
+    path: /requests/{requestId}
+    method: GET
+
+  allowed_navigation:
+    - back_to_list
+    - direct_detail_link
+    - browser_refresh
+    - browser_back
+
+  forbidden_navigation_changes:
+    - modifying request list row navigation
+    - requiring list page behavior changes
+
+test_lock:
+  required_test_file:
+    - tests/Feature/Modules/Request/RequestShowUiFlowTest.php
+
+  required_feature_tests:
+    - employee can open owned request detail
+    - employee cannot access non-owned request detail
+    - detail page renders approved summary fields
+    - detail page renders approval history rows when available
+    - detail page renders empty history state when no records exist
+    - detail page exposes no workflow mutation controls
+
+  forbidden_test_changes:
+    - tests/Feature/Modules/Request/RequestUiFlowTest.php
+
+validation_requirements:
+  before_implementation:
+    - contract status must be approved
+    - implementation lock must be reviewed
+    - implementation lock must be approved
+    - allowed and forbidden files must be accepted
+    - test boundaries must be accepted
+
+  after_implementation:
+    - RequestShowUiFlowTest must pass
+    - existing RequestUiFlowTest must remain unchanged
+    - no mutation controls may appear in show UI
+    - no frozen Request List files may be modified
+
+rollback_boundary:
+  removable_files:
+    - app/Modules/Request/Presentation/Livewire/RequestShowPage.php
+    - resources/views/livewire/request/request-show-page.blade.php
+    - tests/Feature/Modules/Request/RequestShowUiFlowTest.php
+
+  reversible_changes:
+    - route addition for requests.show
+
+implementation_notes:
+  - "Route parameter naming must follow approved contract: requestId."

@@ -1,0 +1,263 @@
+contract:
+  id: request-show
+  feature: request-show
+  version: 0.2.1
+  status: approved
+  lifecycle:
+    previous_status: review-revised
+    review_result: approved_with_modifications
+    validation_result: passed
+    approved_at: "2026-07-08"
+    approved_at_jalali: "1405/04/17"
+    next_expected_status: implementation-lock
+
+meta:
+  module: Request
+  feature_type: detail
+  ownership_scope: employee-scoped
+  pilot_scope: read-only
+  notes:
+    - "Revised governing contract for Request Show / Detail after governance review."
+    - "This pilot authorizes read-only request detail and approval history only."
+    - "Workflow mutations are explicitly out of scope."
+    - "Request List artifacts remain frozen and out of scope."
+
+route:
+  name: requests.show
+  path: /requests/{requestId}
+  method: GET
+
+actors:
+  - key: employee
+    description: "Authenticated employee viewing a request detail page within owned scope"
+
+scope:
+  includes:
+    - request detail display
+    - approval history display
+    - back navigation to request list
+    - direct access by detail URL
+    - browser refresh on detail page
+    - browser back navigation
+  excludes:
+    - submit action
+    - cancel action
+    - approve action
+    - reject action
+    - mutation forms
+    - mutation validation flows
+    - mutation success/error flows
+    - workflow capability presentation
+    - list-to-detail navigation changes
+
+scope_guards:
+  preserved_boundaries:
+    - "Request List remains frozen."
+    - "No mutation capability is introduced."
+    - "No workflow action ownership is added."
+    - "No UI authorization decisions are introduced."
+
+business_fields:
+  request_identity:
+    - request_id
+    - request_code
+
+  request_summary:
+    - request_status
+    - request_type
+    - dormitory_reference
+    - check_in_date
+    - check_out_date
+    - submitted_at
+    - cancelled_at
+    - rejection_reason
+
+  approval_history:
+    item_fields:
+      - stage
+      - decision
+      - approver_reference
+      - decision_reason
+      - decided_at
+
+authority_chain:
+  source_of_truth:
+    - backend authorization policy
+    - backend read model
+    - approved view-model mapping
+    - presentation rendering
+
+  mandatory_rule: "Presentation may render only data and visibility explicitly derived from approved backend read authority."
+
+  forbidden_ui_inference:
+    - derive permissions
+    - derive ownership
+    - derive workflow capability
+    - derive workflow visibility
+    - derive action availability
+    - derive business state from raw fields for behavioral decisions
+    - cache authorization decisions as a source of truth
+    - introduce presentation-only authority branches
+
+  authority_note:
+    - "Implementation classes, resolvers, serializers, and application service method names are not canonicalized by this contract."
+    - "Concrete authority enforcement remains a backend concern."
+    - "Presentation may consume only the approved output of backend authority."
+
+backend_capabilities:
+  required_read_capabilities:
+    - request_summary
+    - approval_history
+
+  forbidden_mutation_capabilities:
+    - request_submit
+    - request_cancel
+    - request_approve
+    - request_reject
+
+authorization:
+  actor_rule: "Employee may access only request detail within owned scope."
+  decision_source: "Backend authorization policy"
+  in_scope_outcomes:
+    - allowed
+  out_of_scope_outcomes:
+    - key: not_found_or_not_accessible
+      authority: framework_backend
+      presentation_responsibility: none
+    - key: privileged_approval_authority
+    - key: cross_user_access
+    - key: workflow_mutation_authority
+
+view_model_contract:
+  request:
+    required_business_fields:
+      - request_id
+      - request_code
+      - request_status
+      - request_type
+      - dormitory_reference
+      - check_in_date
+      - check_out_date
+    optional_business_fields:
+      - submitted_at
+      - cancelled_at
+      - rejection_reason
+
+  approval_history:
+    type: list
+    item_required_business_fields:
+      - stage
+      - decision
+      - approver_reference
+      - decision_reason
+      - decided_at
+
+display_contract:
+  field_display_mode:
+    request_status: raw_backend_value
+    request_type: raw_backend_value
+
+  pilot_decision:
+    raw_backend_values_authorized: true
+
+  restrictions:
+    - "UI must not create semantic labels."
+    - "UI must not derive workflow behavior from display values."
+    - "UI must not relabel backend raw values into presentation-owned business semantics."
+
+  notes:
+    - "Display labels may be introduced in a later approved version."
+    - "Raw backend values are explicitly approved for pilot v1."
+
+render_contract:
+  page_states:
+    - key: loading
+      description: "Initial page load before ready state"
+    - key: ready
+      description: "Detail page rendered successfully"
+    - key: error
+      description: "Unexpected read failure within pilot scope"
+
+  component_states:
+    approval_history:
+      - key: populated
+        description: "One or more history records available"
+      - key: empty
+        description: "No approval history records available"
+
+ui_policies:
+  required:
+    - "UI must remain presentation-only."
+    - "UI must render only approved view-model data."
+    - "UI must not expose workflow mutations in this pilot."
+    - "UI must preserve frozen Request List boundaries."
+    - "UI may provide back navigation to requests.index."
+
+  prohibited:
+    - "UI must not infer action visibility from status, type, or any raw field."
+    - "UI must not infer ownership."
+    - "UI must not infer permission."
+    - "UI must not infer approval capability."
+    - "UI must not execute policy decisions in presentation."
+    - "UI must not use transport-layer details as business authority."
+
+navigation_contract:
+  allowed:
+    - key: back_to_list
+      target_route: requests.index
+    - key: direct_detail_link
+      target_route: requests.show
+    - key: browser_refresh
+    - key: browser_back
+
+  forbidden:
+    - key: require_list_row_navigation_change
+      reason: "Request List is frozen and out of scope"
+
+error_contract:
+  in_scope:
+    - key: unexpected_read_failure
+      behavior: "Render generic non-leaking error outcome"
+
+  framework_outcomes:
+    - key: not_found_or_not_accessible
+      behavior: "Handled by framework/backend denial outcome"
+
+  explicitly_out_of_scope:
+    - unauthorized_transport_state
+    - privileged_forbidden_workflow_state
+    - stale_data_resolution
+    - partial_history_recovery_flow
+    - mutation_error_feedback
+
+testing_contract:
+  required_feature_tests:
+    - "employee can open owned request detail"
+    - "employee cannot access non-owned request detail"
+    - "detail page renders approved summary fields"
+    - "detail page renders approval history rows when available"
+    - "detail page renders empty history state when no records exist"
+    - "detail page exposes no workflow mutation controls"
+
+  test_boundary_rules:
+    - "Do not modify frozen RequestUiFlowTest.php for Show coverage."
+    - "Show tests must live in a separate test file."
+
+  recommended_test_file:
+    - tests/Feature/Modules/Request/RequestShowUiFlowTest.php
+
+frozen_dependencies:
+  do_not_modify:
+    - app/Modules/Request/Presentation/Livewire/RequestListPage.php
+    - resources/views/livewire/request/request-list-page.blade.php
+    - tests/Feature/Modules/Request/RequestUiFlowTest.php
+
+implementation_boundary:
+  notes:
+    - "Concrete DTO property names are implementation concerns."
+    - "Concrete serializer keys are implementation concerns until locked."
+    - "Concrete application-service method names are implementation concerns."
+    - "Concrete resolver or policy class names are implementation concerns."
+    - "Implementation Lock must define mapping from backend read model to approved view model."
+
+open_questions: []

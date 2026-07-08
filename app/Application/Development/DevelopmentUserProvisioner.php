@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Support\Development;
+namespace App\Application\Development;
 
 use App\Application\Mutation\Support\MutationPrincipalContext;
 use App\Models\User;
@@ -16,6 +16,7 @@ use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Identity\Domain\Entities\User as IdentityUser;
 use App\Modules\Identity\Domain\ValueObjects\UserId;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
+use App\Support\Development\DevelopmentUserAccountReport;
 use App\Support\ValueObjects\Identity\NationalCode;
 use DateTimeImmutable;
 

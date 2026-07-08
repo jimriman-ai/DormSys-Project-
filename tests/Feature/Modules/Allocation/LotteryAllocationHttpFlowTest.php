@@ -11,7 +11,6 @@ use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Modules\Lottery\Domain\States\CompletedState;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature\Modules\Lottery\LotteryTestFactory;
 

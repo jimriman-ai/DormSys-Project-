@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Application\Mutation\Support\MutationPrincipalContextHolder;
-use App\Modules\Allocation\Application\Services\CreateAllocationAction;
 use App\Modules\CheckIn\Application\Contracts\CheckInRecordRepositoryContract;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
