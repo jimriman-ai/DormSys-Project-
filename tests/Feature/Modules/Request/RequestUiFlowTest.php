@@ -109,8 +109,13 @@ describe('request ui flows', function (): void {
             ->assertRedirect();
 
         $this->get('/requests')
-            ->assertOk()
-            ->assertSee($dormitoryId);
+            ->assertOk();
+
+        Livewire::actingAs($actor['identity'], 'api')
+            ->test(RequestListPage::class)
+            ->call('refreshList')
+            ->assertSet('uiState', 'ready')
+            ->assertSee((string) $dormitoryId);
     });
 
     it('shows backend validation feedback on create', function (): void {
