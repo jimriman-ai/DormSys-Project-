@@ -1,0 +1,389 @@
+feature:
+  id: notification-inbox-deep-link-navigation
+  name: P6 — Notification Inbox Deep-Link Navigation
+  module: Notification
+  classification: successor-feature
+  version: 0.1.0
+  status: READY_FOR_IMPLEMENTATION_LOCK
+  area: notifications
+  owner_layer: Presentation
+
+decision_reference:
+  artifact: docs/ui/decisions/notifications/notification-inbox-deep-link-navigation.review-decision.md
+  verdict: APPROVED_FOR_CONTRACT
+  classification: UI_BEHAVIOR_GAP
+
+source_analysis:
+  - docs/ui/analysis/notifications/notification-inbox-deep-link-navigation.repo-inspection.md
+  - docs/ui/analysis/notifications/notification-inbox-deep-link-navigation.feature-analysis.md
+
+baseline_contracts:
+  p2:
+    id: notification-inbox-read-only-list
+    relationship: predecessor
+    status: CLOSED
+    closeout: docs/ui/closeouts/notifications/notification-inbox-read-only.reconciliation.md
+    note: >
+      P2 remains authoritative for read-only inbox list behavior. P6 does not reopen
+      or amend the P2 closeout.
+  p5:
+    id: notification-mark-read-mutation
+    relationship: predecessor_overlay
+    status: CLOSED
+    closeout: docs/ui/closeouts/notifications/notification-mark-read-mutation.reconciliation.md
+    note: >
+      P5 mark-read behavior in عملیات remains authoritative and unchanged. P6 adds
+      governed deep-link navigation on the same surface without reopening P5 scope.
+
+purpose:
+  summary: >
+    Enable navigation from eligible notification inbox rows to the existing web
+    request detail surface when backend projection already supplies allowlisted
+    deep-link data.
+  rationale:
+    - P2 closed as read-only and excluded deep-link field consumption.
+    - P5 closed with mark-read overlay and explicitly excluded deep-link navigation.
+    - Repository evidence shows deep-link fields exist on NotificationProjectionDto but are omitted from inbox UI mapping.
+    - P6 is the minimum governed UI navigation behavior to consume existing projection fields under a frozen single-route allowlist.
+
+scope:
+  in_scope:
+    - NotificationInboxPage on notifications.index only
+    - Deep-link navigation affordance for eligible rows only
+    - Consumption of existing NotificationInboxReadContract list projection fields deepLinkRoute and entityId for eligibility and destination generation
+    - Frozen destination generation for allowlisted route requests.show with parameter map requestId bound from entityId
+    - Display-only presentation for all non-eligible rows
+    - Coexistence with P5 per-row mark-read in عملیات without behavioral degradation
+    - Feature-specific UI tests for eligibility gating, destination binding, and P5 coexistence
+  eligibility:
+    all_required:
+      - deepLinkRoute is exactly requests.show
+      - entityId is non-null
+      - requests.show remains resolvable as an existing authenticated web route per app/Modules/Request/Presentation/Routes/web.php
+    rule_id: ELIG-DL-001
+  destination_generation:
+    route_name: requests.show
+    parameter_map:
+      requestId: entityId
+    rule_id: BIND-DL-001
+    constraint: >
+      Destination must be generated using the frozen route name and named parameter
+      map only. No generic route helper invocation using deepLinkRoute as a dynamic
+      first argument.
+  out_of_scope:
+    - Any route name other than requests.show
+    - API-route navigation from the web inbox
+    - entityType-derived routing or parameter inference
+    - Generic dynamic route generation
+    - Backend projection, DTO, schema, migration, or read-contract changes
+    - NotificationInboxReadService changes
+    - Route resolver abstraction or route discovery logic
+    - Notification detail page or notifications.show
+    - Layout navigation link to inbox
+    - Unread badge or countUnread consumption
+    - Mark-all-as-read or any mutation beyond existing P5 mark-read
+    - Changes to mark-read behavior, timing, placement, or mutation semantics
+    - Changes to read/unread projection semantics or list refresh behavior
+    - Pagination, filter, sort, or realtime refresh
+    - New HTTP or API routes
+    - Row-click-as-default navigation
+    - Pre-navigation authorization logic in Notification UI beyond destination route enforcement
+    - Reopening or amending P2 or P5 closeouts, contracts, or locks
+
+route:
+  entrypoint: notifications.index
+  path: GET /notifications
+  constraint: >
+    P6 does not introduce a new route. Navigation is a presentation affordance on
+    the existing inbox page within the authenticated web middleware stack.
+  destination:
+    route_name: requests.show
+    registration_evidence: app/Modules/Request/Presentation/Routes/web.php
+    surface: RequestShowPage
+    parameter:
+      key: requestId
+      value_source: entityId
+
+presentation:
+  surface: NotificationInboxPage
+  view: livewire.notification.notification-inbox-page
+  relationship_to_p2_p5: >
+    Extends the existing inbox table with a governed navigation affordance for
+    eligible rows. All P2 read-only list rendering obligations and all P5 mark-read
+    obligations remain unless explicitly superseded by this contract's navigation
+    consumption boundary only.
+
+view_model:
+  source: App\Modules\Notification\Application\DTOs\NotificationProjectionDto
+  load_list:
+    contract: App\Modules\Notification\Application\Contracts\NotificationInboxReadContract
+    method: listForRecipient
+  row_fields_consumed:
+    - name: deepLinkRoute
+      type: "?string"
+      source: NotificationProjectionDto::deepLinkRoute
+      use: eligibility gating only; must equal requests.show for navigation
+    - name: entityId
+      type: "?string"
+      source: NotificationProjectionDto::entityId
+      use: requestId parameter value for frozen destination generation
+  row_fields_forbidden_for_routing:
+    - name: entityType
+      source: NotificationProjectionDto::entityType
+      rule: must not determine route name, parameter key, or navigation eligibility
+  not_used_for_navigation:
+    - id
+    - notificationType
+    - title
+    - message
+    - isRead
+    - readAt
+    - createdAt
+    - priority
+
+ui_behavior_rules:
+  eligible_row:
+    id: UIR-DL-001
+    when:
+      - deepLinkRoute === requests.show
+      - entityId is non-null
+    then:
+      - Render a navigation affordance for that row
+      - Generated destination resolves to requests.show with requestId bound from entityId
+      - Row retains all existing P2 display fields and P5 read-state presentation
+  non_eligible_row:
+    id: UIR-DL-002
+    when_any:
+      - deepLinkRoute is null
+      - entityId is null
+      - deepLinkRoute is not requests.show
+    then:
+      - Row remains display-only
+      - No navigation affordance rendered
+      - No broken, empty, or placeholder navigation control
+      - No fallback navigation attempt
+  affordance_placement:
+    id: UIR-DL-003
+    column: عملیات
+    form: dedicated_text_link
+    precedent: request-list-page مشاهده link in actions column
+    rules:
+      - Navigation affordance appears in the existing عملیات column for eligible rows
+      - For unread eligible rows, P5 mark-read button remains present and unchanged in عملیات
+      - Navigation affordance must not remove, hide, relocate, or degrade P5 mark-read
+      - For read eligible rows, navigation affordance may appear alone in عملیات
+      - Row-click navigation is forbidden
+  read_state_preservation:
+    id: UIR-DL-004
+    rules:
+      - is_read display and خوانده شده / خوانده نشده labels remain unchanged
+      - Navigation does not mutate notification read state
+      - Navigation does not trigger mark-read
+  mark_read_preservation:
+    id: UIR-DL-005
+    rules:
+      - P5 mark-read affordance visibility rule unchanged (unread rows only)
+      - P5 mark-read mutation delegation unchanged
+      - P5 post-mutation list refresh unchanged
+      - Adding P6 navigation must not alter mark-read timing or semantics
+
+rendering_rules:
+  navigable_control:
+    id: REN-DL-001
+    render_when: eligibility per ELIG-DL-001
+    requirements:
+      - href resolves to requests.show with requestId parameter
+      - control is visibly actionable
+      - no empty href
+      - no broken link markup for eligible rows
+  plain_presentation:
+    id: REN-DL-002
+    render_when: row fails eligibility per ELIG-DL-001
+    requirements:
+      - title and other columns remain plain text
+      - no navigation control in عملیات for deep-link purposes
+      - no visual error state required for non-allowlisted deepLinkRoute values
+  forbidden_rendering:
+    id: REN-DL-003
+    forbid:
+      - navigation control for incomplete link rows
+      - navigation control for non-allowlisted deepLinkRoute values
+      - navigation control for API-only route names such as allocations.show or check-in.show
+      - linked title substitution that removes plain title for non-eligible rows in a confusing way
+
+route_binding_rules:
+  approved_route_names:
+    - requests.show
+  approved_parameter_keys:
+    - requestId
+  binding:
+    id: BIND-DL-001
+    route_name: requests.show
+    parameter_map:
+      requestId: entityId
+  forbidden:
+    - id: BIND-DL-F01
+      pattern: generic route(deepLinkRoute, entityId)
+    - id: BIND-DL-F02
+      pattern: generic route(deepLinkRoute, [...]) without frozen per-route governance
+    - id: BIND-DL-F03
+      pattern: positional route argument where entityId is passed without requestId key
+    - id: BIND-DL-F04
+      pattern: route name derived from entityType
+  supersession_note: >
+    Generic route construction patterns remain forbidden unless a future approved
+    governance artifact explicitly supersedes this contract.
+
+safety_constraints:
+  - id: SAF-DL-001
+    rule: UI must not infer route names from entityType
+  - id: SAF-DL-002
+    rule: UI must not perform generic route construction from deepLinkRoute
+  - id: SAF-DL-003
+    rule: UI must not link to routes not explicitly allowlisted in this contract
+  - id: SAF-DL-004
+    rule: UI must not navigate to API-only routes from the web inbox
+  - id: SAF-DL-005
+    rule: No backend projection extension is required for P6 v1
+  - id: SAF-DL-006
+    rule: Contract language must not imply support for future routes beyond requests.show
+  - id: SAF-DL-007
+    rule: Destination authorization remains on RequestShowPage and backend read path; Notification UI performs no pre-navigation authorization mirroring
+
+allowlist:
+  v1:
+    - route_name: requests.show
+      web_eligible: true
+      parameter_map:
+        requestId: entityId
+  excluded_examples:
+    - allocations.show
+    - check-in.show
+
+mutations:
+  actions: []
+  note: >
+    P6 is navigation-only. No new mutation surface. P5 mark-read mutation remains
+    the sole governed inbox mutation.
+
+architecture_constraints:
+  ui_anti_leak:
+    - UI consumes backend-supplied deepLinkRoute and entityId without redefining business meaning
+    - UI does not derive lifecycle, capability, or route eligibility from entityType
+    - UI does not orchestrate workflows or perform persistence
+    - Frozen route binding is a governed presentation rule, not business-authoritative route discovery
+  backend:
+    - NotificationInboxReadContract, NotificationProjectionDto, and NotificationInboxReadService unchanged
+    - No new Application contracts or DTO fields
+  presentation:
+    - Changes limited to NotificationInboxPage row mapping, inbox Blade view, and P6 tests
+  forbidden_refactors:
+    - Route resolver abstraction
+    - Generic deep-link framework in Notification module
+    - Smuggling mark-all, badge, detail page, or backend changes under P6
+
+supersession_boundary:
+  p6_supersedes:
+    - P2 prohibition on deep-link field consumption for allowlisted eligible rows on the inbox list surface
+    - P5 prohibition on deep-link navigation on the inbox list surface
+  p6_does_not_supersede:
+    - P2 read-only list baseline
+    - P5 mark-read mutation scope
+    - Any closed P2 or P5 artifact content
+  p2_status: CLOSED
+  p5_status: CLOSED
+  future_route_expansion: >
+    Requires a new governance decision or superseding artifact. This contract does
+    not authorize additional route names, parameter maps, or generic consumption.
+
+acceptance_criteria:
+  - id: AC-DL-001
+    given: notification row with deepLinkRoute = requests.show and non-null entityId
+    when: inbox row is rendered
+    then: navigation affordance is available for that row
+  - id: AC-DL-002
+    given: notification row with deepLinkRoute = requests.show and null entityId
+    when: inbox row is rendered
+    then: no navigation affordance is rendered
+  - id: AC-DL-003
+    given: notification row with non-allowlisted deepLinkRoute
+    when: inbox row is rendered
+    then: row remains display-only and no navigation affordance is rendered
+  - id: AC-DL-004
+    given: notification row with null deepLinkRoute
+    when: inbox row is rendered
+    then: row remains display-only and no navigation affordance is rendered
+  - id: AC-DL-005
+    given: any notification row
+    when: UI determines navigation eligibility
+    then: route names are not derived from entityType
+  - id: AC-DL-006
+    given: P5 mark-read action exists in عملیات
+    when: P6 navigation is added
+    then: mark-read behavior, placement compatibility, and mutation semantics remain unchanged
+  - id: AC-DL-007
+    given: notification row with deepLinkRoute = requests.show and entityId = valid request identifier
+    when: user activates navigation
+    then: generated destination resolves to requests.show web route using requestId binding
+  - id: AC-DL-008
+    given: notification row with API-only or unsupported route name
+    when: inbox row is rendered
+    then: no web navigation target is rendered
+
+governance:
+  classification: successor-feature
+  prerequisites:
+    - This contract approved via contract review
+    - Separate implementation lock approved before any coding
+  review_focus:
+    - Single-route allowlist enforcement
+    - Frozen requestId binding from entityId
+    - Non-eligible row display-only behavior
+    - P2/P5 non-reopening and coexistence with mark-read
+    - No backend or generic route expansion
+  frozen_boundaries:
+    - Allowlist contains only requests.show
+    - Parameter map requestId from entityId only
+    - P2 and P5 closeout status remain CLOSED
+
+dependencies:
+  requires:
+    - P2 inbox baseline (NotificationInboxPage, route, list rendering)
+    - P5 mark-read overlay (unchanged)
+    - NotificationInboxReadContract for list load
+    - Existing web route requests.show
+    - Approved P6 review decision
+    - Separate implementation lock before coding
+  does_not_require:
+    - Backend projection extension
+    - DTO changes
+    - NotificationInboxReadService changes
+    - Route resolver abstraction
+    - New routes
+    - Notification detail page
+
+references:
+  analysis:
+    - docs/ui/analysis/notifications/notification-inbox-deep-link-navigation.repo-inspection.md
+    - docs/ui/analysis/notifications/notification-inbox-deep-link-navigation.feature-analysis.md
+  decision:
+    - docs/ui/decisions/notifications/notification-inbox-deep-link-navigation.review-decision.md
+  predecessor_artifacts:
+    - docs/ui/contracts/notifications/notification-inbox-read-only-list.feature-contract.yaml
+    - docs/ui/contracts/notifications/notification-mark-read-mutation.feature-contract.yaml
+    - docs/ui/closeouts/notifications/notification-inbox-read-only.reconciliation.md
+    - docs/ui/closeouts/notifications/notification-mark-read-mutation.reconciliation.md
+  route_evidence:
+    - app/Modules/Request/Presentation/Routes/web.php
+    - resources/views/livewire/request/request-list-page.blade.php
+  architecture_authority:
+    - .specify/ARCHITECTURE.md
+    - docs/architecture/ui/UI-ANTI-LEAK-CONTRACT.md
+
+contract_status:
+  value: READY_FOR_IMPLEMENTATION_LOCK
+  note: >
+    Ready for implementation lock generation only under the narrow P6 v1 scope
+    defined in this contract. No scope expansion, additional route names, backend
+    changes, or generic route consumption may be introduced during lock drafting
+    without a new governance decision.

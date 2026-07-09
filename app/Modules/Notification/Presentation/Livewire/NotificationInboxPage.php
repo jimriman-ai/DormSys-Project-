@@ -24,6 +24,8 @@ final class NotificationInboxPage extends Component
 
     private const LIST_LIMIT = 50;
 
+    private const APPROVED_REQUEST_SHOW_ROUTE = 'requests.show';
+
     public string $uiState = 'loading';
 
     public ?string $loadError = null;
@@ -86,6 +88,15 @@ final class NotificationInboxPage extends Component
      */
     private static function mapProjectionRow(NotificationProjectionDto $projection): array
     {
+        $requestShowUrl = null;
+
+        if (
+            $projection->deepLinkRoute === self::APPROVED_REQUEST_SHOW_ROUTE
+            && $projection->entityId !== null
+        ) {
+            $requestShowUrl = route(self::APPROVED_REQUEST_SHOW_ROUTE, ['requestId' => $projection->entityId]);
+        }
+
         return [
             'id' => $projection->id,
             'notification_type' => $projection->notificationType,
@@ -97,6 +108,7 @@ final class NotificationInboxPage extends Component
                 : (string) Jalalian::fromDateTime($projection->readAt)->format('Y/m/d H:i'),
             'created_at' => (string) Jalalian::fromDateTime($projection->createdAt)->format('Y/m/d H:i'),
             'priority' => $projection->priority,
+            'request_show_url' => $requestShowUrl,
         ];
     }
 }

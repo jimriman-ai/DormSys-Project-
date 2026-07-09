@@ -66,18 +66,29 @@
                                 {{ $notification['is_read'] ? 'خوانده شده' : 'خوانده نشده' }}
                             </td>
                             <td class="px-4 py-3 text-slate-700">
-                                @if (! $notification['is_read'])
-                                    <x-ui.button
-                                        type="button"
-                                        variant="secondary"
-                                        wire:click="markNotificationRead('{{ $notification['id'] }}')"
-                                        wire:loading.attr="disabled"
-                                        wire:target="markNotificationRead"
-                                    >
-                                        <span wire:loading.remove wire:target="markNotificationRead">علامت‌گذاری به‌عنوان خوانده‌شده</span>
-                                        <span wire:loading wire:target="markNotificationRead">در حال علامت‌گذاری...</span>
-                                    </x-ui.button>
-                                @endif
+                                <div class="flex flex-wrap items-center gap-2">
+                                    @if (! $notification['is_read'])
+                                        <x-ui.button
+                                            type="button"
+                                            variant="secondary"
+                                            wire:click="markNotificationRead('{{ $notification['id'] }}')"
+                                            wire:loading.attr="disabled"
+                                            wire:target="markNotificationRead"
+                                        >
+                                            <span wire:loading.remove wire:target="markNotificationRead">علامت‌گذاری به‌عنوان خوانده‌شده</span>
+                                            <span wire:loading wire:target="markNotificationRead">در حال علامت‌گذاری...</span>
+                                        </x-ui.button>
+                                    @endif
+                                    @if ($notification['request_show_url'] !== null)
+                                        <a
+                                            href="{{ $notification['request_show_url'] }}"
+                                            class="text-sm text-slate-600 hover:text-slate-900"
+                                            wire:navigate
+                                        >
+                                            مشاهده
+                                        </a>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @endforeach

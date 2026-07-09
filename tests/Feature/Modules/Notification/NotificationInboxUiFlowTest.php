@@ -56,6 +56,38 @@ function deliverNotificationUiItem(string $employeeId, string $correlationId, st
     return (string) $result->notificationId;
 }
 
+function notificationUiProjectionRow(
+    string $title,
+    ?string $deepLinkRoute = null,
+    ?string $entityId = null,
+    bool $isRead = false,
+): NotificationProjectionDto {
+    return new NotificationProjectionDto(
+        id: UuidGenerator::uuid7(),
+        notificationType: NotificationType::RequestApproved->value,
+        title: $title,
+        message: 'پیام آزمایشی',
+        entityType: 'request',
+        entityId: $entityId,
+        deepLinkRoute: $deepLinkRoute,
+        isRead: $isRead,
+        readAt: $isRead ? new DateTimeImmutable('2026-07-02T11:00:00Z', new DateTimeZone('UTC')) : null,
+        createdAt: new DateTimeImmutable('2026-07-02T10:30:00Z', new DateTimeZone('UTC')),
+        priority: 'standard',
+    );
+}
+
+function mockNotificationInboxProjections(string $employeeId, NotificationProjectionDto ...$projections): void
+{
+    $inbox = MockeryTest::mock(NotificationInboxReadContract::class);
+    $inbox->shouldReceive('listForRecipient')
+        ->once()
+        ->with($employeeId, null, 50)
+        ->andReturn($projections);
+
+    app()->instance(NotificationInboxReadContract::class, $inbox);
+}
+
 /**
  * @return list<string>
  */
@@ -375,6 +407,117 @@ describe('notification inbox mark-read mutation', function (): void {
     });
 });
 
+describe('notification inbox deep-link navigation', function (): void {
+    it('renders request navigation for eligible requests.show rows', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+        $employeeId = $actor['employee']->requireId()->value;
+        $requestId = UuidGenerator::uuid7();
+
+        mockNotificationInboxProjections(
+            $employeeId,
+            notificationUiProjectionRow('اعلان قابل مشاهده', 'requests.show', $requestId),
+        );
+
+        Livewire::actingAs($actor['identity'], 'api')
+            ->test(NotificationInboxPage::class)
+            ->call('refreshList')
+            ->assertSet('uiState', 'ready')
+            ->assertSee('مشاهده')
+            ->assertSee(route('requests.show', ['requestId' => $requestId]));
+    });
+
+    it('does not render navigation when entityId is null for requests.show rows', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+        $employeeId = $actor['employee']->requireId()->value;
+
+        mockNotificationInboxProjections(
+            $employeeId,
+            notificationUiProjectionRow('اعلان بدون شناسه', 'requests.show', null),
+        );
+
+        Livewire::actingAs($actor['identity'], 'api')
+            ->test(NotificationInboxPage::class)
+            ->call('refreshList')
+            ->assertSet('uiState', 'ready')
+            ->assertDontSee('مشاهده');
+    });
+
+    it('does not render navigation for non-allowlisted deep-link routes', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+        $employeeId = $actor['employee']->requireId()->value;
+        $allocationId = UuidGenerator::uuid7();
+
+        mockNotificationInboxProjections(
+            $employeeId,
+            notificationUiProjectionRow('اعلان تخصیص', 'allocations.show', $allocationId),
+        );
+
+        Livewire::actingAs($actor['identity'], 'api')
+            ->test(NotificationInboxPage::class)
+            ->call('refreshList')
+            ->assertSet('uiState', 'ready')
+            ->assertDontSee('مشاهده');
+    });
+
+    it('does not render navigation when deepLinkRoute is null', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+        $employeeId = $actor['employee']->requireId()->value;
+
+        mockNotificationInboxProjections(
+            $employeeId,
+            notificationUiProjectionRow('اعلان بدون مسیر', null, UuidGenerator::uuid7()),
+        );
+
+        Livewire::actingAs($actor['identity'], 'api')
+            ->test(NotificationInboxPage::class)
+            ->call('refreshList')
+            ->assertSet('uiState', 'ready')
+            ->assertDontSee('مشاهده');
+    });
+
+    it('maps request_show_url using requestId binding from entityId', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+        $employeeId = $actor['employee']->requireId()->value;
+        $requestId = UuidGenerator::uuid7();
+
+        mockNotificationInboxProjections(
+            $employeeId,
+            notificationUiProjectionRow('اعلان با مسیر', 'requests.show', $requestId),
+        );
+
+        $component = Livewire::actingAs($actor['identity'], 'api')
+            ->test(NotificationInboxPage::class)
+            ->call('refreshList')
+            ->assertSet('uiState', 'ready');
+
+        expect($component->get('notifications')[0]['request_show_url'])
+            ->toBe(route('requests.show', ['requestId' => $requestId]));
+    });
+
+    it('keeps mark-read affordance for unread eligible rows', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+        $employeeId = $actor['employee']->requireId()->value;
+
+        mockNotificationInboxProjections(
+            $employeeId,
+            notificationUiProjectionRow('اعلان خوانده نشده با مسیر', 'requests.show', UuidGenerator::uuid7(), isRead: false),
+        );
+
+        Livewire::actingAs($actor['identity'], 'api')
+            ->test(NotificationInboxPage::class)
+            ->call('refreshList')
+            ->assertSet('uiState', 'ready')
+            ->assertSee('علامت‌گذاری به‌عنوان خوانده‌شده')
+            ->assertSee('مشاهده');
+    });
+});
+
 describe('notification inbox architecture guard', function (): void {
     it('keeps the livewire inbox page free of persistence orchestration smells', function (): void {
         $path = app_path('Modules/Notification/Presentation/Livewire/NotificationInboxPage.php');
@@ -399,5 +542,15 @@ describe('notification inbox architecture guard', function (): void {
         expect($contents)->toBeString();
         expect($contents)->toContain('MarkNotificationReadContract');
         expect($contents)->toContain('markNotificationRead');
+    });
+
+    it('uses frozen requests.show binding for P6 deep-link navigation', function (): void {
+        $path = app_path('Modules/Notification/Presentation/Livewire/NotificationInboxPage.php');
+        $contents = file_get_contents($path);
+
+        expect($contents)->toBeString();
+        expect($contents)->toContain("route(self::APPROVED_REQUEST_SHOW_ROUTE, ['requestId' => \$projection->entityId])");
+        expect($contents)->not->toContain('entityType');
+        expect($contents)->not->toMatch('/route\s*\(\s*\$projection->deepLinkRoute/');
     });
 });
