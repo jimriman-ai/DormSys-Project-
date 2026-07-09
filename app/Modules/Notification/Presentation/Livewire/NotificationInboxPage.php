@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Notification\Presentation\Livewire;
 
+use App\Modules\Notification\Application\Contracts\MarkNotificationReadContract;
 use App\Modules\Notification\Application\Contracts\NotificationInboxReadContract;
 use App\Modules\Notification\Application\DTOs\NotificationProjectionDto;
 use App\Modules\Notification\Application\Services\NotificationPrincipalEmployeeResolver;
+use App\Support\Presentation\Concerns\HandlesUiMutationFeedback;
+use DateTimeImmutable;
+use DateTimeZone;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -16,6 +20,8 @@ use Throwable;
 #[Layout('components.layouts.app')]
 final class NotificationInboxPage extends Component
 {
+    use HandlesUiMutationFeedback;
+
     private const LIST_LIMIT = 50;
 
     public string $uiState = 'loading';
@@ -45,6 +51,28 @@ final class NotificationInboxPage extends Component
             $this->notifications = [];
             $this->loadError = $exception->getMessage();
             $this->uiState = 'error';
+        }
+    }
+
+    public function markNotificationRead(
+        string $notificationId,
+        MarkNotificationReadContract $markRead,
+        NotificationInboxReadContract $inbox,
+        NotificationPrincipalEmployeeResolver $principalEmployee,
+    ): void {
+        $this->resetActionFeedback();
+
+        try {
+            $markRead->markRead(
+                $notificationId,
+                $principalEmployee->requireEmployeeId(),
+                new DateTimeImmutable('now', new DateTimeZone('UTC')),
+            );
+
+            $this->flashSuccess('اعلان به‌عنوان خوانده‌شده علامت‌گذاری شد.');
+            $this->refreshList($inbox, $principalEmployee);
+        } catch (Throwable $exception) {
+            $this->captureMutationFailure($exception);
         }
     }
 

@@ -14,6 +14,10 @@
         </x-slot:actions>
     </x-ui.page-header>
 
+    @if ($actionError)
+        <x-ui.alert type="error" :message="$actionError" class="mb-4" />
+    @endif
+
     @if ($uiState === 'loading')
         <div class="overflow-hidden rounded-xl border border-slate-200 bg-white" aria-busy="true" aria-live="polite">
             <div class="animate-pulse space-y-3 p-6">
@@ -47,6 +51,7 @@
                         <th class="px-4 py-3 text-right font-medium">اولویت</th>
                         <th class="px-4 py-3 text-right font-medium">تاریخ ایجاد</th>
                         <th class="px-4 py-3 text-right font-medium">وضعیت</th>
+                        <th class="px-4 py-3 text-right font-medium">عملیات</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -59,6 +64,20 @@
                             <td class="px-4 py-3 text-slate-700">{{ $notification['created_at'] }}</td>
                             <td class="px-4 py-3 text-slate-700">
                                 {{ $notification['is_read'] ? 'خوانده شده' : 'خوانده نشده' }}
+                            </td>
+                            <td class="px-4 py-3 text-slate-700">
+                                @if (! $notification['is_read'])
+                                    <x-ui.button
+                                        type="button"
+                                        variant="secondary"
+                                        wire:click="markNotificationRead('{{ $notification['id'] }}')"
+                                        wire:loading.attr="disabled"
+                                        wire:target="markNotificationRead"
+                                    >
+                                        <span wire:loading.remove wire:target="markNotificationRead">علامت‌گذاری به‌عنوان خوانده‌شده</span>
+                                        <span wire:loading wire:target="markNotificationRead">در حال علامت‌گذاری...</span>
+                                    </x-ui.button>
+                                @endif
                             </td>
                         </tr>
                     @endforeach

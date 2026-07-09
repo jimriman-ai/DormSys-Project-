@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Application\Mutation\Support\MutationPrincipalContextHolder;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Modules\Notification\Application\Contracts\EmployeeExistenceReadPort;
+use App\Modules\Notification\Application\Contracts\MarkNotificationReadContract;
 use App\Modules\Notification\Application\Contracts\NotificationDeliveryContract;
 use App\Modules\Notification\Application\Contracts\NotificationInboxReadContract;
 use App\Modules\Notification\Application\DTOs\NotificationIntentDto;
@@ -14,6 +15,7 @@ use App\Modules\Notification\Domain\Enums\NotificationType;
 use App\Modules\Notification\Infrastructure\Adapters\InMemoryEmployeeExistenceReadAdapter;
 use App\Modules\Notification\Presentation\Livewire\NotificationInboxPage;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
+use App\Support\Exceptions\ValidationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Carbon;
@@ -36,9 +38,9 @@ function notificationUiActiveEmployees(string ...$employeeIds): void
     );
 }
 
-function deliverNotificationUiItem(string $employeeId, string $correlationId, string $title): void
+function deliverNotificationUiItem(string $employeeId, string $correlationId, string $title): string
 {
-    app(NotificationDeliveryContract::class)->deliver(
+    $result = app(NotificationDeliveryContract::class)->deliver(
         NotificationIntentDto::fromArray([
             'correlationId' => $correlationId,
             'notificationType' => NotificationType::RequestApproved->value,
@@ -50,6 +52,8 @@ function deliverNotificationUiItem(string $employeeId, string $correlationId, st
             'occurredAt' => '2026-07-02T10:30:00Z',
         ]),
     );
+
+    return (string) $result->notificationId;
 }
 
 /**
@@ -266,6 +270,111 @@ describe('notification inbox ui states', function (): void {
     });
 });
 
+describe('notification inbox mark-read mutation', function (): void {
+    it('renders the mark-read affordance for unread inbox rows', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+        $employeeId = $actor['employee']->requireId()->value;
+        notificationUiActiveEmployees($employeeId);
+
+        deliverNotificationUiItem($employeeId, 'ui:mark-read:unread', 'اعلان خوانده نشده');
+
+        Livewire::actingAs($actor['identity'], 'api')
+            ->test(NotificationInboxPage::class)
+            ->call('refreshList')
+            ->assertSet('uiState', 'ready')
+            ->assertSee('علامت‌گذاری به‌عنوان خوانده‌شده');
+    });
+
+    it('does not render the mark-read affordance for read inbox rows', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+        $employeeId = $actor['employee']->requireId()->value;
+        notificationUiActiveEmployees($employeeId);
+
+        $notificationId = deliverNotificationUiItem($employeeId, 'ui:mark-read:read', 'اعلان خوانده شده');
+
+        app(MarkNotificationReadContract::class)->markRead(
+            $notificationId,
+            $employeeId,
+            new DateTimeImmutable('2026-07-02T11:00:00Z', new DateTimeZone('UTC')),
+        );
+
+        Livewire::actingAs($actor['identity'], 'api')
+            ->test(NotificationInboxPage::class)
+            ->call('refreshList')
+            ->assertSet('uiState', 'ready')
+            ->assertSee('خوانده شده')
+            ->assertDontSee('علامت‌گذاری به‌عنوان خوانده‌شده');
+    });
+
+    it('marks a notification as read through the ui and refreshes rendered state', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+        $employeeId = $actor['employee']->requireId()->value;
+        notificationUiActiveEmployees($employeeId);
+
+        $notificationId = deliverNotificationUiItem($employeeId, 'ui:mark-read:success', 'اعلان برای علامت‌گذاری');
+
+        Livewire::actingAs($actor['identity'], 'api')
+            ->test(NotificationInboxPage::class)
+            ->call('refreshList')
+            ->assertSet('uiState', 'ready')
+            ->assertSee('خوانده نشده')
+            ->call('markNotificationRead', $notificationId)
+            ->assertSet('actionError', null)
+            ->assertSee('خوانده شده')
+            ->assertDontSee('خوانده نشده');
+    });
+
+    it('delegates mark-read to MarkNotificationReadContract with notification and employee context', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+        $employeeId = $actor['employee']->requireId()->value;
+
+        $notificationId = UuidGenerator::uuid7();
+
+        $markRead = MockeryTest::mock(MarkNotificationReadContract::class);
+        $markRead->shouldReceive('markRead')
+            ->once()
+            ->with($notificationId, $employeeId, MockeryTest::type(DateTimeImmutable::class));
+
+        $inbox = MockeryTest::mock(NotificationInboxReadContract::class);
+        $inbox->shouldReceive('listForRecipient')
+            ->once()
+            ->with($employeeId, null, 50)
+            ->andReturn([]);
+
+        app()->instance(MarkNotificationReadContract::class, $markRead);
+        app()->instance(NotificationInboxReadContract::class, $inbox);
+
+        Livewire::actingAs($actor['identity'], 'api')
+            ->test(NotificationInboxPage::class)
+            ->call('markNotificationRead', $notificationId)
+            ->assertSet('uiState', 'empty')
+            ->assertSet('actionError', null);
+    });
+
+    it('surfaces mark-read mutation failures through actionError', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+
+        $notificationId = UuidGenerator::uuid7();
+
+        $markRead = MockeryTest::mock(MarkNotificationReadContract::class);
+        $markRead->shouldReceive('markRead')
+            ->once()
+            ->andThrow(new ValidationException('Notification not found for recipient.'));
+
+        app()->instance(MarkNotificationReadContract::class, $markRead);
+
+        Livewire::actingAs($actor['identity'], 'api')
+            ->test(NotificationInboxPage::class)
+            ->call('markNotificationRead', $notificationId)
+            ->assertSet('actionError', 'Notification not found for recipient.');
+    });
+});
+
 describe('notification inbox architecture guard', function (): void {
     it('keeps the livewire inbox page free of persistence orchestration smells', function (): void {
         $path = app_path('Modules/Notification/Presentation/Livewire/NotificationInboxPage.php');
@@ -277,10 +386,18 @@ describe('notification inbox architecture guard', function (): void {
             'DB::transaction',
             'DB::table',
             'NotificationRepositoryContract',
-            'MarkNotificationReadContract',
             'countUnread',
         ] as $needle) {
             expect($contents)->not->toContain($needle);
         }
+    });
+
+    it('permits governed MarkNotificationReadContract delegation for P5 mark-read', function (): void {
+        $path = app_path('Modules/Notification/Presentation/Livewire/NotificationInboxPage.php');
+        $contents = file_get_contents($path);
+
+        expect($contents)->toBeString();
+        expect($contents)->toContain('MarkNotificationReadContract');
+        expect($contents)->toContain('markNotificationRead');
     });
 });

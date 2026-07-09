@@ -1,0 +1,375 @@
+feature:
+  id: notification-mark-read-mutation
+  name: P5 — Notification Mark-Read Mutation
+  module: Notification
+  classification: successor-feature
+  version: 0.1.0
+  status: approved
+  area: notifications
+
+decision_reference:
+  artifact: docs/ui/decisions/notifications/notification-mark-read-mutation.review-decision.md
+  verdict: CONTRACT_REQUIRED_BEFORE_IMPLEMENTATION
+  classification: UI_BEHAVIOR_GAP
+
+baseline_contract:
+  id: notification-inbox-read-only-list
+  relationship: predecessor
+  status: CLOSED
+  closeout: docs/ui/closeouts/notifications/notification-inbox-read-only.reconciliation.md
+  note: >
+    P2 remains authoritative for read-only inbox list behavior. P5 is a separate
+    successor feature that adds governed single-item mark-read mutation on the
+    existing NotificationInboxPage surface. P5 does not reopen or amend the P2
+    closeout. P5 supersedes only the P2 exclusions that forbade mark-read UI
+    consumption within this contract's approved scope.
+
+purpose:
+  summary: >
+    Enable an authenticated employee to mark a single unread notification as read
+    from the notification inbox UI, delegating state change to the existing backend
+    mark-read capability.
+  rationale:
+    - Spec09 delivered MarkNotificationReadContract and persistence; presentation mutation was deferred under P2.
+    - P2 closed as read-only and explicitly excluded mark-read UI.
+    - Repository evidence shows backend mark-read is implemented and tested; inbox UI displays read/unread only.
+    - P5 adds the minimum governed UI mutation behavior required to fulfill the employee-facing mark-read interaction without reimplementing the write path.
+
+business_goal:
+  primary:
+    - Allow an authenticated recipient to mark one of their own unread inbox notifications as read from the inbox list.
+  success_outcome:
+    - After mark-read, the notification's inbox row reflects read state consistent with backend truth (خوانده شده / read indicator aligned with is_read).
+
+existing_capabilities:
+  reused:
+    - MarkNotificationReadContract::markRead
+    - MarkNotificationReadAction (Application mutation authority)
+    - NotificationPrincipalEmployeeResolver::requireEmployeeId
+    - NotificationInboxReadContract::listForRecipient (post-mutation list refresh)
+    - NotificationProjectionDto (list row source; is_read field)
+    - Existing authenticated web route notifications.index (GET /notifications)
+    - Existing NotificationInboxPage Livewire surface and inbox Blade view
+    - Recipient-scoped enforcement in MarkNotificationReadAction via findByIdForRecipient
+  not_reused:
+    - No new HTTP or API mutation endpoint
+    - No mark-all-as-read backend contract
+    - No notification detail page mutation surface
+  assumptions:
+    - Backend mark-read is idempotent when notification is already read.
+    - No schema, repository, or MarkNotificationReadContract signature change is required for P5 v1.
+    - Livewire method injection to a single Application action is the governed mutation pattern.
+
+scope:
+  in_scope:
+    - Single-notification mark-read initiated from the notification inbox UI (NotificationInboxPage)
+    - Per-row action affordance visible only for unread rows in the authenticated recipient's visible list
+    - Delegation to MarkNotificationReadContract with notification id and resolved recipient employee id
+    - Post-success list reload from NotificationInboxReadContract to reflect updated read/unread indicators
+    - Mutation error surfacing via established thin-UI feedback pattern (HandlesUiMutationFeedback or equivalent governed pattern)
+    - Feature-specific UI tests for mark-read trigger, post-mutation display, and error propagation
+    - Revision of P2 read-only architecture guard expectations to permit governed MarkNotificationReadContract delegation
+  out_of_scope:
+    - mark-all-as-read
+    - Bulk selection UX
+    - Batch mutation actions
+    - Delete, archive, dismiss, or restore notification actions
+    - Notification preferences or settings
+    - Inbox information architecture redesign
+    - Layout navigation link to inbox (deferred P2 item)
+    - countUnread consumption or unread badge surfaces
+    - Deep-link navigation, detail view, or row-click navigation beyond mark-read action
+    - Filtering, search, sorting, pagination, or realtime/push refresh
+    - New HTTP or API mutation endpoint
+    - Notification detail-page mutation
+    - Generic notification management capabilities beyond single-item mark-read
+    - Backend contract, DTO, repository, domain, migration, or schema changes
+    - New Notification-specific Gate or NotificationMutationAuthorizationGate (deferred; see authorization)
+    - Cross-module Infrastructure imports from Notification presentation
+    - Direct database access from UI components
+    - Unauthorized modification of existing NotificationInboxTest or other spec09 backend feature tests
+
+route:
+  entrypoint: notifications.index
+  path: GET /notifications
+  constraint: >
+    P5 does not introduce a new route. Mutation occurs via Livewire action on the
+    existing inbox page within the authenticated web middleware stack.
+
+presentation:
+  surface: NotificationInboxPage
+  view: livewire.notification.notification-inbox-page
+  relationship_to_p2: >
+    Extends the existing inbox table with a governed per-row mark-read affordance.
+    All P2 read-only list rendering obligations remain unless explicitly superseded
+    by this contract.
+
+view_model:
+  source: App\Modules\Notification\Application\DTOs\NotificationProjectionDto
+  load_list:
+    contract: App\Modules\Notification\Application\Contracts\NotificationInboxReadContract
+    method: listForRecipient
+  row_fields_consumed:
+    - name: id
+      type: string
+      source: NotificationProjectionDto::id
+      mutation_use: notification identifier forwarded to MarkNotificationReadContract
+    - name: isRead
+      type: bool
+      source: NotificationProjectionDto::isRead
+      list_use: read/unread indicator display
+      affordance_gating: show mark-read affordance only when isRead is false
+  affordance_gating_rule: >
+    Action visibility may use the backend-provided is_read value from the list
+    projection for presentation gating only (show trigger on unread rows). UI must
+    not treat is_read as authorization authority or infer business capability beyond
+    controlling affordance visibility on already-listed rows. Mutation legality and
+    idempotency remain backend-authoritative via MarkNotificationReadContract.
+  not_consumed_in_v1:
+    - entityType
+    - entityId
+    - deepLinkRoute
+    - readAt (display column; optional future enhancement)
+
+mutations:
+  model: single_item_per_row
+  actions:
+    - name: mark_notification_read
+      scope: one notification per invocation
+      trigger: per-row inbox affordance
+      input:
+        - notification_id from row id
+        - recipient_employee_id from NotificationPrincipalEmployeeResolver::requireEmployeeId
+        - read_at supplied by backend/action layer at execution time (UI does not construct business timestamp semantics)
+  mapping:
+    mark_notification_read: App\Modules\Notification\Application\Contracts\MarkNotificationReadContract::markRead
+  constraints:
+    - Each invocation marks at most one notification.
+    - UI method must delegate to a single Application contract call; no workflow orchestration.
+    - No DB::transaction, repository, or direct persistence access in Livewire.
+    - No mark-all or batch iteration in one user action.
+
+behavioral_rules:
+  unread_row:
+    - User may trigger mark-read for a notification row where is_read is false.
+    - Backend performs recipient-scoped mark-read and persists read_at.
+    - On success, UI reloads inbox list from NotificationInboxReadContract.
+    - Row must thereafter display read/unread indicator consistent with refreshed is_read.
+  already_read_row:
+    - Mark-read affordance must not be shown when is_read is true.
+    - If backend receives mark-read for an already-read notification (e.g., race), domain idempotency applies; UI must not treat this as an error requiring local state repair beyond list refresh.
+  authorization:
+    - UI must not invent independent authorization or ownership rules.
+    - UI must not mirror role/permission checks.
+    - Cross-recipient or not-found mutations fail at Application layer; errors surface to user without semantic remapping.
+  state_authority:
+    - Backend/Application layer remains sole authority for read-state mutation.
+    - UI must not locally flip is_read without backend-confirmed list data after mutation.
+
+authorization:
+  model: recipient_scoped_auth_only
+  stance: >
+    Authenticated employee with linked employee record may mark read only notifications
+    returned for their recipient scope. Enforcement is backend-authoritative via
+    MarkNotificationReadAction::findByIdForRecipient and existing route middleware
+    (auth:api, request.mutation.principal, audit.principal).
+  ui_boundary:
+    - UI performs no policy, Gate, or role evaluation for mark-read eligibility.
+    - UI forwards notification id and relies on resolved employee context from NotificationPrincipalEmployeeResolver.
+  mpep_deferral:
+    status: accepted_for_p5_v1
+    note: >
+      MarkNotificationReadAction remains in PendingMutationAuthorizationRegistry.
+      P5 v1 accepts recipient-scoped Application enforcement without introducing
+      NotificationMutationAuthorizationGate. Formal MPEP gate adoption is deferred
+      to a future governance wave; not a P5 v1 blocker.
+  new_ui_authorization_model: false
+
+interaction_boundaries:
+  surface: inbox_row_action_only
+  allowed:
+    - One mark-read affordance per unread row in the inbox table
+    - Livewire wire:click (or equivalent) on the governed affordance
+  forbidden:
+    - mark-all-as-read control
+    - Bulk select + mark selected
+    - Mark-read from notification detail page
+    - Mark-read from layout nav, badge, or external surface
+    - Row-click navigation repurposed as implicit mark-read
+  post_mutation_refresh:
+    model: full_list_reload
+    authority: NotificationInboxReadContract::listForRecipient
+    constraint: >
+      After successful mark-read, UI must reload the inbox list from the read
+      contract. Optimistic local row mutation without backend list refresh is
+      forbidden.
+  error_feedback:
+    model: thin_ui_mutation_feedback
+    constraint: >
+      Mutation failures must surface backend/Application exception messages without
+      semantic remapping. Governed pattern aligns with HandlesUiMutationFeedback
+      precedent; exact wiring is an implementation-lock detail.
+
+technical_boundaries:
+  backend:
+    - MarkNotificationReadContract and MarkNotificationReadAction are reused as-is.
+    - No new domain behavior, persistence schema, or repository query changes.
+    - NotificationInboxReadContract remains read authority for list refresh.
+  presentation:
+    - Changes limited to NotificationInboxPage, inbox Blade view, and P5 tests.
+    - NotificationPrincipalEmployeeResolver reused; no new principal resolution logic in UI.
+  forbidden_refactors:
+    - Unrelated notification module restructuring
+    - countUnread, badge, deep-link, or detail page work smuggled under P5
+    - API route addition for mark-read
+
+architecture_constraints:
+  ui_anti_leak:
+    - UI forwards user intent to a single Application mutation contract.
+    - UI does not orchestrate multi-step workflows or transactions.
+    - UI does not derive business capability beyond is_read affordance gating on listed rows.
+    - UI does not reconstruct authorization meaning.
+    - UI reloads list from backend after successful mutation.
+  p2_supersession:
+    - P5 explicitly authorizes MarkNotificationReadContract consumption in NotificationInboxPage within this contract scope only.
+    - P2 prohibition on mark-read controls is superseded for P5-approved behavior only.
+  governance:
+    - Implementation requires separate implementation lock after contract approval.
+    - P2 closeout remains CLOSED; P5 does not reopen P2.
+
+state_separation:
+  ui:
+    - loading
+    - empty
+    - ready
+    - error
+    - mutation_in_progress (per-row or action-scoped loading permitted)
+  domain:
+    - unread (isRead false) — mark-read affordance may be shown
+    - read (isRead true) — mark-read affordance hidden
+  note: >
+    Domain read/unread meaning is displayed from DTO fields. Transition to read
+    state occurs only through backend mutation followed by list refresh.
+
+acceptance_criteria:
+  functional:
+    - Authenticated recipient with linked employee can open notifications.index.
+    - Each unread inbox row exposes a governed mark-read affordance.
+    - Read rows do not expose mark-read affordance.
+    - Triggering mark-read on an unread row calls MarkNotificationReadContract for that row's id and resolved employee id.
+    - After successful mark-read, list refresh shows the row as read (خوانده شده / is_read true).
+    - Mark-read for a notification not belonging to the recipient fails with surfaced backend error; list state remains backend-consistent after refresh.
+    - No mark-all, bulk, or batch mark-read control exists on the inbox page.
+  non_functional:
+    - No new API or HTTP mutation route introduced.
+    - No backend contract, DTO, repository, domain, or schema changes.
+    - No UI-side authorization mirroring.
+    - No direct database access from Livewire.
+    - P2 read-only list columns and refresh behavior remain unless explicitly extended by mark-read affordance column/action.
+  regression_safety:
+    - Existing NotificationInboxTest and spec09 backend mark-read tests remain valid without unauthorized modification.
+    - P2 inbox access, principal resolution, and list rendering tests remain valid; architecture guard updated to reflect P5-authorized mutation delegation.
+    - Module boundary tests remain satisfied.
+
+test_implications:
+  required_new_tests:
+    - Unread row renders mark-read affordance
+    - Read row does not render mark-read affordance
+    - Successful mark-read updates displayed read/unread indicator after list refresh
+    - Mark-read delegates to MarkNotificationReadContract with correct notification id and employee context
+    - Mutation failure surfaces error without silent swallow
+  required_regression_updates:
+    - Replace P2 architecture guard that forbids MarkNotificationReadContract in NotificationInboxPage with P5-governed assertions (single-contract delegation, no repository/transaction smells)
+  forbidden_test_changes:
+    - Unauthorized modification of NotificationInboxTest backend scenarios
+    - Removal of recipient-scoping or cross-recipient denial backend coverage
+
+dependencies:
+  requires:
+    - P2 inbox baseline (NotificationInboxPage, route, principal resolver)
+    - MarkNotificationReadContract bound to MarkNotificationReadAction
+    - NotificationInboxReadContract for list load and post-mutation refresh
+    - Approved P5 review decision
+    - Separate implementation lock before coding
+  does_not_require:
+    - New persistence migration
+    - Mark-all backend contract
+    - Notification detail page
+    - countUnread or badge
+    - Layout navigation link
+    - NotificationMutationAuthorizationGate for P5 v1
+
+governance:
+  classification: successor-feature
+  prerequisites:
+    - This contract approved via contract review
+    - Separate implementation lock approved before any coding
+  review_focus:
+    - Single-item scope enforcement
+    - P2 supersession boundaries only where explicitly stated
+    - Recipient-scoped authorization stance and MPEP deferral acceptance
+    - is_read affordance gating vs backend authority separation
+    - Post-mutation full list reload requirement
+    - Test/guard obligation updates
+  frozen_boundaries:
+    - MarkNotificationReadContract signature and write semantics unchanged
+    - NotificationInboxReadContract list semantics unchanged
+    - P2 closeout status remains CLOSED
+
+anti_leak_boundaries:
+  forbidden:
+    - ui_side_read_state_mutation_without_backend_refresh
+    - ui_derives_mark_read_eligibility_from_non_dto_sources
+    - ui_mirrors_role_or_permission_checks
+    - ui_orchestrates_multiple_service_calls_per_mark_read_action
+    - ui_transactions_or_direct_persistence
+    - mark_all_or_batch_mutation
+  required:
+    - single_application_contract_delegation_per_mark_read
+    - backend_list_reload_after_success
+    - backend_error_propagation_without_remapping
+
+open_questions:
+  - id: mark_read_affordance_form
+    question: What is the exact per-row affordance form (dedicated action column button, icon button, text link, or dropdown item)?
+    resolved_in_contract:
+      - Inbox row-level only
+      - Unread rows only
+      - One notification per action
+    unresolved:
+      - Exact visual control and Persian label copy
+    lock_note: Implementation lock must pin affordance form and copy without expanding mutation scope
+
+notes:
+  - P5 v1 is intentionally minimal: one governed mutation on the existing inbox surface.
+  - mark-all-as-read is excluded; any future bulk mark-read requires a separate feature and contract.
+  - can_mark_read DTO field is not introduced in P5 v1; affordance gating uses is_read from list projection under the governed presentation rule above.
+  - This contract authorizes behavior and boundaries only; implementation lock is a separate required step.
+
+references:
+  analysis:
+    - docs/ui/analysis/notifications/notification-mark-read-mutation.repo-inspection.md
+    - docs/ui/analysis/notifications/notification-mark-read-mutation.feature-analysis.md
+  decision:
+    - docs/ui/decisions/notifications/notification-mark-read-mutation.review-decision.md
+  predecessor_artifacts:
+    - docs/ui/contracts/notifications/notification-inbox-read-only-list.feature-contract.yaml
+    - docs/ui/locks/notifications/notification-inbox-read-only-list.implementation-lock.md
+    - docs/ui/closeouts/notifications/notification-inbox-read-only.reconciliation.md
+  backend_authority:
+    - app/Modules/Notification/Application/Contracts/MarkNotificationReadContract.php
+    - app/Modules/Notification/Application/Services/MarkNotificationReadAction.php
+    - app/Modules/Notification/Application/Contracts/NotificationInboxReadContract.php
+    - specs/009-notification-delivery/spec.md
+  architecture_authority:
+    - .specify/ARCHITECTURE.md
+    - docs/architecture/ui/UI-ANTI-LEAK-CONTRACT.md
+    - docs/ui/FEATURE-CONTRACT-GUIDE.md
+
+definition_of_done:
+  - P5 feature contract approved
+  - Implementation lock approved for P5 scope only
+  - Implementation completed within approved lock
+  - Required UI tests and guard updates passing
+  - No unauthorized backend or P2 scope expansion
+  - Feature closed without scope creep
