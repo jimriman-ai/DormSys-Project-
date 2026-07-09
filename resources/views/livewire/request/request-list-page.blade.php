@@ -48,6 +48,7 @@
                         <th class="px-4 py-3 text-right font-medium">تاریخ ورود</th>
                         <th class="px-4 py-3 text-right font-medium">تاریخ خروج</th>
                         <th class="px-4 py-3 text-right font-medium">تاریخ ثبت</th>
+                        <th class="px-4 py-3 text-right font-medium">مشاهده</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -60,6 +61,15 @@
                             <td class="px-4 py-3 text-slate-700">{{ $request['check_in_date'] }}</td>
                             <td class="px-4 py-3 text-slate-700">{{ $request['check_out_date'] }}</td>
                             <td class="px-4 py-3 text-slate-700">{{ $request['submitted_at'] ?? '—' }}</td>
+                            <td class="px-4 py-3 text-slate-700">
+                                <a
+                                    href="{{ route('requests.show', ['requestId' => $request['id']]) }}"
+                                    class="text-sm text-slate-600 hover:text-slate-900"
+                                    wire:navigate
+                                >
+                                    مشاهده
+                                </a>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

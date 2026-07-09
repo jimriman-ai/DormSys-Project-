@@ -1,0 +1,58 @@
+feature:
+  id: request-list-detail-navigation
+  name: Request List Detail Navigation
+  module: Request
+  classification: successor-feature
+  version: 0.1.0
+
+status:
+  implementation: completed
+  closeout: recorded
+
+contract_reference:
+  path: docs/ui/contracts/requests/request-list-detail-navigation.feature-contract.yaml
+  id: request-list-detail-navigation
+  version: 0.1.0
+  status: approved
+
+implementation_lock_reference:
+  path: docs/ui/locks/requests/request-list-detail-navigation.implementation-lock.yaml
+  id: request-list-detail-navigation
+  version: 0.1.0
+  status: approved
+
+completion_evidence:
+  implementation_completed: true
+  lock_scope_complied: true
+  scope_expansion: none
+
+changed_files:
+  modified:
+    - resources/views/livewire/request/request-list-page.blade.php
+  created:
+    - tests/Feature/Modules/Request/RequestListDetailNavigationUiFlowTest.php
+
+tests_executed:
+  command: php artisan test tests/Feature/Modules/Request/RequestListDetailNavigationUiFlowTest.php
+  result:
+    tests: 3
+    passed: 3
+    failed: 0
+    assertions: 20
+    outcome: passed
+
+boundary_verification:
+  request_show_unchanged: true
+  backend_unchanged: true
+  domain_application_infrastructure_unchanged: true
+  dto_service_repository_query_unchanged: true
+  auth_policy_guard_middleware_unchanged: true
+  route_registration_unchanged: true
+  mutation_capability_added: false
+  scope_expansion: false
+
+risk_assessment:
+  level: low
+  rationale: Presentation-scoped navigation exposure only; reused existing requests.show route and list view-model identifier data.
+
+closeout_recorded_at: "2026-07-08"

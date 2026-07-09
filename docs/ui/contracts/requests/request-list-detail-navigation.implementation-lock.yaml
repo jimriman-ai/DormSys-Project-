@@ -1,0 +1,206 @@
+feature:
+  id: request-list-detail-navigation
+  name: Request List Detail Navigation
+  module: Request
+
+status: approved
+
+source_contract:
+  file: docs/ui/contracts/requests/request-list-detail-navigation.feature-contract.yaml
+  required_status: approved
+
+purpose:
+  summary: >
+    Authorize the minimum UI-only change required to expose navigation from
+    employee-owned Request List rows to the existing read-only Request Show page,
+    without reopening Request Show or expanding backend scope.
+
+implementation_intent:
+  allowed_outcome:
+    - Expose a single read-only navigation affordance per employee-owned Request List row.
+    - Route navigation only to the existing requests.show named route.
+    - Preserve current Request List read behavior except for the added navigation affordance.
+  forbidden_outcome:
+    - Any change to Request Show behavior or presentation
+    - Any mutation capability from Request List
+    - Any backend contract or query expansion
+    - Any redesign of Request List row layout beyond the minimum required affordance
+
+hard_stops:
+  - Stop immediately if implementation requires backend data shape changes.
+  - Stop immediately if implementation requires DTO/view-model/service/repository/query changes.
+  - Stop immediately if implementation requires changes to Request Show files.
+  - Stop immediately if implementation requires auth/policy/guard/session changes.
+  - Stop immediately if implementation requires more than one navigation affordance per row.
+  - Stop immediately if implementation requires list row redesign beyond minimal navigation exposure.
+  - Stop immediately if existing Request List data is insufficient to build the existing requests.show route.
+  - Stop immediately if implementation introduces mutation controls, workflow actions, or status actions.
+
+scope:
+  in_scope:
+    - Request List presentation-layer navigation exposure only
+    - Minimal row-level UI change required to render a single read-only navigation affordance
+    - Use of existing request identifier already available in current list/view-model surface
+    - Navigation to the existing requests.show named route only
+    - Test updates strictly required for this feature
+  out_of_scope:
+    - Request Show page changes
+    - Backend read pipeline changes
+    - New API/query/service/repository/DTO/view-model contracts
+    - Ownership logic changes
+    - Authorization logic changes
+    - Auth infrastructure changes
+    - List filtering/sorting/search/pagination changes
+    - UI redesign
+    - Inline detail panels
+    - Modal detail rendering
+    - Mutation controls of any kind
+
+allowed_files:
+  - app/Livewire/**/RequestList*.php
+  - resources/views/**/request*/**list*.blade.php
+
+  - tests/Feature/**/RequestList*.php
+
+  - docs/ui/locks/requests/request-list-detail-navigation.implementation-lock.yaml
+
+forbidden_files:
+  - app/**/RequestShow*.php
+  - resources/views/**/request*/**show*.blade.php
+  - app/Domain/**
+  - app/Application/**
+  - app/Infrastructure/**
+  - app/**/Policies/**
+  - app/**/Guards/**
+  - routes/**
+  - database/**
+  - config/**
+  - bootstrap/**
+  - public/**
+  - lang/**
+  - app/**/DTO/**
+  - app/**/Repositories/**
+  - app/**/Services/**
+  - app/**/Actions/**
+  - app/**/Queries/**
+
+file_rules:
+  notes:
+    - Allowed files are narrow by intent, not blanket permission for broad refactor.
+    - If the actual Request List file paths differ, update this lock explicitly before coding.
+    - No file outside the approved allowlist may be edited.
+    - Contract file may only be edited for approval-state administration before implementation starts; not during coding.
+
+route_constraints:
+  required:
+    - Must use the existing requests.show named route
+    - Must use the existing route parameter structure
+    - Must not introduce new routes
+    - Must not change route registration
+  forbidden:
+    - Direct URL hardcoding if inconsistent with existing named-route usage
+    - Any alternate detail endpoint
+    - Any modal or inline pseudo-detail route behavior
+
+ui_constraints:
+  required:
+    - Exactly one navigation affordance per employee-owned Request List row
+    - Affordance must be read-only in meaning and behavior
+    - Request List must remain read-only except for navigation
+    - UI must consume only existing prepared list data
+  forbidden:
+    - Adding approve/reject/cancel/edit/delete controls
+    - Adding row action menus
+    - Adding workflow dropdowns
+    - Adding inline expansion panels
+    - Adding modal detail rendering
+    - Redesigning table/card layout beyond minimum affordance
+    - Adding new columns unless strictly required as the navigation affordance itself
+    - Adding badges, toolbars, or secondary interaction surfaces unrelated to navigation
+
+backend_constraints:
+  required:
+    - Existing backend ownership and authorization authority remains unchanged
+    - Existing Request Show authorization remains the sole authority for detail access
+  forbidden:
+    - New controller/service/repository/query logic
+    - New DTO/view-model contract changes
+    - New policy/guard/session changes
+    - New authorization branches
+    - New persistence/database changes
+
+request_show_protection:
+  rule: frozen
+  forbidden:
+    - No edits to Request Show UI
+    - No edits to Request Show route behavior
+    - No edits to Request Show data retrieval
+    - No edits to Request Show authorization behavior
+    - No edits to Request Show tests except regression verification if already covered through existing behavior without changing feature scope
+
+data_constraints:
+  required:
+    - Use only data already present in the existing Request List surface
+  forbidden:
+    - Fetching extra backend data to support navigation
+    - Expanding list payload solely to support this feature
+    - Introducing hidden preload/detail data into list rendering
+
+test_policy:
+  allowed_tests:
+    - Feature test: employee can navigate from owned Request List row to existing Request Show page
+    - Feature test: non-owned request remains inaccessible through existing show authorization
+    - Regression test: Request List remains read-only except for navigation
+    - Regression test: existing Request List data loading behavior remains unchanged
+  forbidden_tests:
+    - Tests for new backend contracts
+    - Tests implying new mutation capabilities
+    - Tests implying Request Show behavior changes
+    - Tests for new query/service/repository behavior
+  notes:
+    - Add only the minimum tests necessary to prove the contract.
+    - Do not broaden test scope into unrelated Request module behavior.
+
+verification_checklist:
+  - Contract status is approved before implementation begins
+  - Implementation changes only allowed files
+  - Exactly one read-only navigation affordance exists per employee-owned row
+  - Navigation uses the existing requests.show named route
+  - Request List remains read-only except for navigation
+  - Request Show files remain untouched
+  - No backend files changed
+  - No route files changed
+  - No auth/policy files changed
+  - No DTO/service/repository/query files changed
+  - Existing ownership authority remains unchanged
+  - Existing Request List data loading behavior remains unchanged
+
+approval_gate:
+  preconditions:
+    - Feature contract approved
+    - Implementation lock approved
+    - Allowed file paths validated against real repository structure
+  implementation_authorization:
+    - Coding is authorized only after this lock status is set to approved
+
+completion_criteria:
+  - All changes remain within lock boundaries
+  - Required tests pass
+  - No forbidden file modified
+  - No hard stop triggered
+  - No scope expansion requested during implementation
+  - Feature ready for closeout review
+
+change_control:
+  rule: strict
+  process:
+    - If any new requirement appears, stop coding.
+    - If any forbidden file seems necessary, stop coding.
+    - If current list data is insufficient, stop coding.
+    - Return to governance and revise contract/lock before any further implementation.
+
+status_transitions:
+  allowed:
+    - draft -> approved
+    - approved -> implemented
+    - implemented -> closed

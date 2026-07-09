@@ -1,0 +1,174 @@
+feature:
+  id: request-list-detail-navigation
+  name: Request List Detail Navigation
+  module: Request
+  classification: successor-feature
+  version: 0.1.0
+  status: approved
+
+purpose:
+  summary: Enable employees to navigate from Request List rows to the existing read-only Request Show page.
+  rationale:
+    - Request Show is completed and frozen as a read-only detail surface.
+    - Request List exists and shows employee-owned requests but currently forbids list-to-detail navigation.
+    - This feature is a separate successor feature and must not reopen or extend Request Show.
+
+business_goal:
+  primary:
+    - Complete the employee request read journey from list to detail.
+    - Improve discoverability of the existing Request Show capability without changing it.
+  success_outcome:
+    - An employee can open the detail page of an owned request directly from a Request List row.
+
+existing_capabilities:
+  reused:
+    - Existing Request List page and rendering flow
+    - Existing RequestReadContract::listByEmployee read path
+    - Existing RequestSummaryDTO collection including request identifier (id)
+    - Existing requests.show route (GET /requests/{requestId})
+    - Existing Request Show page implementation
+    - Existing backend ownership and authorization enforcement for detail access
+    - Existing read-only Request Show feature contract and frozen implementation boundary
+  assumptions:
+    - Request List rows already expose sufficient identifier data from the approved list view-model to build the existing show route.
+    - Request Show backend authorization already rejects access to non-owned requests.
+    - No new backend read capability is required to expose navigation.
+
+scope:
+  included:
+    - Add a single read-only navigation affordance per employee-owned Request List row to the existing Request Show page.
+    - Use only the existing request identifier already present in the list view-model (RequestSummaryDTO::id).
+    - Generate links only to the existing requests.show named route.
+    - Preserve current backend authorization and ownership enforcement as the sole authority for detail access.
+    - Keep all other Request List behavior unchanged except for the presence of detail navigation.
+  excluded:
+    - Any change to Request Show behavior, layout, fields, authorization, data retrieval, or navigation contract
+    - Any backend read contract, service, DTO, query, repository, or API change
+    - Filtering, sorting, pagination, search, or export
+    - Create, edit, delete, approve, cancel, or any other mutation capability
+    - Workflow actions, status transition controls, or capability presentation
+    - Auth, session, guard, policy, middleware, or infrastructure changes
+    - UI-side ownership, permission, or authorization decision logic
+    - Direct database access from UI components
+    - Changes to employee ownership resolution rules
+    - Modal, inline expansion, or alternate detail surfaces within the list
+    - New entrypoints beyond the current Request List
+    - Changing Request List row layout beyond the minimum required navigation affordance
+
+architecture_constraints:
+  ui:
+    - UI must remain thin and presentation-only.
+    - UI must consume only existing prepared list read data.
+    - UI must not perform domain logic or business rule evaluation.
+    - UI must not query the database directly.
+    - UI must not resolve authorization, ownership, or capability rules.
+    - UI must not introduce business transformations outside returned DTO fields.
+  backend:
+    - Existing backend read authority for list and show remains unchanged.
+    - Existing Request Show authorization remains the sole authority for detail access.
+    - No backend contract expansion is permitted in this feature.
+  governance:
+    - This feature is a successor to frozen Request List navigation exclusion; it must not reopen frozen Request Show.
+    - Implementation must proceed only under a separate implementation lock for this feature.
+
+allowed_changes:
+  areas:
+    - Request List presentation layer (row rendering and interaction surface only)
+    - Feature-specific tests covering permitted navigation behavior
+    - Feature-specific governance artifacts for this feature
+  constraint: Changes must remain minimal and localized to list-to-detail navigation exposure.
+
+forbidden_changes:
+  areas:
+    - Request Show implementation, contract, or frozen behavior
+    - Request read backend contracts, services, repositories, queries, and DTOs
+    - Shared auth infrastructure, policies, guards, and middleware
+    - Domain rules related to ownership or access resolution
+    - Mutation workflows, command handlers, and action handlers
+    - Request List data loading, refresh, or state behavior beyond navigation affordance
+    - New cross-module dependencies
+  escalation_rule: If implementation appears to require any forbidden change, this contract must be rejected and re-scoped before coding.
+
+interaction_model:
+  user_story:
+    - As an employee, when I view my request list, I can open a request's existing detail page from its list row.
+  entrypoint: Request List page
+  destination: Existing Request Show page (requests.show)
+  navigation_pattern: Row-level detail navigation only
+
+acceptance_criteria:
+  functional:
+    - Each employee-owned Request List row exposes a detail navigation affordance.
+    - Activating the affordance opens the existing requests.show route for that request using the list view-model identifier.
+    - Owned requests remain viewable through the unchanged Request Show page.
+    - Non-owned requests remain inaccessible through existing backend enforcement on show access.
+    - Navigation must use the existing requests.show named route.
+  non_functional:
+    - No mutation controls are introduced on the Request List as part of this feature.
+    - No Request Show behavior, layout, or data changes are introduced.
+    - Existing Request List data loading, refresh, and render-state behavior remains unchanged.
+    - No additional backend authority path or read contract is introduced.
+    - No UI-side authorization logic is introduced.
+  regression_safety:
+    - Existing Request List behavior continues to function aside from the added navigation affordance.
+    - Existing Request Show tests and expectations remain valid without contract expansion.
+    - Frozen Request Show boundaries are not violated.
+
+test_expectations:
+  required:
+    - Feature test covering navigation from Request List to existing Request Show for an owned request
+    - Feature test confirming non-owned request access remains denied by existing show authorization
+    - Regression coverage confirming no mutation actions are introduced by this feature
+    - Regression coverage confirming Request List remains read-only except for navigation.
+    - Existing Request List data loading behavior remains unchanged.
+  boundary:
+    - Tests must not require modification of frozen Request Show test files or contracts.
+
+risk:
+  level: low
+  rationale:
+    - The feature is presentation-scoped and reuses an existing read-only detail endpoint and list view-model data.
+    - Primary risk is accidental scope bleed into frozen Request Show boundaries or unintended Request List behavior expansion.
+
+dependencies:
+  requires:
+    - Existing Request List implementation and approved list view-model
+    - Existing requests.show route and Request Show page
+    - Existing ownership and authorization enforcement for show access
+  does_not_require:
+    - New backend read APIs or contract methods
+    - New policies, guards, or middleware
+    - New domain or application services
+    - Persistence or migration changes
+
+governance:
+  classification: successor-feature
+  prerequisites:
+    - This feature contract approved
+    - Separate implementation lock approved before any coding
+    - Explicit confirmation that no backend change is required
+  review_focus:
+    - Navigation exposure only
+    - No boundary violation into frozen Request Show
+    - No backend, mutation, or Request List behavior expansion beyond navigation
+  frozen_boundaries:
+    - Request Show feature contract and implementation remain frozen and unchanged
+    - Request Show must not be reopened or extended by this feature
+
+definition_of_done:
+  - Feature contract approved
+  - Implementation lock approved for this feature only
+  - Implementation completed within approved lock scope
+  - Required tests added and passing
+  - No frozen feature boundary violated
+  - Feature closed without scope expansion
+
+references:
+  predecessor_artifacts:
+    - docs/ui/contracts/requests/request-list.feature-contract.yaml
+    - docs/ui/contracts/requests/request-show.feature-contract.yaml
+  architecture_authority:
+    - .specify/ARCHITECTURE.md
+    - docs/ai-ui/AI-UI-ENGINEERING-FRAMEWORK.md
+
+open_questions: []
