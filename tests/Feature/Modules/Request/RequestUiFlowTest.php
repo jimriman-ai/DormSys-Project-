@@ -67,7 +67,8 @@ describe('request ui access', function (): void {
             ->assertOk()
             ->assertSee('درخواست‌های من')
             ->assertSee('بروزرسانی')
-            ->assertDontSee('ثبت درخواست جدید')
+            ->assertSee('ثبت درخواست جدید')
+            ->assertSee(route('requests.create'), escape: false)
             ->assertDontSee('مشاهده');
     });
 
@@ -79,7 +80,9 @@ describe('request ui access', function (): void {
             ->test(RequestListPage::class)
             ->call('refreshList')
             ->assertSet('uiState', 'empty')
-            ->assertSet('loadError', null);
+            ->assertSet('loadError', null)
+            ->assertSee('ثبت درخواست جدید')
+            ->assertSeeHtml('href="'.route('requests.create').'"');
     });
 
     it('renders the request create page', function (): void {

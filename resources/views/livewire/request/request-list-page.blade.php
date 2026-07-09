@@ -1,6 +1,13 @@
 <div wire:init="refreshList">
     <x-ui.page-header title="درخواست‌های من" description="فهرست درخواست‌های ثبت‌شده شما">
         <x-slot:actions>
+            <a
+                href="{{ route('requests.create') }}"
+                class="inline-flex items-center justify-center rounded-lg bg-sky-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-sky-800"
+                wire:navigate
+            >
+                ثبت درخواست جدید
+            </a>
             <x-ui.button
                 type="button"
                 variant="secondary"
@@ -35,7 +42,17 @@
         <x-ui.empty-state
             title="درخواستی ثبت نشده است"
             description="هنوز درخواستی برای نمایش وجود ندارد."
-        />
+        >
+            <x-slot:action>
+                <a
+                    href="{{ route('requests.create') }}"
+                    class="inline-flex items-center justify-center rounded-lg bg-sky-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-sky-800"
+                    wire:navigate
+                >
+                    ثبت درخواست جدید
+                </a>
+            </x-slot:action>
+        </x-ui.empty-state>
     @else
         <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
             <table class="min-w-full divide-y divide-slate-200 text-sm">
