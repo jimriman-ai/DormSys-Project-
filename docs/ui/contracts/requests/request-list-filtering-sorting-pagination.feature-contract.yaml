@@ -1,0 +1,463 @@
+feature:
+  id: request-list-filtering-sorting-pagination
+  name: Request List Filtering / Sorting / Pagination
+  module: Request
+  classification: successor-feature
+  version: 0.1.1
+  status: approved
+
+decision_reference:
+  artifact: docs/ui/decisions/requests/request-list-filtering-sorting-pagination.review-decision.md
+  status: CONTRACT_REQUIRED_BEFORE_IMPLEMENTATION
+  classification: MIXED_UI_AND_READ_MODEL_GAP
+
+purpose:
+  summary: Add governed filtering, sorting, and pagination to the employee Request List web surface while preserving backend-authoritative read semantics.
+  rationale:
+    - Approved request-list contract v1.0.2 explicitly excludes filtering, sorting, and pagination.
+    - Repository evidence shows the current list uses a fixed read path (employee scope, orderByDesc created_at, full get()).
+    - P4 reopens only these three capabilities under a separate successor contract without redesigning the request list.
+
+baseline_contract:
+  id: requests/request-list
+  version: 1.0.2
+  status: approved
+  relationship: predecessor
+  note: >
+    The approved request-list contract and lock remain authoritative for all
+    non-P4 list behavior. P4 supersedes only the filtering, sorting, and
+    pagination exclusions within this contract's approved scope. P4 does not
+    amend request-list.feature-contract.yaml directly.
+
+scope:
+  in_scope:
+    - Web Request List page only (route requests.index, RequestListPage)
+    - Status filtering on the employee-owned request list
+    - Single-field column sorting on an approved allowlist
+    - Offset page-number pagination with fixed page size
+    - Component state and URL query-string synchronization for filter, sort, and page
+    - Distinct empty-state behavior for global empty vs filtered-empty results
+    - Backend read/query extension for list controls consumed by the web list only
+    - Feature-specific tests for filter, sort, pagination, URL state, and empty states
+  out_of_scope:
+    - API route requests.flow.mine (RequestFlowController::indexMine) behavior changes
+    - Existing RequestReadContract::listByEmployee signature or semantics changes
+    - Free-text search or code substring search
+    - Type filter, dormitory filter, or date-range filter
+    - Multi-column or multi-field sorting
+    - User-configurable page size or per-page selector
+    - Cursor-based pagination
+    - CSV export
+    - Request mutation, workflow actions, or capability presentation changes
+    - Request Show changes
+    - Request List row detail navigation changes
+    - Create entrypoint changes
+    - New table columns or list layout redesign beyond minimum controls required by P4
+    - Client-side-only filtering, sorting, or pagination over a full in-memory result set
+    - Cross-module query joins or UI-side authorization logic
+
+user_visible_behavior:
+  surface: Request List page (درخواست‌های من)
+  filtering:
+    control_label: فیلتر
+    model: single optional status filter
+    behavior:
+      - User may select one status value or clear the filter to show all statuses.
+      - Filter options must be consumed from backend-supplied status option metadata per filtering.status_options.
+      - Applying or changing the status filter reloads the list from the backend using the active filter.
+      - Clearing the filter restores the unfiltered employee-owned list.
+  sorting:
+    control_label: مرتب‌سازی
+    model: single-field sort with direction toggle
+    behavior:
+      - User may sort by one approved column at a time.
+      - User may toggle ascending or descending direction for the active sort field.
+      - Sorting reloads the list from the backend using the active sort field and direction.
+  pagination:
+    model: page-number navigation with fixed page size
+    behavior:
+      - User may navigate forward and backward across pages when total results exceed one page.
+      - Current page and total page count must be visible when pagination is active.
+      - Pagination controls are hidden when total results fit within one page.
+  refresh:
+    behavior: Manual refresh preserves active filter, sort, and page state and reloads from backend.
+  unchanged_from_baseline:
+    - Table columns remain code, type, status, dormitory_id, check_in_date, check_out_date, submitted_at, and show navigation.
+    - Loading, ready, and error render states remain supported.
+    - Create entrypoint and row detail navigation remain as currently implemented.
+
+state_model:
+  component_state:
+    - name: status_filter
+      type: string|null
+      default: null
+      meaning: null means no status filter; non-null means exact backend status value filter
+    - name: sort_field
+      type: enum
+      allowed_values:
+        - submitted_at
+        - code
+        - status
+        - check_in_date
+        - check_out_date
+      default: submitted_at
+    - name: sort_direction
+      type: enum
+      allowed_values:
+        - asc
+        - desc
+      default: desc
+    - name: page
+      type: positive_integer
+      default: 1
+      minimum: 1
+  persistence: livewire_component_state_backed_by_url_query_string
+  reset_rules:
+    - trigger: status_filter changes
+      resets: page to 1
+    - trigger: sort_field changes
+      resets: page to 1
+    - trigger: sort_direction changes
+      resets: page to 1
+    - trigger: clear_filters action
+      resets: status_filter to null, sort_field to submitted_at, sort_direction to desc, page to 1
+    - trigger: manual_refresh
+      resets: none; preserves active filter, sort, and page
+
+url_state:
+  synchronized: true
+  scope: requests.index only
+  query_parameters:
+    - name: status
+      maps_to: status_filter
+      optional: true
+      omission_default: null
+    - name: sort
+      maps_to: sort_field
+      optional: true
+      omission_default: submitted_at
+    - name: dir
+      maps_to: sort_direction
+      optional: true
+      omission_default: desc
+      allowed_values:
+        - asc
+        - desc
+    - name: page
+      maps_to: page
+      optional: true
+      omission_default: 1
+  validation:
+    invalid_sort_field: coerce to submitted_at
+    invalid_sort_direction: coerce to desc
+    invalid_page_below_one: coerce to 1
+    invalid_page_above_last_page: coerce to last_page_or_1_when_empty
+    invalid_status_value: treat as no filter (null)
+  reload_behavior: Direct navigation or browser reload with valid query parameters restores the same filtered, sorted, paginated list state.
+
+query_semantics:
+  authority_owner: backend
+  consumption_surface: web Request List only
+  baseline_behavior_preserved_when_defaults_applied:
+    employee_scope: employee_id from RequestPrincipalEmployeeResolver::requireEmployeeId
+    default_sort: submitted_at descending (equivalent to current orderByDesc created_at baseline)
+    default_filter: none
+    default_page: 1
+    cardinality_note: >
+      Default sort and filter match the pre-P4 baseline, but result cardinality does not.
+      P4 default load is paginated (page 1, per_page 15). Pre-P4 returned the full
+      employee result set via get(). This cardinality change is intentional governed P4
+      behavior, not accidental regression.
+  read_operation:
+    description: New governed list read operation for Request List page consumption.
+    contract_requirement: Must accept employee scope plus list-control criteria and return a paginated result envelope.
+    criteria_input:
+      employee_id:
+        required: true
+        source: RequestPrincipalEmployeeResolver::requireEmployeeId
+      status:
+        required: false
+        semantics: exact match filter; omitted or null returns all statuses for the employee
+      sort_field:
+        required: true
+        default: submitted_at
+      sort_direction:
+        required: true
+        default: desc
+        allowed_values:
+          - asc
+          - desc
+      page:
+        required: true
+        default: 1
+        minimum: 1
+      per_page:
+        required: true
+        fixed_value: 15
+    result_envelope:
+      items: RequestSummaryDTO[]
+      pagination:
+        current_page: integer
+        per_page: integer
+        total: integer
+        last_page: integer
+    enforcement_rules:
+      - Filter, sort, and page slicing must be applied in backend read/query execution.
+      - UI must not fetch the full employee list and filter, sort, or paginate in memory.
+      - Sorting must use backend-defined field-to-persistence mapping only.
+      - Invalid or unsupported criteria must be normalized per url_state.validation before query execution.
+  unchanged_read_paths:
+    - RequestReadContract::listByEmployee remains available and unchanged for existing API consumption.
+    - RequestFlowController::indexMine continues to use listByEmployee without list-control parameters.
+
+sorting:
+  model: single_field_only
+  default:
+    field: submitted_at
+    direction: desc
+  sortable_fields:
+    - field: submitted_at
+      display_column: submitted_at
+      persistence_mapping: created_at
+      directions:
+        - asc
+        - desc
+    - field: code
+      display_column: code
+      persistence_mapping: code
+      directions:
+        - asc
+        - desc
+    - field: status
+      display_column: status
+      persistence_mapping: status
+      directions:
+        - asc
+        - desc
+    - field: check_in_date
+      display_column: check_in_date
+      persistence_mapping: check_in_date
+      directions:
+        - asc
+        - desc
+    - field: check_out_date
+      display_column: check_out_date
+      persistence_mapping: check_out_date
+      directions:
+        - asc
+        - desc
+  excluded_from_sorting:
+    - type
+    - dormitory_id
+  tie_breaker: When primary sort values are equal, secondary ordering by created_at descending must be applied in backend query execution.
+
+filtering:
+  model: optional_exact_status_filter
+  status_options:
+    authority: backend_domain
+    source_of_truth: Request workflow status values serialized as RequestSummaryDTO.status
+    value_serialization: Must match RequestSummaryDTO.status as produced by the current read query (RequestModel.status getValue semantics).
+    delivery: Backend-supplied metadata consumed by the web list; UI must not infer options from currently visible table rows, current page items, or client-side row aggregation.
+    option_set_scope: Governed allowlist of filterable request status values applicable to employee-owned requests; not derived from rendered row presence or absence.
+    invalid_selection: Coerce to no filter (null) per url_state.validation.invalid_status_value
+  filterable_fields:
+    - field: status
+      match_type: exact
+      source_of_truth: backend request status values as used in RequestSummaryDTO.status
+  excluded_filters:
+    - free_text_search
+    - code_substring_search
+    - type_filter
+    - dormitory_id_filter
+    - check_in_date_range
+    - check_out_date_range
+    - submitted_at_range
+  apply_behavior: Backend query applies status filter before sort and pagination.
+  clear_behavior: Clearing status filter removes status constraint and resets page to 1.
+
+pagination:
+  model: offset_page_number
+  pre_p4_baseline:
+    behavior: Request list returned the full employee-owned result set in one response using listByEmployee (employee_id constraint, orderByDesc created_at, get()).
+    cardinality: All matching employee requests rendered when total was greater than zero.
+  p4_behavior:
+    default_load: Paginated from first interaction; page 1 with per_page 15 without requiring user pagination action.
+    cardinality_change: Intentional and governed. When total employee requests exceed 15, default load shows at most 15 rows.
+    not_preserved: Full-list cardinality from pre-P4 get() is not preserved when total exceeds per_page.
+    execution_authority: Backend query applies pagination; UI must not slice an in-memory full list.
+  per_page:
+    value: 15
+    configurable_by_user: false
+  page_semantics:
+    first_page: 1
+    empty_result_last_page: 1
+    out_of_range_page: coerce to last_page when results exist; coerce to 1 when no results exist
+  ui_requirements:
+    - Show previous and next affordances when applicable.
+    - Show current page and last page when last_page is greater than 1.
+    - Do not render pagination controls when total results are zero or fit within one page.
+  interaction_with_filter_and_sort:
+    - Pagination applies after active filter and sort.
+    - Changing filter or sort resets page to 1 before query execution.
+
+empty_states:
+  global_empty:
+    condition: total equals 0 and status_filter is null
+    ui_state: empty
+    copy:
+      title: درخواستی ثبت نشده است
+      description: هنوز درخواستی برای نمایش وجود ندارد.
+  filtered_empty:
+    condition: total equals 0 and status_filter is not null
+    ui_state: ready
+    copy:
+      title: نتیجه‌ای یافت نشد
+      description: درخواستی با وضعیت انتخاب‌شده وجود ندارد.
+    required_action:
+      name: clear_filters
+      label: حذف فیلتر
+      behavior: Clears status_filter and reloads list using default sort and page 1.
+  error_state:
+    unchanged_from_baseline: true
+
+unchanged_behavior:
+  from_request_list_baseline:
+    - Employee-scoped list access via authenticated web route
+    - Principal resolution via RequestPrincipalEmployeeResolver
+    - DTO-backed row rendering using RequestSummaryDTO fields
+    - Loading, ready, and error render states
+    - Manual refresh action
+    - Read-only list; no mutation actions
+    - Anti-leak boundary: UI does not derive workflow meaning or authorization
+    - Default sort equivalence when no user sort change (submitted_at desc / created_at desc)
+  intentional_p4_changes:
+    - Default list load is paginated at 15 rows per page rather than returning the full employee result set
+    - Status filter, single-field sort, and page navigation controls are added on the web list surface
+  from_request_list_detail_navigation:
+    - Row-level navigation to requests.show remains available and unchanged
+  from_api_baseline:
+    - requests.flow.mine response shape and semantics remain unchanged
+
+acceptance_criteria:
+  functional:
+    - Request List exposes a status filter control labeled فیلتر.
+    - Request List exposes a sort control labeled مرتب‌سازی for approved single-field sorting.
+    - Request List exposes pagination controls when results exceed 15 items.
+    - Applying a status filter returns only employee-owned requests with exact matching status from backend query execution.
+    - Clearing the status filter restores the unfiltered employee-owned list subject to active pagination rules.
+    - Status filter control options are backend-supplied and are not inferred from currently visible table rows.
+    - Status filter option values use the same serialization as RequestSummaryDTO.status.
+    - Default list order with no user sort change matches current baseline: submitted_at descending (created_at desc).
+    - Default list load returns page 1 with at most 15 rows; when total exceeds 15 this is intentional P4 pagination, not full-list cardinality preservation.
+    - Changing sort field or direction changes row order according to backend-applied sort rules.
+    - Page navigation shows a different slice of the same filtered and sorted result set without client-side slicing.
+    - Changing filter or sort resets the active page to 1.
+    - URL query parameters status, sort, dir, and page restore equivalent list state after reload.
+    - Global empty state appears only when the employee has no requests and no status filter is active.
+    - Filtered-empty state appears when a status filter is active and zero rows match, with a clear-filter action.
+  non_functional:
+    - Filter, sort, and pagination are enforced in backend read/query execution; not in UI memory over full listByEmployee results.
+    - requests.flow.mine continues to use listByEmployee without list-control parameters and remains behaviorally unchanged.
+    - No mutation, export, search, or workflow action surfaces are introduced.
+    - Existing table columns and row detail navigation remain intact.
+  regression_safety:
+    - Request List remains read-only.
+    - Request Show behavior and contract boundaries remain unchanged.
+    - Existing list access, refresh, loading, and error behavior remain available.
+
+test_implications:
+  required_new_tests:
+    - Status filter reduces visible rows to exact status matches
+    - Status filter options are backend-supplied and not derived from visible row data
+    - Clearing status filter restores unfiltered employee-owned list subject to pagination
+    - Default load returns at most 15 rows when total exceeds per_page without user pagination interaction
+    - Default sort matches submitted_at descending baseline across multiple rows
+    - Non-default sort changes row order relative to default
+    - Pagination returns at most 15 rows per page and navigates across pages correctly
+    - Filter or sort change resets page to 1
+    - URL query parameters restore filter, sort, direction, and page on reload
+    - Global empty state renders only without active status filter
+    - Filtered-empty state renders with clear-filter action when status filter matches zero rows
+  required_regression_updates:
+    - Remove or replace negative assertions that forbid presence of فیلتر and مرتب‌سازی on Request List
+    - Assert requests.flow.mine remains unchanged by P4 implementation
+  boundary:
+    - Tests must not require changes to frozen Request Show contracts or tests
+    - Tests must validate backend query behavior, not only DOM visibility of controls
+
+dependencies_or_preconditions:
+  requires:
+    - Approved request-list baseline implementation
+    - Approved request-list-detail-navigation behavior
+    - Review decision CONTRACT_REQUIRED_BEFORE_IMPLEMENTATION
+    - Separate P4 implementation lock approved before coding
+    - Backend read/query extension for paginated filtered sorted list consumption by web surface only
+  does_not_require:
+    - Request Show changes
+    - API list endpoint changes
+    - Mutation workflow changes
+    - New authorization model beyond existing route and principal resolution
+
+governance:
+  classification: successor-feature
+  prerequisites:
+    - This contract approved
+    - Separate implementation lock approved before any coding
+    - Explicit confirmation that request-list.implementation-lock.yaml forbidden actions filter_list, sort_list, and paginate_list are superseded only within P4 lock scope
+  review_focus:
+    - Backend-authoritative filter, sort, and pagination semantics
+    - URL state correctness and reset rules
+    - Distinct empty-state behavior
+    - No scope bleed into API, mutations, or Request Show
+  frozen_boundaries:
+    - request-list.feature-contract.yaml v1.0.2 remains approved for original non-P4 scope
+    - request-show feature contract and implementation remain unchanged
+
+anti_leak_boundaries:
+  forbidden:
+    - ui_side_filtering_over_full_result_set
+    - ui_side_sorting_over_full_result_set
+    - ui_side_pagination_over_full_result_set
+    - ui_derives_workflow_transitions
+    - ui_computes_permission_outcomes
+    - ui_inferrs_backend_capabilities
+    - ui_infers_filter_options_from_rendered_rows
+  required:
+    - backend_executed_filter_sort_pagination
+    - dto_field_consumption_only_for_row_rendering
+    - list_control_criteria_forwarded_to_single_backend_read_operation
+
+notes:
+  - P4 intentionally limits filtering to one optional exact status filter to keep scope minimal and testable.
+  - Default sort preserves the current repository baseline equivalent (created_at desc via submitted_at desc).
+  - Default pagination intentionally changes list cardinality from pre-P4 full get() to page 1 at 15 rows per page.
+  - Status filter option authority is contract-resolved; delivery packaging remains an open implementation decision.
+  - Fixed page size of 15 is the initial governed value; changing it requires contract revision.
+  - This contract authorizes behavior definition only; implementation lock drafting is a separate required step.
+
+open_questions:
+  - id: status_filter_option_delivery_mechanism
+    question: How are backend-supplied status filter options delivered to RequestListPage?
+    resolved_in_contract:
+      - Options are backend/domain authoritative
+      - UI must not infer options from rendered rows
+      - Option values must match RequestSummaryDTO.status serialization
+    unresolved:
+      - Whether status options are returned in the paginated list read envelope metadata or via a separate backend read output invoked by the list page
+    lock_note: Implementation lock must pin the chosen delivery mechanism without changing option authority rules
+
+references:
+  analysis:
+    - docs/ui/analysis/requests/request-list-filtering-sorting-pagination.repo-inspection.md
+    - docs/ui/analysis/requests/request-list-filtering-sorting-pagination.feature-analysis.md
+  decision:
+    - docs/ui/decisions/requests/request-list-filtering-sorting-pagination.review-decision.md
+  contract_review:
+    - docs/ui/decisions/requests/request-list-filtering-sorting-pagination.contract-review.md
+  predecessor_artifacts:
+    - docs/ui/contracts/requests/request-list.feature-contract.yaml
+    - docs/ui/contracts/requests/request-list.implementation-lock.yaml
+    - docs/ui/contracts/requests/request-list-detail-navigation.feature-contract.yaml
+  architecture_authority:
+    - .specify/ARCHITECTURE.md
+    - docs/architecture/ui/UI-ANTI-LEAK-CONTRACT.md

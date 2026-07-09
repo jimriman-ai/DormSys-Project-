@@ -146,7 +146,7 @@ describe('request list detail navigation ui flow', function (): void {
             ->assertSee('بروزرسانی')
             ->assertSee('ثبت درخواست جدید')
             ->assertSeeHtml('href="'.route('requests.create').'"')
-            ->assertDontSee('فیلتر')
-            ->assertDontSee('مرتب‌سازی', escape: false);
+            ->assertSee('فیلتر')
+            ->assertSee('مرتب‌سازی', escape: false);
     });
 });

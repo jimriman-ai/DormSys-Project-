@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Request\Application\Contracts\Internal;
 
+use App\Modules\Request\Application\DTOs\EmployeeRequestListQueryDTO;
+use App\Modules\Request\Application\DTOs\PaginatedRequestSummaryListDTO;
 use App\Modules\Request\Application\DTOs\RequestSummaryDTO;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
 
@@ -17,6 +19,8 @@ interface RequestReadQueryPort
      * @return list<RequestSummaryDTO>
      */
     public function listByEmployee(string $employeeId): array;
+
+    public function listByEmployeePaginated(EmployeeRequestListQueryDTO $query): PaginatedRequestSummaryListDTO;
 
     /**
      * @return list<RequestSummaryDTO>

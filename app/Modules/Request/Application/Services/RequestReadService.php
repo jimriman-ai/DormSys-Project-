@@ -7,6 +7,8 @@ namespace App\Modules\Request\Application\Services;
 use App\Modules\Request\Application\Contracts\Internal\RequestReadQueryPort;
 use App\Modules\Request\Application\Contracts\RequestApprovalRepositoryContract;
 use App\Modules\Request\Application\Contracts\RequestReadContract;
+use App\Modules\Request\Application\DTOs\EmployeeRequestListQueryDTO;
+use App\Modules\Request\Application\DTOs\PaginatedRequestSummaryListDTO;
 use App\Modules\Request\Application\DTOs\RequestApprovalHistoryDTO;
 use App\Modules\Request\Application\DTOs\RequestSummaryDTO;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
@@ -31,6 +33,11 @@ final class RequestReadService implements RequestReadContract
     public function listByEmployee(string $employeeId): array
     {
         return $this->queries->listByEmployee($employeeId);
+    }
+
+    public function listByEmployeePaginated(EmployeeRequestListQueryDTO $query): PaginatedRequestSummaryListDTO
+    {
+        return $this->queries->listByEmployeePaginated($query);
     }
 
     public function listApprovedByEmployee(string $employeeId): array

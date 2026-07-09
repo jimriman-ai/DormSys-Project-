@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace App\Modules\Request\Infrastructure\Queries;
 
 use App\Modules\Request\Application\Contracts\Internal\RequestReadQueryPort;
+use App\Modules\Request\Application\DTOs\EmployeeRequestListQueryDTO;
+use App\Modules\Request\Application\DTOs\PaginatedRequestSummaryListDTO;
 use App\Modules\Request\Application\DTOs\RequestSummaryDTO;
 use App\Modules\Request\Domain\Enums\RequestType;
+use App\Modules\Request\Application\DTOs\RequestEmployeeListFilterOptions;
 use App\Modules\Request\Domain\States\ApprovedState;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
 use App\Modules\Request\Infrastructure\Persistence\Models\RequestModel;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 final class RequestReadQuery implements RequestReadQueryPort
@@ -40,6 +44,74 @@ final class RequestReadQuery implements RequestReadQueryPort
                 ->orderByDesc('created_at')
                 ->get(),
         );
+    }
+
+    public function listByEmployeePaginated(EmployeeRequestListQueryDTO $query): PaginatedRequestSummaryListDTO
+    {
+        $builder = $this->employeeListQueryBuilder($query->employeeId, $query->status);
+
+        $sortColumn = $this->resolveSortColumn($query->sortField);
+        $direction = $query->sortDirection === 'asc' ? 'asc' : 'desc';
+
+        $builder->orderBy($sortColumn, $direction);
+
+        if ($sortColumn !== 'created_at') {
+            $builder->orderByDesc('created_at');
+        }
+
+        $total = (clone $builder)->count();
+        $perPage = $query->perPage;
+        $lastPage = max((int) ceil($total / $perPage), 1);
+        $page = min(max($query->page, 1), $lastPage);
+
+        if ($total === 0) {
+            $page = 1;
+        }
+
+        $models = $builder->forPage($page, $perPage)->get();
+
+        return new PaginatedRequestSummaryListDTO(
+            items: $this->mapSummaries($models),
+            total: $total,
+            currentPage: $page,
+            perPage: $perPage,
+            lastPage: $lastPage,
+            statusOptions: RequestEmployeeListFilterOptions::statusValues(),
+        );
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function filterableStatusOptions(): array
+    {
+        return RequestEmployeeListFilterOptions::statusValues();
+    }
+
+    /**
+     * @return Builder<RequestModel>
+     */
+    private function employeeListQueryBuilder(string $employeeId, ?string $status): Builder
+    {
+        $builder = RequestModel::query()->where('employee_id', $employeeId);
+
+        if ($status !== null) {
+            $builder->where('status', $status);
+        }
+
+        return $builder;
+    }
+
+    private function resolveSortColumn(string $sortField): string
+    {
+        return match ($sortField) {
+            'submitted_at' => 'created_at',
+            'code' => 'code',
+            'status' => 'status',
+            'check_in_date' => 'check_in_date',
+            'check_out_date' => 'check_out_date',
+            default => 'created_at',
+        };
     }
 
     public function listApprovedByEmployee(string $employeeId): array

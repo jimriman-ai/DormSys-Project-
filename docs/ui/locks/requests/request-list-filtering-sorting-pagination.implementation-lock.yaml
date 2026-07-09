@@ -1,0 +1,438 @@
+id: request-list-filtering-sorting-pagination
+feature: request-list-filtering-sorting-pagination
+name: Request List Filtering / Sorting / Pagination
+module: Request
+version: 0.1.0
+status: approved
+lock_type: ui_feature_implementation
+
+authorization_notice:
+  summary: This lock authorizes P4 implementation only after approval.
+  rule: Implementation may begin only after this lock status is changed to approved and the source feature contract is approved.
+
+contract_reference:
+  path: docs/ui/contracts/requests/request-list-filtering-sorting-pagination.feature-contract.yaml
+  id: request-list-filtering-sorting-pagination
+  version: 0.1.1
+  required_status: approved
+
+review_references:
+  review_decision: docs/ui/decisions/requests/request-list-filtering-sorting-pagination.review-decision.md
+  contract_review: docs/ui/decisions/requests/request-list-filtering-sorting-pagination.contract-review.md
+  contract_review_verdict: APPROVED_FOR_LOCK_DRAFTING
+
+scope:
+  in_scope:
+    - Web Request List surface only (route requests.index, RequestListPage)
+    - Optional exact status filter
+    - Single-field sorting on contract allowlist
+    - Offset page-number pagination with fixed per_page 15
+    - URL-synchronized state for status, sort, dir, page
+    - Backend-authoritative filter, sort, and pagination query execution for web list consumption
+    - Distinct global-empty vs filtered-empty presentation behavior
+    - Feature-specific tests and required regression test updates
+  out_of_scope:
+    - API route requests.flow.mine behavior changes
+    - RequestReadContract::listByEmployee signature or semantics changes
+    - Free-text search or code substring search
+    - Type, dormitory, or date-range filtering
+    - Multi-column or multi-field sorting
+    - User-configurable page size or per-page selector
+    - Cursor-based or infinite-scroll pagination
+    - CSV export
+    - Dashboard or reporting changes
+    - Request mutation, workflow actions, or capability presentation changes
+    - Request Show changes
+    - Request create entrypoint changes
+    - Request List row detail navigation behavior changes beyond preservation
+    - New table columns or list layout redesign beyond minimum P4 controls
+    - Client-side authoritative filtering, sorting, or pagination
+    - Client-side inference of status filter options from rendered rows
+    - Cross-module query joins or UI-side authorization logic
+
+allowed_actions:
+  governed:
+    - name: execute_backend_authoritative_paginated_query
+      type: read
+      scope: web Request List only
+      rule: Single backend read operation applies employee scope plus status, sort_field, sort_direction, page, per_page=15 and returns paginated RequestSummaryDTO items with pagination metadata.
+    - name: read_backend_authoritative_status_options
+      type: read
+      scope: status filter control population only
+      rule: Status filter options must be backend-supplied; values match RequestSummaryDTO.status serialization; UI must not infer from visible rows.
+    - name: apply_status_filter
+      type: ui_read_trigger
+      rule: Sets status_filter and reloads via execute_backend_authoritative_paginated_query; resets page to 1.
+    - name: clear_status_filter
+      type: ui_read_trigger
+      rule: Clears status_filter to null and reloads; resets page to 1.
+    - name: clear_filters
+      type: ui_read_trigger
+      rule: Resets status_filter, sort_field=submitted_at, sort_direction=desc, page=1 per contract reset_rules.
+    - name: apply_sort
+      type: ui_read_trigger
+      rule: Sets sort_field and/or sort_direction from allowlist and reloads; resets page to 1 on field or direction change.
+    - name: paginate_list
+      type: ui_read_trigger
+      rule: Changes page within validated bounds and reloads via backend paginated query.
+    - name: reset_page_on_filter_or_sort_change
+      type: state_rule
+      rule: Automatic page reset to 1 when status_filter, sort_field, or sort_direction changes.
+    - name: synchronize_url_state
+      type: presentation_state
+      rule: Bidirectional sync for query params status, sort, dir, page only, with contract coercion rules.
+    - name: refresh_list
+      type: read
+      rule: Manual refresh preserves active filter, sort, and page; reloads via execute_backend_authoritative_paginated_query.
+    - name: render_global_empty_state
+      type: presentation
+      rule: When total=0 and status_filter is null; ui_state empty with contract copy.
+    - name: render_filtered_empty_state
+      type: presentation
+      rule: When total=0 and status_filter is not null; ui_state ready with contract copy and clear_filters action.
+
+forbidden_actions:
+  remains_forbidden:
+    - free_text_search
+    - code_substring_search
+    - type_filter
+    - dormitory_id_filter
+    - date_range_filter
+    - advanced_filtering
+    - export_csv
+    - dashboard_changes
+    - reporting_changes
+    - api_list_contract_changes
+    - api_index_mine_behavior_changes
+    - create_request
+    - update_request
+    - delete_request
+    - approve_request
+    - reject_request
+    - change_status
+    - workflow_transition_execution
+    - per_page_selector
+    - cursor_pagination
+    - infinite_scroll_pagination
+    - multi_column_sort
+    - multi_field_sort
+    - client_side_authoritative_filtering
+    - client_side_authoritative_sorting
+    - client_side_authoritative_pagination
+    - client_side_status_option_inference
+    - ui_infers_filter_options_from_rendered_rows
+    - listByEmployee_behavior_change
+
+allowed_surfaces:
+  presentation:
+    may_modify:
+      - path: app/Modules/Request/Presentation/Livewire/RequestListPage.php
+        constraint: P4 list controls, URL state sync, and delegated backend read calls only; no mutation or authorization logic.
+      - path: resources/views/livewire/request/request-list-page.blade.php
+        constraint: Filter, sort, pagination controls, empty states, and table rendering only; no unrelated layout redesign.
+  application_read_extension:
+    may_modify:
+      - path: app/Modules/Request/Application/Contracts/RequestReadContract.php
+        constraint: Add new P4 paginated list read method only; do not change listByEmployee or other existing method signatures or semantics.
+      - path: app/Modules/Request/Application/Contracts/Internal/RequestReadQueryPort.php
+        constraint: Add matching internal query port method for P4 paginated list read only.
+      - path: app/Modules/Request/Application/Services/RequestReadService.php
+        constraint: Delegate new P4 read method only; preserve existing methods unchanged.
+    may_create:
+      - path: app/Modules/Request/Application/DTOs/*
+        constraint: DTOs required for P4 list criteria, pagination envelope, and/or backend-supplied status filter options only.
+  infrastructure_read_extension:
+    may_modify:
+      - path: app/Modules/Request/Infrastructure/Queries/RequestReadQuery.php
+        constraint: Implement backend filter, sort, pagination, and optional status-option metadata/query support for P4 only.
+      - path: app/Modules/Request/Infrastructure/Providers/RequestServiceProvider.php
+        constraint: Binding changes only if required for new P4 read path; no unrelated provider expansion.
+  tests:
+    may_modify:
+      - path: tests/Feature/Modules/Request/RequestUiFlowTest.php
+        constraint: Updates required by P4 regression changes only (e.g. pagination/empty-state expectations).
+      - path: tests/Feature/Modules/Request/RequestListDetailNavigationUiFlowTest.php
+        constraint: Remove/replace negative filter/sort absence assertions and preserve navigation regression only.
+    may_create:
+      - path: tests/Feature/Modules/Request/RequestListFilteringSortingPaginationUiFlowTest.php
+        constraint: P4 filter, sort, pagination, URL state, page reset, empty-state, and backend-authority tests only.
+      - path: tests/Unit/Modules/Request/**
+        constraint: Unit tests for P4 read query behavior only if strictly necessary.
+
+forbidden_surfaces:
+  do_not_modify:
+    api_and_unchanged_read_paths:
+      - app/Modules/Request/Presentation/Http/Controllers/RequestFlowController.php
+      - app/Modules/Request/Presentation/Routes/requests.php
+      - routes/api.php
+    request_show_freeze:
+      - app/Modules/Request/Presentation/Livewire/RequestShowPage.php
+      - resources/views/livewire/request/request-show-page.blade.php
+      - tests/Feature/Modules/Request/RequestShowUiFlowTest.php
+      - docs/ui/contracts/requests/request-show.feature-contract.yaml
+      - docs/ui/contracts/requests/request-show.implementation-lock.yaml
+    unrelated_request_presentation:
+      - app/Modules/Request/Presentation/Livewire/RequestCreatePage.php
+      - resources/views/livewire/request/request-create-page.blade.php
+    domain_freeze:
+      - app/Modules/Request/Domain/**
+    auth_and_routes_freeze:
+      - app/Modules/Request/Presentation/Http/Middleware/**
+      - app/Modules/Identity/**
+      - app/**/Policies/**
+      - app/**/Guards/**
+      - app/Modules/Request/Presentation/Routes/web.php
+      - routes/web.php
+    unrelated_infrastructure:
+      - database/**
+      - config/**
+      - bootstrap/**
+    governance_freeze:
+      - docs/ui/contracts/requests/request-list.feature-contract.yaml
+      - docs/ui/contracts/requests/request-list.implementation-lock.yaml
+      - docs/ui/contracts/requests/request-list-filtering-sorting-pagination.feature-contract.yaml
+
+query_boundary:
+  authority: backend
+  required:
+    - Filter, sort, and pagination are applied in backend read/query execution.
+    - Web RequestListPage consumes only the new P4 paginated read operation for list loading.
+    - RequestReadContract::listByEmployee remains unchanged and continues to serve existing API consumption.
+    - RequestFlowController::indexMine must remain behaviorally unchanged.
+    - Status filter uses exact match on RequestSummaryDTO.status serialization.
+    - Sort uses only contract allowlist fields with contract persistence mappings and tie-breaker rule.
+    - per_page is fixed at 15.
+    - Default load is page 1 with paginated cardinality; pre-P4 full get() cardinality is intentionally not preserved when total exceeds 15.
+  forbidden:
+    - Fetching full employee list via listByEmployee in RequestListPage and filtering/sorting/paginating in memory
+    - Changing listByEmployee query semantics or return shape
+    - Changing indexMine to use P4 paginated read path
+    - Cross-module Eloquent queries from presentation
+    - Domain mutation via list read path
+  allowed_read_extensions:
+    summary: Minimum new read-contract and query-port method(s) plus supporting DTO(s) for P4 only.
+    status_option_delivery:
+      allowed_choices:
+        - paginated_read_envelope_metadata
+        - separate_backend_read_output
+      constraint: Either choice is allowed; option authority rules from contract must not change.
+
+state_boundary:
+  component_state:
+    allowed:
+      - status_filter
+      - sort_field
+      - sort_direction
+      - page
+      - uiState
+      - rows derived from backend paginated envelope only
+    defaults:
+      status_filter: null
+      sort_field: submitted_at
+      sort_direction: desc
+      page: 1
+  reset_rules:
+    - status_filter change resets page to 1
+    - sort_field change resets page to 1
+    - sort_direction change resets page to 1
+    - clear_filters resets filter and sort defaults and page to 1
+    - manual_refresh preserves active filter, sort, and page
+  forbidden_state:
+    - Additional filter dimensions
+    - Additional sort dimensions
+    - per_page user state
+    - Client-side authoritative result sets
+
+url_boundary:
+  synchronized: true
+  scope: requests.index only
+  allowed_query_parameters:
+    - name: status
+      maps_to: status_filter
+    - name: sort
+      maps_to: sort_field
+      allowed_values:
+        - submitted_at
+        - code
+        - status
+        - check_in_date
+        - check_out_date
+    - name: dir
+      maps_to: sort_direction
+      allowed_values:
+        - asc
+        - desc
+    - name: page
+      maps_to: page
+  coercion:
+    invalid_sort_field: submitted_at
+    invalid_sort_direction: desc
+    invalid_page_below_one: 1
+    invalid_page_above_last_page: last_page_or_1_when_empty
+    invalid_status_value: null
+  forbidden_query_parameters:
+    - search
+    - q
+    - query
+    - type
+    - dormitory_id
+    - per_page
+    - page_size
+    - cursor
+    - export
+
+filter_boundary:
+  model: optional_exact_status_filter
+  allowed_filter_fields:
+    - status
+  status_options:
+    authority: backend_domain
+    serialization: RequestSummaryDTO.status
+    forbidden:
+      - infer_from_visible_rows
+      - infer_from_current_page_items
+      - client_side_row_aggregation
+
+sort_boundary:
+  model: single_field_only
+  allowed_sort_fields:
+    - submitted_at
+    - code
+    - status
+    - check_in_date
+    - check_out_date
+  default:
+    field: submitted_at
+    direction: desc
+  persistence_mappings:
+    submitted_at: created_at
+    code: code
+    status: status
+    check_in_date: check_in_date
+    check_out_date: check_out_date
+  tie_breaker: created_at descending when primary sort values are equal
+
+pagination_boundary:
+  model: offset_page_number
+  per_page: 15
+  configurable_by_user: false
+  pre_p4_baseline:
+    behavior: full employee result set via listByEmployee get()
+  p4_default_load:
+    page: 1
+    per_page: 15
+    cardinality_change: intentional governed change when total exceeds 15
+
+predecessor_lock_interaction:
+  predecessor_locks:
+    - id: requests/request-list
+      path: docs/ui/contracts/requests/request-list.implementation-lock.yaml
+      version: 1.0.2
+    - id: request-list-detail-navigation
+      path: docs/ui/locks/requests/request-list-detail-navigation.implementation-lock.yaml
+      version: 0.1.0
+  supersession_rule: >
+    This P4 lock supersedes predecessor forbidden actions filter_list, sort_list,
+    and paginate_list only within the exact approved P4 scope defined by this lock
+    and the P4 feature contract. Predecessor locks remain authoritative for all
+    other behavior and are not globally amended.
+  superseded_within_p4_scope_only:
+    - filter_list
+    - sort_list
+    - paginate_list
+  not_superseded:
+    - predecessor backend_change_policy outside P4 authorized read extension
+    - request-show freeze
+    - request-list baseline behaviors outside P4 additions
+    - detail-navigation behavior except required regression test updates
+  predecessor_files_remain_unmodified:
+    rule: Do not edit predecessor lock or contract files during P4 implementation.
+
+test_boundary:
+  required_new_coverage:
+    - Status filter exact-match behavior via backend query
+    - Backend-supplied status options not inferred from visible rows
+    - Single-field sort behavior and default submitted_at desc baseline
+    - Pagination at most 15 rows per page and page navigation
+    - Default load paginated cardinality when total exceeds 15
+    - Page reset on filter or sort change
+    - URL param restore for status, sort, dir, page
+    - Global empty vs filtered-empty states
+    - clear_filters behavior
+  required_regression_updates:
+    - Remove or replace assertDontSee for فیلتر and مرتب‌سازی where P4 controls are in scope
+    - Preserve row detail navigation regression where applicable
+    - Assert requests.flow.mine / listByEmployee baseline unchanged
+  forbidden_test_expansion:
+    - Request Show contract or test changes
+    - API behavior change tests beyond unchanged baseline assertion
+    - Mutation, export, search, or advanced filter tests
+    - Cross-module integration tests outside Request list P4 scope
+
+anti_leak_lock:
+  forbidden:
+    - ui_side_filtering_over_full_result_set
+    - ui_side_sorting_over_full_result_set
+    - ui_side_pagination_over_full_result_set
+    - ui_infers_filter_options_from_rendered_rows
+    - ui_derives_workflow_transitions
+    - ui_computes_permission_outcomes
+    - ui_inferrs_backend_capabilities
+  required:
+    - backend_executed_filter_sort_pagination
+    - dto_field_consumption_only_for_row_rendering
+    - list_control_criteria_forwarded_to_single_backend_read_operation
+
+hard_stops:
+  - Stop if implementation requires changing listByEmployee signature or semantics.
+  - Stop if implementation requires changing RequestFlowController::indexMine behavior.
+  - Stop if implementation filters, sorts, or paginates in UI memory over full listByEmployee results.
+  - Stop if status filter options are inferred from rendered rows or page-local data.
+  - Stop if sort fields outside the contract allowlist are introduced.
+  - Stop if per_page becomes user-configurable or differs from 15.
+  - Stop if additional URL query parameters are introduced.
+  - Stop if Request Show, create, API routes, or unrelated Request modules must be modified.
+  - Stop if mutation, export, search, or advanced filtering is introduced.
+  - Stop if any forbidden file appears necessary; return to governance.
+
+open_implementation_choices:
+  - id: status_filter_option_delivery_mechanism
+    contract_reference: open_questions.status_filter_option_delivery_mechanism
+    allowed_resolutions:
+      - paginated_read_envelope_metadata
+      - separate_backend_read_output
+    constraint: Must preserve backend-supplied option authority and RequestSummaryDTO.status serialization.
+  - id: paginated_read_authority_ref
+    constraint: Lock implementer must pin exact RequestReadContract / RequestReadQueryPort method name(s) in code without expanding beyond P4 criteria envelope.
+
+notes:
+  - P4 intentionally changes default list cardinality from pre-P4 full get() to page 1 at 15 rows.
+  - refresh_list remains allowed and must preserve active P4 state.
+  - Row detail navigation and create entrypoint must remain as currently implemented.
+  - This lock does not authorize contract edits or predecessor lock edits.
+
+approval_gate:
+  current_authorization: none
+  coding_authorized: false
+  preconditions:
+    - Feature contract status is approved
+    - This implementation lock is reviewed and approved
+    - Allowed file paths are validated against repository structure
+    - Predecessor supersession scope is accepted
+  status_transitions:
+    allowed:
+      - draft -> approved
+      - approved -> implemented
+      - implemented -> closed
+
+verification_checklist:
+  - Source feature contract v0.1.1 approved
+  - This lock approved before coding
+  - Changes limited to allowed surfaces only
+  - listByEmployee and indexMine unchanged
+  - Backend paginated query used by web list only
+  - Status options backend-supplied; not inferred from rows
+  - URL params limited to status, sort, dir, page
+  - per_page fixed at 15
+  - Required P4 tests added and regression updates applied
+  - No forbidden surface modified
