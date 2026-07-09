@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Web\AuthSessionController;
+use App\Modules\Notification\Presentation\Providers\NotificationPresentationServiceProvider;
 use App\Modules\Request\Presentation\Providers\RequestPresentationServiceProvider;
 use Illuminate\Support\Facades\Route;
 
@@ -18,4 +19,7 @@ Route::middleware(['auth:api', 'request.mutation.principal', 'audit.principal'])
 
     Route::prefix('requests')
         ->group(RequestPresentationServiceProvider::requestWebRoutePath());
+
+    Route::prefix('notifications')
+        ->group(NotificationPresentationServiceProvider::notificationWebRoutePath());
 });

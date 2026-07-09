@@ -1,0 +1,90 @@
+artifact:
+  id: notification-inbox-read-only-list-open-decisions-resolution
+  feature_id: notification-inbox-read-only-list
+  feature_contract: docs/ui/contracts/notifications/notification-inbox-read-only-list.feature-contract.yaml
+  version: 1.0.0
+  status: resolved
+
+decision_summary:
+  decisions_resolved: 3
+  decisions_deferred: 4
+  resolved:
+    - route path and named route
+    - principal-to-employee resolution mechanism for presentation
+    - authorization semantics
+  deferred_by_contract:
+    - localized Persian labels for notificationType and priority
+    - nav discovery affordance
+    - message display truncation policy
+    - initial presentation cap acceptance confirmation
+
+final_resolved_decisions:
+  route:
+    http_method: GET
+    path: /notifications
+    named_route: notifications.index
+    registration_pattern: module-scoped web route file grouped under Route::prefix('notifications') in routes/web.php authenticated session group
+    route_file_convention: app/Modules/Notification/Presentation/Routes/web.php
+    livewire_entry: single full-page Livewire component at route root
+    constraint: new greenfield entrypoint; no reuse of an existing notification inbox route
+
+  principal_resolution:
+    mechanism: module-local Application resolver
+    resolver: App\Modules\Notification\Application\Services\NotificationPrincipalEmployeeResolver
+    method: requireEmployeeId
+    composition:
+      - App\Application\Mutation\Contracts\MutationPrincipalContextPort
+      - App\Modules\Employee\Application\Contracts\EmployeeRepositoryContract
+    pattern_authority: App\Modules\Request\Application\Services\RequestPrincipalEmployeeResolver
+    presentation_boundary: Livewire page injects resolver; UI does not own principal resolution logic
+    read_call: NotificationInboxReadContract::listForRecipient($employeeId, null, 50)
+    failure_handling: resolver exceptions surface as inbox page error state
+
+  authorization_semantics:
+    model: authenticated_employee_session_via_route_middleware
+    authority_owner: backend
+    implementation_authority: existing_application_authorization_flow
+    view_access:
+      mechanism: route_middleware
+      bindings:
+        - auth:api
+        - request.mutation.principal
+        - audit.principal
+    explicit_gate: none
+    notification_specific_permission: none
+    recipient_visibility_authority: NotificationRepository recipient-scoped inbox queries via NotificationInboxReadContract
+    ui_rule: UI consumes backend access boundary only and does not evaluate authorization semantics
+
+constraints_preserved:
+  - read-only list scope unchanged
+  - NotificationInboxReadContract sole read authority
+  - NotificationProjectionDto sole list view-model source
+  - no backend read contract, DTO, repository, or migration expansion
+  - initial presentation cap of 50 items; pagination deferred
+  - countUnread, badge, detail, deep-link, mark-read, filtering, search, sorting, realtime explicitly out of scope
+  - UI does not own principal resolution logic
+  - UI does not implement authorization, ownership, or capability rules
+  - no cross-module Infrastructure imports from Notification presentation
+  - no direct database access from UI
+
+impact_on_implementation_lock:
+  prerequisites_satisfied:
+    - route path and named route decided
+    - principal resolution mechanism decided
+    - authorization semantics decided
+  lock_may_bind:
+    - route: GET /notifications named notifications.index
+    - resolver: NotificationPrincipalEmployeeResolver::requireEmployeeId
+    - read_contract: NotificationInboxReadContract::listForRecipient
+    - middleware: auth:api, request.mutation.principal, audit.principal
+    - permission_authority: route_middleware; no Gate
+  lock_must_not_include:
+    - deferred presentation decisions (labels, nav, message truncation)
+    - scope exclusions listed in feature contract
+    - implementation steps or file-by-file coding plan
+
+status:
+  resolution: complete
+  feature_contract_status: draft
+  implementation_lock_status: not_created
+  ready_for_implementation_lock_drafting: true

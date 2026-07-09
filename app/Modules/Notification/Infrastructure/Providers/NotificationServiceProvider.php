@@ -12,6 +12,7 @@ use App\Modules\Notification\Application\Contracts\NotificationRepositoryContrac
 use App\Modules\Notification\Application\Services\DeliverNotificationAction;
 use App\Modules\Notification\Application\Services\MarkNotificationReadAction;
 use App\Modules\Notification\Application\Services\NotificationInboxReadService;
+use App\Modules\Notification\Application\Services\NotificationPrincipalEmployeeResolver;
 use App\Modules\Notification\Application\Services\NotificationRetentionSettingsReader;
 use App\Modules\Notification\Infrastructure\Adapters\StubEmployeeExistenceReadAdapter;
 use App\Modules\Notification\Infrastructure\Repositories\NotificationRepository;
@@ -36,6 +37,8 @@ class NotificationServiceProvider extends ServiceProvider
         $this->app->singleton(MarkNotificationReadContract::class, MarkNotificationReadAction::class);
 
         $this->app->singleton(NotificationRetentionSettingsReader::class);
+
+        $this->app->singleton(NotificationPrincipalEmployeeResolver::class);
     }
 
     public function boot(): void

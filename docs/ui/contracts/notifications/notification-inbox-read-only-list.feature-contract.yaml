@@ -1,0 +1,290 @@
+feature:
+  id: notification-inbox-read-only-list
+  name: Notification Inbox (Read-Only List)
+  module: Notification
+  classification: greenfield-presentation
+  version: 0.1.0
+  status: draft
+
+purpose:
+  summary: Provide a greenfield presentation surface for employees to view their in-app notification inbox as a read-only list.
+  rationale:
+    - spec09 Wave 1 delivered backend inbox read capability; presentation was explicitly deferred (OA-09-05).
+    - No notification inbox route or presentation surface currently exists in the codebase.
+    - This feature introduces the first user-facing inbox list without expanding backend read contracts.
+
+business_goal:
+  primary:
+    - Enable authenticated employees to view their delivered, non-archived notifications in a single read-only list.
+  success_outcome:
+    - An employee can open a new inbox entrypoint and see their notifications with title, message, created time, and read/unread indicator sourced from the existing read port.
+
+existing_capabilities:
+  reused:
+    - NotificationInboxReadContract::listForRecipient read path
+    - NotificationProjectionDto as the sole list view-model source
+    - Recipient-scoped query enforcement in NotificationRepository (delivery_status, archived_at, recipient_employee_id)
+    - Existing authenticated web session infrastructure
+  not_reused:
+    - No existing notification inbox route (web or API)
+    - No existing Livewire component, Blade view, controller, or presentation route registration for notifications
+    - No existing layout navigation entry for notifications
+    - No Notification-bound principal-to-employee resolution for presentation
+    - No notification-specific permission or Gate definition
+  assumptions:
+    - Backend read contract and DTO fields are stable for list rendering without contract expansion.
+    - The read operation requires recipientEmployeeId.
+    - The mechanism for obtaining recipientEmployeeId is an open architectural decision.
+    - Presentation consumes an approved resolved recipient context once that decision is made.
+    - Backend enforces recipient scope at query time when recipientEmployeeId is supplied to the read port.
+    - Jalali date display and message preview truncation are presentation concerns, not backend responsibilities.
+
+scope:
+  included:
+    - New web route as a required presentation entrypoint decision (path and named route to be decided at review).
+    - Greenfield Livewire page and Blade view for read-only inbox list rendering.
+    - Greenfield route registration for the notification inbox presentation entrypoint.
+    - Thin UI consuming NotificationInboxReadContract::listForRecipient only.
+    - List display of DTO-backed fields available for rendering.
+    - UI states for loading, empty, ready, and error.
+    - Initial presentation cap of 50 items, aligned to current backend read capability.
+  excluded:
+    - countUnread consumption
+    - Unread badge behavior (header, nav, or elsewhere)
+    - Notification detail view
+    - Row-click detail navigation
+    - Deep-link consumption (deepLinkRoute, entityType, entityId navigation)
+    - Mark-as-read (MarkNotificationReadContract)
+    - Mark-all-as-read
+    - Archive, delete, or restore actions
+    - Filtering, search, or sorting controls
+    - Realtime, polling, or websocket refresh behavior
+    - Pagination beyond the initial presentation cap of 50 items (deferred; out of scope unless separately approved)
+    - Any backend read contract, service, DTO, query, repository, or migration change
+    - Cross-module Eloquent queries or direct database access from UI
+
+route:
+  status: required_new_entrypoint
+  current_state: No notification inbox route exists in routes/web.php, routes/api.php, or Notification Presentation/Routes.
+  constraint: Do not imply reuse of an existing route. Route path and named route are presentation entrypoint decisions pending review.
+
+presentation:
+  status: greenfield
+  current_state: Notification/Presentation contains only placeholder directories (Livewire, Views, Controllers, Routes); no implementation exists.
+  constraint: Do not imply reuse of an existing Livewire component, Blade view, controller, or presentation route registration.
+
+view_model:
+  source: App\Modules\Notification\Application\DTOs\NotificationProjectionDto
+  backend_mapping:
+    load_list: App\Modules\Notification\Application\Contracts\NotificationInboxReadContract::listForRecipient
+  read_parameters:
+    recipientEmployeeId: required by listForRecipient; mechanism for obtaining it is an open architectural decision (see principal_resolution)
+    unreadOnly: not consumed in v1 (no unread filter UI)
+    limit: 50 (initial presentation cap for this feature; aligned to current backend read capability)
+  fields:
+    - name: id
+      type: string
+      source: NotificationProjectionDto::id
+      list_use: row identity (display only; no navigation)
+    - name: notificationType
+      type: string
+      source: NotificationProjectionDto::notificationType
+      list_use: raw enum value; localized label is a presentation mapping decision
+    - name: title
+      type: string
+      source: NotificationProjectionDto::title
+      list_use: primary list label
+    - name: message
+      type: string
+      source: NotificationProjectionDto::message
+      list_use: full body returned by backend; preview truncation is presentation-only
+    - name: isRead
+      type: bool
+      source: NotificationProjectionDto::isRead
+      list_use: read/unread indicator
+    - name: readAt
+      type: "?DateTimeImmutable"
+      source: NotificationProjectionDto::readAt
+      list_use: optional display; Jalali conversion at presentation layer
+    - name: createdAt
+      type: DateTimeImmutable
+      source: NotificationProjectionDto::createdAt
+      list_use: list timestamp; Jalali conversion at presentation layer
+    - name: priority
+      type: string
+      source: NotificationProjectionDto::priority
+      list_use: raw enum value (standard | urgent); display mapping is presentation decision
+  not_consumed_in_v1:
+    - entityType
+    - entityId
+    - deepLinkRoute
+  filters: []
+  sortable: []
+  pagination:
+    current_backend_capability: listForRecipient accepts a limit parameter (default 50); no offset or cursor
+    feature_position: initial presentation cap of 50 items, aligned to current backend read capability; pagination deferred and out of scope unless separately approved
+
+mutations:
+  actions: []
+  mapping: {}
+  note: Read-only list feature. No mutation surface permitted.
+
+state_separation:
+  ui:
+    - loading
+    - empty
+    - ready
+    - error
+  domain:
+    - read (isRead true)
+    - unread (isRead false)
+  note: Domain read/unread state is displayed only. No mutation actions to transition state.
+
+permission_semantics:
+  status: open_review
+  baseline_assumption: Authenticated employee access (session-bound principal with linked employee record).
+  open_decision: Whether auth-only access is sufficient or an explicit permission/Gate model is required.
+  constraint: Do not pre-decide between auth-only and explicit Gate. Record as unresolved architectural matter.
+
+principal_resolution:
+  status: open_review
+  current_state: Notification module has no bound principal-to-employee resolution mechanism for presentation.
+  read_requirement: listForRecipient requires recipientEmployeeId.
+  open_decision: The mechanism for obtaining recipientEmployeeId remains an open architectural decision.
+  presentation_boundary: Presentation consumes an approved resolved recipient context once that decision is made; it must not own or directly implement principal resolution logic.
+  review_topic_only:
+    - Request module uses RequestPrincipalEmployeeResolver (MutationPrincipalContextPort + EmployeeRepositoryContract); reuse is a review topic, not a decided approach.
+  constraint: Do not assume Notification already resolves principal to employee. Do not imply that presentation already owns or directly implements resolution logic.
+
+architecture_constraints:
+  ui:
+    - UI must remain thin and presentation-only.
+    - UI must consume only NotificationInboxReadContract prepared list data via NotificationProjectionDto.
+    - UI must not perform domain logic or business rule evaluation.
+    - UI must not query the database directly.
+    - UI must not own principal resolution logic.
+    - UI may consume a resolved recipient context provided through an approved application boundary.
+    - UI must not implement authorization, ownership, or capability rules.
+    - UI must not introduce business transformations outside returned DTO fields except presentation formatting (Jalali, text truncation, enum labels).
+    - UI must not consume countUnread, deepLinkRoute, or MarkNotificationReadContract.
+  backend:
+    - NotificationInboxReadContract remains the sole read authority.
+    - Recipient-scoped query enforcement in NotificationRepository remains the backend visibility authority.
+    - No backend contract expansion is permitted in this feature.
+  governance:
+    - This is a greenfield presentation feature atop an existing read port.
+    - Implementation must proceed only under a separate implementation lock (not part of this artifact).
+
+allowed_changes:
+  areas:
+    - Greenfield route registration for the notification inbox presentation entrypoint
+    - Greenfield Livewire page and Blade view for read-only inbox list rendering
+    - Layout navigation link to inbox entrypoint (optional; subject to review)
+    - Feature-specific governance and test artifacts for this feature
+  constraint: Changes must remain localized to read-only list presentation. No backend read surface expansion.
+
+forbidden_changes:
+  areas:
+    - NotificationInboxReadContract, NotificationInboxReadService, NotificationRepository, or NotificationProjectionDto
+    - MarkNotificationReadContract and read-state mutation paths
+    - countUnread consumption or badge surfaces
+    - Deep-link navigation, detail views, or row-click interactions
+    - Filtering, search, sorting, pagination, or realtime refresh
+    - Cross-module Infrastructure imports from Notification presentation
+    - Direct database access from UI components
+  escalation_rule: If implementation appears to require any forbidden change, this contract must be rejected and re-scoped before coding.
+
+interaction_model:
+  user_story:
+    - As an authenticated employee, I can open the notification inbox and view my delivered notifications in a read-only list.
+  entrypoint: New inbox route (decision pending)
+  interactions:
+    - Page load triggers listForRecipient using an approved resolved recipient context at the initial presentation cap of 50 items.
+    - List renders title, message (or preview), created time, and read/unread indicator per row.
+    - No row click, no detail navigation, no mark-read, no deep-link activation.
+
+acceptance_criteria:
+  functional:
+    - A new authenticated presentation entrypoint exists for the notification inbox.
+    - The inbox entrypoint is reachable by authenticated users within the approved authorization model.
+    - The inbox page renders a list of notifications for the approved resolved recipient context via NotificationInboxReadContract::listForRecipient.
+    - Each row displays title, message content (full or presentation-truncated preview), created time, and read/unread indicator from DTO fields.
+    - An empty inbox renders an empty state without error.
+    - The list presents at most the initial presentation cap of 50 items, aligned to current backend read capability.
+    - Archived and non-delivered notifications are excluded by backend query (not presentation filtering).
+    - Cross-recipient notifications are not visible (backend recipient scoping).
+  non_functional:
+    - No mutation controls, mark-read actions, or deep-link navigation are introduced.
+    - No countUnread or badge behavior is introduced.
+    - No filtering, search, sorting, pagination, or realtime refresh is introduced.
+    - No backend read contract or DTO expansion is introduced.
+    - UI does not query the database directly.
+    - UI does not own principal resolution logic.
+  regression_safety:
+    - Existing NotificationInboxTest and related backend feature tests remain valid without modification.
+    - spec09 backend boundaries (R9, recipient isolation) are not weakened.
+
+ux:
+  loading_behavior: loading state on initial page load
+  empty_state: dedicated empty inbox presentation
+  error_handling_strategy: error state with user-visible message; no silent failure
+  success_message: none (read-only list; no mutation feedback)
+
+dependencies:
+  requires:
+    - NotificationInboxReadContract and NotificationInboxReadService (existing, bound)
+    - NotificationProjectionDto (existing)
+    - Existing authenticated web session infrastructure
+    - Principal-to-employee resolution decision (open)
+    - Authorization semantics decision (open)
+    - New route and greenfield presentation artifacts (to be created)
+  does_not_require:
+    - MarkNotificationReadContract
+    - countUnread
+    - Backend read contract expansion
+    - Pagination backend support
+    - Notification-specific Gate (unless decided at review)
+
+governance:
+  classification: greenfield-presentation
+  prerequisites:
+    - This feature contract approved
+    - Open review items resolved or explicitly accepted with documented decisions
+    - Separate implementation lock approved before any coding
+  review_focus:
+    - Route path and named route decision
+    - Principal-to-employee resolution approach
+    - Authorization semantics (auth-only vs explicit Gate)
+    - notificationType and priority display mapping (Persian labels)
+    - Nav discovery affordance (header link vs standalone entry only)
+    - Confirmation that initial presentation cap of 50 items is acceptable without pagination
+  frozen_boundaries:
+    - NotificationInboxReadContract and NotificationProjectionDto shape remain unchanged
+    - Backend recipient-scoped query enforcement remains authoritative
+
+definition_of_done:
+  - Feature contract approved
+  - Open review items resolved or accepted
+  - Implementation lock approved for this feature only
+  - Implementation completed within approved lock scope
+  - Required tests added and passing
+  - No backend read contract expansion
+  - Feature closed without scope expansion
+
+references:
+  backend_authority:
+    - app/Modules/Notification/Application/Contracts/NotificationInboxReadContract.php
+    - app/Modules/Notification/Application/DTOs/NotificationProjectionDto.php
+    - specs/009-notification-delivery/contracts/notification-inbox-read-contract.md
+  architecture_authority:
+    - .specify/memory/constitution.md
+    - docs/ui/FEATURE-CONTRACT-GUIDE.md
+
+decisions:
+  - "Route path and named route for the new inbox entrypoint (e.g. /notifications, notifications.index)."
+  - "Principal-to-employee resolution mechanism for presentation — Notification has none today; reuse of RequestPrincipalEmployeeResolver pattern is a review topic only."
+  - "Authorization semantics — is authenticated employee session access sufficient, or is an explicit permission/Gate required?"
+  - "Localized Persian labels for notificationType and priority raw enum values."
+  - "Nav discovery — header link to inbox vs standalone route only."
+  - "Message display — full message vs presentation-truncated preview in list rows."
+  - "Confirm initial presentation cap of 50 items is acceptable without pagination for v1."
