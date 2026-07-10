@@ -23,8 +23,8 @@ use DateTimeImmutable;
 final class DevelopmentUserProvisioner
 {
     public function __construct(
-        private readonly CreateUserAction $createIdentityUser,
-        private readonly CreateEmployeeAction $createEmployee,
+        private readonly CreateUserAction $createIdentityUserAction,
+        private readonly CreateEmployeeAction $createEmployeeAction,
         private readonly AssignRoleToUserAction $assignRoleAction,
         private readonly UserRepositoryContract $identityUsers,
         private readonly EmployeeRepositoryContract $employees,
@@ -195,7 +195,7 @@ final class DevelopmentUserProvisioner
     ): IdentityUser {
         return MutationPrincipalContext::runAs(
             $mutationPrincipalId,
-            fn (): IdentityUser => $this->createIdentityUser->execute($displayName, $email),
+            fn (): IdentityUser => $this->createIdentityUserAction->execute($displayName, $email),
         );
     }
 
@@ -215,7 +215,7 @@ final class DevelopmentUserProvisioner
     ): Employee {
         return MutationPrincipalContext::runAs(
             $mutationPrincipalId,
-            fn () => $this->createEmployee->execute(
+            fn () => $this->createEmployeeAction->execute(
                 identityId: $identityId,
                 employeeCode: $employee['code'],
                 firstName: $employee['first_name'],
@@ -259,7 +259,7 @@ final class DevelopmentUserProvisioner
     {
         $actorId = MutationPrincipalContext::runAs(
             UuidGenerator::uuid7(),
-            fn (): string => $this->createIdentityUser->execute(
+            fn (): string => $this->createIdentityUserAction->execute(
                 'Dev Mutation Actor',
                 'dev.mutation.actor.'.uniqid('', true).'@dormsys.local',
             )->requireId()->value,
