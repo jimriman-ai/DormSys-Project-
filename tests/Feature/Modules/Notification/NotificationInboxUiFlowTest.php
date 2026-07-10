@@ -20,7 +20,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Carbon;
 use Livewire\Livewire;
-use Mockery as MockeryTest;
+use Tests\Support\MockeryTest;
 
 uses(RefreshDatabase::class);
 
@@ -80,8 +80,7 @@ function notificationUiProjectionRow(
 function mockNotificationInboxProjections(string $employeeId, NotificationProjectionDto ...$projections): void
 {
     $inbox = MockeryTest::mock(NotificationInboxReadContract::class);
-    $inbox->shouldReceive('listForRecipient')
-        ->once()
+    MockeryTest::expectOnce($inbox, 'listForRecipient')
         ->with($employeeId, null, 50)
         ->andReturn($projections);
 
@@ -136,7 +135,7 @@ beforeEach(function (): void {
 
 afterEach(function (): void {
     Carbon::setTestNow();
-    MockeryTest::close();
+    Mockery::close();
 });
 
 describe('notification inbox ui access', function (): void {
@@ -231,8 +230,7 @@ describe('notification inbox ui states', function (): void {
         $employeeId = $actor['employee']->requireId()->value;
 
         $inbox = MockeryTest::mock(NotificationInboxReadContract::class);
-        $inbox->shouldReceive('listForRecipient')
-            ->once()
+        MockeryTest::expectOnce($inbox, 'listForRecipient')
             ->with($employeeId, null, 50)
             ->andReturn([]);
 
@@ -268,8 +266,7 @@ describe('notification inbox ui states', function (): void {
         }
 
         $inbox = MockeryTest::mock(NotificationInboxReadContract::class);
-        $inbox->shouldReceive('listForRecipient')
-            ->once()
+        MockeryTest::expectOnce($inbox, 'listForRecipient')
             ->with($employeeId, null, 50)
             ->andReturn($projections);
 
@@ -288,8 +285,7 @@ describe('notification inbox ui states', function (): void {
         authenticateNotificationUiUser($actor['identity']);
 
         $inbox = MockeryTest::mock(NotificationInboxReadContract::class);
-        $inbox->shouldReceive('listForRecipient')
-            ->once()
+        MockeryTest::expectOnce($inbox, 'listForRecipient')
             ->andThrow(new RuntimeException('Inbox read failed.'));
 
         app()->instance(NotificationInboxReadContract::class, $inbox);
@@ -367,13 +363,11 @@ describe('notification inbox mark-read mutation', function (): void {
         $notificationId = UuidGenerator::uuid7();
 
         $markRead = MockeryTest::mock(MarkNotificationReadContract::class);
-        $markRead->shouldReceive('markRead')
-            ->once()
-            ->with($notificationId, $employeeId, MockeryTest::type(DateTimeImmutable::class));
+        MockeryTest::expectOnce($markRead, 'markRead')
+            ->with($notificationId, $employeeId, Mockery::type(DateTimeImmutable::class));
 
         $inbox = MockeryTest::mock(NotificationInboxReadContract::class);
-        $inbox->shouldReceive('listForRecipient')
-            ->once()
+        MockeryTest::expectOnce($inbox, 'listForRecipient')
             ->with($employeeId, null, 50)
             ->andReturn([]);
 
@@ -394,8 +388,7 @@ describe('notification inbox mark-read mutation', function (): void {
         $notificationId = UuidGenerator::uuid7();
 
         $markRead = MockeryTest::mock(MarkNotificationReadContract::class);
-        $markRead->shouldReceive('markRead')
-            ->once()
+        MockeryTest::expectOnce($markRead, 'markRead')
             ->andThrow(new ValidationException('Notification not found for recipient.'));
 
         app()->instance(MarkNotificationReadContract::class, $markRead);
