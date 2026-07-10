@@ -78,11 +78,16 @@ describe('request list filtering sorting pagination ui flow', function (): void 
             ->assertSee('مرتب‌سازی', escape: false);
 
         $options = $component->get('statusOptions');
+        $page = $component->instance();
+
+        if (! $page instanceof RequestListPage) {
+            test()->fail('Expected RequestListPage instance.');
+        }
 
         expect($options)->toBe(RequestEmployeeListFilterOptions::statusValues())
             ->and($options)->toContain('approved')
-            ->and($component->get('requests'))->toHaveCount(1)
-            ->and(collect($component->get('requests'))->pluck('status')->unique()->all())->toBe([DraftState::$name]);
+            ->and($page->requests)->toHaveCount(1)
+            ->and(array_values(array_unique(array_column($page->requests, 'status'))))->toBe([DraftState::$name]);
     });
 
     it('filters employee requests by exact status match', function (): void {
