@@ -518,15 +518,30 @@ describe('notification inbox layout navigation', function (): void {
     function notificationLayoutNavHtml(): string
     {
         $content = test()->get('/notifications')->assertOk()->getContent();
+
+        if (! is_string($content)) {
+            throw new RuntimeException('Expected notification inbox HTML content.');
+        }
+
         $navStart = strpos($content, '<nav class="flex items-center gap-4 text-sm">');
 
-        expect($navStart)->not->toBeFalse();
+        if ($navStart === false) {
+            throw new RuntimeException('Layout nav block not found in notification inbox HTML.');
+        }
 
-        $navEnd = strpos($content, '</nav>', (int) $navStart);
+        $navEnd = strpos($content, '</nav>', $navStart);
 
-        expect($navEnd)->not->toBeFalse();
+        if ($navEnd === false) {
+            throw new RuntimeException('Layout nav closing tag not found in notification inbox HTML.');
+        }
 
-        return substr($content, (int) $navStart, (int) $navEnd - (int) $navStart + strlen('</nav>'));
+        $navHtml = substr($content, $navStart, $navEnd - $navStart + strlen('</nav>'));
+
+        if ($navHtml === '') {
+            throw new RuntimeException('Extracted layout nav HTML is empty.');
+        }
+
+        return $navHtml;
     }
 
     it('renders the notification inbox nav link on shared layout pages', function (): void {
@@ -596,7 +611,14 @@ describe('notification inbox layout navigation', function (): void {
 
         $navHtml = notificationLayoutNavHtml();
 
-        expect(strpos($navHtml, 'درخواست‌ها'))->toBeLessThan(strpos($navHtml, 'اعلان‌ها'));
+        $requestsPosition = strpos($navHtml, 'درخواست‌ها');
+        $notificationsPosition = strpos($navHtml, 'اعلان‌ها');
+
+        if ($requestsPosition === false || $notificationsPosition === false) {
+            throw new RuntimeException('Expected both nav labels in layout nav HTML.');
+        }
+
+        expect($requestsPosition)->toBeLessThan($notificationsPosition);
     });
 });
 
