@@ -21,4 +21,9 @@ class EmployeePresentationServiceProvider extends ServiceProvider
             ]);
         }
     }
+
+    public static function employeeWebRoutePath(): string
+    {
+        return app_path('Modules/Employee/Presentation/Routes/web.php');
+    }
 }

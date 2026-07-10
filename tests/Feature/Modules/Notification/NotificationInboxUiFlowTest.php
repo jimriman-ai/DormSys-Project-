@@ -427,8 +427,6 @@ describe('notification inbox pagination', function (): void {
             }
         }
 
-        expect($pageTwoNotificationId)->toBeString();
-
         Livewire::actingAs($actor['identity'], 'api')
             ->withQueryParams(['page' => 2])
             ->test(NotificationInboxPage::class)

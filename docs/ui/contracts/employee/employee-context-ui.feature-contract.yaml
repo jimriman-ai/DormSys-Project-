@@ -1,0 +1,584 @@
+# Employee Context UI — Feature Contract
+# Status: FEATURE_CONTRACT_CREATED_READY_FOR_REVIEW
+# Next gate: contract-review
+# Implementation: NOT authorized by this artifact
+
+feature_id: employee-context-ui
+
+feature_name: Employee Context UI
+
+classification:
+  gap_type: UI_PRESENTATION_GAP
+  implementation_type: UI_OVER_EXISTING_APPLICATION
+  governance_type: greenfield-presentation-mvf
+  version: 0.1.0
+  status: FEATURE_CONTRACT_CREATED_READY_FOR_REVIEW
+  module: Employee
+  area: employee
+  owner_layer: Presentation
+
+decision_reference:
+  artifact: docs/ui/review/employee/employee-context-ui.review-decision.md
+  verdict: APPROVED_READY_FOR_CONTRACT
+  status_equivalent: APPROVED_FOR_CONTRACT
+  implementation_authorized: false
+  decision_date: 2026-07-10
+
+product_authorization:
+  artifact: docs/product/product-authorization-next-ui-feature.md
+  status: AUTHORIZED
+  slug: employee-context-ui
+  source_spec: specs/003-employee-context
+
+source_artifacts:
+  - docs/product/product-authorization-next-ui-feature.md
+  - docs/ui/analysis/employee/employee-context-ui.repo-inspection.md
+  - docs/ui/analysis/employee/employee-context-ui.feature-analysis.md
+  - docs/ui/review/employee/employee-context-ui.review-decision.md
+  - docs/architecture/ui/UI-ANTI-LEAK-CONTRACT.md
+
+governing_contracts:
+  - docs/architecture/ui/UI-ANTI-LEAK-CONTRACT.md
+  - .specify/ARCHITECTURE.md
+
+purpose:
+  summary: >
+    Deliver a narrow authenticated Persian RTL Employee Hub presentation that
+    discovers HR mutation surfaces via shared layout navigation and executes only
+    the four already-delivered Employee Application mutations — create employee,
+    create department, assign department, deactivate department — using explicit
+    UUID/id text inputs and flash + returned-id confirmation.
+  constraint: >
+    Presentation-only over existing Application actions. No backend expansion,
+    no list/search/profile/tree/selector/dependents/Identity UX, and no reopening
+    of closed Notification or Request UI features.
+
+# ---------------------------------------------------------------------------
+# Review-decision resolutions (frozen into contract)
+# ---------------------------------------------------------------------------
+
+review_decision_resolutions:
+  RD-EC-001:
+    question: Full four-mutation MVF vs narrower first slice
+    decision: >
+      Approve the four-mutation MVF in full — not a further-narrowed subset.
+      Scope stays strictly on delivered Application actions.
+  RD-EC-002:
+    question: Single hub page vs separate routes per mutation
+    decision: >
+      Single Employee Hub Page hosts all four mutation forms. Separate
+      per-mutation public routes are not required.
+  RD-EC-003:
+    question: Layout label/copy and nav placement
+    decision: >
+      Nav label کارکنان. Placement is third shared-layout nav item immediately
+      after اعلان‌ها (order: درخواست‌ها → اعلان‌ها → کارکنان). Plain href;
+      active state via routeIs matching existing layout nav pattern.
+  RD-EC-004:
+    question: Post-create detail panel vs success flash + id
+    decision: >
+      Success flash + returned identifier display is enough. Dedicated
+      employee/department profile or edit panel is out of MVF. Optional
+      point-read confirmation via existing findById is allowed only as
+      non-authoritative display of backend-returned data.
+  RD-EC-005:
+    question: Additional capability flags for action visibility
+    decision: >
+      No additional backend capability flags required. Forms may be shown to
+      authenticated users who reach the hub. Mutation authorization remains
+      backend-authoritative via existing Employee mutation policy / gate.
+      Do not introduce new Application APIs or capability fields.
+
+# ---------------------------------------------------------------------------
+# Approved MVF
+# ---------------------------------------------------------------------------
+
+approved_mvf:
+  surfaces:
+    - id: employee_hub_page
+      name: Employee Hub Page
+      description: >
+        Single authenticated Persian RTL Livewire (or equivalent presentation)
+        hub hosting the four mutation forms below.
+    - id: hr_employee_navigation_entry
+      name: HR / Employee navigation entry
+      description: >
+        Shared layout nav link labeled کارکنان to the Employee Hub for
+        discoverability only.
+  ui_capabilities:
+    - id: create_employee
+      name: Create Employee form
+      application_action: App\Modules\Employee\Application\Services\CreateEmployeeAction
+      mutation_capability_key: employee.create
+    - id: create_department
+      name: Create Department form
+      application_action: App\Modules\Employee\Application\Services\CreateDepartmentAction
+      mutation_capability_key: employee.department.create
+    - id: assign_department
+      name: Assign Department form
+      application_action: App\Modules\Employee\Application\Services\AssignDepartmentToEmployeeAction
+      mutation_capability_key: employee.department.assign
+    - id: deactivate_department
+      name: Deactivate Department action
+      application_action: App\Modules\Employee\Application\Services\DeactivateDepartmentAction
+      mutation_capability_key: employee.department.deactivate
+
+# ---------------------------------------------------------------------------
+# Route & presentation
+# ---------------------------------------------------------------------------
+
+route:
+  entrypoint:
+    route_name: employees.hub
+    path: GET /employees
+    middleware: authenticated web stack (same class as requests/notifications)
+  constraint: >
+    One public hub route only. No separate public routes per mutation.
+    Exact Livewire component / Blade path is deferred to implementation-lock
+    after contract-review; must live under Employee Presentation (or
+    repository-equivalent Livewire registration pattern used by Request/Notification).
+
+presentation:
+  hub:
+    type: single_page
+    locale: fa
+    direction: rtl
+    hosts:
+      - create_employee form
+      - create_department form
+      - assign_department form
+      - deactivate_department action/form
+  layout_nav:
+    primary_file: resources/views/components/layouts/app.blade.php
+    element: header nav
+    label: کارکنان
+    destination:
+      route_name: employees.hub
+      href: route('employees.hub')
+    placement:
+      rule_id: PLACE-EC-001
+      order:
+        - position: 1
+          label: درخواست‌ها
+          route: requests.index
+        - position: 2
+          label: اعلان‌ها
+          route: notifications.index
+        - position: 3
+          label: کارکنان
+          route: employees.hub
+      constraint: >
+        کارکنان must appear immediately after اعلان‌ها. Do not insert before
+        requests or notifications. No separate menu, footer, or sidebar placement.
+    visibility:
+      rule_id: VIS-EC-001
+      show_to: all authenticated users rendering components.layouts.app
+      nav_conditionals: none
+      note: >
+        RD-EC-005 — no @can/@role/Gate/capability-flag wrap on the nav link.
+        Mutation legality remains backend-authoritative on form submit.
+    active_state:
+      rule_id: ACTIVE-EC-001
+      detection: request()->routeIs('employees.*')
+      active_classes: font-semibold text-sky-700
+      inactive_classes: text-slate-600 hover:text-slate-900
+      pattern: >
+        Mirror existing requests/notifications nav ternary class pattern.
+    transport:
+      rule_id: TRANS-EC-001
+      mechanism: plain href anchor
+      wire_navigate: false
+      precedent: Layout nav درخواست‌ها and اعلان‌ها use plain href without wire:navigate.
+
+# ---------------------------------------------------------------------------
+# Capability bindings (Application only)
+# ---------------------------------------------------------------------------
+
+mutations:
+  model: hub_forms_delegate_to_single_application_action
+  constraints:
+    - Each UI action method delegates to exactly one Application action execute() call.
+    - No DB::transaction, repository, Eloquent, or Domain mutation in Presentation.
+    - No workflow orchestration across multiple Application actions in one UI method.
+    - No new Application contracts, ports, DTOs, capability flags, or migrations.
+  actions:
+    - id: create_employee
+      ui_capability: create_employee
+      binding:
+        class: App\Modules\Employee\Application\Services\CreateEmployeeAction
+        method: execute
+      inputs:
+        - name: identity_id
+          transport: text_uuid
+          maps_to: IdentityUserId
+          note: Explicit UUID text input — no Identity admin picker
+        - name: employee_code
+          transport: text
+        - name: first_name
+          transport: text
+        - name: last_name
+          transport: text
+        - name: national_code
+          transport: text
+          maps_to: NationalCode VO at Application boundary
+        - name: hire_date
+          transport: date_or_text_as_required_by_action
+          maps_to: DateTimeImmutable at Application boundary
+      success_confirmation:
+        mode: flash_plus_returned_id
+        returned_id_source: Employee entity id from action return
+        optional_point_read: EmployeeRepositoryContract::findById (display only; not profile edit)
+
+    - id: create_department
+      ui_capability: create_department
+      binding:
+        class: App\Modules\Employee\Application\Services\CreateDepartmentAction
+        method: execute
+      inputs:
+        - name: name
+          transport: text
+        - name: code
+          transport: text
+        - name: manager_id
+          transport: optional_text_uuid
+          maps_to: "?EmployeeId"
+          note: Explicit UUID text when provided — no employee selector
+        - name: parent_id
+          transport: optional_text_uuid
+          maps_to: "?DepartmentId"
+          note: Explicit UUID text when provided — no department tree/picker
+        - name: lottery_priority
+          transport: optional_integer
+          default: 0
+      success_confirmation:
+        mode: flash_plus_returned_id
+        returned_id_source: Department entity id from action return
+        optional_point_read: DepartmentRepositoryContract::findById (display only)
+
+    - id: assign_department
+      ui_capability: assign_department
+      binding:
+        class: App\Modules\Employee\Application\Services\AssignDepartmentToEmployeeAction
+        method: execute
+      inputs:
+        - name: employee_id
+          transport: text_uuid
+          maps_to: EmployeeId
+          note: Explicit UUID — no employee dropdown/list
+        - name: department_id
+          transport: text_uuid
+          maps_to: DepartmentId
+          note: Explicit UUID — no department dropdown/list
+      success_confirmation:
+        mode: flash_plus_returned_id
+        returned_id_source: Employee entity id (and/or assigned department id) from action return
+        optional_point_read: EmployeeRepositoryContract::findById (display only)
+
+    - id: deactivate_department
+      ui_capability: deactivate_department
+      binding:
+        class: App\Modules\Employee\Application\Services\DeactivateDepartmentAction
+        method: execute
+      inputs:
+        - name: department_id
+          transport: text_uuid
+          maps_to: DepartmentId
+          note: Explicit UUID — no department tree/list
+      success_confirmation:
+        mode: flash_plus_returned_id
+        returned_id_source: Department entity id from action return
+        optional_point_read: DepartmentRepositoryContract::findById (display only)
+
+input_rules:
+  rule_id: INPUT-EC-001
+  required:
+    - Explicit UUID/id text inputs wherever entity selection would otherwise need list/search APIs
+    - Form fields map to Application action parameters without semantic business derivation in UI
+  forbidden:
+    - Employee selector / dropdown / typeahead backed by list APIs
+    - Department selector / tree / browse picker
+    - Identity admin user picker / SSO login UX
+    - Inventing list/search/paginate Application reads
+
+confirmation_rules:
+  rule_id: CONFIRM-EC-001
+  approved:
+    - Success flash message
+    - Display of returned entity identifier(s)
+    - Optional non-authoritative point-read display via existing findById after mutation
+  rejected:
+    - Dedicated employee profile page or edit panel
+    - Dedicated department profile page or edit panel
+    - Post-create navigation into list/search UX
+
+authorization_rules:
+  rule_id: AUTH-EC-001
+  model: backend_authoritative
+  approved:
+    - Existing MutationPolicyEnforcementPoint + MutationCapabilityCatalog keys
+    - Existing EmployeeMutationAuthorizationGate checks inside Application actions
+    - Surface backend validation/authorization failures via thin UI feedback (no semantic remapping)
+  rejected:
+    - New backend capability flags for form visibility (RD-EC-005)
+    - UI mirroring of roles/permissions as authority (hasRole / Gate reconstruction)
+    - Identity / Auth UX changes
+  form_visibility: >
+    Forms may render for authenticated users who reach the hub. Submit legality
+    is decided solely by backend Application actions.
+
+anti_leak_rules:
+  rule_id: ANTILEAK-EC-001
+  governing: docs/architecture/ui/UI-ANTI-LEAK-CONTRACT.md
+  required:
+    - Thin Livewire → Application action only
+    - No Domain entity mutation in Presentation
+    - No Employee Infrastructure / Eloquent imports in Presentation
+    - No Identity Infrastructure imports in Presentation
+    - No business-authoritative status/capability derivation in UI
+    - Errors surfaced from backend outcomes without reinterpretation as a local rule system
+  forbidden_smells:
+    - Calculated status smell
+    - Authorization mirroring smell
+    - Workflow orchestration smell
+    - Derived capability smell
+
+# ---------------------------------------------------------------------------
+# Existing capabilities reused (no expansion)
+# ---------------------------------------------------------------------------
+
+existing_capabilities:
+  reused:
+    - App\Modules\Employee\Application\Services\CreateEmployeeAction
+    - App\Modules\Employee\Application\Services\CreateDepartmentAction
+    - App\Modules\Employee\Application\Services\AssignDepartmentToEmployeeAction
+    - App\Modules\Employee\Application\Services\DeactivateDepartmentAction
+    - EmployeeRepositoryContract::findById (optional post-mutation display only)
+    - DepartmentRepositoryContract::findById (optional post-mutation display only)
+    - Existing mutation policy keys employee.create / employee.department.*
+    - Existing EmployeeMutationAuthorizationGate
+    - Shared layout components.layouts.app
+  not_introduced:
+    - EmployeeReadContract / EmployeeSummaryDTO
+    - List / search / paginate Application APIs
+    - New capability flags
+    - Dependents Application actions
+    - Employee deactivate Application action
+    - Migrations or schema changes
+  assumptions:
+    - CreateEmployeeAction continues to validate identity via IdentityUserReadContract::userExists
+    - AssignDepartmentToEmployeeAction continues to reject inactive departments
+    - Console Artisan commands may remain; this feature does not require removing them
+
+# ---------------------------------------------------------------------------
+# Exclusions (from review decision §5 — mandatory)
+# ---------------------------------------------------------------------------
+
+exclusions:
+  - id: EX-EC-001
+    item: Employee listing
+  - id: EX-EC-002
+    item: Employee search
+  - id: EX-EC-003
+    item: Employee profile editing
+  - id: EX-EC-004
+    item: Department tree UI
+  - id: EX-EC-005
+    item: Employee selector / dropdown
+  - id: EX-EC-006
+    item: Dependents UI
+  - id: EX-EC-007
+    item: Full HR admin panel
+  - id: EX-EC-008
+    item: Identity / Auth UX (login, SSO, Identity admin)
+  - id: EX-EC-009
+    item: >
+      Backend expansion (new Application APIs, list/read contracts, capability
+      flags, migrations, etc.)
+  - id: EX-EC-010
+    item: Reopening closed notification UI features (P2–P9)
+  - id: EX-EC-011
+    item: Reopening closed request UI features
+  - id: EX-EC-012
+    item: Employee deactivate Application action (not delivered — no new backend requirement)
+  - id: EX-EC-013
+    item: Eligibility admin UI
+  - id: EX-EC-014
+    item: Console command changes as product scope
+
+forbidden_changes:
+  backend:
+    - Application layer expansion beyond consuming the four listed actions
+    - Domain layer changes
+    - Infrastructure / Eloquent / migration / schema changes
+    - New Application contracts, ports, DTOs, or capability flags
+    - Employee deactivate Application action introduction
+  presentation_out_of_mvf:
+    - Employee index/list/search pages
+    - Employee profile edit surfaces
+    - Department tree or browse UI
+    - Selector/dropdown components requiring list APIs
+    - Dependents UI
+    - Full HR admin shell beyond the single hub
+    - Identity / Auth presentation
+  closed_features:
+    - Notification inbox features P2–P9 (contracts, locks, closeouts, code)
+    - Closed Request UI features (list/show/create/detail-nav and successors)
+  governance:
+    - Implementation without approved contract-review and implementation-lock
+    - Treating this contract as implementation authorization
+
+non_goals:
+  - Browseable HR directory
+  - Department hierarchy visualization
+  - Dependent management (spec US3)
+  - Employee lifecycle deactivate/activate UI without delivered Application action
+  - Eligibility administration
+  - Identity user administration or login redesign
+  - Unread badge or notification/request behavior changes
+
+# ---------------------------------------------------------------------------
+# Dependencies & ownership
+# ---------------------------------------------------------------------------
+
+dependencies:
+  requires:
+    - Product authorization AUTHORIZED for employee-context-ui
+    - Approved review decision APPROVED_READY_FOR_CONTRACT
+    - Delivered CreateEmployeeAction / CreateDepartmentAction /
+      AssignDepartmentToEmployeeAction / DeactivateDepartmentAction
+    - Contract-review approval of this contract
+    - Separate implementation-lock approval before any coding
+  does_not_require:
+    - New Application APIs or capability flags
+    - EmployeeReadContract
+    - List/search/paginate backends
+    - Dependents persistence
+    - Identity admin UI
+    - Changes to closed Notification or Request UI
+
+ownership:
+  authorized_for_future_implementation_lock:
+    - Employee Presentation Livewire hub component + Blade (paths locked later)
+    - Employee Presentation web route registration for employees.hub
+    - resources/views/components/layouts/app.blade.php (nav item only)
+    - Feature-specific UI tests (paths locked later)
+  not_authorized:
+    - Employee Application / Domain / Infrastructure code changes
+    - Identity module presentation or Application changes for this feature
+    - Notification / Request module presentation changes beyond shared layout nav addition
+
+# ---------------------------------------------------------------------------
+# Verification expectations (later gates — not executed here)
+# ---------------------------------------------------------------------------
+
+verification_expectations:
+  access_control:
+    - Guest cannot reach Employee Hub (redirect/auth middleware parity with other authenticated pages)
+    - Authenticated user can render hub route when authorized by web auth stack
+  render_integrity:
+    - Hub renders four mutation sections/forms without list/search/profile chrome
+    - Nav label کارکنان appears after اعلان‌ها on shared layout
+    - Active state applies on employees.* routes
+    - Layout nav link uses plain href without wire:navigate
+  mutation_delegation:
+    - Each form submit invokes exactly one bound Application action
+    - No repository/Eloquent/Domain mutation in Livewire methods
+  confirmation:
+    - Successful mutations surface flash + returned id (and optional point-read display only)
+  error_propagation:
+    - Backend validation/authorization failures surface clearly without UI semantic remapping
+  exclusions:
+    - No employee list/search/profile edit
+    - No department tree or selectors/dropdowns
+    - No dependents UI
+    - No Identity/Auth UX
+    - No backend expansion
+    - Closed Notification P2–P9 and Request UI features remain untouched
+  anti_leak:
+    - Presentation does not define business meaning, capability authority, or workflow orchestration
+  test_guidance_high_level:
+    - Feature UI flow tests for hub render, nav discoverability, and each of four mutations
+    - Architecture/surface discipline assertions consistent with UI Anti-Leak contract
+    - Exact test file paths deferred to implementation-lock
+
+acceptance_constraints:
+  - id: AC-EC-001
+    given: authenticated user on any page using components.layouts.app
+    when: page is rendered
+    then: header nav includes link labeled کارکنان immediately after اعلان‌ها linking to employees.hub
+  - id: AC-EC-002
+    given: authenticated user opens employees.hub
+    when: hub is rendered
+    then: page hosts create-employee, create-department, assign-department, and deactivate-department affordances only within approved MVF
+  - id: AC-EC-003
+    given: user submits create-employee form with valid inputs
+    when: mutation succeeds
+    then: UI delegates to CreateEmployeeAction and shows flash + returned employee id
+  - id: AC-EC-004
+    given: user submits create-department form with valid inputs
+    when: mutation succeeds
+    then: UI delegates to CreateDepartmentAction and shows flash + returned department id
+  - id: AC-EC-005
+    given: user submits assign-department form with explicit employee_id and department_id text UUIDs
+    when: mutation succeeds
+    then: UI delegates to AssignDepartmentToEmployeeAction and shows flash + returned id confirmation
+  - id: AC-EC-006
+    given: user submits deactivate-department with explicit department_id text UUID
+    when: mutation succeeds
+    then: UI delegates to DeactivateDepartmentAction and shows flash + returned id confirmation
+  - id: AC-EC-007
+    given: backend rejects a mutation (policy, gate, or domain exception)
+    when: UI surfaces the outcome
+    then: failure is shown without UI reinterpretation as a separate local rule system
+  - id: AC-EC-008
+    given: hub and nav implementation
+    when: inspected against exclusions
+    then: no list/search/profile/tree/dropdown/dependents/Identity UX or backend expansion is present
+  - id: AC-EC-009
+    given: closed Notification P2–P9 and Request UI surfaces
+    when: this feature is implemented later
+    then: those closed features remain unreopened and behaviorally unchanged aside from shared layout nav addition
+
+# ---------------------------------------------------------------------------
+# Governance
+# ---------------------------------------------------------------------------
+
+governance:
+  contract_status: FEATURE_CONTRACT_CREATED_READY_FOR_REVIEW
+  implementation_authorized: false
+  prerequisites_before_code:
+    - This contract approved via contract-review
+    - Separate implementation-lock created and approved via lock-review
+  next_authorized_gate: contract-review
+  next_authorized_artifact: >
+    Contract review decision / approval artifact per project UI governance
+    convention (does not authorize implementation by itself)
+  explicitly_not_created_by_this_gate:
+    - implementation-lock
+    - Livewire components
+    - Blade views
+    - routes
+    - Application / Domain / Infrastructure code
+  review_focus:
+    - MVF fidelity to review decision (four mutations + hub + nav only)
+    - RD-EC-001 through RD-EC-005 preservation
+    - Application action bindings only — no backend expansion
+    - Explicit UUID/id inputs and flash+id confirmation
+    - Full exclusion list enforcement
+    - Anti-leak / thin UI constraints
+    - No reopening of Notification or Request closed UI features
+
+implementation_notes:
+  - Greenfield Employee Presentation: hub Livewire + Blade + employees.hub route
+  - Surgical shared-layout nav addition only for کارکنان
+  - Prefer injecting the four Application action classes directly (same thin pattern as other modules)
+  - Do not bind repositories in Livewire except optional post-success findById display if lock allows Application-mediated read
+  - Prefer Application-layer point confirmation over Presentation→Repository if lock must choose; either way display-only and non-authoritative
+  - Persian RTL copy for form labels may be finalized at lock/implementation within MVF; nav label کارکنان is frozen
+  - Console commands remain out of product scope for change
+
+contract_status:
+  value: FEATURE_CONTRACT_CREATED_READY_FOR_REVIEW
+  note: >
+    Contract drafted for contract-review only. No code, routes, Livewire, Blade,
+    backend changes, or implementation-lock are authorized by this artifact.
