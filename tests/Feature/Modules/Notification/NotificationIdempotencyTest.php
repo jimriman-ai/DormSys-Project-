@@ -91,6 +91,15 @@ it('prevents duplicate rows when concurrent delivery races past the dedup pre-ch
             return $this->inner->listForRecipient($recipientEmployeeId, $unreadOnly, $limit);
         }
 
+        public function listForRecipientPaginated(
+            string $recipientEmployeeId,
+            ?bool $unreadOnly,
+            int $page,
+            int $perPage,
+        ): array {
+            return $this->inner->listForRecipientPaginated($recipientEmployeeId, $unreadOnly, $page, $perPage);
+        }
+
         public function countUnread(string $recipientEmployeeId): int
         {
             return $this->inner->countUnread($recipientEmployeeId);

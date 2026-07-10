@@ -6,6 +6,7 @@ use App\Modules\Notification\Application\Contracts\EmployeeExistenceReadPort;
 use App\Modules\Notification\Application\Contracts\MarkNotificationReadContract;
 use App\Modules\Notification\Application\Contracts\NotificationDeliveryContract;
 use App\Modules\Notification\Application\Contracts\NotificationInboxReadContract;
+use App\Modules\Notification\Application\DTOs\NotificationInboxListQueryDTO;
 use App\Modules\Notification\Application\DTOs\NotificationIntentDto;
 use App\Modules\Notification\Application\DTOs\NotificationProjectionDto;
 use App\Modules\Notification\Domain\Enums\NotificationType;
@@ -132,4 +133,115 @@ it('returns an empty inbox without error', function (): void {
 
     expect(app(NotificationInboxReadContract::class)->listForRecipient($employeeId))->toBe([]);
     expect(app(NotificationInboxReadContract::class)->countUnread($employeeId))->toBe(0);
+});
+
+it('returns a paginated envelope with authoritative metadata', function (): void {
+    $employeeId = UuidGenerator::uuid7();
+    inboxActiveEmployees($employeeId);
+
+    deliverInboxNotification($employeeId, 'inbox:page:meta:001', 'اعلان یک');
+    deliverInboxNotification($employeeId, 'inbox:page:meta:002', 'اعلان دو');
+
+    $page = app(NotificationInboxReadContract::class)->listForRecipientPaginated(
+        new NotificationInboxListQueryDTO(recipientEmployeeId: $employeeId),
+    );
+
+    expect($page->items)->toHaveCount(2);
+    expect($page->total)->toBe(2);
+    expect($page->currentPage)->toBe(1);
+    expect($page->perPage)->toBe(50);
+    expect($page->lastPage)->toBe(1);
+});
+
+it('orders paginated inbox by created_at desc then id desc', function (): void {
+    $employeeId = UuidGenerator::uuid7();
+    inboxActiveEmployees($employeeId);
+
+    $olderId = deliverInboxNotification($employeeId, 'inbox:order:001', 'قدیمی‌تر');
+    $newerId = deliverInboxNotification($employeeId, 'inbox:order:002', 'جدیدتر');
+
+    NotificationLogModel::query()->whereKey($olderId)->update(['created_at' => '2026-07-01T10:00:00Z']);
+    NotificationLogModel::query()->whereKey($newerId)->update(['created_at' => '2026-07-02T10:00:00Z']);
+
+    $sameMomentA = deliverInboxNotification($employeeId, 'inbox:order:003', 'هم‌زمان الف');
+    $sameMomentB = deliverInboxNotification($employeeId, 'inbox:order:004', 'هم‌زمان ب');
+
+    NotificationLogModel::query()->whereKey($sameMomentA)->update(['created_at' => '2026-07-03T10:00:00Z']);
+    NotificationLogModel::query()->whereKey($sameMomentB)->update(['created_at' => '2026-07-03T10:00:00Z']);
+
+    $page = app(NotificationInboxReadContract::class)->listForRecipientPaginated(
+        new NotificationInboxListQueryDTO(recipientEmployeeId: $employeeId),
+    );
+
+    $ids = array_map(static fn (NotificationProjectionDto $item): string => $item->id, $page->items);
+
+    $tieBreakerFirst = max($sameMomentA, $sameMomentB);
+    $tieBreakerSecond = min($sameMomentA, $sameMomentB);
+
+    expect($ids)->toBe([$tieBreakerFirst, $tieBreakerSecond, $newerId, $olderId]);
+});
+
+it('returns a distinct second page when total exceeds perPage', function (): void {
+    $employeeId = UuidGenerator::uuid7();
+    inboxActiveEmployees($employeeId);
+
+    for ($index = 1; $index <= 51; $index++) {
+        deliverInboxNotification($employeeId, 'inbox:slice:'.$index, 'صفحه اعلان '.$index);
+    }
+
+    $pageOne = app(NotificationInboxReadContract::class)->listForRecipientPaginated(
+        new NotificationInboxListQueryDTO(recipientEmployeeId: $employeeId, page: 1, perPage: 50),
+    );
+    $pageTwo = app(NotificationInboxReadContract::class)->listForRecipientPaginated(
+        new NotificationInboxListQueryDTO(recipientEmployeeId: $employeeId, page: 2, perPage: 50),
+    );
+
+    expect($pageOne->total)->toBe(51);
+    expect($pageOne->lastPage)->toBe(2);
+    expect($pageOne->items)->toHaveCount(50);
+    expect($pageTwo->currentPage)->toBe(2);
+    expect($pageTwo->items)->toHaveCount(1);
+
+    $pageOneTitles = array_map(static fn (NotificationProjectionDto $item): string => $item->title, $pageOne->items);
+    $pageTwoTitles = array_map(static fn (NotificationProjectionDto $item): string => $item->title, $pageTwo->items);
+
+    expect($pageOneTitles)->not->toContain($pageTwoTitles[0]);
+    expect(array_intersect($pageOneTitles, $pageTwoTitles))->toBe([]);
+});
+
+it('clamps out-of-range pages to the last page', function (): void {
+    $employeeId = UuidGenerator::uuid7();
+    inboxActiveEmployees($employeeId);
+
+    for ($index = 1; $index <= 51; $index++) {
+        deliverInboxNotification($employeeId, 'inbox:clamp:'.$index, 'اعلان '.$index);
+    }
+
+    $page = app(NotificationInboxReadContract::class)->listForRecipientPaginated(
+        new NotificationInboxListQueryDTO(recipientEmployeeId: $employeeId, page: 99, perPage: 50),
+    );
+
+    expect($page->currentPage)->toBe(2);
+    expect($page->lastPage)->toBe(2);
+    expect($page->items)->toHaveCount(1);
+});
+
+it('keeps listForRecipient compatible alongside pagination', function (): void {
+    $employeeId = UuidGenerator::uuid7();
+    inboxActiveEmployees($employeeId);
+
+    for ($index = 1; $index <= 51; $index++) {
+        deliverInboxNotification($employeeId, 'inbox:compat:'.$index, 'سازگاری '.$index);
+    }
+
+    $flat = app(NotificationInboxReadContract::class)->listForRecipient($employeeId);
+    $paginated = app(NotificationInboxReadContract::class)->listForRecipientPaginated(
+        new NotificationInboxListQueryDTO(recipientEmployeeId: $employeeId),
+    );
+
+    expect($flat)->toHaveCount(50);
+    expect($paginated->total)->toBe(51);
+    expect($paginated->items)->toHaveCount(50);
+    expect(array_map(static fn (NotificationProjectionDto $item): string => $item->id, $flat))
+        ->toBe(array_map(static fn (NotificationProjectionDto $item): string => $item->id, $paginated->items));
 });

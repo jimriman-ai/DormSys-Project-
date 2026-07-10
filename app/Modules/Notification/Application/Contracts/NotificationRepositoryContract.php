@@ -27,6 +27,22 @@ interface NotificationRepositoryContract
      */
     public function listForRecipient(string $recipientEmployeeId, ?bool $unreadOnly = null, int $limit = 50): array;
 
+    /**
+     * @return array{
+     *     items: list<Notification>,
+     *     total: int,
+     *     currentPage: int,
+     *     perPage: int,
+     *     lastPage: int
+     * }
+     */
+    public function listForRecipientPaginated(
+        string $recipientEmployeeId,
+        ?bool $unreadOnly,
+        int $page,
+        int $perPage,
+    ): array;
+
     public function countUnread(string $recipientEmployeeId): int;
 
     public function archiveExpiredBefore(DateTimeImmutable $cutoff): int;

@@ -6,6 +6,7 @@ namespace App\Modules\Notification\Presentation\Livewire;
 
 use App\Modules\Notification\Application\Contracts\MarkNotificationReadContract;
 use App\Modules\Notification\Application\Contracts\NotificationInboxReadContract;
+use App\Modules\Notification\Application\DTOs\NotificationInboxListQueryDTO;
 use App\Modules\Notification\Application\DTOs\NotificationProjectionDto;
 use App\Modules\Notification\Application\Services\NotificationPrincipalEmployeeResolver;
 use App\Support\Presentation\Concerns\HandlesUiMutationFeedback;
@@ -13,6 +14,7 @@ use DateTimeImmutable;
 use DateTimeZone;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Morilog\Jalali\Jalalian;
 use Throwable;
@@ -22,7 +24,7 @@ final class NotificationInboxPage extends Component
 {
     use HandlesUiMutationFeedback;
 
-    private const LIST_LIMIT = 50;
+    private const int PER_PAGE = 50;
 
     private const APPROVED_REQUEST_SHOW_ROUTE = 'requests.show';
 
@@ -30,8 +32,33 @@ final class NotificationInboxPage extends Component
 
     public ?string $loadError = null;
 
+    #[Url(as: 'page', except: 1)]
+    public int $page = 1;
+
+    public int $total = 0;
+
+    public int $lastPage = 1;
+
+    public int $perPage = self::PER_PAGE;
+
     /** @var list<array<string, mixed>> */
     public array $notifications = [];
+
+    public function updatedPage(
+        NotificationInboxReadContract $inbox,
+        NotificationPrincipalEmployeeResolver $principalEmployee,
+    ): void {
+        $this->refreshList($inbox, $principalEmployee);
+    }
+
+    public function goToPage(
+        int $page,
+        NotificationInboxReadContract $inbox,
+        NotificationPrincipalEmployeeResolver $principalEmployee,
+    ): void {
+        $this->page = max($page, 1);
+        $this->refreshList($inbox, $principalEmployee);
+    }
 
     public function refreshList(
         NotificationInboxReadContract $inbox,
@@ -43,14 +70,32 @@ final class NotificationInboxPage extends Component
         try {
             $employeeId = $principalEmployee->requireEmployeeId();
 
+            if ($this->page < 1) {
+                $this->page = 1;
+            }
+
+            $result = $inbox->listForRecipientPaginated(new NotificationInboxListQueryDTO(
+                recipientEmployeeId: $employeeId,
+                unreadOnly: null,
+                page: $this->page,
+                perPage: self::PER_PAGE,
+            ));
+
+            $this->page = $result->currentPage;
+            $this->total = $result->total;
+            $this->lastPage = $result->lastPage;
+            $this->perPage = $result->perPage;
+
             $this->notifications = array_map(
                 static fn (NotificationProjectionDto $projection): array => self::mapProjectionRow($projection),
-                $inbox->listForRecipient($employeeId, null, self::LIST_LIMIT),
+                $result->items,
             );
 
-            $this->uiState = $this->notifications === [] ? 'empty' : 'ready';
+            $this->uiState = $this->total === 0 ? 'empty' : 'ready';
         } catch (Throwable $exception) {
             $this->notifications = [];
+            $this->total = 0;
+            $this->lastPage = 1;
             $this->loadError = $exception->getMessage();
             $this->uiState = 'error';
         }

@@ -1,0 +1,494 @@
+feature:
+  id: notification-inbox-pagination
+  name: P9 — Notification Inbox Pagination
+  module: Notification
+  classification: successor-feature
+  gap_type: MIXED_UI_AND_READ_MODEL_GAP
+  version: 0.1.0
+  status: draft
+  area: notifications
+
+decision_reference:
+  artifact: docs/ui/review/notifications/notification-inbox-pagination.review-decision.md
+  verdict: READY_FOR_CONTRACT
+  implementation_authorized: false
+
+source_artifacts:
+  - docs/ui/analysis/notifications/notification-inbox-pagination.repo-inspection.md
+  - docs/ui/review/notifications/notification-inbox-pagination.review-decision.md
+  - docs/ui/review/governance-next-candidate-triage.md
+
+baseline_contracts:
+  - id: notification-inbox-read-only-list
+    relationship: predecessor
+    status: CLOSED
+    supersession_scope: >
+      P9 supersedes only the P2 deferred pagination exclusion beyond the initial
+      presentation cap of 50 items. P2 read-only inbox baseline (list rendering,
+      states, projection mapping, principal resolution) remains authoritative except
+      where explicitly superseded by this contract.
+  - id: notification-mark-read-mutation
+    relationship: predecessor
+    status: CLOSED
+    supersession_scope: >
+      P9 supersedes only the P5 post-mutation list reload transport on
+      NotificationInboxPage: reload uses the paginated read method on the current
+      page instead of flat listForRecipient first-page reload. Mark-read mutation
+      semantics, affordance, and MarkNotificationReadContract delegation remain unchanged.
+  - id: notification-inbox-deep-link-navigation
+    relationship: predecessor
+    status: CLOSED
+    preserved: Row request_show_url binding on paginated rows remains unchanged.
+  - id: notification-inbox-layout-navigation
+    relationship: predecessor
+    status: CLOSED
+    preserved: Layout nav اعلان‌ها link, destination, order, and active state unchanged.
+  - id: notification-inbox-unread-badge
+    relationship: predecessor
+    status: CLOSED
+    preserved: >
+      P8 layout unread badge via LayoutNavUnreadBadgeComposer remains fully
+      independent. P9 does not modify P8 delivery or consume countUnread in inbox page.
+
+purpose:
+  summary: >
+    Enable authenticated employees to navigate beyond the first 50 delivered,
+    non-archived inbox notifications using backend-authoritative offset page-number
+    pagination on the existing NotificationInboxPage surface.
+  rationale:
+    - P2 delivered read-only inbox with a fixed 50-item presentation cap and deferred pagination.
+    - Repository evidence shows listForRecipient supports limit only; no offset, cursor, or pagination metadata.
+    - Records beyond the first 50 matching notifications are unreachable in current UI.
+    - P9 reopens only pagination under a separate successor contract without redesigning inbox baseline, mark-read, deep-link, layout nav, or unread badge.
+
+business_goal:
+  primary:
+    - Allow authenticated recipients to access notification inbox rows beyond the first page when total delivered notifications exceed 50.
+  success_outcome:
+    - User can navigate forward and backward across inbox pages when lastPage > 1.
+    - Pagination metadata and page slices are backend-authoritative.
+    - Mark-read on a paginated page refreshes the current page without resetting to page 1.
+
+scope:
+  in_scope:
+    - Web notification inbox page only (route notifications.index, NotificationInboxPage)
+    - Offset page-number pagination with fixed page size of 50
+    - New paginated read method on NotificationInboxReadContract
+    - New paginated envelope DTO in Notification Application layer
+    - Repository query extension using forPage(page, perPage) with count query
+    - Stable ordering created_at DESC, id DESC
+    - Livewire URL-synchronized page state
+    - Pagination controls when lastPage > 1; hidden when single page or total is zero
+    - Distinct empty inbox state when total equals 0
+    - Post mark-read reload of current page via paginated read method
+    - Preservation of flat listForRecipient for non-inbox consumers
+    - Feature-specific tests for pagination, URL state, mark-read page preservation, and architecture guards
+  out_of_scope:
+    - mark-all-as-read
+    - Unread-only filtering UI (unreadOnly contract parameter remains unused by inbox UI in v1)
+    - Notification search
+    - Notification sorting controls or user-selectable sort order
+    - Realtime, polling, websocket, or wire:poll refresh
+    - Notification archive management UI
+    - New API or HTTP endpoints
+    - SPA architecture or client-side routing changes
+    - Notification domain redesign
+    - Request-list pagination changes
+    - P8 layout unread badge changes
+    - countUnread consumption inside NotificationInboxPage or inbox Blade
+    - Cursor-based pagination
+    - User-configurable page size or per-page selector
+    - Client-side in-memory pagination over a full in-memory fetch
+    - Cross-module Infrastructure imports from Notification presentation
+    - Direct repository or Eloquent access from Livewire or Blade
+
+user_visible_behavior:
+  surface: Notification Inbox page (اعلان‌ها — notifications.index)
+  pagination:
+    model: page-number navigation with fixed page size
+    behavior:
+      - User may navigate to previous and next pages when total notifications exceed one page.
+      - Current page position and whether more pages exist must be derived from backend pagination metadata.
+      - Pagination controls are not rendered when total equals 0 or when lastPage is less than or equal to 1.
+      - Each page displays at most 50 notification rows.
+  unchanged_from_predecessors:
+    - Row displays title, message, created time, read/unread indicator, mark-read affordance (P5), and deep-link (P6) per existing contracts.
+    - Loading, ready, empty, and error UI states remain supported.
+    - Layout nav اعلان‌ها link and P8 unread badge behavior remain unchanged.
+  mark_read_interaction:
+    behavior: >
+      After successful mark-read, inbox reloads the same current page number via the
+      paginated read method. User is not reset to page 1.
+
+state_model:
+  component_state:
+    - name: page
+      type: positive_integer
+      default: 1
+      minimum: 1
+      persistence: livewire_url_binding
+    - name: total
+      type: integer
+      source: backend_envelope
+    - name: lastPage
+      type: integer
+      source: backend_envelope
+    - name: perPage
+      type: integer
+      fixed_value: 50
+      source: backend_envelope
+    - name: notifications
+      type: list
+      source: backend_envelope_items_mapped_for_blade
+  persistence: livewire_component_state_backed_by_url_query_string
+  reset_rules:
+    - trigger: initial_page_load
+      resets: none; page defaults to 1 when URL omits page parameter
+    - trigger: mark_notification_read_success
+      resets: none; preserves current page and reloads same page via paginated read
+    - trigger: manual_full_page_navigation_with_page_query
+      resets: none; page restored from URL then clamped by backend envelope
+
+url_state:
+  synchronized: true
+  scope: notifications.index only
+  query_parameters:
+    - name: page
+      maps_to: page
+      optional: true
+      omission_default: 1
+      livewire_binding: '#[Url(as: ''page'', except: 1)]'
+  validation:
+    invalid_page_below_one: coerce to 1 before query execution
+    invalid_page_above_last_page: backend clamps to lastPage when results exist; coerce to 1 when total is 0
+  reload_behavior: >
+    Direct navigation or browser reload with a valid page query parameter restores
+    the corresponding paginated inbox slice after backend clamping.
+
+query_semantics:
+  authority_owner: backend
+  consumption_surface: web Notification Inbox page only
+  pagination_strategy: offset_page_number
+  rejected_strategies:
+    - cursor_pagination
+  baseline_behavior_preserved:
+    employee_scope: NotificationPrincipalEmployeeResolver::requireEmployeeId
+    unread_filter: null (all delivered non-archived notifications; unreadOnly not consumed by UI in v1)
+    row_projection: NotificationProjectionDto
+    delivered_filter: delivery_status = delivered
+    archive_filter: archived_at IS NULL
+    recipient_scope: recipient_employee_id match enforced in repository
+  read_operations:
+  flat_list:
+    contract: App\Modules\Notification\Application\Contracts\NotificationInboxReadContract
+    method: listForRecipient
+    preservation: >
+      Signature and semantics remain unchanged for non-inbox consumers
+      (NotificationInboxTest, retention paths, bounded non-UI reads). Inbox UI
+      must not use listForRecipient for primary list load after P9 implementation.
+  paginated_list:
+    contract: App\Modules\Notification\Application\Contracts\NotificationInboxReadContract
+    method: listForRecipientPaginated
+    query_dto: App\Modules\Notification\Application\DTOs\NotificationInboxListQueryDTO
+    envelope_dto: App\Modules\Notification\Application\DTOs\PaginatedNotificationInboxListDTO
+    criteria_input:
+      recipient_employee_id:
+        required: true
+        source: NotificationPrincipalEmployeeResolver::requireEmployeeId
+      unread_only:
+        required: false
+        default: null
+        ui_value_v1: null
+      page:
+        required: true
+        default: 1
+        minimum: 1
+      per_page:
+        required: true
+        fixed_value: 50
+    result_envelope:
+      items: list<NotificationProjectionDto>
+      total: integer
+      current_page: integer
+      per_page: integer
+      last_page: integer
+    enforcement_rules:
+      - Page slicing and total count must be applied in backend repository/query execution using forPage(page, perPage).
+      - UI must not fetch the full recipient notification set and paginate in memory.
+      - Pagination metadata (total, currentPage, perPage, lastPage) must be backend-authoritative; UI must not compute lastPage or total from visible rows.
+      - Out-of-range page requests must be normalized by backend before slice execution.
+      - Ordering must be orderByDesc(created_at) then orderByDesc(id) before count and forPage execution.
+
+ordering:
+  primary: created_at descending
+  tie_breaker: id descending
+  requirement: >
+    Repository list and paginated list queries must apply both sort keys so page
+    boundaries are stable across requests. created_at DESC alone is insufficient
+    for P9.
+
+pagination:
+  model: offset_page_number
+  pre_p9_baseline:
+    behavior: >
+      Inbox returned at most the first 50 delivered non-archived notifications via
+      listForRecipient($employeeId, null, 50) with no navigation beyond that slice.
+    cardinality: Maximum 50 visible rows regardless of total matching notifications.
+  p9_behavior:
+    default_load: Paginated page 1 with per_page 50.
+    cardinality_change: >
+      Intentional and governed. When total exceeds 50, user can access additional
+      pages. Per-page row count remains 50.
+    execution_authority: Backend query applies forPage; UI must not slice in memory.
+  per_page:
+    value: 50
+    configurable_by_user: false
+    contract_frozen: true
+  page_semantics:
+    first_page: 1
+    empty_result_last_page: 1
+    out_of_range_page: clamp to lastPage when total > 0; clamp to 1 when total is 0
+  ui_requirements:
+    - Show previous and next affordances when lastPage > 1 and navigation is valid.
+    - Do not render pagination controls when total is 0 or lastPage <= 1.
+    - UI consumes backend-supplied total, currentPage, perPage, and lastPage only.
+
+empty_states:
+  global_empty:
+    condition: total equals 0
+    ui_state: empty
+    note: Distinct from paginated ready state with rows on page 1.
+  paginated_ready:
+    condition: total greater than 0
+    ui_state: ready
+  error_state:
+    unchanged_from_p2_baseline: true
+
+mutations:
+  preserved_from_p5:
+    action: mark_notification_read
+    contract: App\Modules\Notification\Application\Contracts\MarkNotificationReadContract::markRead
+    constraint: Mutation semantics unchanged from P5 contract.
+  post_mutation_refresh:
+    model: paginated_current_page_reload
+    authority: NotificationInboxReadContract::listForRecipientPaginated
+    constraint: >
+      After successful mark-read, UI reloads inbox using the paginated read method
+      with the same page number as before the mutation. Reset to page 1 is forbidden.
+      Optimistic local row mutation without backend paginated list refresh is forbidden.
+
+p8_unread_badge_boundary:
+  rule_id: BADGE-P9-001
+  constraint: >
+    NotificationInboxPage and inbox Blade must not invoke countUnread, reference
+    countUnread, or derive unread aggregate count from list rows or pagination metadata.
+  layout_badge:
+    owner: LayoutNavUnreadBadgeComposer on components.layouts.app
+    unchanged: true
+    refresh: full page load only; P9 does not introduce reactive badge refresh.
+
+architecture_constraints:
+  ui:
+    - UI must remain thin and presentation-only.
+    - Inbox list load and post mark-read refresh must use NotificationInboxReadContract::listForRecipientPaginated only.
+    - UI must consume PaginatedNotificationInboxListDTO metadata for pagination controls and state clamping.
+    - UI must not query notification_logs, call NotificationRepositoryContract, or access Eloquent from Livewire or Blade.
+    - UI must not perform client-side pagination over a full listForRecipient fetch.
+    - UI must not call countUnread.
+    - UI must not own principal resolution logic; use NotificationPrincipalEmployeeResolver.
+    - UI may transport page index via Livewire URL binding; backend owns slice boundaries and metadata meaning.
+    - Row rendering, Jalali formatting, deep-link URL binding, and mark-read affordance gating remain presentation concerns per P2/P5/P6.
+  backend:
+    - NotificationInboxReadContract gains listForRecipientPaginated; listForRecipient preserved.
+    - NotificationInboxReadService and NotificationRepository implement paginated query execution.
+    - Recipient-scoped delivered/non-archived filtering remains backend authority.
+    - MarkNotificationReadContract and countUnread semantics remain unchanged.
+  governance:
+    - Implementation requires separate implementation lock after contract review approval.
+    - P9 does not amend P2/P5/P6/P7/P8 contracts in place.
+
+allowed_changes:
+  areas:
+    - NotificationInboxReadContract (add listForRecipientPaginated)
+    - NotificationInboxReadService (paginated delegation)
+    - NotificationRepositoryContract and NotificationRepository (paginated query + ordering tie-breaker)
+    - New Application DTOs NotificationInboxListQueryDTO and PaginatedNotificationInboxListDTO
+    - NotificationInboxPage (page state, paginated load, mark-read refresh semantics)
+    - notification-inbox-page.blade.php (pagination controls)
+    - Feature-specific tests and successor updates to P2 limit-50-only inbox UI tests
+  constraint: Changes must remain within P9 pagination scope. No P8 layout badge changes.
+
+forbidden_changes:
+  areas:
+    - MarkNotificationReadContract signature or mark-read domain behavior
+    - countUnread query semantics or LayoutNavUnreadBadgeComposer delivery
+    - listForRecipient signature change or removal
+    - NotificationProjectionDto field shape changes for pagination
+    - New API routes or controllers for inbox pagination
+    - Filtering, search, sort, archive, mark-all, or realtime surfaces
+    - Request module pagination implementation
+    - Cross-module Infrastructure imports in Notification presentation
+    - Direct database access from UI
+    - countUnread in NotificationInboxPage.php or inbox Blade
+  escalation_rule: >
+    If implementation appears to require any forbidden change, contract review must
+    reject or re-scope before coding.
+
+interaction_model:
+  user_story:
+    - As an authenticated employee with more than 50 inbox notifications, I can navigate to additional pages to view older notifications.
+  entrypoint: notifications.index
+  interactions:
+    - Page load triggers listForRecipientPaginated at page from URL (default 1) with per_page 50.
+    - User navigates prev/next when pagination controls are visible.
+    - Mark-read on unread row triggers MarkNotificationReadContract then paginated reload of current page.
+    - Deep-link and mark-read affordances behave per P6/P5 on each visible page row.
+
+acceptance_criteria:
+  functional:
+    - Inbox primary list load uses NotificationInboxReadContract::listForRecipientPaginated, not listForRecipient.
+    - When total notifications exceed 50, user can access rows beyond the first 50 via page navigation.
+    - Each page returns at most 50 NotificationProjectionDto items from backend execution.
+    - Backend returns envelope fields items, total, currentPage, perPage, lastPage on every paginated load.
+    - Pagination controls appear only when lastPage > 1.
+    - Pagination controls are absent when total is 0 or lastPage <= 1.
+    - Empty inbox renders empty state when total equals 0.
+    - URL page query parameter restores paginated slice after reload with backend clamping.
+    - Out-of-range page values are normalized per page_semantics before display.
+    - Ordering is created_at DESC then id DESC across paginated slices.
+    - After successful mark-read, inbox reloads the same page number via listForRecipientPaginated.
+    - listForRecipient remains available with unchanged signature for non-inbox consumers.
+    - P5 mark-read affordance, P6 deep-link, and P2 row field rendering remain on paginated rows.
+    - P7 layout nav and P8 unread badge behavior remain unchanged.
+  non_functional:
+    - Pagination slicing and metadata are backend-authoritative; no in-memory full-list pagination in UI.
+    - NotificationInboxPage does not call countUnread.
+    - UI does not access NotificationRepository or Eloquent directly.
+    - No mark-all, filter UI, search, sort UI, realtime refresh, archive UI, or new API endpoints.
+    - unreadOnly is not exposed as inbox filter UI in v1.
+  regression_safety:
+    - NotificationInboxTest and backend mark-read tests remain valid without requiring inbox UI to use flat listForRecipient.
+    - P8 architecture guard forbidding countUnread in NotificationInboxPage remains enforced.
+    - Recipient isolation and delivered/non-archived query scope remain backend-enforced.
+
+test_implications:
+  required_new_tests:
+    - Paginated load returns at most 50 items per page when total exceeds 50
+    - User can navigate to page 2+ and see rows beyond the first 50
+    - Pagination controls hidden when total <= 50 or lastPage <= 1
+    - URL page parameter restores paginated state on reload
+    - Out-of-range page clamped per contract semantics
+    - Mark-read success reloads current page without reset to page 1
+    - listForRecipientPaginated invoked on inbox load and post mark-read refresh
+    - Backend ordering uses created_at DESC and id DESC
+    - Empty state when total equals 0
+  required_regression_updates:
+    - Replace P2 tests that assert inbox uses only listForRecipient(..., 50) with paginated method expectations
+    - Retain and extend architecture guard forbidding countUnread in NotificationInboxPage
+  boundary:
+    - Tests must not require P8 layout badge changes
+    - Tests must not require Request module changes
+
+dependencies:
+  requires:
+    - Approved P2/P5/P6/P7/P8 closed deliveries
+    - Review decision READY_FOR_CONTRACT
+    - NotificationPrincipalEmployeeResolver (existing)
+    - NotificationInboxReadContract and NotificationProjectionDto (existing)
+    - MarkNotificationReadContract (existing; unchanged)
+    - Separate implementation lock approved after contract review
+  does_not_require:
+    - countUnread or layout badge changes
+    - New routes or middleware
+    - Notification domain model redesign
+    - Request module PaginatedRequestSummaryListDTO reuse
+
+governance:
+  classification: successor-feature
+  prerequisites:
+    - This contract approved via contract-review gate
+    - Separate implementation lock approved before any coding
+  review_focus:
+    - Backend-authoritative pagination metadata and forPage execution
+    - listForRecipient preservation vs inbox paginated method consumption
+    - URL page state and backend clamping alignment
+    - Mark-read current-page reload semantics
+    - P8 countUnread independence and architecture guard retention
+    - P2 pagination deferral supersession scope only
+  frozen_boundaries:
+    - P5 mark-read mutation semantics unchanged
+    - P6 deep-link behavior unchanged
+    - P7 layout navigation unchanged
+    - P8 unread badge delivery unchanged
+    - flat listForRecipient signature unchanged
+  next_gate: contract-review
+  superseded_predecessor_exclusions:
+    - P2 contract pagination deferral beyond 50-item cap
+    - P2 lock prohibition on pagination UI and backend pagination support
+    - P5 inbox post-mutation listForRecipient reload transport on NotificationInboxPage only
+
+anti_leak_boundaries:
+  forbidden:
+    - ui_side_pagination_over_full_result_set
+    - ui_computes_last_page_from_visible_rows
+    - ui_computes_total_from_visible_rows
+    - countUnread_in_inbox_page
+    - direct_repository_access_from_presentation
+    - ui_derives_unread_aggregate_from_list_slice
+  required:
+    - backend_executed_pagination_with_metadata_envelope
+    - dto_field_consumption_for_row_rendering
+    - page_criteria_forwarded_to_single_paginated_read_operation
+    - backend_authoritative_clamping_of_page_index
+
+decisions:
+  - id: RD-P9-001
+    area: pagination_strategy
+    resolution: offset_page_number via forPage
+  - id: RD-P9-002
+    area: read_contract
+    resolution: add listForRecipientPaginated; preserve listForRecipient
+  - id: RD-P9-003
+    area: response_model
+    resolution: PaginatedNotificationInboxListDTO envelope with items, total, currentPage, perPage, lastPage
+  - id: RD-P9-004
+    area: ordering
+    resolution: created_at DESC, id DESC
+  - id: RD-P9-005
+    area: page_size
+    resolution: fixed per_page 50
+  - id: RD-P9-006
+    area: url_state
+    resolution: Livewire URL page binding on notifications.index
+  - id: RD-P9-007
+    area: mark_read_reload
+    resolution: refresh current page via listForRecipientPaginated
+  - id: RD-P9-008
+    area: p8_badge_boundary
+    resolution: countUnread forbidden in NotificationInboxPage; P8 unchanged
+
+references:
+  review:
+    - docs/ui/review/notifications/notification-inbox-pagination.review-decision.md
+  analysis:
+    - docs/ui/analysis/notifications/notification-inbox-pagination.repo-inspection.md
+  predecessor_contracts:
+    - docs/ui/contracts/notifications/notification-inbox-read-only-list.feature-contract.yaml
+    - docs/ui/contracts/notifications/notification-mark-read-mutation.feature-contract.yaml
+    - docs/ui/contracts/notifications/notification-inbox-deep-link-navigation.feature-contract.yaml
+    - docs/ui/contracts/notifications/notification-inbox-layout-navigation.feature-contract.yaml
+    - docs/ui/contracts/notifications/notification-inbox-unread-badge.feature-contract.yaml
+  internal_precedent_analogy_only:
+    - docs/ui/contracts/requests/request-list-filtering-sorting-pagination.feature-contract.yaml
+  architecture_authority:
+    - .specify/ARCHITECTURE.md
+    - docs/architecture/ui/UI-ANTI-LEAK-CONTRACT.md
+  backend_authority:
+    - app/Modules/Notification/Application/Contracts/NotificationInboxReadContract.php
+    - app/Modules/Notification/Application/DTOs/NotificationProjectionDto.php
+
+notes:
+  - P9 converts P2 total cap of 50 into per-page size of 50 with multi-page navigation when total exceeds 50.
+  - Request P4 paginated list patterns are internal analogy only; Notification DTOs and query shape are Notification-specific.
+  - Exact prev/next Persian labels and Blade markup are implementation-lock pins.
+  - Implementation is not authorized by this contract artifact.

@@ -6,7 +6,9 @@ namespace App\Modules\Notification\Application\Services;
 
 use App\Modules\Notification\Application\Contracts\NotificationInboxReadContract;
 use App\Modules\Notification\Application\Contracts\NotificationRepositoryContract;
+use App\Modules\Notification\Application\DTOs\NotificationInboxListQueryDTO;
 use App\Modules\Notification\Application\DTOs\NotificationProjectionDto;
+use App\Modules\Notification\Application\DTOs\PaginatedNotificationInboxListDTO;
 use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\Notification\Domain\ValueObjects\NotificationId;
 
@@ -21,6 +23,27 @@ final class NotificationInboxReadService implements NotificationInboxReadContrac
         return array_map(
             fn (Notification $notification): NotificationProjectionDto => $this->toProjection($notification),
             $this->notifications->listForRecipient($recipientEmployeeId, $unreadOnly, $limit),
+        );
+    }
+
+    public function listForRecipientPaginated(NotificationInboxListQueryDTO $query): PaginatedNotificationInboxListDTO
+    {
+        $page = $this->notifications->listForRecipientPaginated(
+            $query->recipientEmployeeId,
+            $query->unreadOnly,
+            max($query->page, 1),
+            $query->perPage,
+        );
+
+        return new PaginatedNotificationInboxListDTO(
+            items: array_map(
+                fn (Notification $notification): NotificationProjectionDto => $this->toProjection($notification),
+                $page['items'],
+            ),
+            total: $page['total'],
+            currentPage: $page['currentPage'],
+            perPage: $page['perPage'],
+            lastPage: $page['lastPage'],
         );
     }
 

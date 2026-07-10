@@ -14,6 +14,7 @@ use App\Modules\Notification\Domain\ValueObjects\NotificationId;
 use App\Modules\Notification\Infrastructure\Persistence\Models\NotificationLogModel;
 use DateTimeImmutable;
 use DateTimeZone;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
 final class NotificationRepository implements NotificationRepositoryContract
@@ -56,16 +57,10 @@ final class NotificationRepository implements NotificationRepositoryContract
 
     public function listForRecipient(string $recipientEmployeeId, ?bool $unreadOnly = null, int $limit = 50): array
     {
-        $query = NotificationLogModel::query()
-            ->where('recipient_employee_id', $recipientEmployeeId)
-            ->where('delivery_status', DeliveryStatus::Delivered->value)
-            ->whereNull('archived_at')
+        $query = $this->recipientInboxQuery($recipientEmployeeId, $unreadOnly)
             ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->limit($limit);
-
-        if ($unreadOnly === true) {
-            $query->whereNull('read_at');
-        }
 
         $notifications = [];
 
@@ -74,6 +69,39 @@ final class NotificationRepository implements NotificationRepositoryContract
         }
 
         return $notifications;
+    }
+
+    public function listForRecipientPaginated(
+        string $recipientEmployeeId,
+        ?bool $unreadOnly,
+        int $page,
+        int $perPage,
+    ): array {
+        $builder = $this->recipientInboxQuery($recipientEmployeeId, $unreadOnly)
+            ->orderByDesc('created_at')
+            ->orderByDesc('id');
+
+        $total = (clone $builder)->count();
+        $lastPage = max((int) ceil($total / $perPage), 1);
+        $currentPage = min(max($page, 1), $lastPage);
+
+        if ($total === 0) {
+            $currentPage = 1;
+        }
+
+        $notifications = [];
+
+        foreach ($builder->forPage($currentPage, $perPage)->get() as $model) {
+            $notifications[] = $this->toDomain($model);
+        }
+
+        return [
+            'items' => $notifications,
+            'total' => $total,
+            'currentPage' => $currentPage,
+            'perPage' => $perPage,
+            'lastPage' => $lastPage,
+        ];
     }
 
     public function countUnread(string $recipientEmployeeId): int
@@ -95,6 +123,23 @@ final class NotificationRepository implements NotificationRepositoryContract
             ->where('delivery_status', DeliveryStatus::Delivered->value)
             ->where('created_at', '<', $cutoff)
             ->update(['archived_at' => $archivedAt]);
+    }
+
+    /**
+     * @return Builder<NotificationLogModel>
+     */
+    private function recipientInboxQuery(string $recipientEmployeeId, ?bool $unreadOnly): Builder
+    {
+        $query = NotificationLogModel::query()
+            ->where('recipient_employee_id', $recipientEmployeeId)
+            ->where('delivery_status', DeliveryStatus::Delivered->value)
+            ->whereNull('archived_at');
+
+        if ($unreadOnly === true) {
+            $query->whereNull('read_at');
+        }
+
+        return $query;
     }
 
     private function insert(Notification $notification): Notification

@@ -95,5 +95,29 @@
                 </tbody>
             </table>
         </div>
+
+        @if ($lastPage > 1)
+            <div class="mt-4 flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
+                <span>صفحه {{ $page }} از {{ $lastPage }}</span>
+                <div class="flex gap-2">
+                    <x-ui.button
+                        type="button"
+                        variant="secondary"
+                        wire:click="goToPage({{ max($page - 1, 1) }})"
+                        :disabled="$page <= 1"
+                    >
+                        قبلی
+                    </x-ui.button>
+                    <x-ui.button
+                        type="button"
+                        variant="secondary"
+                        wire:click="goToPage({{ min($page + 1, $lastPage) }})"
+                        :disabled="$page >= $lastPage"
+                    >
+                        بعدی
+                    </x-ui.button>
+                </div>
+            </div>
+        @endif
     @endif
 </div>

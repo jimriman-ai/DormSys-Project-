@@ -8,8 +8,10 @@ use App\Modules\Notification\Application\Contracts\EmployeeExistenceReadPort;
 use App\Modules\Notification\Application\Contracts\MarkNotificationReadContract;
 use App\Modules\Notification\Application\Contracts\NotificationDeliveryContract;
 use App\Modules\Notification\Application\Contracts\NotificationInboxReadContract;
+use App\Modules\Notification\Application\DTOs\NotificationInboxListQueryDTO;
 use App\Modules\Notification\Application\DTOs\NotificationIntentDto;
 use App\Modules\Notification\Application\DTOs\NotificationProjectionDto;
+use App\Modules\Notification\Application\DTOs\PaginatedNotificationInboxListDTO;
 use App\Modules\Notification\Application\Services\NotificationPrincipalEmployeeResolver;
 use App\Modules\Notification\Domain\Enums\NotificationType;
 use App\Modules\Notification\Infrastructure\Adapters\InMemoryEmployeeExistenceReadAdapter;
@@ -79,10 +81,25 @@ function notificationUiProjectionRow(
 
 function mockNotificationInboxProjections(string $employeeId, NotificationProjectionDto ...$projections): void
 {
+    $items = array_values($projections);
+    $total = count($items);
+
     $inbox = MockeryTest::mock(NotificationInboxReadContract::class);
-    MockeryTest::expectOnce($inbox, 'listForRecipient')
-        ->with($employeeId, null, 50)
-        ->andReturn($projections);
+    MockeryTest::expectOnce($inbox, 'listForRecipientPaginated')
+        ->with(Mockery::on(static function (mixed $query) use ($employeeId): bool {
+            return $query instanceof NotificationInboxListQueryDTO
+                && $query->recipientEmployeeId === $employeeId
+                && $query->unreadOnly === null
+                && $query->page === 1
+                && $query->perPage === 50;
+        }))
+        ->andReturn(new PaginatedNotificationInboxListDTO(
+            items: $items,
+            total: $total,
+            currentPage: 1,
+            perPage: 50,
+            lastPage: max((int) ceil($total / 50), 1),
+        ));
 
     app()->instance(NotificationInboxReadContract::class, $inbox);
 }
@@ -256,25 +273,40 @@ describe('notification inbox ui states', function (): void {
             ->assertSet('loadError', 'Authenticated principal has no linked employee.');
     });
 
-    it('calls listForRecipient with the locked limit of 50', function (): void {
+    it('calls listForRecipientPaginated with page 1 and perPage 50', function (): void {
         $actor = createRequestHttpMutationEmployee();
         authenticateNotificationUiUser($actor['identity']);
         $employeeId = $actor['employee']->requireId()->value;
 
         $inbox = MockeryTest::mock(NotificationInboxReadContract::class);
-        MockeryTest::expectOnce($inbox, 'listForRecipient')
-            ->with($employeeId, null, 50)
-            ->andReturn([]);
+        MockeryTest::expectOnce($inbox, 'listForRecipientPaginated')
+            ->with(Mockery::on(static function (mixed $query) use ($employeeId): bool {
+                return $query instanceof NotificationInboxListQueryDTO
+                    && $query->recipientEmployeeId === $employeeId
+                    && $query->unreadOnly === null
+                    && $query->page === 1
+                    && $query->perPage === 50;
+            }))
+            ->andReturn(new PaginatedNotificationInboxListDTO(
+                items: [],
+                total: 0,
+                currentPage: 1,
+                perPage: 50,
+                lastPage: 1,
+            ));
 
         app()->instance(NotificationInboxReadContract::class, $inbox);
 
         Livewire::actingAs($actor['identity'], 'api')
             ->test(NotificationInboxPage::class)
             ->call('refreshList')
-            ->assertSet('uiState', 'empty');
+            ->assertSet('uiState', 'empty')
+            ->assertSet('page', 1)
+            ->assertSet('total', 0)
+            ->assertSet('lastPage', 1);
     });
 
-    it('presents at most 50 inbox items', function (): void {
+    it('presents at most 50 inbox items on the default page', function (): void {
         $actor = createRequestHttpMutationEmployee();
         authenticateNotificationUiUser($actor['identity']);
         $employeeId = $actor['employee']->requireId()->value;
@@ -298,16 +330,29 @@ describe('notification inbox ui states', function (): void {
         }
 
         $inbox = MockeryTest::mock(NotificationInboxReadContract::class);
-        MockeryTest::expectOnce($inbox, 'listForRecipient')
-            ->with($employeeId, null, 50)
-            ->andReturn($projections);
+        MockeryTest::expectOnce($inbox, 'listForRecipientPaginated')
+            ->with(Mockery::on(static function (mixed $query) use ($employeeId): bool {
+                return $query instanceof NotificationInboxListQueryDTO
+                    && $query->recipientEmployeeId === $employeeId
+                    && $query->page === 1
+                    && $query->perPage === 50;
+            }))
+            ->andReturn(new PaginatedNotificationInboxListDTO(
+                items: $projections,
+                total: 50,
+                currentPage: 1,
+                perPage: 50,
+                lastPage: 1,
+            ));
 
         app()->instance(NotificationInboxReadContract::class, $inbox);
 
         $component = Livewire::actingAs($actor['identity'], 'api')
             ->test(NotificationInboxPage::class)
             ->call('refreshList')
-            ->assertSet('uiState', 'ready');
+            ->assertSet('uiState', 'ready')
+            ->assertDontSee('قبلی')
+            ->assertDontSee('بعدی');
 
         expect($component->get('notifications'))->toHaveCount(50);
     });
@@ -317,7 +362,7 @@ describe('notification inbox ui states', function (): void {
         authenticateNotificationUiUser($actor['identity']);
 
         $inbox = MockeryTest::mock(NotificationInboxReadContract::class);
-        MockeryTest::expectOnce($inbox, 'listForRecipient')
+        MockeryTest::expectOnce($inbox, 'listForRecipientPaginated')
             ->andThrow(new RuntimeException('Inbox read failed.'));
 
         app()->instance(NotificationInboxReadContract::class, $inbox);
@@ -327,6 +372,73 @@ describe('notification inbox ui states', function (): void {
             ->call('refreshList')
             ->assertSet('uiState', 'error')
             ->assertSet('loadError', 'Inbox read failed.');
+    });
+});
+
+describe('notification inbox pagination', function (): void {
+    it('navigates to a later page when total exceeds 50', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+        $employeeId = $actor['employee']->requireId()->value;
+        notificationUiActiveEmployees($employeeId);
+
+        for ($index = 1; $index <= 51; $index++) {
+            deliverNotificationUiItem($employeeId, 'ui:page:'.$index, 'اعلان صفحه '.$index);
+        }
+
+        Livewire::actingAs($actor['identity'], 'api')
+            ->test(NotificationInboxPage::class)
+            ->call('refreshList')
+            ->assertSet('uiState', 'ready')
+            ->assertSet('total', 51)
+            ->assertSet('lastPage', 2)
+            ->assertSet('page', 1)
+            ->assertSee('صفحه 1 از 2')
+            ->assertSee('قبلی')
+            ->assertSee('بعدی')
+            ->call('goToPage', 2)
+            ->assertSet('page', 2)
+            ->assertSet('lastPage', 2)
+            ->assertSee('صفحه 2 از 2');
+
+        $pageTwo = Livewire::actingAs($actor['identity'], 'api')
+            ->withQueryParams(['page' => 2])
+            ->test(NotificationInboxPage::class)
+            ->call('refreshList')
+            ->assertSet('page', 2)
+            ->assertSet('total', 51);
+
+        expect($pageTwo->get('notifications'))->toHaveCount(1);
+    });
+
+    it('keeps the current page after mark-read success', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+        $employeeId = $actor['employee']->requireId()->value;
+        notificationUiActiveEmployees($employeeId);
+
+        $pageTwoNotificationId = null;
+
+        for ($index = 1; $index <= 51; $index++) {
+            $id = deliverNotificationUiItem($employeeId, 'ui:mark-page:'.$index, 'اعلان علامت '.$index);
+
+            if ($index === 1) {
+                $pageTwoNotificationId = $id;
+            }
+        }
+
+        expect($pageTwoNotificationId)->toBeString();
+
+        Livewire::actingAs($actor['identity'], 'api')
+            ->withQueryParams(['page' => 2])
+            ->test(NotificationInboxPage::class)
+            ->call('refreshList')
+            ->assertSet('page', 2)
+            ->assertSee('اعلان علامت 1')
+            ->call('markNotificationRead', $pageTwoNotificationId)
+            ->assertSet('actionError', null)
+            ->assertSet('page', 2)
+            ->assertSee('خوانده شده');
     });
 });
 
@@ -399,9 +511,21 @@ describe('notification inbox mark-read mutation', function (): void {
             ->with($notificationId, $employeeId, Mockery::type(DateTimeImmutable::class));
 
         $inbox = MockeryTest::mock(NotificationInboxReadContract::class);
-        MockeryTest::expectOnce($inbox, 'listForRecipient')
-            ->with($employeeId, null, 50)
-            ->andReturn([]);
+        MockeryTest::expectOnce($inbox, 'listForRecipientPaginated')
+            ->with(Mockery::on(static function (mixed $query) use ($employeeId): bool {
+                return $query instanceof NotificationInboxListQueryDTO
+                    && $query->recipientEmployeeId === $employeeId
+                    && $query->unreadOnly === null
+                    && $query->page === 1
+                    && $query->perPage === 50;
+            }))
+            ->andReturn(new PaginatedNotificationInboxListDTO(
+                items: [],
+                total: 0,
+                currentPage: 1,
+                perPage: 50,
+                lastPage: 1,
+            ));
 
         app()->instance(MarkNotificationReadContract::class, $markRead);
         app()->instance(NotificationInboxReadContract::class, $inbox);
@@ -686,6 +810,7 @@ describe('notification inbox architecture guard', function (): void {
             'DB::transaction',
             'DB::table',
             'NotificationRepositoryContract',
+            'NotificationLogModel',
             'countUnread',
         ] as $needle) {
             expect($contents)->not->toContain($needle);
