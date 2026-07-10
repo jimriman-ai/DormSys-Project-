@@ -30,6 +30,9 @@
                                 class="{{ request()->routeIs('notifications.*') ? 'font-semibold text-sky-700' : 'text-slate-600 hover:text-slate-900' }}"
                             >
                                 اعلان‌ها
+                                @if ($show_badge)
+                                    <span class="ms-1 inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-sky-600 px-1.5 py-0.5 text-xs font-semibold text-white">{{ $unread_count }}</span>
+                                @endif
                             </a>
                         </nav>
                     </div>

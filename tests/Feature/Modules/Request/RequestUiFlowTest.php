@@ -3,6 +3,11 @@
 declare(strict_types=1);
 
 use App\Application\Mutation\Support\MutationPrincipalContextHolder;
+use App\Modules\Notification\Application\Contracts\EmployeeExistenceReadPort;
+use App\Modules\Notification\Application\Contracts\NotificationDeliveryContract;
+use App\Modules\Notification\Application\DTOs\NotificationIntentDto;
+use App\Modules\Notification\Domain\Enums\NotificationType;
+use App\Modules\Notification\Infrastructure\Adapters\InMemoryEmployeeExistenceReadAdapter;
 use App\Modules\Request\Presentation\Livewire\RequestCreatePage;
 use App\Modules\Request\Presentation\Livewire\RequestListPage;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
@@ -69,6 +74,34 @@ describe('request ui access', function (): void {
             ->assertSee('اعلان‌ها')
             ->assertSee(route('notifications.index'), escape: false)
             ->assertDontSee('مشاهده');
+    });
+
+    it('renders layout unread badge on requests page when unread notifications exist', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateRequestUiUser($actor['identity']);
+        $employeeId = $actor['employee']->requireId()->value;
+
+        app()->instance(
+            EmployeeExistenceReadPort::class,
+            new InMemoryEmployeeExistenceReadAdapter([$employeeId]),
+        );
+
+        app(NotificationDeliveryContract::class)->deliver(
+            NotificationIntentDto::fromArray([
+                'correlationId' => 'request-ui:badge:001',
+                'notificationType' => NotificationType::RequestApproved->value,
+                'recipientEmployeeId' => $employeeId,
+                'title' => 'اعلان برای نشان',
+                'message' => 'پیام آزمایشی',
+                'sourceContext' => 'request',
+                'priority' => 'standard',
+                'occurredAt' => '2026-07-02T10:30:00Z',
+            ]),
+        );
+
+        $this->get('/requests')
+            ->assertOk()
+            ->assertSee('>1<', escape: false);
     });
 
     it('renders contract-aligned list states through livewire', function (): void {

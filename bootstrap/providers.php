@@ -15,6 +15,7 @@ use App\Modules\Identity\Presentation\Providers\IdentityPresentationServiceProvi
 use App\Modules\Lottery\Infrastructure\Providers\LotteryServiceProvider;
 use App\Modules\Lottery\Presentation\Providers\LotteryPresentationServiceProvider;
 use App\Modules\Notification\Infrastructure\Providers\NotificationServiceProvider;
+use App\Modules\Notification\Presentation\Providers\NotificationPresentationServiceProvider;
 use App\Modules\Reporting\Infrastructure\Providers\ReportingServiceProvider;
 use App\Modules\Reporting\Presentation\Providers\ReportingPresentationServiceProvider;
 use App\Modules\Request\Infrastructure\Providers\RequestServiceProvider;
@@ -50,6 +51,7 @@ $providers = [
     LotteryPresentationServiceProvider::class,
     VoucherServiceProvider::class,
     NotificationServiceProvider::class,
+    NotificationPresentationServiceProvider::class,
     AuditServiceProvider::class,
     ReportingServiceProvider::class,
     ReportingPresentationServiceProvider::class,

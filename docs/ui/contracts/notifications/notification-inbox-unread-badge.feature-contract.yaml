@@ -1,0 +1,287 @@
+feature:
+  id: notification-inbox-unread-badge
+  title: P8 — Notification Inbox Unread Badge
+  domain: notifications
+  classification:
+    gap_type: UI_PRESENTATION_GAP
+    implementation_type: UI_ONLY_GAP
+    governance_type: successor-feature
+    version: 0.1.0
+    status: READY_FOR_CONTRACT_REVIEW
+    module: Notification
+    area: notifications
+    owner_layer: Presentation
+
+decision_reference:
+  artifact: docs/ui/review/notifications/notification-inbox-unread-badge.review-decision.md
+  verdict: APPROVED_FOR_FEATURE_CONTRACT
+  implementation_authorized: false
+
+source_artifacts:
+  - docs/ui/analysis/notifications/notification-inbox-unread-badge.repo-inspection.md
+  - docs/ui/analysis/notifications/notification-inbox-unread-badge.feature-analysis.md
+  - docs/ui/review/notifications/notification-inbox-unread-badge.review-decision.md
+
+purpose:
+  user_goal: >
+    Show authenticated users how many unread notifications they have without opening
+    the inbox, via an aggregate count on shared layout navigation.
+  business_value: >
+    Completes post-P7 notification discoverability with unread-volume visibility on
+    shared chrome. Presentation-only; no change to inbox list, mark-read, or deep-link behavior.
+  constraint: >
+    Display backend-authoritative unread count only. No new counting rules, routes,
+    backend changes, or inbox-page behavior changes.
+
+authority_chain:
+  source_of_truth: >
+    Notification Application/Infrastructure unread semantics via
+    NotificationInboxReadContract::countUnread(string $recipientEmployeeId).
+  allowed_consumption_path:
+    - Layout Blade render surface (display only)
+    - Notification-owned layout presentation boundary (resolution only)
+    - NotificationInboxReadContract::countUnread($recipientEmployeeId)
+    - NotificationPrincipalEmployeeResolver (employee id scoping)
+    - NotificationInboxReadService → NotificationRepository (existing; unchanged)
+  forbidden_consumption_path:
+    - Direct repository or database access from Blade/layout
+    - NotificationRepositoryContract from presentation views
+    - Deriving unread count from listForRecipient row data or list length
+    - countUnread invocation inside NotificationInboxPage or inbox Blade
+    - Business-rule definition of unread meaning in presentation layer
+
+ui_contract:
+  surface:
+    primary_file: resources/views/components/layouts/app.blade.php
+    element: header nav — notifications nav item only
+    constraint: >
+      P8 changes are limited to unread badge presentation beside the existing
+      اعلان‌ها nav link. No other presentation files are authorized by this contract
+      except the Notification-owned layout presentation boundary defined below.
+  placement:
+    rule_id: PLACE-UB-001
+    location: beside existing اعلان‌ها nav anchor in header nav
+    order_constraint: >
+      درخواست‌ها remains position 1; اعلان‌ها remains position 2; badge attaches to
+      اعلان‌ها item only. No new nav items.
+  rendering_rules:
+    rule_id: RENDER-UB-001
+    show_badge_when: unread_count > 0
+    hide_badge_when:
+      - unread_count === 0
+      - employee principal cannot be resolved (silent omission)
+    badge_content: numeric unread count as supplied by view model (integer > 0)
+    nav_preservation:
+      label: اعلان‌ها
+      destination_route: notifications.index
+      href_mechanism: plain href anchor
+      wire_navigate: false
+      active_state: request()->routeIs('notifications.*') with existing P7 class ternary
+      requests_nav: unchanged destination, order, label, and active-state behavior
+  zero_state_behavior:
+    rule_id: ZERO-UB-001
+    when_count_zero: do not render badge markup; do not display numeric zero
+    when_employee_unresolved: do not render badge markup; do not surface layout error
+    nav_link: remains visible per P7 regardless of badge visibility
+
+presentation_boundary:
+  rule_id: BOUNDARY-UB-001
+  owner: Notification module Presentation layer
+  responsibility: >
+    Resolve layout nav badge view data by delegating to NotificationInboxReadContract
+    and NotificationPrincipalEmployeeResolver. Supply frozen view_model_contract fields
+    to components.layouts.app without exposing repository or query logic to Blade.
+  allowed_mechanism_categories:
+    - Notification Presentation view composer bound to components.layouts.app
+    - Notification Presentation dedicated layout read adapter/service registered in Notification module
+  mechanism_selection: >
+    Exact mechanism and file paths are pinned at implementation-lock stage.
+    Contract requires Notification module ownership and single delegation path only.
+  layout_blade_constraint: >
+    app.blade.php may consume supplied view model fields only. No inline service
+    resolution, contract calls, resolver calls, or DB/repository access in Blade.
+
+view_model_contract:
+  fields:
+    - name: unread_count
+      type: int
+      meaning: Backend-authoritative aggregate unread count for current recipient employee
+      source: NotificationInboxReadContract::countUnread($recipientEmployeeId)
+      nullability: not passed to layout when badge omitted; when passed, non-negative integer
+    - name: show_badge
+      type: bool
+      meaning: Presentation gate — true only when employee resolved and unread_count > 0
+      source: Notification-owned layout presentation boundary
+      nullability: required when view data is supplied; false suppresses badge render
+  constraint: >
+    Layout renders badge only when show_badge is true, displaying unread_count.
+    Layout must not recompute show_badge from partial data or infer unread semantics.
+
+authorization:
+  principal_resolution:
+    rule_id: AUTH-UB-001
+    pattern: NotificationPrincipalEmployeeResolver
+    employee_id_required_for_count: true
+    unresolved_employee_behavior: omit badge silently on layout; do not throw on layout render
+  employee_scoping:
+    rule_id: AUTH-UB-002
+    scope: recipient_employee_id matching authenticated principal's linked employee
+    cross_recipient_risk: forbidden — count must never reflect another employee's notifications
+  visibility:
+    rule_id: AUTH-UB-003
+    show_nav_link: all authenticated users rendering components.layouts.app (P7 parity)
+    nav_role_gating: none
+    badge_gating: show_badge view model only; no separate Policy/Gate for badge
+
+refresh_policy:
+  v1_behavior:
+    rule_id: REFRESH-UB-001
+    mechanism: full HTTP page load render only
+    guarantee: count reflects backend state at time of layout render for current request
+    stale_acceptable:
+      - badge unchanged after mark-read on inbox until next full page navigation
+      - badge unchanged after new notification delivery until next full page navigation
+  explicitly_deferred:
+    - wire:poll on layout nav
+    - Livewire layout island for reactive badge
+    - event-driven or websocket refresh
+    - client-side polling
+    - post-mark-read cross-page badge update without reload
+
+dependencies:
+  allowed:
+    - NotificationInboxReadContract::countUnread (existing; semantics unchanged)
+    - NotificationInboxReadService (existing)
+    - NotificationPrincipalEmployeeResolver (existing)
+    - components.layouts.app (render surface)
+    - Existing route notifications.index (unchanged)
+    - P7 closed layout nav baseline
+    - Notification-owned layout presentation boundary (new; lock pins files)
+  forbidden:
+    - NotificationRepositoryContract from views or layout Blade
+    - Direct notification_logs or Eloquent queries from presentation views
+    - countUnread changes to contract signature or query semantics
+    - NotificationInboxPage or notification-inbox-page.blade.php changes
+    - MarkNotificationReadContract changes
+    - New routes, middleware, Policy, or Gate
+    - Request module files for count resolution
+    - Deriving count from listForRecipient results
+
+governance:
+  predecessors:
+    p2:
+      id: notification-inbox-read-only-list
+      status: CLOSED
+      relationship: predecessor
+      impact: supersede deferred countUnread/badge exclusion only
+    p5:
+      id: notification-mark-read-mutation
+      status: CLOSED
+      relationship: predecessor_overlay
+      impact: no change; NotificationInboxPage countUnread prohibition preserved
+    p6:
+      id: notification-inbox-deep-link-navigation
+      status: IMPLEMENTED_VERIFIED
+      relationship: predecessor_overlay
+      impact: no change
+    p7:
+      id: notification-inbox-layout-navigation
+      status: CLOSED
+      relationship: predecessor_overlay
+      closeout: docs/ui/closeouts/notifications/notification-inbox-layout-navigation.closeout.md
+      impact: supersede AC-LN-005 badge exclusion only; preserve all other P7 nav semantics
+  supersession_scope:
+    p8_supersedes:
+      - P2 deferred countUnread consumption and badge surfaces
+      - P7 AC-LN-005 forbidden unread badge or countUnread on layout nav
+    p8_does_not_supersede:
+      - P2 read-only inbox list baseline
+      - P5 mark-read mutation scope or inbox-page architecture guard
+      - P6 deep-link navigation scope
+      - P7 nav link label, destination, order, active state, plain href transport
+      - Any closed P2, P5, P6, or P7 artifact content except badge-display exclusions noted above
+  prerequisites:
+    - This contract approved via contract review
+    - Separate implementation lock approved before any coding
+  next_authorized_artifact: implementation lock
+
+testing_expectations:
+  required_future_tests:
+    - id: TEST-UB-001
+      description: Layout nav renders numeric badge when unread_count > 0 for linked employee
+      surface: GET /requests or GET /notifications with seeded unread notifications
+    - id: TEST-UB-002
+      description: Layout nav omits badge when unread_count is 0
+    - id: TEST-UB-003
+      description: Layout nav omits badge when principal has no linked employee
+    - id: TEST-UB-004
+      description: P7 nav link اعلان‌ها preserved with correct href and order
+    - id: TEST-UB-005
+      description: Badge count is recipient-scoped (no cross-employee leakage)
+  regression_updates:
+    - file: tests/Feature/Modules/Notification/NotificationInboxUiFlowTest.php
+      action: replace P7 negative badge test with P8 positive/negative badge assertions
+    - file: tests/Feature/Modules/Request/RequestUiFlowTest.php
+      action: extend layout regression for badge visibility on /requests when applicable
+    - file: NotificationInboxPage architecture guard
+      action: retain prohibition on countUnread in inbox page source (unchanged)
+  backend_tests:
+    note: No new backend tests required; NotificationInboxTest.php already covers countUnread
+
+acceptance_constraints:
+  - id: AC-UB-001
+    given: authenticated user with linked employee and unread_count > 0
+    when: layout page is rendered
+    then: numeric badge appears beside اعلان‌ها nav item
+  - id: AC-UB-002
+    given: authenticated user with linked employee and unread_count === 0
+    when: layout page is rendered
+    then: no badge markup beside اعلان‌ها
+  - id: AC-UB-003
+    given: authenticated user without linked employee
+    when: layout page is rendered
+    then: no badge markup; no layout render error
+  - id: AC-UB-004
+    given: P7 nav baseline
+    when: P8 is implemented
+    then: اعلان‌ها label, notifications.index href, nav order, active state, plain href preserved
+  - id: AC-UB-005
+    given: P2, P5, P6 inbox behavior
+    when: P8 is implemented
+    then: inbox list, mark-read, and deep-link behavior unchanged
+  - id: AC-UB-006
+    given: NotificationInboxPage source
+    when: P8 is implemented
+    then: no countUnread consumption in inbox Livewire component
+  - id: AC-UB-007
+    given: layout Blade and presentation boundary
+    when: inspected
+    then: no repository, DB, or list-derived unread inference in views
+
+non_goals:
+  - Inbox page header badge or second-surface count display
+  - Real-time, polling, wire:poll, or event-driven badge refresh
+  - Mark-all-as-read
+  - Notification filtering, sort, or pagination
+  - Inbox list, mark-read, or deep-link redesign
+  - Backend countUnread query or contract changes
+  - New routes, middleware, or permission model
+  - NotificationInboxPage countUnread consumption
+  - Reusable global badge component library (unless lock authorizes minimal inline markup)
+  - Reopening or amending P2, P5, P6, or P7 closed deliveries beyond badge-display supersession
+
+open_decisions:
+  - id: OQ-UB-001
+    topic: Exact presentation boundary mechanism (view composer vs dedicated adapter)
+    status: deferred_to_implementation_lock
+    constraint: must remain Notification Presentation-owned with single contract delegation path
+  - id: OQ-UB-002
+    topic: Badge visual markup and CSS classes
+    status: deferred_to_implementation_lock
+    constraint: numeric count only; no wire:navigate; must not alter P7 nav link structure
+
+contract_status:
+  value: READY_FOR_CONTRACT_REVIEW
+  note: >
+    Contract governs future implementation only. No code changes are authorized until
+    contract review and implementation lock approval complete.

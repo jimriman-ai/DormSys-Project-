@@ -88,6 +88,38 @@ function mockNotificationInboxProjections(string $employeeId, NotificationProjec
 }
 
 /**
+ * @return non-empty-string
+ */
+function notificationLayoutNavHtml(): string
+{
+    $content = test()->get('/notifications')->assertOk()->getContent();
+
+    if (! is_string($content)) {
+        throw new RuntimeException('Expected notification inbox HTML content.');
+    }
+
+    $navStart = strpos($content, '<nav class="flex items-center gap-4 text-sm">');
+
+    if ($navStart === false) {
+        throw new RuntimeException('Layout nav block not found in notification inbox HTML.');
+    }
+
+    $navEnd = strpos($content, '</nav>', $navStart);
+
+    if ($navEnd === false) {
+        throw new RuntimeException('Layout nav closing tag not found in notification inbox HTML.');
+    }
+
+    $navHtml = substr($content, $navStart, $navEnd - $navStart + strlen('</nav>'));
+
+    if ($navHtml === '') {
+        throw new RuntimeException('Extracted layout nav HTML is empty.');
+    }
+
+    return $navHtml;
+}
+
+/**
  * @return list<string>
  */
 function notificationInboxRouteMiddleware(): array
@@ -512,38 +544,6 @@ describe('notification inbox deep-link navigation', function (): void {
 });
 
 describe('notification inbox layout navigation', function (): void {
-    /**
-     * @return non-empty-string
-     */
-    function notificationLayoutNavHtml(): string
-    {
-        $content = test()->get('/notifications')->assertOk()->getContent();
-
-        if (! is_string($content)) {
-            throw new RuntimeException('Expected notification inbox HTML content.');
-        }
-
-        $navStart = strpos($content, '<nav class="flex items-center gap-4 text-sm">');
-
-        if ($navStart === false) {
-            throw new RuntimeException('Layout nav block not found in notification inbox HTML.');
-        }
-
-        $navEnd = strpos($content, '</nav>', $navStart);
-
-        if ($navEnd === false) {
-            throw new RuntimeException('Layout nav closing tag not found in notification inbox HTML.');
-        }
-
-        $navHtml = substr($content, $navStart, $navEnd - $navStart + strlen('</nav>'));
-
-        if ($navHtml === '') {
-            throw new RuntimeException('Extracted layout nav HTML is empty.');
-        }
-
-        return $navHtml;
-    }
-
     it('renders the notification inbox nav link on shared layout pages', function (): void {
         $actor = createRequestHttpMutationEmployee();
         authenticateNotificationUiUser($actor['identity']);
@@ -584,15 +584,68 @@ describe('notification inbox layout navigation', function (): void {
             ->assertSee('اعلان‌های من');
     });
 
-    it('does not render unread badge or countUnread output in layout nav', function (): void {
+    it('renders numeric unread badge beside اعلان‌ها when unread count is greater than zero', function (): void {
         $actor = createRequestHttpMutationEmployee();
         authenticateNotificationUiUser($actor['identity']);
+        $employeeId = $actor['employee']->requireId()->value;
+        notificationUiActiveEmployees($employeeId);
+
+        deliverNotificationUiItem($employeeId, 'ui:badge:001', 'اعلان نخوانده اول');
+        deliverNotificationUiItem($employeeId, 'ui:badge:002', 'اعلان نخوانده دوم');
 
         $navHtml = notificationLayoutNavHtml();
 
+        expect($navHtml)->toContain('اعلان‌ها');
+        expect($navHtml)->toContain('>2<');
         expect($navHtml)->not->toContain('countUnread');
-        expect($navHtml)->not->toMatch('/\d+\s*<\/a>\s*<\/nav>/');
-        expect(preg_match_all('/<a\b[^>]*>/', $navHtml))->toBe(2);
+    });
+
+    it('omits unread badge when unread count is zero', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+        $employeeId = $actor['employee']->requireId()->value;
+        notificationUiActiveEmployees($employeeId);
+
+        $navHtml = notificationLayoutNavHtml();
+
+        expect($navHtml)->toContain('اعلان‌ها');
+        expect($navHtml)->not->toContain('rounded-full bg-sky-600');
+        expect($navHtml)->not->toMatch('/>\s*0\s*</');
+    });
+
+    it('omits unread badge when principal has no linked employee without layout error', function (): void {
+        $identity = createIdentityUserThroughMutation(
+            'Unlinked Badge User',
+            'unlinked.badge.'.uniqid('', true).'@example.com',
+        );
+
+        $identityModel = UserModel::query()->findOrFail($identity->requireId()->value);
+        authenticateNotificationUiUser($identityModel);
+
+        $navHtml = notificationLayoutNavHtml();
+
+        expect($navHtml)->toContain('اعلان‌ها');
+        expect($navHtml)->not->toContain('rounded-full bg-sky-600');
+    });
+
+    it('scopes layout unread badge to the authenticated recipient employee', function (): void {
+        $actorA = createRequestHttpMutationEmployee();
+        $actorB = createRequestHttpMutationEmployee('0000000019');
+        notificationUiActiveEmployees(
+            $actorA['employee']->requireId()->value,
+            $actorB['employee']->requireId()->value,
+        );
+
+        deliverNotificationUiItem($actorA['employee']->requireId()->value, 'ui:badge:scope:001', 'اعلان کارمند الف');
+        deliverNotificationUiItem($actorA['employee']->requireId()->value, 'ui:badge:scope:002', 'اعلان کارمند الف دوم');
+
+        authenticateNotificationUiUser($actorB['identity']);
+
+        $navHtml = notificationLayoutNavHtml();
+
+        expect($navHtml)->toContain('اعلان‌ها');
+        expect($navHtml)->not->toContain('>2<');
+        expect($navHtml)->not->toContain('rounded-full bg-sky-600');
     });
 
     it('uses plain href transport without wire:navigate on layout nav', function (): void {
@@ -656,5 +709,21 @@ describe('notification inbox architecture guard', function (): void {
         expect($contents)->toContain("route(self::APPROVED_REQUEST_SHOW_ROUTE, ['requestId' => \$projection->entityId])");
         expect($contents)->not->toContain('entityType');
         expect($contents)->not->toMatch('/route\s*\(\s*\$projection->deepLinkRoute/');
+    });
+
+    it('keeps layout blade free of unread count resolution smells', function (): void {
+        $path = resource_path('views/components/layouts/app.blade.php');
+        $contents = file_get_contents($path);
+
+        expect($contents)->toBeString();
+
+        foreach ([
+            'NotificationRepositoryContract',
+            'countUnread',
+            'DB::',
+            'notification_logs',
+        ] as $needle) {
+            expect($contents)->not->toContain($needle);
+        }
     });
 });
