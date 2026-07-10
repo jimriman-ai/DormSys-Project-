@@ -41,6 +41,10 @@ it('persists database session metadata with credential user id on protected rout
     $sessionCookie = $response->getCookie(config('session.cookie'));
     expect($sessionCookie)->not->toBeNull();
 
+    if ($sessionCookie === null) {
+        $this->fail('Expected session cookie to be present.');
+    }
+
     $sessionRow = DB::table('sessions')
         ->where('id', $sessionCookie->getValue())
         ->first();
@@ -50,6 +54,10 @@ it('persists database session metadata with credential user id on protected rout
     }
 
     expect($sessionRow)->not->toBeNull();
+
+    if ($sessionRow === null) {
+        $this->fail('Expected session row to be present.');
+    }
 
     $credentialUserId = $sessionRow->user_id;
     expect($credentialUserId)->not->toBeNull()

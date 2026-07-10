@@ -96,8 +96,9 @@ final class DevelopmentUserProvisioner
         $identityId = $identityUser->requireId()->value;
         $employeeId = null;
         $employeeCreated = false;
+        $employeePayload = $account['employee'] ?? null;
 
-        if ($account['employee'] !== null) {
+        if ($employeePayload !== null) {
             $identityReference = IdentityUserId::fromString($identityId);
 
             if ($this->employees->existsByIdentityId($identityReference)) {
@@ -105,7 +106,7 @@ final class DevelopmentUserProvisioner
             } else {
                 $employee = $this->createEmployee(
                     identityId: $identityReference,
-                    employee: $account['employee'],
+                    employee: $employeePayload,
                     mutationPrincipalId: $mutationPrincipalId,
                 );
                 $employeeId = $employee->requireId()->value;
