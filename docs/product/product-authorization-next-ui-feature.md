@@ -1,16 +1,16 @@
-# Product Authorization — Next UI Feature
+# Product Authorization: audit-ui
 
 ## 1. Decision Status
 
 | Field | Value |
 |---|---|
-| **Status** | **`AUTHORIZED`** |
+| **STATUS** | **`AUTHORIZED`** |
 | **Decision date** | 2026-07-10 |
 | **Authority source** | Product / Governance Review |
-| **Supersedes** | Prior blocked record in this path (`BLOCKED_BY_MISSING_PRODUCT_DECISION`) |
+| **Supersedes** | Prior blocked posture (`BLOCKED_BY_MISSING_PRODUCT_DECISION`); does **not** reopen closed features; does **not** continue or reuse blocked `workflow-ui` / `dormitory-ui` grants |
 | **Decision type** | Product Authorization — UI governance intake |
 
-This artifact is the official product authorization for the next DormSys UI governance candidate.
+This artifact is the official Product Authorization for the next DormSys UI governance feature. It applies **only** to `audit-ui`.
 
 ---
 
@@ -18,18 +18,17 @@ This artifact is the official product authorization for the next DormSys UI gove
 
 | Field | Value |
 |---|---|
-| **Canonical feature slug** | `employee-context-ui` |
-| **Feature title** | Employee Context UI |
-| **Domain** | Employee |
-| **Source specification** | `specs/003-employee-context` |
-| **Related references** | spec03 Phase F / R-15 (deferred Livewire HR admin); catalog `spec03` Employee Context |
+| **Canonical feature slug** | `audit-ui` |
+| **Feature title** | Audit UI |
+| **Domain** | Audit |
+| **Source specification** | `specs/010-audit-trail` |
 | **Authorization** | **Approved for UI governance intake** |
 
 ### Business purpose
 
-Provide a governed Persian RTL Livewire presentation surface for HR administrators to work with the Employee bounded context — employee profiles with Identity attachment, department assignment, and related Employee-owned records — without embedding business authority in the UI.
+Product authorizes a governed Persian RTL presentation surface for the Audit domain so authorized operators and stakeholders can interact with Audit-owned trail and compliance visibility concerns under UI governance — without treating the UI as a second source of business truth, and without reopening closed or blocked prior UI features.
 
-This authorization opens the deferred presentation follow-on described in spec03 planning (Phase F / R-15) for **UI governance intake only**. Exact MVF boundaries are to be established in subsequent governance gates starting with repo-inspection.
+This decision opens **UI governance intake only**. Exact MVF screen and capability boundaries remain Product-owned where not yet specified (`TBD_BY_PRODUCT`) and must be established through subsequent governance gates starting with `repo-inspection`.
 
 ---
 
@@ -39,25 +38,27 @@ This authorization opens the deferred presentation follow-on described in spec03
 
 | Item | Status |
 |---|---|
-| UI governance intake for `employee-context-ui` | **Authorized** |
-| Start gate: **`repo-inspection`** | **Explicitly permitted** |
+| UI governance intake for `audit-ui` | **Authorized** |
+| Start gate: **`repo-inspection`** for `audit-ui` only | **Explicitly permitted** |
 | Subsequent gates (feature-analysis → …) | Allowed only after each prior gate passes under normal UI governance rules |
-| Presentation-layer work within Employee Context UI (Livewire/Blade) | In scope for later gates after lock-review authorization — **not** authorized for coding by this artifact |
-| Consumption of existing Employee Application contracts / read-write actions already delivered by spec03 | In scope for inspection and later contract/lock definition |
+| Presentation-layer work within Audit UI (Livewire/Blade) | In scope for later gates after lock-review authorization — **not** authorized for coding by this artifact |
+| Exact Audit UI screens, actions, and capability flags | **`TBD_BY_PRODUCT`** — not inferred from audit tables, activity logs, events, code, routes, components, TODOs, deferred roadmap items, or implementation completeness |
 
 ### Excluded scope
 
 | Item | Status |
 |---|---|
 | Implementation / coding | **Not authorized** by this artifact |
-| Feature contract drafting | Not started by this artifact |
-| Implementation lock drafting | Not started by this artifact |
-| Identity login/session UX (OA-02-01) | **Excluded** |
-| Identity Livewire admin (spec02 T035–T037) | **Excluded** (separate feature if ever authorized) |
-| Request, Allocation, Lottery, Voucher, Dormitory, Audit explorer, Notification residual features | **Excluded** |
-| Request Show workflow mutations | **Excluded** |
-| Expanding Employee backend beyond what repo-inspection and later gates authorize | **Excluded** unless a separate product/backend authorization is issued |
-| Reopening closed notification/request UI features (P2–P9, P3/P4, etc.) | **Excluded** |
+| Feature contract drafting / creation | **Not authorized** by this artifact |
+| Implementation lock drafting / creation | **Not authorized** by this artifact |
+| Unrelated Reporting UI (including KPI dashboards / explorer surfaces not authorized as this feature) | **Excluded** |
+| Workflow UI | **Excluded** |
+| Notification UI | **Excluded** |
+| Employee UI / reopening `employee-context-ui` | **Excluded** |
+| Request UI | **Excluded** |
+| Dormitory UI / Lottery UI / Voucher UI / Allocation UI | **Excluded** |
+| Any unauthorized domain expansion / backend expansion under this UI grant | **Excluded** unless a separate product/backend authorization is issued |
+| Any feature other than `audit-ui` | **Excluded** |
 
 ---
 
@@ -65,11 +66,10 @@ This authorization opens the deferred presentation follow-on described in spec03
 
 | Area | Status |
 |---|---|
-| **Backend readiness** | Spec03 Wave 1A MVP and US2 (departments) are delivered per `specs/003-employee-context`. US3+ backend authorization remains limited per spec status — repo-inspection must map UI candidates to **already delivered** Application surfaces and flag any backend gaps. |
-| **Identity dependency** | `IdentityUserReadContract` available (spec02 frozen Wave 1A). Auth UX remains deferred (OA-02-01); UI must not invent login flows. |
-| **Prerequisites for intake** | Satisfied by this Product Authorization. |
+| **Backend / Application readiness for Audit UI** | Not verified as UI-consumable Application surfaces for this feature by this authorization artifact. Readiness for UI consumption must be established at repo-inspection. |
+| **Prerequisites for intake** | Satisfied by this Product Authorization for starting **repo-inspection** only. |
 | **Blockers for intake** | None for starting **repo-inspection**. Downstream blockers (if any) must be recorded at repo-inspection / feature-analysis. |
-| **Dependency status** | **Ready for UI governance intake** at `repo-inspection` |
+| **Dependency status** | **`UNKNOWN`** |
 
 ---
 
@@ -77,13 +77,13 @@ This authorization opens the deferred presentation follow-on described in spec03
 
 | Field | Value |
 |---|---|
-| **Next allowed action** | Begin UI governance for `employee-context-ui` |
-| **Next allowed gate** | **`repo-inspection`** |
-| **Explicit permission** | **Yes — repo-inspection is permitted to start** |
+| **Next allowed action** | Begin UI governance for `audit-ui` |
+| **Next allowed governance gate** | **`repo-inspection`** for `audit-ui` only |
+| **Explicit permission to start repo-inspection** | **Yes** |
 
-Expected first artifact path (for the next task, not created here):
+Expected first artifact path (for a later task, **not** created here):
 
-`docs/ui/analysis/employee/employee-context-ui.repo-inspection.md`
+`docs/ui/analysis/audit/audit-ui.repo-inspection.md`
 
 (or repository-equivalent under `docs/ui/analysis/` consistent with existing conventions)
 
@@ -91,12 +91,13 @@ Expected first artifact path (for the next task, not created here):
 
 ## 6. Constraints
 
-- This artifact **does** authorize UI governance intake and **explicitly permits** starting **`repo-inspection`**.
+- This artifact **does** authorize UI governance intake for **`audit-ui`** and **explicitly permits** starting **`repo-inspection`** for that feature only.
 - This artifact does **not** authorize implementation.
-- This artifact does **not** create a feature contract or implementation lock.
-- This artifact does **not** create repo-inspection, feature-analysis, contract, or lock content.
+- This artifact does **not** create repo-inspection, feature-analysis, feature-contract, contract-review, implementation-lock, or lock-review content.
+- This artifact does **not** reopen closed features or continue blocked prior UI grants.
+- This artifact does **not** authorize any feature other than `audit-ui`.
 - No coding may begin until a later lock-review returns `APPROVED_FOR_IMPLEMENTATION`.
-- Agents must not expand scope into excluded domains or reopen closed UI features under this authorization.
+- Agents must not expand scope into excluded domains or infer authorized UI capabilities from non-Product sources.
 
 ---
 
