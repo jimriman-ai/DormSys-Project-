@@ -1,0 +1,316 @@
+feature:
+  id: notification-inbox-layout-navigation
+  title: P7 — Notification Inbox Layout Navigation
+  module: Notification
+  area: notifications
+  version: 0.1.0
+  classification: successor-feature
+  gap_type: UI_DISCOVERABILITY_GAP
+  status: APPROVED_FOR_IMPLEMENTATION
+governance:
+  approved_by:
+    review_decision: docs/ui/review/notifications/notification-inbox-layout-navigation.review-decision.md
+    contract_review: docs/ui/review/notifications/notification-inbox-layout-navigation.contract-review.md
+  contract_reference:
+    path: docs/ui/contracts/notifications/notification-inbox-layout-navigation.feature-contract.yaml
+    id: notification-inbox-layout-navigation
+    version: 0.1.0
+    contract_status: READY_FOR_IMPLEMENTATION_LOCK
+  review_reference:
+    contract_review_verdict: CONTRACT_APPROVED_READY_FOR_IMPLEMENTATION_LOCK
+  source_artifacts:
+    - docs/ui/analysis/notifications/notification-inbox-layout-navigation.repo-inspection.md
+    - docs/ui/analysis/notifications/notification-inbox-layout-navigation.feature-analysis.md
+  predecessor_boundary_note: >
+    P7 supersedes only the prior P2 deferred layout navigation link and the P5/P6
+    excluded layout navigation link to inbox. P7 does not supersede, reopen, or
+    amend P2 read-only list behavior, P5 mark-read mutation, or P6 row deep-link
+    navigation. P2, P5, and P6 artifacts remain unchanged.
+
+authorization:
+  implementation_authorized: true
+  coding_authorized: true
+  lock_authorized: true
+  scope: layout_navigation_discoverability_only
+  note: >
+    This lock artifact drafts implementation boundaries only. Code changes are NOT
+    authorized until this lock is explicitly reviewed and approved. Creating this
+    lock does not authorize implementation.
+
+allowed_changes:
+  files:
+    production:
+      - path: resources/views/components/layouts/app.blade.php
+        constraint: >
+          Header <nav> only. Add one Notification Inbox nav link and its active-state
+          class logic. Preserve existing درخواست‌ها nav item unchanged in destination,
+          order, and active-state behavior.
+    tests:
+      - path: tests/Feature/Modules/Notification/NotificationInboxUiFlowTest.php
+        constraint: Add P7 layout-nav assertions only.
+      - path: tests/Feature/Modules/Request/RequestUiFlowTest.php
+        constraint: Optional cross-module regression assertions for shared layout nav only.
+        required: false
+  behavior:
+    - Add nav anchor labeled اعلان‌ها linking to route('notifications.index')
+    - Add notifications.* active-state class logic mirroring requests.* ternary pattern
+    - Preserve plain href transport without wire:navigate
+    - Preserve all authenticated-user visibility with no nav-level conditionals
+  file_scope_rule: >
+    No other production, test, route, backend, or governance files are authorized
+    by this lock unless a future governance artifact explicitly supersedes it.
+
+frozen_requirements:
+  label:
+    value: اعلان‌ها
+    rule_id: FR-LN-001
+    constraint: Nav label only. Must not replace inbox page title اعلان‌های من.
+  route:
+    name: notifications.index
+    href: route('notifications.index')
+    path: GET /notifications
+    rule_id: FR-LN-002
+    constraint: Reuse existing route. No new route registration.
+  placement:
+    rule_id: FR-LN-003
+    order:
+      - position: 1
+        label: درخواست‌ها
+        route: requests.index
+      - position: 2
+        label: اعلان‌ها
+        route: notifications.index
+    constraint: اعلان‌ها immediately after درخواست‌ها in header nav.
+  visibility:
+    rule_id: FR-LN-004
+    show_to: all authenticated users rendering components.layouts.app
+    nav_conditionals: none
+    forbidden:
+      - employee-linkage gating
+      - role or permission branching
+      - backend capability flags for nav visibility
+  active_state:
+    rule_id: FR-LN-005
+    detection: request()->routeIs('notifications.*')
+    active_classes: font-semibold text-sky-700
+    inactive_classes: text-slate-600 hover:text-slate-900
+    requests_nav_constraint: request()->routeIs('requests.*') logic unchanged
+  transport:
+    rule_id: FR-LN-006
+    mechanism: plain href anchor
+    wire_navigate: false
+    forbidden:
+      - wire:navigate
+      - Livewire navigation from layout
+      - JavaScript route abstraction
+  nav_pattern_parity:
+    rule_id: FR-LN-007
+    requirements:
+      - Preserve existing header nav structure
+      - Preserve existing درخواست‌ها nav item
+      - Follow existing nav markup/class ternary pattern already used in app.blade.php
+      - No new nav component, partial, or abstraction extraction
+
+test_scope:
+  allowed_files:
+    - tests/Feature/Modules/Notification/NotificationInboxUiFlowTest.php
+    - tests/Feature/Modules/Request/RequestUiFlowTest.php
+  required_assertions:
+  - id: TEST-LN-001
+    maps_to: AC-LN-001
+    assertion: assertSee('اعلان‌ها') and href to route('notifications.index') on authenticated shared-layout page
+  - id: TEST-LN-002
+    maps_to: AC-LN-002
+    assertion: assertSee('درخواست‌ها') and requests nav href to route('requests.index') remains present
+  - id: TEST-LN-003
+    maps_to: AC-LN-003
+    assertion: on GET /notifications, assert اعلان‌ها visible and active-state styling present
+  - id: TEST-LN-004
+    maps_to: AC-LN-004
+    assertion: on GET /notifications, assertSee('اعلان‌های من') as observational regression only
+  - id: TEST-LN-005
+    maps_to: AC-LN-005
+    assertion: no badge text, numeric unread count, or countUnread-related output beside nav link
+  - id: TEST-LN-006
+    maps_to: AC-LN-006
+    assertion: rendered notification nav link uses href and does not include wire:navigate
+  - id: TEST-LN-007
+    maps_to: AC-LN-007
+    assertion: درخواست‌ها appears before اعلان‌ها in header nav markup order
+  active_state_assertion_style: >
+    Prefer assertSee('font-semibold text-sky-700') on GET /notifications for the
+    notification nav context, or equivalent HTML-order assertion that proves
+    notifications.* active classes are applied. Exact assertion technique is fixed
+    at implementation review time but must validate AC-LN-003.
+  ac_ln_004_note: >
+    AC-LN-004 is observational regression only. Verifying inbox page title does
+    not authorize edits to notification-inbox-page.blade.php or NotificationInboxPage.
+  forbidden_test_changes:
+    - Modifications to P2/P5/P6 inbox behavior tests except additive layout-nav coverage
+    - Badge or countUnread assertions beyond negative AC-LN-005 checks
+    - New test files unless separately approved by governance
+
+forbidden_changes:
+  backend:
+    - Domain logic changes
+    - Application service changes
+    - DTO changes
+    - Repository changes
+    - Database or migration changes
+    - Event or listener changes
+    - Notification query or read-service changes
+    - NotificationInboxReadContract changes
+    - NotificationInboxReadService changes
+    - NotificationProjectionDto changes
+    - NotificationPrincipalEmployeeResolver behavior changes
+  routes:
+    - routes/web.php changes
+    - app/Modules/Notification/Presentation/Routes/web.php changes
+    - Middleware stack changes
+    - Controller changes
+    - Home redirect changes
+    - New HTTP or API routes
+  authorization:
+    - Policy introduction or changes
+    - Gate introduction or changes
+    - Permission changes
+    - User-role visibility branching for notification nav
+    - Nav-level employee gating
+    - Backend capability delivery for nav visibility
+  notification_behavior:
+    - NotificationInboxPage behavior changes
+    - P2 read-only list behavior changes
+    - P5 mark-read mutation changes
+    - P6 row deep-link navigation changes
+    - Mark-all-as-read
+    - Unread calculation changes
+    - countUnread consumption or display
+    - Unread badge or counter behavior
+  ui_surfaces:
+    - resources/views/livewire/notification/notification-inbox-page.blade.php
+    - Request list, show, or create Blade or Livewire changes
+    - Page-level inbox entrypoints on request surfaces
+    - Home redirect to /notifications
+    - New nav component extraction
+    - UI framework changes
+    - Any file outside allowed_changes.files unless future governance approves
+  architecture:
+    - Refactors outside locked files
+    - Cleanup outside P7 scope
+    - Dependency or package changes
+    - Cross-module backend imports from layout
+  governance_boundary:
+    - Reopening or amending P2, P5, or P6 closeouts, contracts, or locks
+    - Implementation work beyond locked surfaces
+    - Scope expansion into badge, backend, inbox-page, or request-page discoverability
+
+acceptance_criteria:
+  - id: AC-LN-001
+    given: authenticated user on a page using components.layouts.app
+    when: page is rendered
+    then:
+      - header nav includes link labeled اعلان‌ها
+      - link href resolves to notifications.index
+    implementation_obligation: app.blade.php nav anchor + test assertion
+  - id: AC-LN-002
+    given: authenticated user on shared layout
+    when: page is rendered
+    then:
+      - existing Request nav item درخواست‌ها remains present
+      - requests nav purpose and destination remain unchanged
+    implementation_obligation: preserve requests nav; test regression on GET /requests
+  - id: AC-LN-003
+    given: authenticated user on GET /notifications
+    when: page is rendered
+    then:
+      - اعلان‌ها nav link is visible
+      - notifications nav uses active-state styling for notifications.* routes
+    implementation_obligation: active-state ternary in app.blade.php + test on /notifications
+  - id: AC-LN-004
+    given: authenticated user on GET /notifications
+    when: page is rendered
+    then:
+      - inbox page title اعلان‌های من remains visible unchanged
+    implementation_obligation: observational HTTP regression only; no inbox Blade edits authorized
+  - id: AC-LN-005
+    given: any authenticated layout render
+    when: nav is inspected
+    then:
+      - no unread badge beside اعلان‌ها
+      - no unread count display
+      - no countUnread consumption in layout nav
+    implementation_obligation: negative assertion in authorized test files
+  - id: AC-LN-006
+    given: layout nav markup for اعلان‌ها
+    when: link is rendered
+    then:
+      - uses standard href navigation
+      - does not use wire:navigate
+    implementation_obligation: plain anchor in app.blade.php + markup assertion
+  - id: AC-LN-007
+    given: header nav with both module links
+    when: nav order is inspected
+    then:
+      - position 1 is درخواست‌ها
+      - position 2 is اعلان‌ها
+    implementation_obligation: DOM/markup order assertion in authorized tests
+  - id: AC-LN-008
+    given: P2, P5, and P6 inbox behavior
+    when: P7 is implemented
+    then:
+      - inbox list behavior unchanged
+      - mark-read behavior unchanged
+      - row deep-link behavior unchanged
+    implementation_obligation: >
+      No edits to NotificationInboxPage, inbox Blade, or P2/P5/P6 tests except
+      additive layout-nav coverage. P7 supersedes layout-nav deferrals only.
+
+validation_requirements:
+  file_scope:
+    - Confirm git diff touches only resources/views/components/layouts/app.blade.php plus authorized test files
+    - Reject any diff touching NotificationInboxPage, inbox Blade, routes, or backend layers
+  forbidden_surface:
+    - Verify no changes under app/Modules/Notification except authorized test file if applicable
+    - Verify no changes under app/Modules/Request presentation views or Livewire
+    - Verify routes/web.php and notification route files unchanged
+  nav_order:
+    - Confirm درخواست‌ها precedes اعلان‌ها in header <nav>
+    - AC-LN-007 test or equivalent markup inspection passes
+  href_transport:
+    - Confirm notification nav uses href="{{ route('notifications.index') }}" or equivalent route helper form
+    - Confirm absence of wire:navigate on layout nav anchor
+  badge_and_count:
+    - Confirm no badge markup, numeric counter, or countUnread invocation in app.blade.php
+    - AC-LN-005 negative assertions pass
+  predecessor_boundaries:
+    - Confirm NotificationInboxUiFlowTest P2/P5/P6 scenarios still pass without behavioral edits
+    - Confirm P7 diff limited to layout nav supersession, not functional inbox changes
+  recommended_commands:
+    - php artisan test tests/Feature/Modules/Notification/NotificationInboxUiFlowTest.php
+    - php artisan test tests/Feature/Modules/Request/RequestUiFlowTest.php
+
+rollback_boundary:
+  applies_to: P7 layout navigation link in resources/views/components/layouts/app.blade.php and P7 layout-nav test assertions only
+  must_not_touch:
+    - P2 read-only inbox list behavior
+    - P5 mark-read mutation behavior
+    - P6 deep-link navigation behavior
+    - Unrelated layout changes outside the P7 nav link addition
+  rollback_rule: >
+    Revert only the اعلان‌ها nav anchor, its active-state logic, and associated P7
+    test additions. Do not revert or modify inbox page, backend, route, or predecessor
+  feature behavior as part of P7 rollback.
+
+next_step:
+  action: lock_review_and_approval
+  authorized_after_approval:
+    - Implementation within allowed_changes.files only
+    - Tests within test_scope.allowed_files only
+  not_authorized_now:
+    - Production code changes
+    - Test implementation
+    - Direct UI implementation without lock approval
+  note: >
+    Next governance step is review and approval of this implementation lock.
+    Implementation remains unauthorized until lock approval explicitly sets
+    implementation_authorized and coding_authorized to true.

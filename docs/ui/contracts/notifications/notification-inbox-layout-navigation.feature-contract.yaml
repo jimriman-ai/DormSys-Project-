@@ -1,0 +1,280 @@
+feature_id: notification-inbox-layout-navigation
+
+feature_name: P7 — Notification Inbox Layout Navigation
+
+classification:
+  gap_type: UI_DISCOVERABILITY_GAP
+  implementation_type: UI_ONLY_GAP
+  governance_type: successor-feature
+  version: 0.1.0
+  status: READY_FOR_IMPLEMENTATION_LOCK
+  module: Notification
+  area: notifications
+  owner_layer: Presentation
+
+decision_reference:
+  artifact: docs/ui/review/notifications/notification-inbox-layout-navigation.review-decision.md
+  verdict: APPROVED_READY_FOR_CONTRACT
+  implementation_authorized: false
+
+source_artifacts:
+  - docs/ui/analysis/notifications/notification-inbox-layout-navigation.repo-inspection.md
+  - docs/ui/analysis/notifications/notification-inbox-layout-navigation.feature-analysis.md
+
+predecessor_artifacts:
+  p2:
+    id: notification-inbox-read-only-list
+    relationship: predecessor
+    status: CLOSED
+    closeout: docs/ui/closeouts/notifications/notification-inbox-read-only.reconciliation.md
+    supersession: >
+      P7 supersedes only the P2 deferred layout navigation link to inbox.
+      P2 read-only inbox list behavior remains authoritative and unchanged.
+  p5:
+    id: notification-mark-read-mutation
+    relationship: predecessor_overlay
+    status: CLOSED
+    closeout: docs/ui/closeouts/notifications/notification-mark-read-mutation.reconciliation.md
+    supersession: >
+      P7 supersedes only the P5 excluded layout navigation link to inbox.
+      P5 mark-read behavior remains authoritative and unchanged.
+  p6:
+    id: notification-inbox-deep-link-navigation
+    relationship: predecessor_overlay
+    status: IMPLEMENTED_VERIFIED
+    closeout: docs/ui/closeout/notifications/notification-inbox-deep-link-navigation.closeout.md
+    supersession: >
+      P7 supersedes only the P6 excluded layout navigation link to inbox.
+      P6 row deep-link navigation remains authoritative and unchanged.
+
+purpose:
+  summary: >
+    Add a shared-layout header navigation link so authenticated users can discover
+    the existing notification inbox route without direct URL knowledge.
+  constraint: >
+    Presentation-only discoverability. No new routes, backend changes, or inbox-page
+    behavior changes.
+
+approved_surface:
+  primary_file: resources/views/components/layouts/app.blade.php
+  element: header nav
+  constraint: >
+    P7 changes are limited to the shared authenticated layout header navigation.
+    No other presentation files are authorized by this contract.
+
+allowed_changes:
+  - Add one plain anchor nav link labeled اعلان‌ها to route notifications.index
+  - Add active-route class logic for notifications.* using the same ternary pattern as requests.*
+  - Preserve existing درخواست‌ها nav item and its active-state behavior unchanged
+  - Feature-specific UI tests in authorized test files only (defined at lock stage)
+
+required_behavior:
+  affordance:
+    type: anchor
+    label: اعلان‌ها
+    destination:
+      route_name: notifications.index
+      path: GET /notifications
+      href: route('notifications.index')
+  visibility:
+    rule_id: VIS-LN-001
+    show_to: all authenticated users rendering components.layouts.app
+    nav_conditionals: none
+  inbox_page_title:
+    value: اعلان‌های من
+    constraint: unchanged on notification-inbox-page.blade.php
+  requests_nav:
+    label: درخواست‌ها
+    constraint: unchanged destination, order, and active-state behavior
+
+visibility_rules:
+  rule_id: VIS-LN-001
+  approved:
+    - Nav link اعلان‌ها renders for every authenticated user who reaches pages using components.layouts.app
+    - No @can, @role, hasRole, Gate, or employee-linkage conditional wraps the nav link
+  rejected:
+    - Hide nav when principal has no linked employee
+    - Backend capability flag such as can_view_inbox for nav visibility
+    - Notification-specific Policy or Gate for nav rendering
+  accepted_parity_risk: >
+    Principals without a linked employee may follow the nav link and encounter
+    existing inbox page error behavior from NotificationPrincipalEmployeeResolver.
+    Nav-level gating is out of scope for P7.
+
+placement_rules:
+  rule_id: PLACE-LN-001
+  order:
+    - position: 1
+      label: درخواست‌ها
+      route: requests.index
+    - position: 2
+      label: اعلان‌ها
+      route: notifications.index
+  constraint: >
+    اعلان‌ها must appear immediately after درخواست‌ها in the header nav.
+    No insertion before requests, no separate menu, no footer or sidebar placement.
+
+active_state_rules:
+  rule_id: ACTIVE-LN-001
+  notifications:
+    detection: request()->routeIs('notifications.*')
+    active_classes: font-semibold text-sky-700
+    inactive_classes: text-slate-600 hover:text-slate-900
+  requests:
+    detection: request()->routeIs('requests.*')
+    constraint: unchanged from current layout implementation
+  pattern: >
+    Mirror the existing requests nav ternary class pattern for notifications.
+    Do not introduce new active-state semantics or badge-driven highlighting.
+
+transport_rules:
+  rule_id: TRANS-LN-001
+  approved:
+    mechanism: plain href anchor
+    wire_navigate: false
+  rejected:
+    - wire:navigate on layout nav link
+    - Livewire navigation triggers from layout
+    - JavaScript-driven route changes for layout nav
+  precedent: >
+    Layout nav درخواست‌ها uses plain href without wire:navigate.
+    Page-level links (P3, P6) use wire:navigate but are out of P7 scope.
+
+forbidden_changes:
+  surfaces:
+    - NotificationInboxPage
+    - resources/views/livewire/notification/notification-inbox-page.blade.php
+    - Request list, show, or create Livewire components and Blade views
+    - Any file outside resources/views/components/layouts/app.blade.php unless separately authorized by lock
+  routes_and_middleware:
+    - routes/web.php
+    - app/Modules/Notification/Presentation/Routes/web.php
+    - Middleware stack changes
+    - Home redirect change from / to /requests
+  backend:
+    - Application, Domain, Infrastructure layers
+    - NotificationInboxReadContract
+    - NotificationInboxReadService
+    - NotificationProjectionDto
+    - NotificationPrincipalEmployeeResolver behavior changes
+    - Migrations or schema
+  authorization:
+    - Notification Policy or Gate introduction
+    - Nav-level employee gating
+    - Backend capability delivery for nav visibility
+  badge_and_counts:
+    - countUnread consumption
+    - Unread badge, counter, or numeric indicator on nav link
+  inbox_behavior:
+    - P2 read-only list changes
+    - P5 mark-read mutation changes
+    - P6 deep-link navigation changes
+  discoverability_expansion:
+    - Page-level inbox entrypoints on request surfaces
+    - Notification detail page or notifications.show
+    - Mark-all-as-read
+    - Pagination, filter, sort
+  governance:
+    - Reopening or amending P2, P5, or P6 closeouts, contracts, or locks
+
+non_goals:
+  - Unread badge or countUnread on layout nav
+  - Nav-level employee or role gating
+  - Page-level discoverability on request list, show, or create
+  - Inbox page content or behavior changes
+  - Home redirect to /notifications
+  - New HTTP or API routes
+  - Backend or read-model changes
+  - Generic notification management beyond layout nav link
+
+dependencies:
+  requires:
+    - Existing route notifications.index (GET /notifications)
+    - Existing NotificationInboxPage destination (unchanged)
+    - components.layouts.app shared by authenticated Livewire pages
+    - Approved P7 review decision
+    - Contract review approval
+    - Separate implementation lock before coding
+  does_not_require:
+    - New routes
+    - Backend contracts or DTO changes
+    - countUnread or badge infrastructure
+    - Notification Policy or Gate
+    - Changes to P2, P5, or P6 implementation files
+
+implementation_notes:
+  - Single surgical diff in app.blade.php header nav only
+  - Reuse route('notifications.index'); do not hardcode /notifications unless tests require URL form
+  - Nav label اعلان‌ها must not replace inbox page title اعلان‌های من
+  - Do not add wire:navigate to layout nav anchors
+  - Cross-module blast radius: link appears on all pages using shared layout
+  - Implementation lock must enumerate allowed files (app.blade.php + designated tests)
+  - Test guidance (high level): assert nav on GET /requests and GET /notifications; no badge assertions
+  - Primary test file: tests/Feature/Modules/Notification/NotificationInboxUiFlowTest.php
+  - Secondary test file: tests/Feature/Modules/Request/RequestUiFlowTest.php
+
+acceptance_constraints:
+  - id: AC-LN-001
+    given: authenticated user on any page using components.layouts.app
+    when: page is rendered
+    then: header nav includes link labeled اعلان‌ها with href to notifications.index
+  - id: AC-LN-002
+    given: authenticated user on GET /requests
+    when: page is rendered
+    then: اعلان‌ها nav link is visible with correct href
+  - id: AC-LN-003
+    given: authenticated user on GET /notifications
+    when: page is rendered
+    then: اعلان‌ها nav link is visible and notifications nav uses active styling
+  - id: AC-LN-004
+    given: authenticated user on GET /notifications
+    when: page is rendered
+    then: inbox page title remains اعلان‌های من unchanged
+  - id: AC-LN-005
+    given: any authenticated layout render
+    when: nav is inspected
+    then: no unread count or badge appears on or beside اعلان‌ها
+  - id: AC-LN-006
+    given: layout nav markup
+    when: اعلان‌ها link is rendered
+    then: link uses plain href and does not use wire:navigate
+  - id: AC-LN-007
+    given: header nav order
+    when: both module links are present
+    then: درخواست‌ها precedes اعلان‌ها
+  - id: AC-LN-008
+    given: P2, P5, P6 inbox behavior
+    when: P7 is implemented
+    then: inbox list, mark-read, and row deep-link behavior remain unchanged
+
+supersession_boundary:
+  p7_supersedes:
+    - P2 deferred layout navigation link to inbox
+    - P5 excluded layout navigation link to inbox
+    - P6 excluded layout navigation link to inbox
+  p7_does_not_supersede:
+    - P2 read-only inbox list baseline
+    - P5 mark-read mutation scope
+    - P6 deep-link navigation scope
+    - Any closed P2, P5, or P6 artifact content
+  predecessor_status:
+    p2: CLOSED
+    p5: CLOSED
+    p6: IMPLEMENTED_VERIFIED
+
+governance:
+  prerequisites:
+    - This contract approved via contract review
+    - Separate implementation lock approved before any coding
+  next_authorized_artifact: implementation lock
+  review_focus:
+    - Layout-only surface enforcement
+    - Frozen label, placement, visibility, active state, and transport rules
+    - No badge, backend, or inbox-page scope bleed
+    - P2/P5/P6 non-reopening
+
+contract_status:
+  value: READY_FOR_IMPLEMENTATION_LOCK
+  note: >
+    Contract governs future implementation only. No code changes are authorized
+    until contract review and implementation lock approval complete.
