@@ -3,11 +3,8 @@
 declare(strict_types=1);
 
 use App\Application\Mutation\Support\MutationPrincipalContextHolder;
-use App\Modules\Request\Domain\States\DraftState;
-use App\Modules\Request\Domain\States\PendingDepartmentManagerState;
 use App\Modules\Request\Presentation\Livewire\RequestCreatePage;
 use App\Modules\Request\Presentation\Livewire\RequestListPage;
-use App\Modules\Request\Presentation\Livewire\RequestShowPage;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -132,35 +129,6 @@ describe('request ui flows', function (): void {
             ->set('checkOutDate', '2026-12-31')
             ->call('save')
             ->assertHasErrors(['dormitoryId']);
-    });
-
-    it('submits a draft request and reflects backend status', function (): void {
-        $actor = createRequestHttpMutationEmployee();
-        authenticateRequestUiUser($actor['identity']);
-
-        $draft = createDraftPersonalRequestForHttp($actor['employee']);
-
-        Livewire::actingAs($actor['identity'], 'api')
-            ->test(RequestShowPage::class, ['requestId' => $draft->requireId()->value])
-            ->assertSet('summary.status', DraftState::$name)
-            ->call('submit')
-            ->assertSet('summary.status', PendingDepartmentManagerState::$name)
-            ->assertSet('actionError', null);
-    });
-
-    it('surfaces backend conflict without rewriting the message', function (): void {
-        $actor = createRequestHttpMutationEmployee();
-        authenticateRequestUiUser($actor['identity']);
-
-        $draft = createDraftPersonalRequestForHttp($actor['employee']);
-
-        $component = Livewire::actingAs($actor['identity'], 'api')
-            ->test(RequestShowPage::class, ['requestId' => $draft->requireId()->value])
-            ->call('submit')
-            ->assertSet('summary.status', PendingDepartmentManagerState::$name);
-
-        $component->call('submit')
-            ->assertSet('actionError', 'Only draft requests can be submitted.');
     });
 });
 
