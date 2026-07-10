@@ -11,6 +11,7 @@ governance:
   approved_by:
     review_decision: docs/ui/review/notifications/notification-inbox-layout-navigation.review-decision.md
     contract_review: docs/ui/review/notifications/notification-inbox-layout-navigation.contract-review.md
+    lock_review: docs/ui/review/notifications/notification-inbox-layout-navigation.implementation-lock-review.md
   contract_reference:
     path: docs/ui/contracts/notifications/notification-inbox-layout-navigation.feature-contract.yaml
     id: notification-inbox-layout-navigation
@@ -18,6 +19,8 @@ governance:
     contract_status: READY_FOR_IMPLEMENTATION_LOCK
   review_reference:
     contract_review_verdict: CONTRACT_APPROVED_READY_FOR_IMPLEMENTATION_LOCK
+    lock_review_verdict: LOCK_APPROVED_READY_FOR_IMPLEMENTATION
+    lock_review_date: 2026-07-10
   source_artifacts:
     - docs/ui/analysis/notifications/notification-inbox-layout-navigation.repo-inspection.md
     - docs/ui/analysis/notifications/notification-inbox-layout-navigation.feature-analysis.md
@@ -32,10 +35,11 @@ authorization:
   coding_authorized: true
   lock_authorized: true
   scope: layout_navigation_discoverability_only
+  approved_at: 2026-07-10
   note: >
-    This lock artifact drafts implementation boundaries only. Code changes are NOT
-    authorized until this lock is explicitly reviewed and approved. Creating this
-    lock does not authorize implementation.
+    Lock review approved (LOCK_APPROVED_READY_FOR_IMPLEMENTATION). Bounded
+    implementation is authorized only within allowed_changes.files and
+    test_scope.allowed_files. All forbidden_changes remain in force.
 
 allowed_changes:
   files:
@@ -299,18 +303,17 @@ rollback_boundary:
   rollback_rule: >
     Revert only the اعلان‌ها nav anchor, its active-state logic, and associated P7
     test additions. Do not revert or modify inbox page, backend, route, or predecessor
-  feature behavior as part of P7 rollback.
+    feature behavior as part of P7 rollback.
 
 next_step:
-  action: lock_review_and_approval
-  authorized_after_approval:
+  action: bounded_implementation
+  authorized_now:
     - Implementation within allowed_changes.files only
     - Tests within test_scope.allowed_files only
-  not_authorized_now:
-    - Production code changes
-    - Test implementation
-    - Direct UI implementation without lock approval
+  not_authorized:
+    - Changes outside allowed_changes.files or test_scope.allowed_files
+    - Badge, backend, route, inbox-page, request-page, or P2/P5/P6 functional changes
   note: >
-    Next governance step is review and approval of this implementation lock.
-    Implementation remains unauthorized until lock approval explicitly sets
-    implementation_authorized and coding_authorized to true.
+    Lock approved. Proceed with P7 layout navigation implementation and authorized
+    test assertions. Validate against validation_requirements and AC-LN-001 through
+    AC-LN-008 before closeout.
