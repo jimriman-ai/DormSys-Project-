@@ -25,6 +25,12 @@
                             >
                                 درخواست‌ها
                             </a>
+                            <a
+                                href="{{ route('notifications.index') }}"
+                                class="{{ request()->routeIs('notifications.*') ? 'font-semibold text-sky-700' : 'text-slate-600 hover:text-slate-900' }}"
+                            >
+                                اعلان‌ها
+                            </a>
                         </nav>
                     </div>
 

@@ -66,6 +66,8 @@ describe('request ui access', function (): void {
             ->assertSee('بروزرسانی')
             ->assertSee('ثبت درخواست جدید')
             ->assertSee(route('requests.create'), escape: false)
+            ->assertSee('اعلان‌ها')
+            ->assertSee(route('notifications.index'), escape: false)
             ->assertDontSee('مشاهده');
     });
 

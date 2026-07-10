@@ -511,6 +511,95 @@ describe('notification inbox deep-link navigation', function (): void {
     });
 });
 
+describe('notification inbox layout navigation', function (): void {
+    /**
+     * @return non-empty-string
+     */
+    function notificationLayoutNavHtml(): string
+    {
+        $content = test()->get('/notifications')->assertOk()->getContent();
+        $navStart = strpos($content, '<nav class="flex items-center gap-4 text-sm">');
+
+        expect($navStart)->not->toBeFalse();
+
+        $navEnd = strpos($content, '</nav>', (int) $navStart);
+
+        expect($navEnd)->not->toBeFalse();
+
+        return substr($content, (int) $navStart, (int) $navEnd - (int) $navStart + strlen('</nav>'));
+    }
+
+    it('renders the notification inbox nav link on shared layout pages', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+
+        $this->get('/requests')
+            ->assertOk()
+            ->assertSee('اعلان‌ها')
+            ->assertSee(route('notifications.index'), escape: false);
+    });
+
+    it('preserves the existing requests nav item unchanged', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+
+        $this->get('/requests')
+            ->assertOk()
+            ->assertSee('درخواست‌ها')
+            ->assertSee(route('requests.index'), escape: false);
+    });
+
+    it('applies active-state styling on the notifications route', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+
+        $navHtml = notificationLayoutNavHtml();
+
+        expect($navHtml)->toContain('اعلان‌ها');
+        expect($navHtml)->toContain('font-semibold text-sky-700');
+        expect($navHtml)->toContain(route('notifications.index'));
+    });
+
+    it('keeps the inbox page title unchanged as observational regression', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+
+        $this->get('/notifications')
+            ->assertOk()
+            ->assertSee('اعلان‌های من');
+    });
+
+    it('does not render unread badge or countUnread output in layout nav', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+
+        $navHtml = notificationLayoutNavHtml();
+
+        expect($navHtml)->not->toContain('countUnread');
+        expect($navHtml)->not->toMatch('/\d+\s*<\/a>\s*<\/nav>/');
+        expect(preg_match_all('/<a\b[^>]*>/', $navHtml))->toBe(2);
+    });
+
+    it('uses plain href transport without wire:navigate on layout nav', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+
+        $navHtml = notificationLayoutNavHtml();
+
+        expect($navHtml)->toContain('href="'.route('notifications.index').'"');
+        expect($navHtml)->not->toContain('wire:navigate');
+    });
+
+    it('renders requests nav before notifications nav in header order', function (): void {
+        $actor = createRequestHttpMutationEmployee();
+        authenticateNotificationUiUser($actor['identity']);
+
+        $navHtml = notificationLayoutNavHtml();
+
+        expect(strpos($navHtml, 'درخواست‌ها'))->toBeLessThan(strpos($navHtml, 'اعلان‌ها'));
+    });
+});
+
 describe('notification inbox architecture guard', function (): void {
     it('keeps the livewire inbox page free of persistence orchestration smells', function (): void {
         $path = app_path('Modules/Notification/Presentation/Livewire/NotificationInboxPage.php');
