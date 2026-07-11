@@ -15,7 +15,6 @@ use App\Modules\Request\Domain\States\DraftState;
 use App\Modules\Request\Domain\States\PendingDepartmentManagerState;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
-use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use App\Support\ValueObjects\Identity\NationalCode;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -49,7 +48,7 @@ afterEach(function (): void {
 
 it('submits an eligible personal request into the approval pipeline', function (): void {
     $employee = createActiveEmployeeForRequest();
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
 
     $draft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
@@ -76,7 +75,7 @@ it('rejects submit for an ineligible employee with stable reason codes', functio
 
     $draft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
@@ -107,7 +106,7 @@ it('rejects submit when eligibility contract reports pending request exists', fu
 
     $draft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );

@@ -27,6 +27,7 @@ For authority ownership, see only:
 - [ ] **Dependency Direction**: Presentation/Infra → Application → Domain (AP-03)
 - [ ] **Boundary Leaks**: Application services do not expose domain entities directly to the UI layer
 - [ ] **Contract Stability**: Cross-module contracts (DTOs, events) are defined and documented
+- [ ] **Integration Readiness Gate** (when batch includes cross-module integration, live adapter wiring, Null/Stub replacement, or provider-consumer Application bindings): `.specify/governance/patterns/integration-readiness-gate.md` was applied; authorization artifact includes `## Integration Readiness Gate`; result is exactly `READY_FOR_INTEGRATION_IMPLEMENTATION_AUTHORIZATION` or work remained blocked as `INTEGRATION_AUTHORIZATION_BLOCKED`. The gate does not itself authorize implementation.
 
 ---
 
@@ -114,6 +115,7 @@ If any item fails, the batch is **rejected** and must be reworked before continu
 ---
 
 **Document Control**
-- Version: 1.2.0
-- Last Updated: 1405/04/06
+- Version: 1.3.0
+- Last Updated: 1405/04/20 | 2026/07/11
+- Change: Added Integration Readiness Gate checklist control for cross-module integration work
 - Owner: DormSys Architecture Team

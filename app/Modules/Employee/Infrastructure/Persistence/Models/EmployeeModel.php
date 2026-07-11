@@ -8,6 +8,7 @@ use App\Modules\Employee\Domain\Enums\EmployeeStatus;
 use App\Modules\Employee\Domain\Exceptions\IdentityIdImmutableException;
 use App\Support\Models\BaseModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -67,5 +68,13 @@ class EmployeeModel extends BaseModel
     public function department(): BelongsTo
     {
         return $this->belongsTo(DepartmentModel::class, 'department_id');
+    }
+
+    /**
+     * @return HasMany<DependentModel, $this>
+     */
+    public function dependents(): HasMany
+    {
+        return $this->hasMany(DependentModel::class, 'employee_id');
     }
 }

@@ -32,7 +32,7 @@ describe('http program setup', function (): void {
         $operator = createLotteryHttpOperator();
         authenticateLotteryHttpUser($operator['identity']);
 
-        $dormitoryId = UuidGenerator::uuid7();
+        $dormitoryId = createDormitorySiteForRequestTests();
 
         $this->postJson(lotteryHttpCreateProgramUrl(), [
             'title' => 'HTTP Lottery Program',
@@ -53,7 +53,7 @@ describe('http program setup', function (): void {
 
         $created = $this->postJson(lotteryHttpCreateProgramUrl(), [
             'title' => 'Show Test Program',
-            'dormitoryId' => UuidGenerator::uuid7(),
+            'dormitoryId' => createDormitorySiteForRequestTests(),
             'capacity' => 1,
             'registrationStartsAt' => '2026-07-01T00:00:00+00:00',
             'registrationEndsAt' => '2026-07-31T23:59:59+00:00',
@@ -83,7 +83,7 @@ describe('http end-to-end lottery flow', function (): void {
         $operator = createLotteryHttpOperator();
         authenticateLotteryHttpUser($operator['identity']);
 
-        $dormitoryId = UuidGenerator::uuid7();
+        $dormitoryId = createDormitorySiteForRequestTests();
 
         $program = $this->postJson(lotteryHttpCreateProgramUrl(), [
             'title' => 'HTTP E2E Program',
@@ -163,7 +163,7 @@ describe('http domain failures', function (): void {
 
         $program = $this->postJson(lotteryHttpCreateProgramUrl(), [
             'title' => 'Conflict Program',
-            'dormitoryId' => UuidGenerator::uuid7(),
+            'dormitoryId' => createDormitorySiteForRequestTests(),
             'capacity' => 1,
             'registrationStartsAt' => '2026-07-01T00:00:00+00:00',
             'registrationEndsAt' => '2026-07-31T23:59:59+00:00',
@@ -184,7 +184,7 @@ describe('http domain failures', function (): void {
 
         $program = $this->postJson(lotteryHttpCreateProgramUrl(), [
             'title' => 'Enroll Failure Program',
-            'dormitoryId' => UuidGenerator::uuid7(),
+            'dormitoryId' => createDormitorySiteForRequestTests(),
             'capacity' => 1,
             'registrationStartsAt' => '2026-07-01T00:00:00+00:00',
             'registrationEndsAt' => '2026-07-31T23:59:59+00:00',
@@ -210,7 +210,7 @@ describe('http domain failures', function (): void {
         $operator = createLotteryHttpOperator();
         authenticateLotteryHttpUser($operator['identity']);
 
-        $dormitoryId = UuidGenerator::uuid7();
+        $dormitoryId = createDormitorySiteForRequestTests();
         $program = $this->postJson(lotteryHttpCreateProgramUrl(), [
             'title' => 'Ownership Program',
             'dormitoryId' => $dormitoryId,
@@ -242,7 +242,7 @@ describe('http authentication', function (): void {
     it('rejects unauthenticated program create', function (): void {
         $this->postJson(lotteryHttpCreateProgramUrl(), [
             'title' => 'Unauthenticated',
-            'dormitoryId' => UuidGenerator::uuid7(),
+            'dormitoryId' => createDormitorySiteForRequestTests(),
             'capacity' => 1,
             'registrationStartsAt' => '2026-07-01T00:00:00+00:00',
             'registrationEndsAt' => '2026-07-31T23:59:59+00:00',

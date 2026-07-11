@@ -34,7 +34,7 @@ describe('exception mapping stability', function (): void {
     it('maps allocation overlap to conflict on lottery draw without leaking internal errors', function (): void {
         $employee = createEmployeeForLotteryEnrollmentTest();
         $personId = $employee->requireId()->value;
-        $dormitoryId = UuidGenerator::uuid7();
+        $dormitoryId = createDormitorySiteForRequestTests();
         $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
 
         $allocationOperator = createAllocationHttpOperator();
@@ -91,7 +91,7 @@ describe('exception mapping stability', function (): void {
 
         $program = $this->postJson(lotteryHttpCreateProgramUrl(), [
             'title' => 'Duplicate Lock Program',
-            'dormitoryId' => UuidGenerator::uuid7(),
+            'dormitoryId' => createDormitorySiteForRequestTests(),
             'capacity' => 1,
             'registrationStartsAt' => '2026-07-01T00:00:00+00:00',
             'registrationEndsAt' => '2026-07-31T23:59:59+00:00',
@@ -162,7 +162,7 @@ describe('lottery snapshot boundary runtime guard', function (): void {
 
         $program = $this->postJson(lotteryHttpCreateProgramUrl(), [
             'title' => 'Snapshot Guard Program',
-            'dormitoryId' => UuidGenerator::uuid7(),
+            'dormitoryId' => createDormitorySiteForRequestTests(),
             'capacity' => 1,
             'registrationStartsAt' => '2026-07-01T00:00:00+00:00',
             'registrationEndsAt' => '2026-07-31T23:59:59+00:00',

@@ -40,7 +40,7 @@ Function: `architectureLegacyCrossModuleAdapterPaths()`
 
 Function: `architectureLegacyModuleProviderPortBindings()`
 
-**Mandatory rule:** the five integration ports in `architectureIntegrationPortClasses()` must bind **only** in `IntegrationServiceProvider`.
+**Mandatory rule:** the integration ports in `architectureIntegrationPortClasses()` must bind **only** in `IntegrationServiceProvider`.
 
 ---
 

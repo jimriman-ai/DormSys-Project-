@@ -12,7 +12,7 @@
 - **CD-013:** Eligibility computation in Employee; BR-01 allocation/request via **stub ports** until spec05/spec07
 - **No** Request, Allocation, or login UI tasks
 
-**Status**: Wave 1A — **MVP complete (T001–T026a)** — Wave 1B — **complete (T027–T034)** · US3+ on hold
+**Status**: Wave 1A — **MVP complete (T001–T026a)** — Wave 1B — **complete (T027–T034)** · Wave US3 — **complete (T035–T040)** · US4+ on hold
 
 ---
 
@@ -24,7 +24,7 @@
 | 2 — Foundational | VOs, enums, exceptions, core migrations | T005–T014 | Yes |
 | 3 — US1 (P1) | Employee + `identity_id` boundary + MVP gate | T015–T026a | Yes |
 | 4 — US2 (P2) | Department CRUD + assignment | T027–T034 | **Wave 1B — Complete** |
-| 5 — US3 (P2) | Dependent CRUD (CD-009) | T035–T040 | No |
+| 5 — US3 (P2) | Dependent CRUD (CD-009) | T035–T040 | **US3 Batch 1 — Complete** |
 | 6 — US4 (P3) | Eligibility supplier + stub ports | T041–T048 | No |
 | 7 — Supplier read | `EmployeeReadContract` | T049–T052 | No |
 | 8 — Polish | BT-05 arch, PHPStan, quickstart | T053–T058 | Yes (quality) |
@@ -175,12 +175,12 @@ Run after T026a before starting Wave 1B; gate **passed** at post-MVP checkpoint:
 
 **Independent Test**: Add dependent to employee → list → update; reject orphan dependent without employee.
 
-- [ ] T035 [US3] Create migration `database/migrations/modules/employee/*_create_employee_dependents_table.php` per `data-model.md` (`employee_id` FK → `employee_employees`; no `request_id`)
-- [ ] T036 [US3] Create `Dependent` entity in `app/Modules/Employee/Domain/Entities/Dependent.php` and `DependentModel` in `app/Modules/Employee/Infrastructure/Persistence/Models/DependentModel.php` with `belongsTo(EmployeeModel::class)` relation; add `dependents()` on `EmployeeModel`
-- [ ] T037 [US3] Create `DependentRepositoryContract` in `app/Modules/Employee/Application/Contracts/DependentRepositoryContract.php` and `DependentRepository` in `app/Modules/Employee/Infrastructure/Repositories/DependentRepository.php`
-- [ ] T038 [US3] Implement `AddDependentAction` in `app/Modules/Employee/Application/Services/AddDependentAction.php` and `UpdateDependentAction` in `app/Modules/Employee/Application/Services/UpdateDependentAction.php` — use `App\Support\ValueObjects\Identity\NationalCode` when code provided
-- [ ] T039 [P] [US3] Feature test `tests/Feature/Modules/Employee/DependentTest.php` — add, list, update; `NationalCode` validation; employee ownership
-- [ ] T040 [US3] Bind `DependentRepositoryContract` in `app/Modules/Employee/Infrastructure/Providers/EmployeeServiceProvider.php`
+- [x] T035 [US3] Create migration `database/migrations/modules/employee/*_create_employee_dependents_table.php` per `data-model.md` (`employee_id` FK → `employee_employees`; no `request_id`)
+- [x] T036 [US3] Create `Dependent` entity in `app/Modules/Employee/Domain/Entities/Dependent.php` and `DependentModel` in `app/Modules/Employee/Infrastructure/Persistence/Models/DependentModel.php` with `belongsTo(EmployeeModel::class)` relation; add `dependents()` on `EmployeeModel`
+- [x] T037 [US3] Create `DependentRepositoryContract` in `app/Modules/Employee/Application/Contracts/DependentRepositoryContract.php` and `DependentRepository` in `app/Modules/Employee/Infrastructure/Repositories/DependentRepository.php`
+- [x] T038 [US3] Implement `AddDependentAction` in `app/Modules/Employee/Application/Services/AddDependentAction.php` and `UpdateDependentAction` in `app/Modules/Employee/Application/Services/UpdateDependentAction.php` — use `App\Support\ValueObjects\Identity\NationalCode` when code provided
+- [x] T039 [P] [US3] Feature test `tests/Feature/Modules/Employee/DependentTest.php` — add, list, update; `NationalCode` validation; employee ownership
+- [x] T040 [US3] Bind `DependentRepositoryContract` in `app/Modules/Employee/Infrastructure/Providers/EmployeeServiceProvider.php`
 
 **Checkpoint**: US3 acceptance scenarios pass; quickstart Scenario 6 pass.
 

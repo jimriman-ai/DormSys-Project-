@@ -118,7 +118,7 @@ it('allows lottery program create with an authorized actor', function (): void {
 it('denies enrollment when principal does not own the request', function (): void {
     $owner = createEmployeeForLotteryMutationAuthTest();
     $other = createEmployeeForLotteryMutationAuthTest('0000000019');
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
     $requestId = createApprovedLotteryRequestForMutationAuth($owner, $dormitoryId);
     $actorId = createLotteryMutationActor();
 
@@ -145,7 +145,7 @@ it('denies enrollment when principal does not own the request', function (): voi
 
 it('allows enrollment when principal owns the request', function (): void {
     $employee = createEmployeeForLotteryMutationAuthTest();
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
     $requestId = createApprovedLotteryRequestForMutationAuth($employee, $dormitoryId);
     $actorId = createLotteryMutationActor();
 

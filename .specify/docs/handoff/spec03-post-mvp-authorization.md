@@ -67,8 +67,9 @@
 ## Implementation hold (mandatory)
 
 - Wave 1B (T027–T034) is **closed**.
-- Do **not** start T035+ (US3), T041+ (US4), or Polish beyond US2 checkpoint without separate authorization.
-- Do **not** start spec04 or spec05 implementation.
+- **US3 (T035–T040):** hold **superseded** 2026-07-11 by [`.specify/docs/handoff/spec03-implementation-authorization-us3.md`](./spec03-implementation-authorization-us3.md) (`authorization-status: active`). Execution limited to that record’s verbatim `authorized-scope`.
+- Do **not** start T041+ (US4), Phase 7, Polish beyond authorized slices, or Request Dependent live wiring without separate authorization.
+- Do **not** start spec04 or spec05 implementation under this post-MVP record.
 
 ---
 

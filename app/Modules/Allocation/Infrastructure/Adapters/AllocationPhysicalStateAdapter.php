@@ -12,10 +12,19 @@ final class AllocationPhysicalStateAdapter
         private readonly PhysicalStateSignalPort $physicalState,
     ) {}
 
-    public function signalAssigned(string $bedId, string $signalReferenceId): void
-    {
+    /**
+     * @param  bool  $requireOccupiedMarker  When true, follow reserve with occupyBed (ADIC optional path).
+     */
+    public function signalAssigned(
+        string $bedId,
+        string $signalReferenceId,
+        bool $requireOccupiedMarker = false,
+    ): void {
         $this->physicalState->reserveBed($bedId, $signalReferenceId);
-        $this->physicalState->occupyBed($bedId, $signalReferenceId);
+
+        if ($requireOccupiedMarker) {
+            $this->physicalState->occupyBed($bedId, $signalReferenceId);
+        }
     }
 
     public function signalReleased(string $bedId, string $signalReferenceId): void

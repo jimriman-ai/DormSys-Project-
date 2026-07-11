@@ -19,7 +19,6 @@ use App\Modules\Request\Domain\States\RejectedState;
 use App\Modules\Request\Domain\States\SubmittedState;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
-use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use App\Support\ValueObjects\Identity\NationalCode;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -61,7 +60,7 @@ function createDraftPersonalRequest(): array
 
     $draft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );

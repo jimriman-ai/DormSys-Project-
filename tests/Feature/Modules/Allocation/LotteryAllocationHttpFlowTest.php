@@ -9,7 +9,6 @@ use App\Modules\Allocation\Domain\Enums\AllocationStatus;
 use App\Modules\Allocation\Domain\ValueObjects\AllocationId;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Modules\Lottery\Domain\States\CompletedState;
-use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\Feature\Modules\Lottery\LotteryTestFactory;
@@ -33,7 +32,7 @@ it('persists lottery-sourced allocations from http draw using frozen snapshot wi
     $operator = createLotteryHttpOperator();
     authenticateLotteryHttpUser($operator['identity']);
 
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
 
     $program = $this->postJson(lotteryHttpCreateProgramUrl(), [
         'title' => 'Allocation Intake Program',

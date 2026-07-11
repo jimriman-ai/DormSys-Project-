@@ -78,6 +78,7 @@ AllocationAssignmentReadPort::class     → AllocationAssignmentReadBridge::clas
 RequestEligibilityGatewayContract::class → EmployeeEligibilityBridge::class
 PendingRequestReadPort::class           → PendingRequestReadBridge::class
 ProposedAllocationPort::class           → ProposedAllocationConsumer::class
+DormitoryReadContract::class            → DormitoryReadBridge::class
 ```
 
 **Rules:**
@@ -91,6 +92,13 @@ ProposedAllocationPort::class           → ProposedAllocationConsumer::class
 ---
 
 ## Current bridges (approved)
+
+### `Integrations/Request/DormitoryReadBridge.php`
+
+- **Implements:** `Request\...\DormitoryReadContract`
+- **Depends on:** `Dormitory\...\DormitoryStructureReadContract`
+- **Behavior:** `siteExists()` via `getDormitoryDetail() !== null`
+- **Binding:** `IntegrationServiceProvider` only
 
 ### `Integrations/Request/PendingRequestReadBridge.php`
 

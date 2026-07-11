@@ -93,6 +93,46 @@ This document does not fix or override invalid authorization; it only detects an
 
 ---
 
+## Integration Implementation Authorization Issuance
+
+This section constrains **issuance and request** of cross-module Integration Implementation Authorization. It does **not** add a fourth operational authority type. Authority ownership remains only in `.specify/docs/catalog-decisions.md` § `## Governance Decision Authority Map`.
+
+Before issuing Integration Implementation Authorization, apply:
+
+`.specify/governance/patterns/integration-readiness-gate.md`
+
+Authorization must be blocked unless the following chain is proven:
+
+```text
+Consumer -> Required Capability -> Accepted Application Contract -> Thin Adapter Mapping
+```
+
+Allowed readiness outcomes only:
+
+- `READY_FOR_INTEGRATION_IMPLEMENTATION_AUTHORIZATION`
+- `INTEGRATION_AUTHORIZATION_BLOCKED`
+
+The gate itself does **not** authorize implementation. It only determines whether implementation authorization may be requested or issued.
+
+Apply this gate **before**:
+
+- Integration Implementation Authorization
+- cross-module adapter creation
+- replacing Null/Stub adapters with live implementations
+- provider-consumer Application bindings
+
+Every Integration Implementation Authorization artifact must include section `## Integration Readiness Gate` with fields:
+
+Consumer; Required Capability; Accepted Provider Contract; Mapping; Adapter Type; Behavior Invented; Authorization Result.
+
+Use the reusable template (do not duplicate the full pattern):
+
+`.specify/templates/integration-implementation-authorization-template.md`
+
+If readiness is `INTEGRATION_AUTHORIZATION_BLOCKED`, do not issue Integration Implementation Authorization and do not begin live adapter implementation.
+
+---
+
 ## Governance Transition State
 
 **Governance Transition** is an operational state — **not** a decision class with canonical authority ownership in `## Governance Decision Authority Map`.
@@ -449,9 +489,9 @@ they do not change authority ownership.
 
 ## Document Control
 
-- Version: 1.4.1
-- Last Updated: 1405/04/03 | 2026/06/24
-- Change: Nomination references aligned with `authority-model.md` v4.0.0; removed map ownership implication for Next Spec Transition Nomination; canonical map applies to operational artifacts only
+- Version: 1.5.0
+- Last Updated: 1405/04/20 | 2026/07/11
+- Change: Added Integration Implementation Authorization Issuance section referencing Integration Readiness Gate pattern
 - Owner: DormSys Architecture Team
 
 This ownership line controls document maintenance only.  

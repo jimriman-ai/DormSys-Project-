@@ -18,7 +18,7 @@ uses(RefreshDatabase::class);
 it('persists a draft request with draft status', function (): void {
     $code = app(RequestCodeGenerator::class)->generate();
     $employeeId = UuidGenerator::uuid7();
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
 
     $request = Request::createDraft(
         code: $code,
@@ -48,7 +48,7 @@ it('generates sequential request codes for the same utc day', function (): void 
     $generator = app(RequestCodeGenerator::class);
     $at = new DateTimeImmutable('2026-06-23 12:00:00', new DateTimeZone('UTC'));
     $employeeId = EmployeeReferenceId::fromString(UuidGenerator::uuid7());
-    $dormitoryId = DormitorySiteId::fromString(UuidGenerator::uuid7());
+    $dormitoryId = DormitorySiteId::fromString(createDormitorySiteForRequestTests());
     $repository = app(RequestRepositoryContract::class);
 
     $firstCode = $generator->generate($at);

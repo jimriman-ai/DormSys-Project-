@@ -47,7 +47,7 @@ function createApprovedPersonalRequestForAllocationTest(): array
         hireDate: new DateTimeImmutable('2024-01-01'),
     );
 
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
     $bedId = UuidGenerator::uuid7();
 
     $draft = app(CreatePersonalRequestAction::class)->execute(

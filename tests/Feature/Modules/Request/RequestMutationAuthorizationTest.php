@@ -56,7 +56,7 @@ it('denies submit without a mutation principal', function (): void {
 
     $draft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
@@ -71,7 +71,7 @@ it('denies submit when principal does not own the request', function (): void {
 
     $draft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($owner->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
@@ -85,7 +85,7 @@ it('allows submit when principal owns the request', function (): void {
 
     $draft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
@@ -100,7 +100,7 @@ it('denies approve when approver does not match mutation actor', function (): vo
 
     $draft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
@@ -120,7 +120,7 @@ it('allows approve when approver matches mutation actor', function (): void {
 
     $draft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
@@ -141,7 +141,7 @@ it('denies cancel when principal does not own the request', function (): void {
 
     $draft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($owner->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );

@@ -6,7 +6,6 @@ namespace App\Modules\Request\Infrastructure\Providers;
 
 use App\Modules\Request\Application\Contracts\DependentSnapshotRepositoryContract;
 use App\Modules\Request\Application\Contracts\DependentSnapshotSourceContract;
-use App\Modules\Request\Application\Contracts\DormitoryReadContract;
 use App\Modules\Request\Application\Contracts\Internal\PendingRequestQueryPort;
 use App\Modules\Request\Application\Contracts\Internal\RequestReadQueryPort;
 use App\Modules\Request\Application\Contracts\MissionDetailsRepositoryContract;
@@ -29,7 +28,6 @@ use App\Modules\Request\Application\Services\SubmitRequestAction;
 use App\Modules\Request\Domain\Services\ApprovalStageResolver;
 use App\Modules\Request\Domain\Services\MissionGroupValidator;
 use App\Modules\Request\Infrastructure\Adapters\DependentSnapshotSourceStub;
-use App\Modules\Request\Infrastructure\Adapters\NullDormitoryReadAdapter;
 use App\Modules\Request\Infrastructure\Queries\PendingRequestQuery;
 use App\Modules\Request\Infrastructure\Queries\RequestReadQuery;
 use App\Modules\Request\Infrastructure\Repositories\DependentSnapshotRepository;
@@ -58,7 +56,7 @@ class RequestServiceProvider extends ServiceProvider
         $this->app->singleton(PendingRequestQueryPort::class, PendingRequestQuery::class);
         $this->app->singleton(RequestReadContract::class, RequestReadService::class);
         $this->app->singleton(RequestCodeGenerator::class);
-        $this->app->singleton(DormitoryReadContract::class, NullDormitoryReadAdapter::class);
+        // DormitoryReadContract binds in IntegrationServiceProvider → DormitoryReadBridge.
         $this->app->singleton(CreatePersonalRequestAction::class);
         $this->app->singleton(CreateFamilyDirectRequestAction::class);
         $this->app->singleton(CreateMissionRequestAction::class);

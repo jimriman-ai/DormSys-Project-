@@ -80,6 +80,36 @@ Mandatory implementation behavior:
 
 ---
 
+## Cross-Module Integration Discipline
+
+Before any of the following:
+
+- Integration Implementation Authorization
+- cross-module adapter creation
+- replacing Null/Stub adapters with live implementations
+- provider-consumer Application bindings
+
+apply the mandatory Integration Readiness Gate:
+
+`.specify/governance/patterns/integration-readiness-gate.md`
+
+Authorization must be blocked unless the chain is proven:
+
+`Consumer -> Required Capability -> Accepted Application Contract -> Thin Adapter Mapping`
+
+Allowed readiness outcomes only:
+
+- `READY_FOR_INTEGRATION_IMPLEMENTATION_AUTHORIZATION`
+- `INTEGRATION_AUTHORIZATION_BLOCKED`
+
+The gate does **not** authorize implementation. It only determines whether Integration Implementation Authorization may be requested or issued. Use the reusable template:
+
+`.specify/templates/integration-implementation-authorization-template.md`
+
+Do not invent live cross-module wiring from stub/Null adapters without an issued Integration Implementation Authorization that records `## Integration Readiness Gate`.
+
+---
+
 ## Evidence and Citation Rules
 
 1. Cite the authoritative source when applying a decision.

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Modules\Allocation\Application\Contracts\Ports\DormitoryReadPort;
 use App\Modules\Allocation\Application\Contracts\Ports\PhysicalStateSignalPort;
+use App\Modules\Allocation\Application\Services\AssignmentOccupancyMarkerPolicy;
 use App\Modules\Allocation\Application\Services\CreateAllocationAction;
 use App\Modules\Allocation\Application\Services\ReleaseAllocationAction;
 use App\Modules\Allocation\Domain\Events\AllocationAssigned;
@@ -26,7 +27,8 @@ it('emits integration events and physical state signals on assign and release', 
 
     $port = MockeryTest::mock(PhysicalStateSignalPort::class);
     MockeryTest::expectOnce($port, 'reserveBed');
-    MockeryTest::expectOnce($port, 'occupyBed');
+    // Default assignment policy reserves only; occupy is optional (ADIC / CD-015).
+    $port->shouldNotReceive('occupyBed');
     MockeryTest::expectOnce($port, 'releaseBed');
 
     app()->instance(PhysicalStateSignalPort::class, $port);
@@ -49,6 +51,33 @@ it('emits integration events and physical state signals on assign and release', 
     ));
 
     Event::assertDispatched(AllocationReleased::class);
+});
+
+it('occupies bed on assign when assignment policy requires occupied marker', function (): void {
+    Event::fake([AllocationAssigned::class]);
+
+    $bedId = UuidGenerator::uuid7();
+    $personId = UuidGenerator::uuid7();
+
+    $port = MockeryTest::mock(PhysicalStateSignalPort::class);
+    MockeryTest::expectOnce($port, 'reserveBed');
+    MockeryTest::expectOnce($port, 'occupyBed');
+
+    app()->instance(PhysicalStateSignalPort::class, $port);
+    app()->instance(
+        AssignmentOccupancyMarkerPolicy::class,
+        new AssignmentOccupancyMarkerPolicy(requireOccupiedMarkerOnAssign: true),
+    );
+    app()->forgetInstance(CreateAllocationAction::class);
+
+    runAllocationMutation(fn () => app(CreateAllocationAction::class)->execute(
+        personId: $personId,
+        bedId: $bedId,
+        start: new DateTimeImmutable('2026-08-01', new DateTimeZone('UTC')),
+        end: new DateTimeImmutable('2026-08-31', new DateTimeZone('UTC')),
+    ));
+
+    Event::assertDispatched(AllocationAssigned::class);
 });
 
 it('rejects allocation when bed is not assignable', function (): void {

@@ -58,6 +58,7 @@ These documents control procedure, not ownership.
 6. `.specify/governance/coding-rules.md`
 7. `.specify/governance/review-checklist.md`
 8. `.specify/governance/reporting-template.md`
+9. `.specify/governance/patterns/` (including `integration-readiness-gate.md` and `patterns/README.md`)
 
 Use this tier for:
 
@@ -65,16 +66,17 @@ Use this tier for:
 - execution sequencing strategy,
 - implementation constraints,
 - review criteria,
-- reporting format.
+- reporting format,
+- reusable governance patterns (for example Integration Readiness Gate before cross-module Integration Implementation Authorization).
 
-These documents do not override higher-tier ownership or execution rules.
+These documents do not override higher-tier ownership or execution rules. Patterns do not grant operational authority.
 
 ### Tier 4 — Spec and Task Artifacts
 
-9. `spec.md`
-10. `spec05.md`
-11. `tasks.md`
-12. `.specify/governance/batches/<spec>.md`
+10. `spec.md`
+11. `spec05.md`
+12. `tasks.md`
+13. `.specify/governance/batches/<spec>.md`
 
 Use this tier for:
 
@@ -87,11 +89,11 @@ These artifacts are operational inputs, not governance authority sources.
 
 ### Tier 5 — Informational / Supporting Inputs
 
-13. `decision-index.md`
-14. `constitution.md`
-15. `ai-prompts.md`
-16. `rules-dorm-sys.mdc`
-17. `KNOWN_DEBT.md`
+14. `decision-index.md`
+15. `constitution.md`
+16. `ai-prompts.md`
+17. `rules-dorm-sys.mdc`
+18. `KNOWN_DEBT.md`
 
 Use this tier as supporting context unless a higher-tier document explicitly delegates a specific interpretive role.
 
@@ -135,8 +137,9 @@ Execution must halt when:
 
 ## Document Control
 
-- Version: 1.2.0
-- Last Updated: 1405/04/08
+- Version: 1.3.0
+- Last Updated: 1405/04/20 | 2026/07/11
+- Change: Added `.specify/governance/patterns/` to Tier 3 (Integration Readiness Gate)
 - Owner: DormSys Architecture Team
 
 This ownership line is for document maintenance only.

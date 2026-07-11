@@ -13,7 +13,6 @@ use App\Modules\Request\Domain\States\ApprovedState;
 use App\Modules\Request\Domain\States\PendingDepartmentManagerState;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
-use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use App\Support\ValueObjects\Identity\NationalCode;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -47,7 +46,7 @@ function createEmployeeForLotteryRegistrationTest(): Employee
 
 it('persists lottery registration request type through submit and approval', function (): void {
     $employee = createEmployeeForLotteryRegistrationTest();
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
 
     $draft = app(CreateLotteryRegistrationRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),

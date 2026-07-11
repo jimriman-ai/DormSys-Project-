@@ -60,7 +60,7 @@ afterEach(function (): void {
 
 it('locks a program and persists snapshot with stable scores', function (): void {
     $employee = createEmployeeForLotteryEnrollmentTest();
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
     $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
 
     $draft = createLotteryProgramForTest(

@@ -3,13 +3,18 @@
 declare(strict_types=1);
 
 use App\Application\Mutation\Support\MutationPrincipalContext;
+use App\Modules\Employee\Application\Services\AddDependentAction;
 use App\Modules\Employee\Application\Services\AssignDepartmentToEmployeeAction;
 use App\Modules\Employee\Application\Services\CreateDepartmentAction;
 use App\Modules\Employee\Application\Services\CreateEmployeeAction;
 use App\Modules\Employee\Application\Services\DeactivateDepartmentAction;
+use App\Modules\Employee\Application\Services\UpdateDependentAction;
 use App\Modules\Employee\Domain\Entities\Department;
+use App\Modules\Employee\Domain\Entities\Dependent;
 use App\Modules\Employee\Domain\Entities\Employee;
+use App\Modules\Employee\Domain\Enums\DependentRelationship;
 use App\Modules\Employee\Domain\ValueObjects\DepartmentId;
+use App\Modules\Employee\Domain\ValueObjects\DependentId;
 use App\Modules\Employee\Domain\ValueObjects\EmployeeId;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Modules\Identity\Application\Services\AssignRoleToUserAction;
@@ -143,6 +148,52 @@ function deactivateDepartmentThroughMutation(DepartmentId $departmentId, ?string
 {
     return withMutationActor(
         fn () => app(DeactivateDepartmentAction::class)->execute($departmentId),
+        $actorId,
+    );
+}
+
+function addDependentThroughMutation(
+    EmployeeId $employeeId,
+    string $firstName,
+    string $lastName,
+    DependentRelationship $relationship,
+    ?int $age = null,
+    ?string $nationalCode = null,
+    ?string $actorId = null,
+): Dependent {
+    return withMutationActor(
+        fn () => app(AddDependentAction::class)->execute(
+            employeeId: $employeeId,
+            firstName: $firstName,
+            lastName: $lastName,
+            relationship: $relationship,
+            age: $age,
+            nationalCode: $nationalCode,
+        ),
+        $actorId,
+    );
+}
+
+function updateDependentThroughMutation(
+    EmployeeId $employeeId,
+    DependentId $dependentId,
+    string $firstName,
+    string $lastName,
+    DependentRelationship $relationship,
+    ?int $age = null,
+    ?string $nationalCode = null,
+    ?string $actorId = null,
+): Dependent {
+    return withMutationActor(
+        fn () => app(UpdateDependentAction::class)->execute(
+            employeeId: $employeeId,
+            dependentId: $dependentId,
+            firstName: $firstName,
+            lastName: $lastName,
+            relationship: $relationship,
+            age: $age,
+            nationalCode: $nationalCode,
+        ),
         $actorId,
     );
 }

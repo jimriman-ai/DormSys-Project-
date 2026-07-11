@@ -47,7 +47,7 @@ afterEach(function (): void {
 
 it('fails closed when runtime mutation is invoked without an established principal', function (): void {
     $actorId = createActiveMutationActorId('Runtime Governance Actor');
-    $dormitoryId = DormitorySiteId::fromString(UuidGenerator::uuid7());
+    $dormitoryId = DormitorySiteId::fromString(createDormitorySiteForRequestTests());
 
     $program = mutationActingAs($actorId, fn () => createLotteryProgramForTest(
         title: 'Runtime Deny Program',
@@ -75,7 +75,7 @@ it('executes auto lock job with explicit approved system actor without test wrap
     seedLotterySettingsForBackgroundJobs();
 
     $employee = createEmployeeForLotteryEnrollmentTest();
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
     $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
 
     $draft = createLotteryProgramForTest(
@@ -103,7 +103,7 @@ it('executes draw job with explicit approved system actor without test wrappers'
     seedLotterySettingsForBackgroundJobs();
 
     $employee = createEmployeeForLotteryEnrollmentTest();
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
     $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
 
     $draft = createLotteryProgramForTest(
@@ -130,7 +130,7 @@ it('executes draw job with explicit approved system actor without test wrappers'
 
 it('denies user-bound lottery enrollment for approved system actor', function (): void {
     $employee = createEmployeeForLotteryEnrollmentTest();
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
     $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
     $draft = createLotteryProgramForTest(
         title: 'System Enroll Deny Program',

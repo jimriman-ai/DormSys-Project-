@@ -10,7 +10,6 @@ use App\Modules\Notification\Domain\Enums\NotificationType;
 use App\Modules\Notification\Infrastructure\Adapters\InMemoryEmployeeExistenceReadAdapter;
 use App\Modules\Request\Presentation\Livewire\RequestCreatePage;
 use App\Modules\Request\Presentation\Livewire\RequestListPage;
-use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Livewire\Livewire;
@@ -132,7 +131,7 @@ describe('request ui flows', function (): void {
         $actor = createRequestHttpMutationEmployee();
         authenticateRequestUiUser($actor['identity']);
 
-        $dormitoryId = UuidGenerator::uuid7();
+        $dormitoryId = createDormitorySiteForRequestTests();
 
         Livewire::actingAs($actor['identity'], 'api')
             ->test(RequestCreatePage::class)

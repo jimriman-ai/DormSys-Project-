@@ -18,7 +18,6 @@ use App\Modules\Lottery\Domain\ValueObjects\RequestReferenceId;
 use App\Modules\Lottery\Domain\ValueObjects\ScoringConfig;
 use App\Modules\Lottery\Infrastructure\Jobs\AutoLockLotteryJob;
 use App\Modules\Lottery\Infrastructure\Jobs\ExecuteLotteryDrawJob;
-use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Tests\Feature\Modules\Lottery\LotteryTestFactory;
@@ -39,7 +38,7 @@ afterEach(function (): void {
 it('validates the full request to read contract integration boundary', function (): void {
     $employeeOne = createEmployeeForLotteryEnrollmentTest();
     $employeeTwo = LotteryTestFactory::createSecondEmployee();
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
     $requestOne = createApprovedLotteryRegistrationRequest($employeeOne, $dormitoryId);
     $requestTwo = createApprovedLotteryRegistrationRequest($employeeTwo, $dormitoryId);
 
@@ -132,7 +131,7 @@ it('validates the full request to read contract integration boundary', function 
 
 it('preserves idempotency when auto lock and draw jobs retry after manual completion', function (): void {
     $employee = createEmployeeForLotteryEnrollmentTest();
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
     $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
 
     $draft = createLotteryProgramForTest(

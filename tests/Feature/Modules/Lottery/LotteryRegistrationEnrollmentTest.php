@@ -16,7 +16,6 @@ use App\Modules\Request\Application\Services\SubmitRequestAction;
 use App\Modules\Request\Domain\States\ApprovedState;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId as RequestDormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
-use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use App\Support\ValueObjects\Identity\NationalCode;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -73,7 +72,7 @@ it('enrolls an approved lottery registration request into an open program', func
     Event::fake([LotteryRegistrationCreated::class]);
 
     $employee = createEmployeeForLotteryEnrollmentTest();
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
     $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
 
     $draft = createLotteryProgramForTest(
@@ -108,7 +107,7 @@ it('enrolls an approved lottery registration request into an open program', func
 
 it('rejects duplicate enrollment for the same request', function (): void {
     $employee = createEmployeeForLotteryEnrollmentTest();
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
     $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
 
     $draft = createLotteryProgramForTest(
@@ -129,7 +128,7 @@ it('rejects duplicate enrollment for the same request', function (): void {
 
 it('rejects enrollment when program registration is closed', function (): void {
     $employee = createEmployeeForLotteryEnrollmentTest();
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
     $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
 
     $draft = createLotteryProgramForTest(

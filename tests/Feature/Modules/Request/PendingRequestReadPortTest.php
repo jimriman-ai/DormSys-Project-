@@ -16,7 +16,6 @@ use App\Modules\Request\Domain\States\CancelledState;
 use App\Modules\Request\Domain\States\PendingDepartmentManagerState;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
-use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use App\Support\ValueObjects\Identity\NationalCode;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -56,7 +55,7 @@ it('returns true when a non-terminal request exists (BT-R08)', function (): void
 
     app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
@@ -71,7 +70,7 @@ it('returns false for terminal request statuses (BT-R08)', function (): void {
 
     $draft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
@@ -105,14 +104,14 @@ it('blocks submit when eligibility detects an existing pending request (CD-013)'
 
     app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
 
     $secondDraft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-08-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );
@@ -134,7 +133,7 @@ it('does not treat cancelled requests as pending (R-04)', function (): void {
 
     $draft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
     );

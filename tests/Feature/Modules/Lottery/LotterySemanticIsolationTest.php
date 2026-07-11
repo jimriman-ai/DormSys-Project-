@@ -19,7 +19,6 @@ use App\Modules\Lottery\Domain\ValueObjects\RequestReferenceId;
 use App\Modules\Lottery\Domain\ValueObjects\ScoringConfig;
 use App\Modules\Request\Domain\States\RejectedState;
 use App\Modules\Request\Infrastructure\Persistence\Models\RequestModel;
-use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Tests\Feature\Modules\Lottery\LotteryTestFactory;
@@ -39,7 +38,7 @@ afterEach(function (): void {
 
 it('materializes full frozen eligibility and scoring inputs at lock', function (): void {
     $employee = createEmployeeForLotteryEnrollmentTest();
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
     $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
 
     $draft = createLotteryProgramForTest(
@@ -103,7 +102,7 @@ it('materializes full frozen eligibility and scoring inputs at lock', function (
 it('does not reinterpret live request state after lock when drawing', function (): void {
     $employeeOne = createEmployeeForLotteryEnrollmentTest();
     $employeeTwo = LotteryTestFactory::createSecondEmployee();
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
     $requestOne = createApprovedLotteryRegistrationRequest($employeeOne, $dormitoryId);
     $requestTwo = createApprovedLotteryRegistrationRequest($employeeTwo, $dormitoryId);
 
@@ -160,7 +159,7 @@ it('does not reinterpret live request state after lock when drawing', function (
 
 it('rejects eligible snapshot mutation after capture', function (): void {
     $employee = createEmployeeForLotteryEnrollmentTest();
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
     $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
 
     $draft = createLotteryProgramForTest(
@@ -195,7 +194,7 @@ it('produces identical draw rankings from the same frozen snapshot inputs', func
 
     $employeeOne = createEmployeeForLotteryEnrollmentTest();
     $employeeTwo = LotteryTestFactory::createSecondEmployee();
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
     $requestOne = createApprovedLotteryRegistrationRequest($employeeOne, $dormitoryId);
     $requestTwo = createApprovedLotteryRegistrationRequest($employeeTwo, $dormitoryId);
 

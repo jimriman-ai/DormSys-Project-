@@ -78,7 +78,7 @@ it('creates and submits a family direct request with immutable dependent snapsho
 
     $request = app(CreateFamilyDirectRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
         sourceDependentIds: [$dependentId],
@@ -117,7 +117,7 @@ it('rejects submission when employee eligibility fails (CD-013)', function (): v
 
     expect(fn () => app(CreateFamilyDirectRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
         sourceDependentIds: [$dependentId],
@@ -129,7 +129,7 @@ it('rejects submission when dependent snapshot source is missing', function (): 
 
     expect(fn () => app(CreateFamilyDirectRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
         sourceDependentIds: [UuidGenerator::uuid7()],
@@ -152,7 +152,7 @@ it('rejects submission when dependent snapshot source marks dependent ineligible
 
     expect(fn () => app(CreateFamilyDirectRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
         sourceDependentIds: [$dependentId],
@@ -165,7 +165,7 @@ it('blocks updates to dependent snapshot records (CD-009 append-only)', function
 
     app(CreateFamilyDirectRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
         sourceDependentIds: [$dependentId],

@@ -27,6 +27,7 @@ final class CreateAllocationAction
         private readonly AllocationRepositoryContract $allocations,
         private readonly DormitoryReadPort $dormitory,
         private readonly PhysicalStateSignalPort $physicalState,
+        private readonly AssignmentOccupancyMarkerPolicy $occupancyMarkerPolicy,
         private readonly MutationPolicyEnforcementPoint $mutationPolicy,
         private readonly AllocationMutationAuthorizationGate $allocationMutationAuth,
     ) {}
@@ -65,14 +66,20 @@ final class CreateAllocationAction
             Event::dispatch(AllocationCreated::forAllocation($persisted));
             Event::dispatch(AllocationAssigned::forAllocation($persisted));
 
+            $signalReferenceId = $persisted->requireId()->value;
+
             $this->physicalState->reserveBed(
                 bedId: $persisted->bedId,
-                signalReferenceId: $persisted->requireId()->value,
+                signalReferenceId: $signalReferenceId,
             );
-            $this->physicalState->occupyBed(
-                bedId: $persisted->bedId,
-                signalReferenceId: $persisted->requireId()->value,
-            );
+
+            // ADIC: occupyBed is optional — only when assignment policy requires Occupied marker.
+            if ($this->occupancyMarkerPolicy->requiresOccupiedMarkerOnAssign()) {
+                $this->physicalState->occupyBed(
+                    bedId: $persisted->bedId,
+                    signalReferenceId: $signalReferenceId,
+                );
+            }
 
             return $persisted;
         } catch (AllocationOverlapException $exception) {

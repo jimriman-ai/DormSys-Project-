@@ -19,6 +19,8 @@ Execution
 - coding-rules.md
 - file-precedence.md
 - review-checklist.md
+- .specify/governance/patterns/integration-readiness-gate.md (mandatory before cross-module Integration Implementation Authorization / live adapter wiring)
+- .specify/templates/integration-implementation-authorization-template.md (when preparing integration authorization)
 - relevant spec.md / plan.md / tasks.md for the active spec
 
 ## Scope
@@ -34,6 +36,7 @@ Execution
 - no unrelated refactors
 - no speculative implementation beyond batch scope
 - no expansion into future-spec tasks without approval
+- no cross-module live adapter / Null-stub replacement / provider-consumer Application binding without Integration Readiness Gate `READY_FOR_INTEGRATION_IMPLEMENTATION_AUTHORIZATION` and issued Integration Implementation Authorization
 
 ## Required Output
 

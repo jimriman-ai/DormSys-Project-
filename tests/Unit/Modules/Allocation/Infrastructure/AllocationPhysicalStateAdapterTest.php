@@ -14,7 +14,22 @@ use Tests\TestCase;
 class AllocationPhysicalStateAdapterTest extends TestCase
 {
     #[Test]
-    public function it_signals_assign_via_reserve_and_occupy_port_methods(): void
+    public function it_signals_assign_via_reserve_bed_by_default(): void
+    {
+        $bedId = UuidGenerator::uuid7();
+        $signalReferenceId = UuidGenerator::uuid7();
+
+        $port = MockeryTest::mock(PhysicalStateSignalPort::class);
+        MockeryTest::expectOnce($port, 'reserveBed')->with($bedId, $signalReferenceId);
+        $port->shouldNotReceive('occupyBed');
+        $port->shouldNotReceive('releaseBed');
+
+        $adapter = new AllocationPhysicalStateAdapter($port);
+        $adapter->signalAssigned($bedId, $signalReferenceId);
+    }
+
+    #[Test]
+    public function it_signals_assign_with_occupy_when_policy_requires_occupied_marker(): void
     {
         $bedId = UuidGenerator::uuid7();
         $signalReferenceId = UuidGenerator::uuid7();
@@ -25,7 +40,7 @@ class AllocationPhysicalStateAdapterTest extends TestCase
         $port->shouldNotReceive('releaseBed');
 
         $adapter = new AllocationPhysicalStateAdapter($port);
-        $adapter->signalAssigned($bedId, $signalReferenceId);
+        $adapter->signalAssigned($bedId, $signalReferenceId, requireOccupiedMarker: true);
     }
 
     #[Test]

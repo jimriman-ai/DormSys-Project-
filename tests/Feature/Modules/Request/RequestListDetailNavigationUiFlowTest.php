@@ -7,7 +7,6 @@ use App\Application\Mutation\Support\MutationPrincipalContextHolder;
 use App\Modules\Request\Domain\States\DraftState;
 use App\Modules\Request\Presentation\Livewire\RequestListPage;
 use App\Modules\Request\Presentation\Livewire\RequestShowPage;
-use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\View\ViewException;
@@ -117,7 +116,7 @@ describe('request list detail navigation ui flow', function (): void {
         $actor = createRequestHttpMutationEmployee();
         authenticateRequestListDetailNavigationUser($actor['identity']);
 
-        $dormitoryId = UuidGenerator::uuid7();
+        $dormitoryId = createDormitorySiteForRequestTests();
 
         $draft = app(App\Modules\Request\Application\Services\CreatePersonalRequestAction::class)->execute(
             employeeId: App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId::fromString($actor['employee']->requireId()->value),

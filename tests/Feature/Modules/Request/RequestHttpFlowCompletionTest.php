@@ -32,7 +32,7 @@ describe('http create and read', function (): void {
         $actor = createRequestHttpMutationEmployee();
         authenticateRequestHttpMutationUser($actor['identity']);
 
-        $dormitoryId = UuidGenerator::uuid7();
+        $dormitoryId = createDormitorySiteForRequestTests();
 
         $this->postJson('/api/requests/personal', [
             'dormitoryId' => $dormitoryId,
@@ -57,7 +57,7 @@ describe('http create and read', function (): void {
         );
 
         $this->postJson('/api/requests/personal', [
-            'dormitoryId' => UuidGenerator::uuid7(),
+            'dormitoryId' => createDormitorySiteForRequestTests(),
             'checkInDate' => '2026-07-01',
             'checkOutDate' => '2026-12-31',
         ])->assertForbidden()
@@ -70,7 +70,7 @@ describe('http create and read', function (): void {
         authenticateRequestHttpMutationUser($actor['identity']);
 
         $created = $this->postJson('/api/requests/personal', [
-            'dormitoryId' => UuidGenerator::uuid7(),
+            'dormitoryId' => createDormitorySiteForRequestTests(),
             'checkInDate' => '2026-07-01',
             'checkOutDate' => '2026-12-31',
         ])->assertCreated()
@@ -108,7 +108,7 @@ describe('http end-to-end lifecycle', function (): void {
         authenticateRequestHttpMutationUser($owner['identity']);
 
         $created = $this->postJson('/api/requests/personal', [
-            'dormitoryId' => UuidGenerator::uuid7(),
+            'dormitoryId' => createDormitorySiteForRequestTests(),
             'checkInDate' => '2026-07-01',
             'checkOutDate' => '2026-12-31',
         ])->assertCreated()

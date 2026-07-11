@@ -34,7 +34,7 @@ it('denies missing principal with UnauthorizedMutationException across in-scope 
     'checkin' => [fn () => app(CheckInCommandPort::class)->checkIn(UuidGenerator::uuid7(), UuidGenerator::uuid7())],
     'lottery' => [fn () => app(CreateLotteryProgramAction::class)->execute(
         title: 'Surface Stabilization Program',
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         capacity: 1,
         registrationStartsAt: new DateTimeImmutable('2026-08-01', new DateTimeZone('UTC')),
         registrationEndsAt: new DateTimeImmutable('2026-08-31', new DateTimeZone('UTC')),
@@ -60,7 +60,7 @@ it('does not allow system actor for user-bound lottery enrollment', function ():
     require_once __DIR__.'/../Modules/Lottery/LotteryRegistrationEnrollmentTest.php';
 
     $employee = createEmployeeForLotteryEnrollmentTest();
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
     $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
     $draft = createLotteryProgramForTest(
         title: 'Surface Stabilization Enroll Deny',

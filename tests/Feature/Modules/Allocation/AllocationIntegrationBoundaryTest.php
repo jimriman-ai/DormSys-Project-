@@ -44,7 +44,7 @@ it('round-trips request read assign dormitory signal and read contract', functio
         hireDate: new DateTimeImmutable('2024-01-01'),
     );
 
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
     $bedId = UuidGenerator::uuid7();
 
     $draft = app(CreatePersonalRequestAction::class)->execute(
@@ -64,7 +64,8 @@ it('round-trips request read assign dormitory signal and read contract', functio
 
     $port = MockeryTest::mock(PhysicalStateSignalPort::class);
     MockeryTest::expectOnce($port, 'reserveBed');
-    MockeryTest::expectOnce($port, 'occupyBed');
+    // Default assignment policy reserves only; occupy is optional (ADIC / CD-015).
+    $port->shouldNotReceive('occupyBed');
 
     app()->instance(PhysicalStateSignalPort::class, $port);
     app()->forgetInstance(AllocationPhysicalStateAdapter::class);

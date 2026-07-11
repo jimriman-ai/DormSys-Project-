@@ -47,6 +47,7 @@ function architectureIntegrationPortClasses(): array
         'App\\Modules\\Allocation\\Application\\Contracts\\Ports\\ApprovedRequestReadPort',
         'App\\Modules\\CheckIn\\Application\\Contracts\\AllocationAssignmentReadPort',
         'App\\Modules\\Request\\Application\\Contracts\\Internal\\RequestEligibilityGatewayContract',
+        'App\\Modules\\Request\\Application\\Contracts\\DormitoryReadContract',
         'App\\Modules\\Employee\\Application\\Contracts\\Ports\\PendingRequestReadPort',
         'App\\Modules\\Lottery\\Application\\Contracts\\ProposedAllocationPort',
     ];

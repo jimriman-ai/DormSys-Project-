@@ -1,8 +1,8 @@
 # DormSys Catalog Decisions
 
-**Version:** 2.8.2  
+**Version:** 2.8.3  
 **Status:** ACTIVE  
-**Last Updated:** 1405/04/10 | 2026/07/01
+**Last Updated:** 1405/04/20 | 2026/07/11
 **Related Documents:** [`context-map.md`](context-map.md), [`spec-catalog.md`](spec-catalog.md), `CONSTITUTION v1.3.0.md`, `dormsys-architecture.md`
 
 ---
@@ -647,6 +647,14 @@ Request
 ---
 
 ## Change Log
+
+### 2.8.3 — 2026-07-11 (spec03 US3 Implementation Authorization create)
+
+- Lifecycle operation only — no boundary or CD-* changes.
+- Created / activated Spec03 US3 Implementation Authorization: `.specify/docs/handoff/spec03-implementation-authorization-us3.md` (`authorization-status: active`; `authorized-scope` T035–T040 verbatim).
+- Actor: Governance Review. Checkpoint: `spec03-us3-implementation-authorization`.
+- Supersedes US3 hold in `spec03-post-mvp-authorization.md` for T035–T040 only; US4 / Request stub replacement / Spec04–Spec07 reopen remain unauthorized.
+- CD-009 ownership unchanged (`Dependent ∈ Employee`).
 
 ### 2.8.2 — 2026-07-01 (spec07 implementation program closure)
 

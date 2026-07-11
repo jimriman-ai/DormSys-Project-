@@ -38,6 +38,10 @@ final class MutationCapabilityCatalog
 
     public const string EMPLOYEE_DEPARTMENT_ASSIGN = 'employee.department.assign';
 
+    public const string EMPLOYEE_DEPENDENT_ADD = 'employee.dependent.add';
+
+    public const string EMPLOYEE_DEPENDENT_UPDATE = 'employee.dependent.update';
+
     public const string LOTTERY_PROGRAM_CREATE = 'lottery.program.create';
 
     public const string LOTTERY_PROGRAM_OPEN_REGISTRATION = 'lottery.program.open_registration';
@@ -79,6 +83,8 @@ final class MutationCapabilityCatalog
             self::EMPLOYEE_DEPARTMENT_CREATE,
             self::EMPLOYEE_DEPARTMENT_DEACTIVATE,
             self::EMPLOYEE_DEPARTMENT_ASSIGN,
+            self::EMPLOYEE_DEPENDENT_ADD,
+            self::EMPLOYEE_DEPENDENT_UPDATE,
             self::LOTTERY_PROGRAM_CREATE,
             self::LOTTERY_PROGRAM_OPEN_REGISTRATION,
             self::LOTTERY_PROGRAM_CLOSE_REGISTRATION,

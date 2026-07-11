@@ -29,7 +29,7 @@ afterEach(function (): void {
 it('returns the public contract output shape for a completed draw', function (): void {
     $employeeOne = createEmployeeForLotteryEnrollmentTest();
     $employeeTwo = LotteryTestFactory::createSecondEmployee();
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
     $requestOne = createApprovedLotteryRegistrationRequest($employeeOne, $dormitoryId);
     $requestTwo = createApprovedLotteryRegistrationRequest($employeeTwo, $dormitoryId);
 

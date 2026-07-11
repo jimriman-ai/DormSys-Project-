@@ -68,7 +68,7 @@ it('creates a personal request through the create page livewire flow after sessi
     expect($snapshot)->toBeArray()
         ->and($snapshot['memo']['path'] ?? null)->toBe('requests/create');
 
-    $dormitoryId = UuidGenerator::uuid7();
+    $dormitoryId = createDormitorySiteForRequestTests();
 
     $updateResponse = $this->post('/livewire/update', [
         'components' => [

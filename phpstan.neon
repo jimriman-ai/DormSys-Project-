@@ -10,6 +10,12 @@ parameters:
 
     level: 8
 
+    # Analysis-time Ray guard (see phpstan-bootstrap.php). Memory limit is set
+    # via CLI `--memory-limit=1G` (composer script / CI), not neon - PHPStan
+    # rejects `parameters.memoryLimit` as an unexpected item.
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+
     peststan:
         testCaseClass: Tests\TestCase
         pestConfigFiles:
@@ -24,6 +30,12 @@ parameters:
     checkMissingCallableSignature: true
 
     treatPhpDocTypesAsCertain: false
+
+    # Windows parallel workers share OS commit charge; too many concurrent
+    # Larastan boots trigger VirtualAlloc / Fiber stack failures and incomplete
+    # analysis. Cap concurrency; prefer CLI `--memory-limit=1G` (composer/CI).
+    parallel:
+        maximumNumberOfProcesses: 2
 
     excludePaths:
         - app/Providers/HorizonServiceProvider.php

@@ -68,6 +68,22 @@ been verified from the source document.
 
 ---
 
+## Governance Patterns
+
+Reusable process patterns (not decision IDs; not operational authority types):
+
+| Pattern | Owner File | Description |
+| --- | --- | --- |
+| Integration Readiness Gate | `.specify/governance/patterns/integration-readiness-gate.md` | Mandatory readiness gate before cross-module Integration Implementation Authorization. |
+
+Pattern index: `.specify/governance/patterns/README.md`
+
+Reusable authorization template: `.specify/templates/integration-implementation-authorization-template.md`
+
+These patterns do **not** grant Design Approval, Implementation Authorization, or Batch Execution Permission. They constrain readiness before Integration Implementation Authorization may be requested or issued.
+
+---
+
 ## Authority Ownership
 
 This document is an index only.
@@ -135,7 +151,7 @@ When a new decision ID is introduced:
 ---
 
 **Document Control**
-- Version: 1.4.0
-- Last Updated: 1405/04/10 | 2026/07/01
-- Change: Added CD-015, CD-016, CD-017 index entries (governance drift sync)
+- Version: 1.4.1
+- Last Updated: 1405/04/20 | 2026/07/11
+- Change: Added Governance Patterns index entry for Integration Readiness Gate
 - Owner: DormSys Architecture Team

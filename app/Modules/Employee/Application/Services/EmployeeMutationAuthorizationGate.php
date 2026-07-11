@@ -35,6 +35,16 @@ final class EmployeeMutationAuthorizationGate
         $this->assertActiveIdentityActor();
     }
 
+    public function assertAddDependent(): void
+    {
+        $this->assertActiveIdentityActor();
+    }
+
+    public function assertUpdateDependent(): void
+    {
+        $this->assertActiveIdentityActor();
+    }
+
     private function assertActiveIdentityActor(): void
     {
         $principalId = $this->requirePrincipalId();

@@ -54,7 +54,10 @@ final class DevelopmentUserProvisioner
 
         foreach ($accounts as $account) {
             $reports[] = $this->provisionAccount($account, $mutationPrincipalId);
-            $mutationPrincipalId = $this->resolveMutationPrincipalId($accounts);
+            $mutationPrincipalId = $this->advanceMutationPrincipalId(
+                $mutationPrincipalId,
+                $account['email'],
+            );
         }
 
         return $reports;
@@ -171,6 +174,28 @@ final class DevelopmentUserProvisioner
         }
 
         return UuidGenerator::uuid7();
+    }
+
+    /**
+     * Keep a stable active principal across the loop.
+     *
+     * Only upgrade when the current principal is not yet an active identity
+     * (bootstrap UUID), and only from the account just processed — never by
+     * re-scanning the full accounts list mid-loop.
+     */
+    private function advanceMutationPrincipalId(string $currentPrincipalId, string $processedAccountEmail): string
+    {
+        if ($this->isActiveIdentityPrincipal($currentPrincipalId)) {
+            return $currentPrincipalId;
+        }
+
+        $identityUser = $this->identityUsers->findByEmail($processedAccountEmail);
+
+        if ($identityUser !== null && $identityUser->isActive()) {
+            return $identityUser->requireId()->value;
+        }
+
+        return $currentPrincipalId;
     }
 
     private function ensureCredentialUser(string $displayName, string $email, string $password): bool

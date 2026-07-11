@@ -103,7 +103,7 @@ it('rejects mission with fewer than two members (BT-R07 / BR-04)', function (): 
 
     expect(fn () => app(CreateMissionRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($coordinator->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
         members: syntheticMissionMembers(1),
@@ -116,7 +116,7 @@ it('rejects mission with more than twenty members (BT-R07 / BR-04)', function ()
 
     expect(fn () => app(CreateMissionRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($coordinator->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
         members: syntheticMissionMembers(21),
@@ -129,7 +129,7 @@ it('rejects mission with no designated leader (BT-R07 / BR-04)', function (): vo
 
     expect(fn () => app(CreateMissionRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($coordinator->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
         members: syntheticMissionMembers(3, withLeader: false),
@@ -147,7 +147,7 @@ it('creates and submits a valid mission with persisted members and details', fun
 
     $request = app(CreateMissionRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($coordinator->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
         members: missionMemberPayload([$memberA, $memberB, $memberC], leaderIndex: 1),
@@ -179,7 +179,7 @@ it('persists mission members as immutable records after submit (CD-014)', functi
 
     $request = app(CreateMissionRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($coordinator->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
         checkInDate: new DateTimeImmutable('2026-07-01'),
         checkOutDate: new DateTimeImmutable('2026-12-31'),
         members: missionMemberPayload([$memberA, $memberB], leaderIndex: 0),
