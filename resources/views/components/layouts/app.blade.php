@@ -40,6 +40,14 @@
                             >
                                 کارکنان
                             </a>
+                            @if ($show_audit_nav ?? false)
+                                <a
+                                    href="{{ route('audit.index') }}"
+                                    class="{{ request()->routeIs('audit.*') ? 'font-semibold text-sky-700' : 'text-slate-600 hover:text-slate-900' }}"
+                                >
+                                    تاریخچه حسابرسی
+                                </a>
+                            @endif
                         </nav>
                     </div>
 

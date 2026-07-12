@@ -1,0 +1,170 @@
+# Audit UI — Feature Contract
+# Spec Kit / UI governance capability boundary artifact
+# Implementation: NOT authorized by this artifact
+
+metadata:
+  feature_name: Audit UI
+  feature_id: audit-ui
+  module: Audit
+  classification: UI_PRESENTATION_GAP
+  status: AUDIT_UI_FEATURE_CONTRACT_CREATED
+  governance_stage: CONTRACT_ONLY
+  version: 0.1.0
+  created_date: 2026-07-11
+  implementation_authorized: false
+
+purpose:
+  summary: >
+    Provide a read-only authorized Persian RTL presentation surface so staff/internal
+    principals who hold audit.read can view existing audit/application history data
+    already available through Audit Application read capability.
+  user_visible_problem: >
+    Authorized operators can query audit history on the backend but have no confirmed
+    in-product UI presentation surface for that read capability.
+  constraint: >
+    Exposes existing AuditHistoryReadContract read capability only. Does not create,
+    edit, or expand audit recording, storage, Reporting UI, or permission models.
+
+authority_chain:
+  product_authorization:
+    artifact: docs/product/product-authorization-next-ui-feature.md
+    status: AUTHORIZED
+    slug: audit-ui
+  selection:
+    artifact: .specify/docs/handoff/next-approved-work-item-selection-after-create-entrypoint-deferral.md
+    status: NEXT_APPROVED_WORK_ITEM_SELECTED
+  evidence_validation:
+    artifact: .specify/docs/handoff/audit-ui-evidence-validation.md
+    status: AUDIT_UI_EVIDENCE_VALIDATED
+    eligibility: AUDIT_UI_FEATURE_ANALYSIS_ALLOWED
+  feature_analysis:
+    artifact: .specify/docs/handoff/audit-ui.feature-analysis.md
+    status: AUDIT_UI_FEATURE_ANALYSIS_CREATED
+  contract_blockers_review:
+    artifact: .specify/docs/handoff/audit-ui-contract-blockers-resolution.md
+    status: AUDIT_UI_CONTRACT_BLOCKERS_REVIEWED
+  owner_decisions:
+    artifact: .specify/docs/handoff/audit-ui-owner-decisions.md
+    status: AUDIT_UI_OWNER_DECISIONS_RECORDED
+    contract_readiness: AUDIT_UI_CONTRACT_READY
+    decisions:
+      navigation_scope: ROLE_SCOPED_NAVIGATION
+      ui_route_authorization: EXISTING_PERMISSION_BASED_AUTHORIZATION
+  governing_references:
+    - .specify/governance/_meta/authority-model.md
+    - .specify/docs/catalog-decisions.md
+    - .specify/docs/spec-catalog.md
+    - docs/architecture/ui/UI-ANTI-LEAK-CONTRACT.md
+    - specs/010-audit-trail/contracts/audit-history-read-contract.md
+
+user_access_boundary:
+  audience: staff/internal users with audit.read permission
+  permission: audit.read
+  seeded_roles_evidence:
+    - Administrator
+    - DormMgr
+    - HRMgr
+  access_control: >
+    Access is controlled by existing authorization mechanisms.
+    Not admin-only. Not general authenticated access.
+  notes: >
+    SystemAdministrator seed does not receive audit.read under current Identity baseline.
+    Employees and Operators are denied in Spec10 v1 read policy.
+
+data_source_contract:
+  approved_read_source: AuditHistoryReadContract
+  fully_qualified_reference: App\Modules\Audit\Application\Contracts\AuditHistoryReadContract
+  consumption_rule: >
+    The UI consumes existing read capability only.
+    Application-layer authorizeRead / AuditReadPolicyEnforcementPoint remains authoritative
+    for history queries.
+  not_approved_as_ui_source:
+    - Reporting JSON presentation/API endpoints as the Audit UI consumption path
+    - Direct Eloquent / audit_logs table access from Presentation
+    - Invented read ports or new Application APIs
+
+functional_contract:
+  mode: read_only
+  capabilities:
+    - id: access_audit_history_view
+      description: Authorized principals may access the Audit history view surface.
+    - id: display_existing_audit_history
+      description: >
+        Display existing audit/application history data returned by AuditHistoryReadContract
+        (fields already present on history read results).
+    - id: respect_authorization_boundary
+      description: >
+        All access and data retrieval must respect the existing audit.read authorization
+        boundary; UI must not reconstruct or bypass permission meaning.
+  write_operations: none
+
+navigation_contract:
+  scope: ROLE_SCOPED_NAVIGATION
+  rules:
+    - Discoverability/navigation is available only to users who hold audit.read.
+    - Not admin-only navigation.
+    - Not general authenticated navigation.
+  placement: >
+    Exact navigation placement, label, and layout structure are not fixed by this contract
+    and remain a future authorization / lock concern unless separately confirmed by
+    governance evidence.
+
+authorization_contract:
+  model: EXISTING_PERMISSION_BASED_AUTHORIZATION
+  permission: audit.read
+  rules:
+    - Future UI route/page must be protected using existing permission audit.read.
+    - The same permission governs visibility and discoverability.
+    - No new dedicated permission or policy is introduced by this contract unless future
+      evidence separately requires and authorizes it.
+    - UI must not bypass Application AuditHistoryReadContract read enforcement.
+
+forbidden_behaviors:
+  - creating audit events
+  - editing audit records
+  - deleting audit records
+  - modifying audit data
+  - new audit storage
+  - schema or database changes
+  - export functionality
+  - reporting features
+  - analytics dashboards
+  - filtering unless separately approved
+  - search unless separately approved
+  - notification integration
+  - workflow changes
+  - permission model changes
+  - authorization bypass
+  - inferred permissions in Presentation as authority
+  - mutations of any kind
+  - new audit capabilities beyond presenting existing history reads
+  - unrelated UI expansion (Reporting explorer/KPI, Request, Notification, Employee, Workflow, Dormitory)
+  - Spec11 E-03 Operator Explorer scope by implication
+
+open_questions:
+  # Resolved decisions must not be reopened here.
+  before_implementation_authorization:
+    - id: OQ-AU-01
+      question: >
+        Exact presentation query parameters for v1 history view (AuditHistoryQuery requires
+        at least one filter dimension per Spec10 contract) without introducing unauthorized
+        filter/search UI product scope.
+      blocks: implementation_authorization
+    - id: OQ-AU-02
+      question: >
+        Exact navigation label and shared-layout placement for ROLE_SCOPED_NAVIGATION
+        (scope decided; concrete placement not fixed by this contract).
+      blocks: implementation_lock_or_authorization
+    - id: OQ-AU-03
+      question: >
+        Which AuditHistoryItemDto fields are in the v1 display set versus deferred
+        presentational mapping (without inventing new backend fields).
+      blocks: implementation_authorization
+
+contract_readiness: AUDIT_UI_IMPLEMENTATION_AUTHORIZATION_PENDING
+
+non_authorization_statement: >
+  This Feature Contract defines capability boundaries only and does not authorize implementation.
+
+no_change_confirmation: >
+  No application, test, UI implementation, contract, quickstart, or implementation files were modified.

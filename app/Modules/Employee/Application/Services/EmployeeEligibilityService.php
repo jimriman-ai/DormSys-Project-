@@ -6,16 +6,20 @@ namespace App\Modules\Employee\Application\Services;
 
 use App\Modules\Employee\Application\Contracts\EmployeeEligibilityContract;
 use App\Modules\Employee\Application\Contracts\EmployeeRepositoryContract;
+use App\Modules\Employee\Application\Contracts\Ports\ActiveAllocationReadPort;
 use App\Modules\Employee\Application\Contracts\Ports\PendingRequestReadPort;
 use App\Modules\Employee\Application\DTOs\EligibilityResultDTO;
 use App\Modules\Employee\Domain\Exceptions\EmployeeNotFoundException;
+use App\Modules\Employee\Domain\Services\EligibilityCalculator;
 use App\Modules\Employee\Domain\ValueObjects\EmployeeId;
 
 final class EmployeeEligibilityService implements EmployeeEligibilityContract
 {
     public function __construct(
         private readonly EmployeeRepositoryContract $employees,
+        private readonly ActiveAllocationReadPort $activeAllocations,
         private readonly PendingRequestReadPort $pendingRequests,
+        private readonly EligibilityCalculator $calculator,
     ) {}
 
     public function computeRequestEligibility(string $employeeId, ?string $excludingRequestId = null): EligibilityResultDTO
@@ -27,28 +31,19 @@ final class EmployeeEligibilityService implements EmployeeEligibilityContract
             throw new EmployeeNotFoundException('Employee not found.');
         }
 
-        $evaluatedAt = now('UTC')->toDateTimeImmutable();
-
-        if (! $employee->isActive()) {
-            return new EligibilityResultDTO(
-                eligible: false,
-                reasonCodes: ['employee_inactive'],
-                evaluatedAt: $evaluatedAt,
-            );
-        }
-
-        if ($this->pendingRequests->hasPendingRequest($employeeId, $excludingRequestId)) {
-            return new EligibilityResultDTO(
-                eligible: false,
-                reasonCodes: ['pending_request_exists'],
-                evaluatedAt: $evaluatedAt,
-            );
-        }
+        $reasonCodes = $this->calculator->evaluate(
+            $employee,
+            $this->activeAllocations->hasActiveAllocation($id),
+            $this->pendingRequests->hasPendingRequest($employeeId, $excludingRequestId),
+        );
 
         return new EligibilityResultDTO(
-            eligible: true,
-            reasonCodes: [],
-            evaluatedAt: $evaluatedAt,
+            eligible: $reasonCodes === [],
+            reasonCodes: array_map(
+                static fn ($code): string => $code->value,
+                $reasonCodes,
+            ),
+            evaluatedAt: now('UTC')->toDateTimeImmutable(),
         );
     }
 }

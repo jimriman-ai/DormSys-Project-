@@ -1,0 +1,6 @@
+prompt_id: audit-ui-closeout
+recorded_at: 2026-07-12T15:09:00+03:30
+work_item: audit-ui
+stage: AUDIT_UI_CLOSED
+tags: [CLOSED]
+summary: "Audit UI closed after accepted review; terminal governance chain ends at SPEC_ITEM_CLOSED with no additional product scope authorized by closeout."

@@ -1,6 +1,6 @@
 # DormSys Catalog Decisions
 
-**Version:** 2.8.3  
+**Version:** 2.8.4  
 **Status:** ACTIVE  
 **Last Updated:** 1405/04/20 | 2026/07/11
 **Related Documents:** [`context-map.md`](context-map.md), [`spec-catalog.md`](spec-catalog.md), `CONSTITUTION v1.3.0.md`, `dormsys-architecture.md`
@@ -647,6 +647,14 @@ Request
 ---
 
 ## Change Log
+
+### 2.8.4 — 2026-07-11 (spec03 US4 Batch 1b Implementation Authorization create)
+
+- Lifecycle operation only — no boundary or CD-* changes.
+- Created / activated Spec03 US4 Batch 1b Implementation Authorization: `.specify/docs/handoff/spec03-us4-batch1b-implementation-authorization-decision.md` (`authorization-status: active`; verbatim gap-fill `authorized-scope`).
+- Actor: Governance Review. Checkpoint: `spec03-us4-batch1b-implementation-authorization-decision`.
+- Supersedes US4 hold in `spec03-post-mvp-authorization.md` for declared Batch 1b scope only; EmployeeRead / Dependent live stub replacement / live Allocation / Spec04–Spec07 reopen / UI remain unauthorized.
+- CD-013 ownership unchanged (Employee computes; Request enforces).
 
 ### 2.8.3 — 2026-07-11 (spec03 US3 Implementation Authorization create)
 

@@ -68,7 +68,8 @@
 
 - Wave 1B (T027–T034) is **closed**.
 - **US3 (T035–T040):** hold **superseded** 2026-07-11 by [`.specify/docs/handoff/spec03-implementation-authorization-us3.md`](./spec03-implementation-authorization-us3.md) (`authorization-status: active`). Execution limited to that record’s verbatim `authorized-scope`.
-- Do **not** start T041+ (US4), Phase 7, Polish beyond authorized slices, or Request Dependent live wiring without separate authorization.
+- **US4 Batch 1b (gap fill):** hold **superseded** 2026-07-11 by [`.specify/docs/handoff/spec03-us4-batch1b-implementation-authorization-decision.md`](./spec03-us4-batch1b-implementation-authorization-decision.md) (`authorization-status: active`). Execution limited to that record’s verbatim `authorized-scope` (T041, T043-AA, T044-NA, T045, T047-AA, T048, optional DOC-OPT). Remaining US4 greenfield/Pending-Null reversion / signature rewrite items stay blocked.
+- Do **not** start Phase 7 (EmployeeRead), Polish beyond authorized slices, Request Dependent live wiring, or other items outside active IA records without separate authorization.
 - Do **not** start spec04 or spec05 implementation under this post-MVP record.
 
 ---

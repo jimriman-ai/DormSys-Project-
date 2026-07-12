@@ -12,10 +12,16 @@ final class RequestAuditPrincipalContext implements AuditPrincipalContextPort
     {
         $userId = request()->attributes->get('audit_principal_user_id');
 
-        if (! is_string($userId) || $userId === '') {
-            return null;
+        if (is_string($userId) && $userId !== '') {
+            return $userId;
         }
 
-        return $userId;
+        $user = request()->user();
+
+        if ($user !== null) {
+            return (string) $user->getAuthIdentifier();
+        }
+
+        return null;
     }
 }

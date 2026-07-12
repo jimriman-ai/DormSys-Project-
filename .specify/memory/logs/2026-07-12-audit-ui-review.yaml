@@ -1,0 +1,6 @@
+prompt_id: audit-ui-review-decision
+recorded_at: 2026-07-12T11:35:00+03:30
+work_item: audit-ui
+stage: AUDIT_UI_ACCEPTED
+tags: [SAFE_PROGRESS]
+summary: "Fixed v1 query profile using AuditEventTypeCatalogPort.allEventTypeValues() satisfied Spec10’s required filter dimension while keeping filter/search product UI out of the locked Audit UI scope."

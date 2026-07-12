@@ -1,0 +1,7 @@
+# Memory Log Template
+prompt_id: # Reference to the execution session
+recorded_at: # ISO-8601 Timestamp
+work_item: # e.g., audit-ui
+stage: # Current development stage
+tags: [] # Selection from tags.md
+summary: "" # Factual 1-2 sentence observation
