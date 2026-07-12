@@ -61,14 +61,15 @@ it('fails closed when proposed allocation consumer is invoked without caller pri
 
 it('delegates lottery runtime allocation creation through inherited system principal without alternate authority', function (): void {
     $personId = UuidGenerator::uuid7();
+    $dormitoryId = createAssignableBedForAllocationTests();
 
-    MutationPrincipalContext::runAsSystem(function () use ($personId): void {
+    MutationPrincipalContext::runAsSystem(function () use ($personId, $dormitoryId): void {
         app(ProposedAllocationConsumer::class)->emitProposedAllocations([
             [
                 'program_id' => UuidGenerator::uuid7(),
                 'registration_id' => UuidGenerator::uuid7(),
                 'employee_id' => $personId,
-                'dormitory_id' => UuidGenerator::uuid7(),
+                'dormitory_id' => $dormitoryId,
                 'rank' => 1,
             ],
         ]);

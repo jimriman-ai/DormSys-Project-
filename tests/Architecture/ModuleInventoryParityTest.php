@@ -33,9 +33,13 @@ test('every matrix module is active on disk and registered in bootstrap', functi
 });
 
 test('matrix-excluded active modules remain registered in bootstrap', function (): void {
+    $excludedModules = architectureMatrixExcludedActiveModules();
     $bootstrapProviders = architectureBootstrapModuleServiceProviders();
 
-    foreach (architectureMatrixExcludedActiveModules() as $module) {
+    // Empty exclusion list is an intentional enforced state (must still assert).
+    expect($excludedModules)->toBe([]);
+
+    foreach ($excludedModules as $module) {
         $expectedProvider = "App\\Modules\\{$module}\\Infrastructure\\Providers\\{$module}ServiceProvider";
 
         expect(architectureDiscoverActiveModuleNames())->toContain($module);
@@ -44,7 +48,11 @@ test('matrix-excluded active modules remain registered in bootstrap', function (
 });
 
 test('matrix-excluded modules do not silently join the full matrix without an explicit inventory change', function (): void {
-    foreach (architectureMatrixExcludedActiveModules() as $module) {
+    $excludedModules = architectureMatrixExcludedActiveModules();
+
+    expect($excludedModules)->toBe([]);
+
+    foreach ($excludedModules as $module) {
         expect(architectureModuleNames())->not->toContain($module);
     }
 });

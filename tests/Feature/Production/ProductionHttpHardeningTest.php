@@ -35,6 +35,7 @@ describe('exception mapping stability', function (): void {
         $employee = createEmployeeForLotteryEnrollmentTest();
         $personId = $employee->requireId()->value;
         $dormitoryId = createDormitorySiteForRequestTests();
+        createAssignableBedForAllocationTests(id: $dormitoryId);
         $requestId = createApprovedLotteryRegistrationRequest($employee, $dormitoryId);
 
         $allocationOperator = createAllocationHttpOperator();
@@ -42,7 +43,7 @@ describe('exception mapping stability', function (): void {
 
         $this->postJson(allocationHttpUrl(), [
             'personId' => $personId,
-            'bedId' => UuidGenerator::uuid7(),
+            'bedId' => createAssignableBedForAllocationTests('PRE'),
             'startDate' => '2026-08-01',
             'endDate' => '2026-08-31',
         ])->assertCreated();
@@ -115,14 +116,14 @@ describe('exception mapping stability', function (): void {
 
         $this->postJson(allocationHttpUrl(), [
             'personId' => $personId,
-            'bedId' => UuidGenerator::uuid7(),
+            'bedId' => createAssignableBedForAllocationTests('B1'),
             'startDate' => '2026-08-01',
             'endDate' => '2026-08-31',
         ])->assertCreated();
 
         $this->postJson(allocationHttpUrl(), [
             'personId' => $personId,
-            'bedId' => UuidGenerator::uuid7(),
+            'bedId' => createAssignableBedForAllocationTests('B2'),
             'startDate' => '2026-08-15',
             'endDate' => '2026-09-15',
         ])->assertConflict()
@@ -140,7 +141,7 @@ describe('response consistency', function (): void {
 
         $allocationId = $this->postJson(allocationHttpUrl(), [
             'personId' => UuidGenerator::uuid7(),
-            'bedId' => UuidGenerator::uuid7(),
+            'bedId' => createAssignableBedForAllocationTests(),
             'startDate' => '2026-08-01',
             'endDate' => '2026-08-31',
         ])->assertCreated()

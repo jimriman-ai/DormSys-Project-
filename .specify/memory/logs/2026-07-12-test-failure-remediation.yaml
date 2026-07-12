@@ -1,0 +1,6 @@
+prompt_id: test-failure-remediation-2026-07-12
+recorded_at: "2026-07-12T20:20:00+00:00"
+work_item: php-artisan-test-failure-remediation
+stage: post-execution
+tags: [SAFE_PROGRESS, EVIDENCE_GAP]
+summary: "After Spec04 live DormitoryAssignabilityReadBridge became default, HTTP/Lottery fixtures that invented bed/dormitory UUIDs failed with BedNotAssignableException until createAssignableBedForAllocationTests (and site helper seeding) aligned fixtures without weakening assignability."

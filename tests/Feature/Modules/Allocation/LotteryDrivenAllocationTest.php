@@ -51,7 +51,8 @@ it('creates allocations from lottery proposed allocation payloads', function ():
 });
 
 it('binds proposed allocation port to the allocation consumer after boot', function (): void {
-    app(ProposedAllocationPort::class);
+    expect(app()->bound(ProposedAllocationPort::class))->toBeTrue()
+        ->and(app(ProposedAllocationPort::class)::class)->toBe(ProposedAllocationConsumer::class);
 });
 
 it('rejects lottery winner payloads missing frozen fields', function (): void {

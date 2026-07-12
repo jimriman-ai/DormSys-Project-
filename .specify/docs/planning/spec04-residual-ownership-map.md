@@ -37,8 +37,8 @@ timestamp: 2026-07-12
 | ------------------- | --------------- | ---------------------- | ---------------- |
 | Auth integration | closeout evidence — `.specify/docs/handoff/spec04-backend-closeout.md` §6 (“Authorization / policies / roles / guards for Dormitory surfaces”); Wave 02 baseline residual set; `specs/004-accommodation-resource/spec.md` Governance & Evolution Notes residual table | TBD | Pending Decision |
 | UI presentation | closeout evidence — `spec04-backend-closeout.md` §6 (“Livewire / Blade / UI”; HTTP/API/controllers/FormRequests); Wave 02 baseline residual set; Spec04 Governance & Evolution Notes | TBD | Pending Decision |
-| Allocation integration | closeout evidence — `spec04-backend-closeout.md` §6 (“Allocation ↔ Dormitory integration” including `bedExists` / `isBedAssignable`); CD-014 / catalog Allocation BC; Wave 02 baseline residual set | TBD | Pending Decision |
-| Check-in wiring | closeout evidence — `spec04-backend-closeout.md` §6 (“CheckIn/CheckOut ↔ Dormitory occupancy request wiring”; process ownership outside Dormitory); CD-015 / catalog CheckIn/CheckOut; Wave 02 baseline residual set | TBD | Pending Decision |
+| Allocation integration / Allocation Assignability | closeout evidence — `spec04-backend-closeout.md` §6; ownership D1 + assignability ownership; closeout `.specify/docs/closeout/spec04-allocation-assignability-residual-closeout.md` | `SPEC04` | **CLOSED** (`SPEC04_RESIDUAL_CLOSED` / `FULLY_CLOSED`; implementation accepted 2026-07-12) |
+| Check-in wiring | closeout evidence — `spec04-backend-closeout.md` §6; ownership D2; readiness `NO_FURTHER_ACTION_RECOMMENDED`; reconciliation `.specify/docs/reconciliation/spec04-checkin-residual-closeout-reconciliation.md` | `SPEC07` (D2) | **RETIRED_FROM_ACTIVE_SPEC04_TRACKING** / `CLOSED_NO_FURTHER_ACTION` (2026-07-12) — not Spec04 execution; Spec07 not auto-reopened |
 
 ---
 
@@ -48,18 +48,20 @@ timestamp: 2026-07-12
 | -------- | -------------------------------------------- | ----------------------------------------------------- |
 | Auth integration | Authorization / policies / roles / guards for Dormitory surfaces | Identity / access surfaces historically under `spec02`; Dormitory surface auth still deferred |
 | UI presentation | Livewire / Blade / UI | Presentation-layer work; Spec04 backend closeout excludes UI |
-| Allocation integration | Allocation ↔ Dormitory integration (`bedExists` / `isBedAssignable`) | Allocation BC / `spec07` program; CD-014 assignment vs physical-state split |
-| Check-in wiring | CheckIn/CheckOut ↔ Dormitory occupancy request wiring | CheckIn/CheckOut context per CD-015; closeout states process ownership remains outside Dormitory |
+| Allocation integration / Assignability | Allocation ↔ Dormitory live assignability + markers (closed residual) | Spec04 supplier + Integration bridges; lottery `dormitory_id`→`bedId` remains non-blocking test/prod mapping debt |
+| Check-in wiring | CheckIn/CheckOut ↔ Dormitory occupancy request wiring (Spec04 tracking retired) | Ownership D2 = Spec07; readiness + reconciliation retire Spec04 active tracking; Spec07 CheckIn uncoupled from Dormitory by design |
 
-Candidate Domain Owner remains **TBD** until a Decision Gate records ownership. No successor Spec id or Wave number is assigned here.
+Candidate Domain Owner for **remaining open** map rows (Auth, UI) remains as previously recorded until separately reconciled. Check-in wiring is **retired** from active Spec04 tracking (not Spec04 execution).
 
 ---
 
 ## 4. Boundary Note
 
-- Spec04 Product status remains `PENDING_RESIDUAL` / `DEFERRED_TO_FUTURE_WAVE` per Wave 02 alignment closeout.
-- Residuals are deferred, not cancelled.
-- This mapping does not grant Design Approval, Implementation Authorization, or Batch Execution Permission.
+- Spec04 Product status remains `PENDING_RESIDUAL` for **open** residuals (Auth, UI, and other deferred items **excluding** retired Check-in wiring).
+- **Allocation Assignability** residual is **closed** (`SPEC04_RESIDUAL_CLOSED`); not reopened by this reconciliation.
+- **Check-in wiring** is **RETIRED_FROM_ACTIVE_SPEC04_TRACKING** / `CLOSED_NO_FURTHER_ACTION`; does not authorize Spec07 reopen.
+- Remaining open residuals are deferred, not cancelled.
+- This mapping does not grant Design Approval, Implementation Authorization, or Batch Execution Permission for open residuals.
 
 ---
 
@@ -67,6 +69,6 @@ Candidate Domain Owner remains **TBD** until a Decision Gate records ownership. 
 
 | Field | Value |
 | ----- | ----- |
-| Version | 1.0.0 |
-| Status | Traceability preparation — ready for next Decision Gate |
+| Version | 1.2.0 |
+| Status | Traceability map — Assignability CLOSED; Check-in wiring RETIRED_FROM_ACTIVE_SPEC04_TRACKING; Auth/UI still open |
 | Last updated | 2026-07-12 |

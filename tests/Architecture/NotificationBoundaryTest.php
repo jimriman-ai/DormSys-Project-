@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use App\Modules\Notification\Application\Contracts\NotificationDeliveryContract;
 use App\Modules\Notification\Application\Contracts\NotificationInboxReadContract;
+use App\Modules\Notification\Application\Services\DeliverNotificationAction;
+use App\Modules\Notification\Application\Services\NotificationInboxReadService;
 
 arch('notification module does not import request infrastructure')
     ->expect('App\Modules\Notification')
@@ -46,9 +48,11 @@ arch('notification module does not import check-in persistence models')
     ->not->toUse('App\Modules\CheckIn\Infrastructure\Persistence');
 
 test('notification delivery is bound to the module delivery contract', function (): void {
-    app(NotificationDeliveryContract::class);
+    expect(app()->bound(NotificationDeliveryContract::class))->toBeTrue()
+        ->and(app(NotificationDeliveryContract::class)::class)->toBe(DeliverNotificationAction::class);
 });
 
 test('notification inbox read depends only on notification contracts', function (): void {
-    app(NotificationInboxReadContract::class);
+    expect(app()->bound(NotificationInboxReadContract::class))->toBeTrue()
+        ->and(app(NotificationInboxReadContract::class)::class)->toBe(NotificationInboxReadService::class);
 });

@@ -13,7 +13,6 @@ use App\Modules\Request\Domain\Entities\Request;
 use App\Modules\Request\Domain\States\ApprovedState;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
-use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use App\Support\ValueObjects\Identity\NationalCode;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;

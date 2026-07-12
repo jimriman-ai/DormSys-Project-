@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Modules\Lottery\Application\Adapters\RequestReadAdapter;
 use App\Modules\Lottery\Application\Contracts\LotteryRequestReadPort;
 use App\Modules\Lottery\Application\Contracts\LotteryResultReadContract;
+use App\Modules\Lottery\Application\Services\LotteryResultReadService;
 
 arch('lottery module does not import request infrastructure (SC-005)')
     ->expect('App\Modules\Lottery')
@@ -87,5 +88,6 @@ test('request read adapter implements only the lottery request read port (R4)', 
 });
 
 test('lottery result read service is bound to the supplier read contract', function (): void {
-    app(LotteryResultReadContract::class);
+    expect(app()->bound(LotteryResultReadContract::class))->toBeTrue()
+        ->and(app(LotteryResultReadContract::class)::class)->toBe(LotteryResultReadService::class);
 });

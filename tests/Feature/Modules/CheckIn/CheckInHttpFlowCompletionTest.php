@@ -30,9 +30,11 @@ describe('http check-in flow', function (): void {
         $allocationOperator = createAllocationHttpOperator();
         authenticateAllocationHttpUser($allocationOperator['identity']);
 
+        $bedId = createAssignableBedForAllocationTests();
+
         $allocationId = $this->postJson(allocationHttpUrl(), [
             'personId' => UuidGenerator::uuid7(),
-            'bedId' => UuidGenerator::uuid7(),
+            'bedId' => $bedId,
             'startDate' => '2026-08-01',
             'endDate' => '2026-08-31',
         ])->assertCreated()
@@ -78,9 +80,11 @@ describe('http check-in domain failures', function (): void {
         $allocationOperator = createAllocationHttpOperator();
         authenticateAllocationHttpUser($allocationOperator['identity']);
 
+        $bedId = createAssignableBedForAllocationTests();
+
         $allocationId = $this->postJson(allocationHttpUrl(), [
             'personId' => UuidGenerator::uuid7(),
-            'bedId' => UuidGenerator::uuid7(),
+            'bedId' => $bedId,
             'startDate' => '2026-08-01',
             'endDate' => '2026-08-31',
         ])->assertCreated()
@@ -101,9 +105,11 @@ describe('http check-in domain failures', function (): void {
         $allocationOperator = createAllocationHttpOperator();
         authenticateAllocationHttpUser($allocationOperator['identity']);
 
+        $bedId = createAssignableBedForAllocationTests();
+
         $allocationId = $this->postJson(allocationHttpUrl(), [
             'personId' => UuidGenerator::uuid7(),
-            'bedId' => UuidGenerator::uuid7(),
+            'bedId' => $bedId,
             'startDate' => '2026-08-01',
             'endDate' => '2026-08-31',
         ])->assertCreated()
@@ -120,9 +126,11 @@ describe('http check-in domain failures', function (): void {
         $allocationOperator = createAllocationHttpOperator();
         authenticateAllocationHttpUser($allocationOperator['identity']);
 
+        $bedId = createAssignableBedForAllocationTests();
+
         $allocationId = $this->postJson(allocationHttpUrl(), [
             'personId' => UuidGenerator::uuid7(),
-            'bedId' => UuidGenerator::uuid7(),
+            'bedId' => $bedId,
             'startDate' => '2026-08-01',
             'endDate' => '2026-08-31',
         ])->assertCreated()

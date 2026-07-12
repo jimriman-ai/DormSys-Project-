@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Modules\Allocation\Application\Contracts\AllocationReadContract;
+use App\Modules\Allocation\Application\Services\AllocationReadService;
 
 arch('allocation module does not import request infrastructure')
     ->expect('App\Modules\Allocation')
@@ -37,5 +38,6 @@ arch('allocation module does not import employee persistence models')
     ->not->toUse('App\Modules\Employee\Infrastructure\Persistence');
 
 test('allocation read service is bound to the supplier read contract', function (): void {
-    app(AllocationReadContract::class);
+    expect(app()->bound(AllocationReadContract::class))->toBeTrue()
+        ->and(app(AllocationReadContract::class)::class)->toBe(AllocationReadService::class);
 });

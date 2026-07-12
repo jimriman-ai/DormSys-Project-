@@ -7,6 +7,10 @@ use App\Modules\Dormitory\Infrastructure\Persistence\Models\DormitoryModel;
 
 /**
  * Persist a real dormitory row for Request feature flows that call siteExists().
+ *
+ * Also seeds a Spec04 vacant bed with the same UUID so lottery draw paths that
+ * allocate against dormitory_id as bedId (ProposedAllocationConsumer) succeed
+ * under live DormitoryAssignabilityReadBridge wiring.
  */
 function createDormitorySiteForRequestTests(?string $code = null): string
 {
@@ -18,5 +22,8 @@ function createDormitorySiteForRequestTests(?string $code = null): string
         'status' => ResourceStatus::Available,
     ]);
 
-    return $dormitory->getId();
+    $dormitoryId = $dormitory->getId();
+    createAssignableBedForAllocationTests(id: $dormitoryId);
+
+    return $dormitoryId;
 }

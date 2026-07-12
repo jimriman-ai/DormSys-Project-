@@ -84,6 +84,8 @@ describe('http end-to-end lottery flow', function (): void {
         authenticateLotteryHttpUser($operator['identity']);
 
         $dormitoryId = createDormitorySiteForRequestTests();
+        // Lottery draw allocates against dormitory_id as bedId; seed Spec04 bed with that id.
+        createAssignableBedForAllocationTests(id: $dormitoryId);
 
         $program = $this->postJson(lotteryHttpCreateProgramUrl(), [
             'title' => 'HTTP E2E Program',

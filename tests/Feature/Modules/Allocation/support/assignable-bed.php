@@ -21,6 +21,13 @@ function createAssignableBedForAllocationTests(
     ResourceStatus $status = ResourceStatus::Available,
     ?string $id = null,
 ): string {
+    if ($id !== null) {
+        $existing = BedModel::query()->find($id);
+        if ($existing !== null) {
+            return $existing->getId();
+        }
+    }
+
     $suffix = substr(str_replace('.', '', uniqid('', true)), -8);
 
     $dormitory = DormitoryModel::query()->create([

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use App\Modules\Audit\Application\Contracts\AuditHistoryReadContract;
 use App\Modules\Audit\Application\Contracts\AuditRecordingContract;
+use App\Modules\Audit\Application\Services\AuditHistoryReadService;
+use App\Modules\Audit\Application\Services\RecordAuditAction;
 
 arch('audit module does not import request infrastructure')
     ->expect('App\Modules\Audit')
@@ -54,9 +56,11 @@ arch('audit module does not import notification persistence models')
     ->not->toUse('App\Modules\Notification\Infrastructure\Persistence');
 
 test('audit recording is bound to the module recording contract', function (): void {
-    app(AuditRecordingContract::class);
+    expect(app()->bound(AuditRecordingContract::class))->toBeTrue()
+        ->and(app(AuditRecordingContract::class)::class)->toBe(RecordAuditAction::class);
 });
 
 test('audit history read is bound to the module read service', function (): void {
-    app(AuditHistoryReadContract::class);
+    expect(app()->bound(AuditHistoryReadContract::class))->toBeTrue()
+        ->and(app(AuditHistoryReadContract::class)::class)->toBe(AuditHistoryReadService::class);
 });

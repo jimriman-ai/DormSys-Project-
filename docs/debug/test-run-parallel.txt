@@ -1,0 +1,17 @@
+﻿
+ ErrorException 
+ The use statement with non-compound name 'Mockery' has no effect
+ at tests\Feature\Modules\Allocation\RequestLifecycleHandoffTest.php:18
+ 14 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
+ 15 use App\Shared\Infrastructure\Uuid\UuidGenerator;
+ 16 use App\Support\ValueObjects\Identity\NationalCode;
+ 17 use Illuminate\Support\Carbon;
+ 18 use Mockery;
+ 19 use Tests\Support\MockeryTest;
+ 20 
+ 21 beforeEach(function (): void {
+ 22 Carbon::setTestNow('2026-07-01 12:00:00');
+ 1 vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php:263
+ Illuminate\Foundation\Bootstrap\HandleExceptions::handleError("The use statement with non-compound name 'Mockery' has no effect", "C:\project_nigs-dist8\DormSys Project\tests\Feature\Modules\Allocation\RequestLifecycleHandoffTest.php")
+ 2 vendor\pestphp\pest\overrides\Runner\TestSuiteLoader.php:92
+ Illuminate\Foundation\Bootstrap\HandleExceptions::{closure:Illuminate\Foundation\Bootstrap\HandleExceptions::forwardsTo():262}("The use statement with non-compound name 'Mockery' has no effect", "C:\project_nigs-dist8\DormSys Project\tests\Feature\Modules\Allocation\RequestLifecycleHandoffTest.php")

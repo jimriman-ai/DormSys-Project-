@@ -1,145 +1,133 @@
 # Test Failure Remediation Report
 
-**Date:** 2026-07-11  
-**Scope:** Green baseline restoration after Spec04 Request→Dormitory live `siteExists` wiring  
-**Command:** `php -d memory_limit=512M artisan test`  
-**Final result:** **passed** (1755 passed, 4 skipped, 11 risky)
+**Date:** 2026-07-12  
+**Scope:** Strict remediation of `php artisan test` failures and risky tests
 
 ---
 
-## 1. Failure summary (before remediation)
+## 1. Initial test state
 
-### Architecture / boundary (3 failures)
+**User-reported:**
 
-| Test | Signal |
-| ---- | ------ |
-| `CrossModuleAdapterLocationTest` | Unregistered cross-module adapter: `app/Modules/Request/Infrastructure/Adapters/DormitoryReadAdapter.php` imports `DormitoryStructureReadContract` |
-| `ForbiddenImportsScanTest` | Same unregistered adapter finding |
-| `ModuleBoundaryTest` (`Request` infrastructure isolated from `Dormitory`) | `App\Modules\Request\Infrastructure` must not use `App\Modules\Dormitory\*` |
+| Metric | Count |
+| ------ | ----- |
+| Failed | 18 |
+| Risky | 11 |
+| Skipped | 4 |
+| Passed | 1752 |
+| Assertions | 4853 |
+| Duration | 311.18s |
 
-### Runtime / domain validation (many cascading failures)
+**Evidence capture (this run, before remediation):** 8 failed / 10 additional draw-path errors after first fixture pass / 11 risky / 4 skipped — all rooted in Spec04 live bed assignability (`BedNotAssignableException`).
 
-| Signal | Location |
-| ------ | -------- |
-| `RequestValidationException: Dormitory site does not exist.` | `SubmitRequestAction` (also Mission/Family create paths) |
-
-Observed across Request, Allocation, Lottery, Mutation, and Production feature suites that invented dormitory UUIDs without persisting a Dormitory row.
-
----
-
-## 2. Root cause analysis
-
-Two related root causes:
-
-### A. Boundary placement (architecture)
-
-Spec04 Phase 4 correctly introduced **live** Request→Dormitory existence validation, but placed the adapter in:
-
-`app/Modules/Request/Infrastructure/Adapters/DormitoryReadAdapter.php`
-
-and bound it from `RequestServiceProvider`.
-
-Repository policy (`docs/architecture/integration-layer-policy.md`, `CrossModuleAdapterLocationTest`) requires **new** cross-module port implementations under `app/Integrations/` with binding in `IntegrationServiceProvider`. Adding the path to `architectureLegacyCrossModuleAdapterPaths()` was rejected as non-compliant (new debt without architecture approval).
-
-### B. Fixture drift (runtime)
-
-Live `siteExists()` correctly returns false for non-existent sites. Feature tests still used `UuidGenerator::uuid7()` as dormitory IDs (valid under former `NullDormitoryReadAdapter`, which only checked UUID format). Domain validation was **intentional** and must be preserved; fixtures needed alignment.
-
-Evidence: `.specify/docs/handoff/spec04-integration-implementation-review.md` § Risks — documents this as expected Phase 4 collateral.
+Analysis artifact: `docs/debug/test-failure-analysis-report.md`
 
 ---
 
-## 3. Exact files changed and why
+## 2. Failure-by-failure resolution
 
-### Production / composition (architecture-compliant live edge)
+| Test | Root cause | Fix | Files changed | Status |
+| ---- | ---------- | --- | ------------- | ------ |
+| CheckInHttpFlowCompletionTest (4 cases) | Invented `bedId` UUIDs; live `DormitoryAssignabilityReadBridge` rejects missing beds | Seed via `createAssignableBedForAllocationTests()` | `tests/Feature/Modules/CheckIn/CheckInHttpFlowCompletionTest.php` | Fixed |
+| LotteryHttpFlowCompletionTest E2E draw | Draw allocates `dormitory_id` as `bedId` without Spec04 bed row | `createAssignableBedForAllocationTests(id: $dormitoryId)` | `tests/Feature/Modules/Lottery/LotteryHttpFlowCompletionTest.php` | Fixed |
+| ProductionHttpHardeningTest (3 cases) | Same invented bed / lottery dormitory-as-bed gap | Seed real assignable beds | `tests/Feature/Production/ProductionHttpHardeningTest.php` | Fixed |
+| LotteryBackgroundJobs / IntegrationBoundary / ProgramDraw / ResultRead / SemanticIsolation / MutationRuntimeGovernance (10 errors) | Same lottery dormitory→bed gap across helpers | Seed assignable bed inside `createDormitorySiteForRequestTests()` + idempotent bed helper | `tests/Feature/Modules/Request/support/dormitory-site.php`, `tests/Feature/Modules/Allocation/support/assignable-bed.php` | Fixed |
+| MutationRuntimePrincipalContainmentTest consumer path | Invented `dormitory_id` for `ProposedAllocationConsumer` | Use `createAssignableBedForAllocationTests()` as dormitory/bed id | `tests/Feature/Mutation/MutationRuntimePrincipalContainmentTest.php` | Fixed |
 
-| File | Change |
-| ---- | ------ |
-| `app/Integrations/Request/DormitoryReadBridge.php` | **Added** — implements `DormitoryReadContract` via `DormitoryStructureReadContract` |
-| `app/Modules/Request/Infrastructure/Adapters/DormitoryReadAdapter.php` | **Deleted** — illegal module-local cross-module adapter |
-| `app/Providers/IntegrationServiceProvider.php` | Bind `DormitoryReadContract` → `DormitoryReadBridge` |
-| `app/Modules/Request/Infrastructure/Providers/RequestServiceProvider.php` | Remove cross-module binding (composition root owns it) |
-| `tests/Architecture/architecture.php` | Register `DormitoryReadContract` in `architectureIntegrationPortClasses()` |
-| `docs/architecture/integration-layer-policy.md` | Document bridge + binding |
-| `docs/architecture/known-exceptions-registry.md` | Wording: integration ports (count no longer fixed at five) |
-
-### Test fixtures (preserve validation)
-
-| File | Change |
-| ---- | ------ |
-| `tests/Feature/Modules/Request/support/dormitory-site.php` | **Added** — `createDormitorySiteForRequestTests()` seeds a real `DormitoryModel` |
-| `tests/Pest.php` | Load dormitory-site helper |
-| `tests/Feature/Modules/Request/DormitoryReadIntegrationTest.php` | Assert bridge type; keep existence true/false cases |
-| Request / Allocation / Lottery / Mutation / Production Feature tests + HTTP helpers | Replace invented dormitory UUIDs with seeded sites where submit/create validates existence |
-
-`NullDormitoryReadAdapter` retained for explicit isolation overrides; not used as default binding.
+**Classification:** all **B) Test fixture/factory issue**. Domain assignability preserved (no Null adapter rebinding).
 
 ---
 
-## 4. Security impact assessment
+## 3. Risky tests resolution
 
-| Control | Status |
-| ------- | ------ |
-| AuthN / AuthZ / mutation principal middleware | Unchanged |
-| `siteExists` domain validation | **Preserved** (still enforced on submit / mission / family create) |
-| No allow-all / bypass / swallowed exceptions | Confirmed |
-| No test-only production backdoors | Confirmed |
+| Risky cause | Tests | Fix |
+| ----------- | ----- | --- |
+| Zero assertions: bare `app(Contract::class)` | Architecture binding checks + LotteryDrivenAllocation binding | Assert `app()->bound(...)` and concrete `::class` |
+| Zero assertions: empty exclusion `foreach` | ModuleInventoryParity exclusion tests | Assert `architectureMatrixExcludedActiveModules()->toBe([])` |
+| Zero assertions: validate without expect | MissionGroupValidator “accepts valid group” | `expect(...)->not->toThrow(...)` |
 
-Security posture is unchanged or strengthened: existence checks remain authoritative; tests now exercise the real path.
-
----
-
-## 5. Architecture compliance assessment
-
-| Rule | Outcome |
-| ---- | ------- |
-| New cross-module adapters under `app/Integrations/` | Compliant (`DormitoryReadBridge`) |
-| Bind cross-module ports in `IntegrationServiceProvider` only | Compliant |
-| No new legacy registry entries | Compliant (debt not expanded) |
-| Module Infrastructure isolation (`Request` ↛ `Dormitory`) | Compliant |
-| Domain validation not weakened | Compliant |
+Also fixed parallel bootstrap warning: removed ineffective `use Mockery;` in `RequestLifecycleHandoffTest` (kept `Mockery::type` in file namespace).
 
 ---
 
-## 6. Verification evidence
+## 4. Final test results
 
-### Targeted (architecture + primary Request/Allocation paths)
-
-```text
-php artisan test --filter="CrossModuleAdapterLocationTest|ForbiddenImportsScanTest|ModuleBoundaryTest|AllocationIntegrationBoundaryTest|DormitoryReadIntegration|PersonalRequestTest|MissionRequestTest|FamilyDirectSnapshot"
-→ passed (exit 0)
-```
-
-### Full suite
+### Sequential
 
 ```text
 php -d memory_limit=512M artisan test
-→ {"tool":"pest","result":"passed","tests":1759,"passed":1755,"assertions":4944,"skipped":4,"risky":11}
+{"tool":"pest","result":"passed","tests":1785,"passed":1781,"assertions":5074,"duration_ms":304069,"skipped":4}
+EXIT=0
 ```
 
-### Formatting
+Zero failures. Zero risky.
+
+### Parallel
 
 ```text
-php vendor/bin/pint --dirty
-→ applied unused-import / style fixes on touched tests (and pre-dirty Dormitory files in working tree)
+php -d memory_limit=512M artisan test --parallel
+{"tool":"pest","result":"passed","tests":1810,"passed":1806,"assertions":5168,"duration_ms":108338,"skipped":4}
+PARALLEL_EXIT=0
 ```
 
----
+### Quality gates
 
-## 7. Residual risks / follow-ups
-
-1. **Fixture helper uses `DormitoryModel` in Request Feature support** — matches existing Phase 4 integration test style; long-term may prefer a Dormitory Application mutation fixture API to avoid Infrastructure imports in consumer tests.
-2. **Risky tests (11)** — pre-existing Pest “risky” classifications; not introduced by this remediation.
-3. **`NullDormitoryReadAdapter`** — still available; ensure future tests that need UUID-only isolation bind it explicitly rather than inventing sites without intent.
-4. **Prior occupy-on-assign gating** (`AssignmentOccupancyMarkerPolicy`) remains in tree from an earlier fix; orthogonal to this remediation.
+| Gate | Command | Result |
+| ---- | ------- | ------ |
+| PHPStan | `php vendor/bin/phpstan analyse --no-progress` | **passed, 0 errors** |
+| Pint | `php vendor/bin/pint --test` | **Pre-existing fails** in unrelated Request DTOs (`EmployeeRequestListQueryDTO`, `PaginatedRequestSummaryListDTO`, `RequestEmployeeListFilterOptions` — line endings). Allocation unused-import files fixed. **No new Pint failures in remedited files.** |
 
 ---
 
-## Decision summary
+## 5. Files changed
 
-| Option considered | Verdict |
-| ----------------- | ------- |
-| Register adapter as legacy exception | Rejected — new debt without architecture approval |
-| Weaken / remove `siteExists` | Rejected — security/domain regression |
-| Skip failing tests | Rejected — fakes success |
-| Relocate to Integrations + seed fixtures | **Chosen** — policy-compliant, smallest blast radius, preserves validation |
+### Fixtures / helpers
+- `tests/Feature/Modules/Request/support/dormitory-site.php`
+- `tests/Feature/Modules/Allocation/support/assignable-bed.php`
+
+### Feature / mutation tests
+- `tests/Feature/Modules/CheckIn/CheckInHttpFlowCompletionTest.php`
+- `tests/Feature/Modules/Lottery/LotteryHttpFlowCompletionTest.php`
+- `tests/Feature/Production/ProductionHttpHardeningTest.php`
+- `tests/Feature/Mutation/MutationRuntimePrincipalContainmentTest.php`
+- `tests/Feature/Modules/Allocation/LotteryDrivenAllocationTest.php`
+- `tests/Feature/Modules/Allocation/RequestLifecycleHandoffTest.php`
+- (+ Pint unused-import cleanup on AllocationIntegrationBoundaryTest / RequestDrivenAllocationTest)
+
+### Architecture / unit (risky)
+- `tests/Architecture/ReportingBoundaryTest.php`
+- `tests/Architecture/AllocationBoundaryTest.php`
+- `tests/Architecture/AuditBoundaryTest.php`
+- `tests/Architecture/LotterySupplierBoundaryTest.php`
+- `tests/Architecture/NotificationBoundaryTest.php`
+- `tests/Architecture/ModuleInventoryParityTest.php`
+- `tests/Unit/Modules/Request/Domain/MissionGroupValidatorTest.php`
+
+### Docs
+- `docs/debug/test-failure-analysis-report.md`
+- `docs/debug/test-failure-remediation-report.md` (this file)
+
+**Production code:** unchanged in this remediation pass (live assignability kept).
+
+---
+
+## 6. Root causes (summary)
+
+1. **Live Spec04 assignability** (`DormitoryAssignabilityReadBridge`) requires persisted vacant beds; HTTP/Lottery fixtures still invented UUIDs (or used dormitory UUID as bed without a bed row).
+2. **Risky:** several architecture/binding tests resolved the container without assertions; empty matrix-exclusion loops performed zero assertions.
+
+---
+
+## 7. Governance impact
+
+- No domain rule weakening; no Null default rebinding.
+- Fixture alignment matches approved Integration-layer live wiring and existing Allocation helper patterns (`LotteryAllocationHttpFlowTest`).
+- No `.specify/governance` authorization reopen; test-only remediation.
+
+---
+
+## 8. Remaining blockers
+
+**None for test failures / risky.**
+
+**Noted (out of remediation scope):** full-repo `pint --test` still reports pre-existing Request DTO line-ending issues unrelated to this fix set.

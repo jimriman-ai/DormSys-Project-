@@ -17,7 +17,7 @@
 
 **Governance decision**: [`.specify/docs/decision/spec04-governance-decision.md`](../../.specify/docs/decision/spec04-governance-decision.md)
 
-**Residual implementation**: Not authorized by documentary alignment; see Product `PENDING_RESIDUAL` and Governance & Evolution Notes.
+**Residual implementation**: Remaining residuals not authorized by documentary alignment; see Product `PENDING_RESIDUAL` and Governance & Evolution Notes. **Allocation Assignability residual:** closed (`SPEC04_RESIDUAL_CLOSED`) — see [`.specify/docs/closeout/spec04-allocation-assignability-residual-closeout.md`](../../.specify/docs/closeout/spec04-allocation-assignability-residual-closeout.md).
 
 **Depends on**: spec01 Foundation (Approved)
 
@@ -259,8 +259,8 @@ Per GDR Decision 4 and `spec04-backend-closeout.md` §6, the following are ident
 | Authorization / policies / roles / guards for Dormitory surfaces | `DEFERRED_TO_FUTURE_WAVE` |
 | Livewire / Blade / UI | `DEFERRED_TO_FUTURE_WAVE` |
 | HTTP / API / controllers / FormRequests | `DEFERRED_TO_FUTURE_WAVE` |
-| Allocation ↔ Dormitory integration (`bedExists` / `isBedAssignable`, related Application Read extensions) | `DEFERRED_TO_FUTURE_WAVE` |
-| CheckIn/CheckOut ↔ Dormitory occupancy request wiring | `DEFERRED_TO_FUTURE_WAVE` |
+| Allocation ↔ Dormitory integration / Allocation Assignability (`bedExists` / `isBedAssignable`, live VACANT/RESERVED/OCCUPIED markers, Integration Null→live path) | `CLOSED` (`SPEC04_RESIDUAL_CLOSED` / `FULLY_CLOSED`; 2026-07-12) — evidence: `.specify/docs/closeout/spec04-allocation-assignability-residual-closeout.md`. Non-blocking: lottery `dormitory_id`→`bedId` test fixture debt. |
+| CheckIn/CheckOut ↔ Dormitory occupancy request wiring | `RETIRED_FROM_ACTIVE_SPEC04_TRACKING` / `CLOSED_NO_FURTHER_ACTION` (2026-07-12) — not a Spec04 executable gap; ownership Spec07 (D2); Spec07 CheckIn delivered without Dormitory coupling by design; Allocation→Dormitory markers closed via Assignability. Evidence: `.specify/docs/discovery/spec04-checkin-dormitory-residual-readiness-review.md`; `.specify/docs/reconciliation/spec04-checkin-residual-closeout-reconciliation.md`. Does **not** reopen Spec07. |
 | Workflow ownership / orchestration inside Dormitory | `DEFERRED_TO_FUTURE_WAVE` |
 | Events / listeners / jobs (unless separately approved) | `DEFERRED_TO_FUTURE_WAVE` |
 | External system adapters | `DEFERRED_TO_FUTURE_WAVE` |

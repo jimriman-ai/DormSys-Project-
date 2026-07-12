@@ -6,11 +6,11 @@ use App\Modules\Request\Domain\Exceptions\InvalidGroupRequestException;
 use App\Modules\Request\Domain\Services\MissionGroupValidator;
 
 it('accepts a valid three-member mission group', function (): void {
-    app(MissionGroupValidator::class)->validate([
+    expect(fn () => app(MissionGroupValidator::class)->validate([
         ['employeeId' => '11111111-1111-4111-8111-111111111111', 'isLeader' => true],
         ['employeeId' => '22222222-2222-4222-8222-222222222222', 'isLeader' => false],
         ['employeeId' => '33333333-3333-4333-8333-333333333333', 'isLeader' => false],
-    ]);
+    ]))->not->toThrow(InvalidGroupRequestException::class);
 });
 
 it('rejects mission groups outside the 2-20 member range', function (int $count): void {
