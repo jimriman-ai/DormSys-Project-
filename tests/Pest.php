@@ -26,6 +26,7 @@ require_once __DIR__.'/Feature/Modules/Lottery/support/mutation-principal.php';
 require_once __DIR__.'/Feature/Modules/Lottery/support/http-mutation.php';
 require_once __DIR__.'/Feature/Modules/Allocation/support/mutation-principal.php';
 require_once __DIR__.'/Feature/Modules/Allocation/support/http-mutation.php';
+require_once __DIR__.'/Feature/Modules/Allocation/support/assignable-bed.php';
 
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)

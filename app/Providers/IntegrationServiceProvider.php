@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Integrations\Allocation\ApprovedRequestReadBridge;
+use App\Integrations\Allocation\DormitoryAssignabilityReadBridge;
+use App\Integrations\Allocation\PhysicalStateSignalBridge;
 use App\Integrations\Audit\SpatieAuditPermissionReadBridge;
 use App\Integrations\CheckIn\AllocationAssignmentReadBridge;
 use App\Integrations\Reporting\AuditHistorySourceReadBridge;
@@ -13,6 +15,8 @@ use App\Integrations\Request\DormitoryReadBridge;
 use App\Integrations\Request\EmployeeEligibilityBridge;
 use App\Integrations\Request\PendingRequestReadBridge;
 use App\Modules\Allocation\Application\Contracts\Ports\ApprovedRequestReadPort;
+use App\Modules\Allocation\Application\Contracts\Ports\DormitoryReadPort;
+use App\Modules\Allocation\Application\Contracts\Ports\PhysicalStateSignalPort;
 use App\Modules\Allocation\Application\Services\ProposedAllocationConsumer;
 use App\Modules\Audit\Application\Contracts\AuditPermissionReadPort;
 use App\Modules\CheckIn\Application\Contracts\AllocationAssignmentReadPort;
@@ -29,6 +33,8 @@ final class IntegrationServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(ApprovedRequestReadPort::class, ApprovedRequestReadBridge::class);
+        $this->app->singleton(DormitoryReadPort::class, DormitoryAssignabilityReadBridge::class);
+        $this->app->singleton(PhysicalStateSignalPort::class, PhysicalStateSignalBridge::class);
         $this->app->singleton(AllocationAssignmentReadPort::class, AllocationAssignmentReadBridge::class);
         $this->app->singleton(RequestEligibilityGatewayContract::class, EmployeeEligibilityBridge::class);
         $this->app->singleton(PendingRequestReadPort::class, PendingRequestReadBridge::class);

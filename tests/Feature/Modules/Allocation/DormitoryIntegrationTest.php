@@ -22,7 +22,7 @@ uses(RefreshDatabase::class);
 it('emits integration events and physical state signals on assign and release', function (): void {
     Event::fake([AllocationAssigned::class, AllocationReleased::class]);
 
-    $bedId = UuidGenerator::uuid7();
+    $bedId = createAssignableBedForAllocationTests();
     $personId = UuidGenerator::uuid7();
 
     $port = MockeryTest::mock(PhysicalStateSignalPort::class);
@@ -56,7 +56,7 @@ it('emits integration events and physical state signals on assign and release', 
 it('occupies bed on assign when assignment policy requires occupied marker', function (): void {
     Event::fake([AllocationAssigned::class]);
 
-    $bedId = UuidGenerator::uuid7();
+    $bedId = createAssignableBedForAllocationTests();
     $personId = UuidGenerator::uuid7();
 
     $port = MockeryTest::mock(PhysicalStateSignalPort::class);

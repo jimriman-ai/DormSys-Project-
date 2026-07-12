@@ -44,7 +44,7 @@ class ReleaseAllocationTest extends TestCase
     public function it_rejects_release_when_allocation_is_already_released(): void
     {
         $personId = UuidGenerator::uuid7();
-        $bedId = UuidGenerator::uuid7();
+        $bedId = createAssignableBedForAllocationTests();
 
         $allocation = app(CreateAllocationAction::class)->execute(
             personId: $personId,
@@ -70,7 +70,7 @@ class ReleaseAllocationTest extends TestCase
     public function it_rejects_release_when_reason_is_blank_on_active_allocation(): void
     {
         $personId = UuidGenerator::uuid7();
-        $bedId = UuidGenerator::uuid7();
+        $bedId = createAssignableBedForAllocationTests();
 
         $allocation = app(CreateAllocationAction::class)->execute(
             personId: $personId,
@@ -88,7 +88,7 @@ class ReleaseAllocationTest extends TestCase
     public function it_rejects_blank_reason_before_persisting_release(): void
     {
         $personId = UuidGenerator::uuid7();
-        $bedId = UuidGenerator::uuid7();
+        $bedId = createAssignableBedForAllocationTests();
 
         $allocation = app(CreateAllocationAction::class)->execute(
             personId: $personId,

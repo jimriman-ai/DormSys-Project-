@@ -15,7 +15,7 @@ it('assigns and releases an allocation on the happy path', function (): void {
     Event::fake([AllocationCreated::class, AllocationReleased::class]);
 
     $personId = UuidGenerator::uuid7();
-    $bedId = UuidGenerator::uuid7();
+    $bedId = createAssignableBedForAllocationTests();
 
     $allocation = runAllocationMutation(fn () => app(CreateAllocationAction::class)->execute(
         personId: $personId,

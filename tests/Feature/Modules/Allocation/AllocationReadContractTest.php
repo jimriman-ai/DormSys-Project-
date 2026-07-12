@@ -9,7 +9,7 @@ use App\Shared\Infrastructure\Uuid\UuidGenerator;
 
 it('exposes hasActiveAllocation and active assignment queries via AllocationReadContract', function (): void {
     $personId = UuidGenerator::uuid7();
-    $bedId = UuidGenerator::uuid7();
+    $bedId = createAssignableBedForAllocationTests();
 
     $read = app(AllocationReadContract::class);
 

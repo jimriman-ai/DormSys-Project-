@@ -17,6 +17,8 @@ uses(RefreshDatabase::class);
 it('creates allocations from lottery proposed allocation payloads', function (): void {
     $employeeId = UuidGenerator::uuid7();
     $dormitoryId = createDormitorySiteForRequestTests();
+    // Lottery consumer still passes dormitory_id as allocation bedId; seed Spec04 bed with that id.
+    createAssignableBedForAllocationTests(id: $dormitoryId);
     $registrationId = UuidGenerator::uuid7();
     $programId = UuidGenerator::uuid7();
 

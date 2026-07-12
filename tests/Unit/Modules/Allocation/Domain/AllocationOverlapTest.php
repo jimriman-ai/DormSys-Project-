@@ -30,7 +30,7 @@ class AllocationOverlapTest extends TestCase
     public function it_allows_non_overlapping_assignments_for_the_same_person(): void
     {
         $personId = UuidGenerator::uuid7();
-        $bedId = UuidGenerator::uuid7();
+        $bedId = createAssignableBedForAllocationTests();
 
         $first = app(CreateAllocationAction::class)->execute(
             personId: $personId,
@@ -41,7 +41,7 @@ class AllocationOverlapTest extends TestCase
 
         $second = app(CreateAllocationAction::class)->execute(
             personId: $personId,
-            bedId: UuidGenerator::uuid7(),
+            bedId: createAssignableBedForAllocationTests('B2'),
             start: new DateTimeImmutable('2026-07-16', new DateTimeZone('UTC')),
             end: new DateTimeImmutable('2026-07-31', new DateTimeZone('UTC')),
         );
@@ -56,7 +56,7 @@ class AllocationOverlapTest extends TestCase
     public function it_rejects_overlapping_assignments_for_the_same_person(): void
     {
         $personId = UuidGenerator::uuid7();
-        $bedId = UuidGenerator::uuid7();
+        $bedId = createAssignableBedForAllocationTests();
 
         app(CreateAllocationAction::class)->execute(
             personId: $personId,
@@ -69,7 +69,7 @@ class AllocationOverlapTest extends TestCase
 
         app(CreateAllocationAction::class)->execute(
             personId: $personId,
-            bedId: UuidGenerator::uuid7(),
+            bedId: createAssignableBedForAllocationTests('B2'),
             start: new DateTimeImmutable('2026-07-15', new DateTimeZone('UTC')),
             end: new DateTimeImmutable('2026-08-15', new DateTimeZone('UTC')),
         );
@@ -79,7 +79,7 @@ class AllocationOverlapTest extends TestCase
     public function it_allows_overlap_after_prior_assignment_is_released(): void
     {
         $personId = UuidGenerator::uuid7();
-        $bedId = UuidGenerator::uuid7();
+        $bedId = createAssignableBedForAllocationTests();
 
         $first = app(CreateAllocationAction::class)->execute(
             personId: $personId,
@@ -95,7 +95,7 @@ class AllocationOverlapTest extends TestCase
 
         $second = app(CreateAllocationAction::class)->execute(
             personId: $personId,
-            bedId: UuidGenerator::uuid7(),
+            bedId: createAssignableBedForAllocationTests('B2'),
             start: new DateTimeImmutable('2026-07-15', new DateTimeZone('UTC')),
             end: new DateTimeImmutable('2026-08-15', new DateTimeZone('UTC')),
         );

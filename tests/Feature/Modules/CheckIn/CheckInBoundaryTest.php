@@ -51,7 +51,7 @@ it('rejects check-in when the user is not an operator', function (): void {
 it('rejects duplicate check-in on the same allocation', function (): void {
     $allocation = runAllocationMutation(fn () => app(App\Modules\Allocation\Application\Services\CreateAllocationAction::class)->execute(
         personId: UuidGenerator::uuid7(),
-        bedId: UuidGenerator::uuid7(),
+        bedId: createAssignableBedForAllocationTests(),
         start: new DateTimeImmutable('2026-08-01', new DateTimeZone('UTC')),
         end: new DateTimeImmutable('2026-08-31', new DateTimeZone('UTC')),
     ));

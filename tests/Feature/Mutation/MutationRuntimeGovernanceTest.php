@@ -158,7 +158,7 @@ it('allows system-driven allocation creation only through approved system actor 
 
     $allocation = MutationPrincipalContext::runAsSystem(fn () => app(CreateAllocationAction::class)->execute(
         personId: $personId,
-        bedId: UuidGenerator::uuid7(),
+        bedId: createAssignableBedForAllocationTests(),
         start: new DateTimeImmutable('2026-08-01', new DateTimeZone('UTC')),
         end: new DateTimeImmutable('2026-08-31', new DateTimeZone('UTC')),
     ));

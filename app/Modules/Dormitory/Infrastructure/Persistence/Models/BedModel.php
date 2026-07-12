@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
  * @property string $label
  * @property ResourceStatus $status
  * @property PhysicalOccupancyState $physical_occupancy_state
+ * @property string|null $last_signal_reference_id
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
@@ -32,6 +33,7 @@ class BedModel extends BaseModel
         'label',
         'status',
         'physical_occupancy_state',
+        'last_signal_reference_id',
     ];
 
     /**

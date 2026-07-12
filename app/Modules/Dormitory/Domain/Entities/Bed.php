@@ -12,9 +12,7 @@ use App\Modules\Dormitory\Domain\ValueObjects\BedId;
 use App\Modules\Dormitory\Domain\ValueObjects\RoomId;
 
 /**
- * Assignable physical sleeping unit. Owns bed-level status and physical occupancy.
- *
- * Allocation assignment is not physical occupancy and is not modeled here.
+ * Assignable physical sleeping unit. Owns bed-level status and allocation-time inventory markers.
  */
 final class Bed
 {
@@ -64,6 +62,61 @@ final class Bed
         $this->status = $newStatus;
     }
 
+    /**
+     * Allocation-time reserve: VACANT → RESERVED.
+     */
+    public function reserve(): void
+    {
+        if (! $this->status->allowsOccupancy()) {
+            throw new InvalidOccupancyTransition(
+                sprintf('Bed with status "%s" cannot be reserved.', $this->status->value),
+            );
+        }
+
+        if (! $this->occupancy->isVacant()) {
+            throw new InvalidOccupancyTransition(
+                sprintf('Bed with occupancy "%s" cannot be reserved.', $this->occupancy->value),
+            );
+        }
+
+        $this->occupancy = PhysicalOccupancyState::Reserved;
+    }
+
+    /**
+     * Allocation-time occupy marker: RESERVED → OCCUPIED only.
+     */
+    public function applyOccupyMarker(): void
+    {
+        if (! $this->status->allowsOccupancy()) {
+            throw new InvalidOccupancyTransition(
+                sprintf('Bed with status "%s" cannot apply occupy marker.', $this->status->value),
+            );
+        }
+
+        if (! $this->occupancy->isReserved()) {
+            throw new InvalidOccupancyTransition(
+                'Occupy marker requires RESERVED inventory state.',
+            );
+        }
+
+        $this->occupancy = PhysicalOccupancyState::Occupied;
+    }
+
+    /**
+     * Allocation-time release: RESERVED|OCCUPIED → VACANT.
+     */
+    public function releaseInventoryMarker(): void
+    {
+        if ($this->occupancy->isVacant()) {
+            throw new InvalidOccupancyTransition('Vacant bed cannot release inventory marker.');
+        }
+
+        $this->occupancy = PhysicalOccupancyState::Vacant;
+    }
+
+    /**
+     * Structure-mutation occupancy start (Vacant → Occupied). Reserved uses applyOccupyMarker.
+     */
     public function startOccupancy(): void
     {
         if (! $this->status->allowsOccupancy()) {
@@ -74,6 +127,12 @@ final class Bed
 
         if ($this->occupancy->isOccupied()) {
             throw new InvalidOccupancyTransition('Occupied bed cannot start occupancy again.');
+        }
+
+        if ($this->occupancy->isReserved()) {
+            throw new InvalidOccupancyTransition(
+                'Reserved bed cannot start structure occupancy; use occupy marker path.',
+            );
         }
 
         $this->occupancy = PhysicalOccupancyState::Occupied;

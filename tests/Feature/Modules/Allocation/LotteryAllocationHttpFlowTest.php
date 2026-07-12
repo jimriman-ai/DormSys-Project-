@@ -33,6 +33,8 @@ it('persists lottery-sourced allocations from http draw using frozen snapshot wi
     authenticateLotteryHttpUser($operator['identity']);
 
     $dormitoryId = createDormitorySiteForRequestTests();
+    // Lottery draw still allocates against dormitory_id as bedId; seed Spec04 bed with that id.
+    createAssignableBedForAllocationTests(id: $dormitoryId);
 
     $program = $this->postJson(lotteryHttpCreateProgramUrl(), [
         'title' => 'Allocation Intake Program',

@@ -5,18 +5,24 @@ declare(strict_types=1);
 namespace App\Modules\Dormitory\Domain\Enums;
 
 /**
- * Physical occupancy of a bed.
+ * Allocation-time inventory markers for a bed (Spec04-owned).
  *
- * Vacant/Occupied only — Allocation assignment/reservation is not physical occupancy.
+ * VACANT / RESERVED / OCCUPIED. Spec07 owns check-in / resident-presence truth separately.
  */
 enum PhysicalOccupancyState: string
 {
     case Vacant = 'vacant';
+    case Reserved = 'reserved';
     case Occupied = 'occupied';
 
     public function isVacant(): bool
     {
         return $this === self::Vacant;
+    }
+
+    public function isReserved(): bool
+    {
+        return $this === self::Reserved;
     }
 
     public function isOccupied(): bool

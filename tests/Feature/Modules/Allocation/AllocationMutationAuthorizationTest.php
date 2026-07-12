@@ -49,7 +49,7 @@ it('allows allocation create with an authorized actor', function (): void {
 
     $allocation = withAllocationMutationActor(fn () => app(CreateAllocationAction::class)->execute(
         personId: UuidGenerator::uuid7(),
-        bedId: UuidGenerator::uuid7(),
+        bedId: createAssignableBedForAllocationTests(),
         start: new DateTimeImmutable('2026-08-01', new DateTimeZone('UTC')),
         end: new DateTimeImmutable('2026-08-31', new DateTimeZone('UTC')),
     ), $actorId);
@@ -89,7 +89,7 @@ it('denies allocation release without a mutation principal', function (): void {
     $actorId = createAllocationMutationActor();
     $allocation = withAllocationMutationActor(fn () => app(CreateAllocationAction::class)->execute(
         personId: UuidGenerator::uuid7(),
-        bedId: UuidGenerator::uuid7(),
+        bedId: createAssignableBedForAllocationTests(),
         start: new DateTimeImmutable('2026-08-01', new DateTimeZone('UTC')),
         end: new DateTimeImmutable('2026-08-31', new DateTimeZone('UTC')),
     ), $actorId);
@@ -104,7 +104,7 @@ it('allows allocation release with an authorized actor', function (): void {
     $actorId = createAllocationMutationActor();
     $allocation = withAllocationMutationActor(fn () => app(CreateAllocationAction::class)->execute(
         personId: UuidGenerator::uuid7(),
-        bedId: UuidGenerator::uuid7(),
+        bedId: createAssignableBedForAllocationTests(),
         start: new DateTimeImmutable('2026-08-01', new DateTimeZone('UTC')),
         end: new DateTimeImmutable('2026-08-31', new DateTimeZone('UTC')),
     ), $actorId);

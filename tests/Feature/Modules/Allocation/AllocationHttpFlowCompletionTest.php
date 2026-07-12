@@ -30,7 +30,7 @@ describe('http manual allocation flow', function (): void {
         authenticateAllocationHttpUser($operator['identity']);
 
         $personId = UuidGenerator::uuid7();
-        $bedId = UuidGenerator::uuid7();
+        $bedId = createAssignableBedForAllocationTests();
 
         $created = $this->postJson(allocationHttpUrl(), [
             'personId' => $personId,
@@ -106,7 +106,7 @@ describe('http domain failures', function (): void {
         $personId = UuidGenerator::uuid7();
         $created = $this->postJson(allocationHttpUrl(), [
             'personId' => $personId,
-            'bedId' => UuidGenerator::uuid7(),
+            'bedId' => createAssignableBedForAllocationTests(),
             'startDate' => '2026-08-01',
             'endDate' => '2026-08-31',
         ])->assertCreated()
@@ -130,14 +130,14 @@ describe('http domain failures', function (): void {
 
         $this->postJson(allocationHttpUrl(), [
             'personId' => $personId,
-            'bedId' => UuidGenerator::uuid7(),
+            'bedId' => createAssignableBedForAllocationTests(),
             'startDate' => '2026-08-01',
             'endDate' => '2026-08-31',
         ])->assertCreated();
 
         $this->postJson(allocationHttpUrl(), [
             'personId' => $personId,
-            'bedId' => UuidGenerator::uuid7(),
+            'bedId' => createAssignableBedForAllocationTests('B2'),
             'startDate' => '2026-08-15',
             'endDate' => '2026-09-15',
         ])->assertConflict()

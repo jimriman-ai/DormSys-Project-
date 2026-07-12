@@ -45,7 +45,7 @@ it('round-trips request read assign dormitory signal and read contract', functio
     );
 
     $dormitoryId = createDormitorySiteForRequestTests();
-    $bedId = UuidGenerator::uuid7();
+    $bedId = createAssignableBedForAllocationTests();
 
     $draft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),

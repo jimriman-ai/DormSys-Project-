@@ -46,7 +46,7 @@ function createApprovedRequestForLifecycleHandoffTest(): array
     );
 
     $dormitoryId = createDormitorySiteForRequestTests();
-    $bedId = UuidGenerator::uuid7();
+    $bedId = createAssignableBedForAllocationTests();
 
     $draft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
