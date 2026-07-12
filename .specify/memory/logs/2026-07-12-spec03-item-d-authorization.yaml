@@ -1,0 +1,6 @@
+prompt_id: batch-b-spec03-item-d-authorization
+recorded_at: 2026-07-12T15:54:00+03:30
+work_item: spec03-item-d-status-sync
+stage: authorization
+tags: [SAFE_PROGRESS, DEFERRED]
+summary: "Item D authorized for spec.md/tasks.md/catalog status sync and optional SPEC03_CLOSED handoff; T049–T052 must remain deferred, not completed."

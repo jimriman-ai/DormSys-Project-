@@ -1,0 +1,6 @@
+prompt_id: batch-b-spec03-item-a-authorization
+recorded_at: 2026-07-12T15:40:00+03:30
+work_item: spec03-item-a-doc-opt
+stage: authorization
+tags: [SAFE_PROGRESS]
+summary: "Item A DOC-OPT authorized as sole next Spec03 closure execution; no plan contradiction; Items B–D and frozen UI/Dependent/Allocation remain unauthorized."

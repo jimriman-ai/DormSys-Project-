@@ -1,0 +1,6 @@
+prompt_id: batch-b-spec03-item-a-execution
+recorded_at: 2026-07-12T15:43:00+03:30
+work_item: spec03-item-a-doc-opt
+stage: execution
+tags: [CLOSED, SAFE_PROGRESS]
+summary: "Item A DOC-OPT completed: eligibility and internal-read-ports contracts synced to runtime string/excludingRequestId signature and Null ActiveAllocation vs live PendingRequest bindings; no code or status artifacts changed."

@@ -1,14 +1,23 @@
-# Internal Ports: BR-01 Partial Rules (Wave 1A stubs)
+# Internal Ports: BR-01 Partial Rules
 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Spec:** spec03 Employee Context  
-**Scope:** **Internal** to Employee module — not public cross-module API
+**Scope:** **Internal** to Employee module application ports — not a public cross-module API surface beyond the port interfaces themselves
+
+---
+
+## Changelog
+
+| Version | Note |
+| ------- | ---- |
+| **1.1.0** | **DOC-OPT (2026-07-12).** Syncs PendingRequest signature and production bindings to runtime: Null ActiveAllocation in Employee provider; live PendingRequest bridge in Integration composition root. Dual Null Wave 1A binding is historical only. |
+| 1.0.0 | Wave 1A — dual Null stub narrative (historical). |
 
 ---
 
 ## Purpose
 
-BR-01 requires checks against Allocation and Request state. Those modules are not implemented in Wave 1A. Employee eligibility calculator depends on **ports** with **stub adapters** until spec05/spec07 supply real implementations.
+BR-01 requires checks against Allocation and Request state. Employee eligibility depends on **ports**. Production bindings are **not** both Null: ActiveAllocation remains Null until an authorized live Allocation adapter; PendingRequest is bound to a live Request bridge.
 
 ---
 
@@ -25,9 +34,11 @@ interface ActiveAllocationReadPort
 }
 ```
 
-**Wave 1A adapter:** `Infrastructure\Adapters\NullActiveAllocationReadAdapter` — always returns `false`.
+**Current adapter:** `Infrastructure\Adapters\NullActiveAllocationReadAdapter` — always returns `false`.
 
-**Future:** spec07 Allocation module provides `AllocationReadContract` adapter implementing this port (or replaces binding).
+**Bound in:** `EmployeeServiceProvider`.
+
+**Future:** authorized Spec07 / IRG path may replace the Null adapter with a live Allocation read adapter.
 
 ---
 
@@ -36,27 +47,34 @@ interface ActiveAllocationReadPort
 ```php
 namespace App\Modules\Employee\Application\Contracts\Ports;
 
-use App\Modules\Employee\Domain\ValueObjects\EmployeeId;
-
 interface PendingRequestReadPort
 {
-    public function hasPendingRequest(EmployeeId $employeeId): bool;
+    public function hasPendingRequest(
+        string $employeeId,
+        ?string $excludingRequestId = null,
+    ): bool;
 }
 ```
 
-**Wave 1A adapter:** `Infrastructure\Adapters\NullPendingRequestReadAdapter` — always returns `false`.
+**Current adapter:** `App\Integrations\Request\PendingRequestReadBridge` — live Request read (not Null).
 
-**Future:** spec05 Request module provides real adapter.
+**Bound in:** `IntegrationServiceProvider` (composition root).
+
+**Historical:** Wave 1A draft described `NullPendingRequestReadAdapter` and `hasPendingRequest(EmployeeId)` — **not** the current production binding or signature. Do not reintroduce Null PendingRequest as the production bind under Spec03 DOC-OPT.
 
 ---
 
-## Binding (Wave 1A)
+## Binding (current production)
 
 ```php
 // EmployeeServiceProvider
 $this->app->bind(ActiveAllocationReadPort::class, NullActiveAllocationReadAdapter::class);
-$this->app->bind(PendingRequestReadPort::class, NullPendingRequestReadAdapter::class);
+
+// IntegrationServiceProvider (composition root)
+$this->app->singleton(PendingRequestReadPort::class, PendingRequestReadBridge::class);
 ```
+
+**Wave 1A dual-Null binding in EmployeeServiceProvider alone is obsolete** and must not be treated as the only production path.
 
 ---
 
@@ -64,9 +82,9 @@ $this->app->bind(PendingRequestReadPort::class, NullPendingRequestReadAdapter::c
 
 | Test | Approach |
 |------|----------|
-| Default stubs | Active employee → eligible |
-| Allocation blocking | Bind mock port returning `true` → `active_allocation_exists` |
-| Request blocking | Bind mock port returning `true` → `pending_request_exists` |
+| Default production-like | Active employee + Null allocation + no pending → eligible |
+| Allocation blocking | Bind mock `ActiveAllocationReadPort` returning `true` → `active_allocation_exists` |
+| Request blocking | Bind mock `PendingRequestReadPort` returning `true` → `pending_request_exists` |
 
 ---
 

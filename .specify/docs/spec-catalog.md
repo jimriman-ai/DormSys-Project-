@@ -1,8 +1,8 @@
 # DormSys Spec Catalog
 
-**Version:** 1.0.11 (spec08 nomination)  
+**Version:** 1.0.12 (spec03 closure)  
 **Status:** Hard Freeze — Operational  
-**Last Updated:** 1405/04/10 | 2026/07/01  
+**Last Updated:** 1405/04/21 | 2026/07/12  
 **Related Documents:** [`catalog-decisions.md`](catalog-decisions.md), [`context-map.md`](context-map.md), [`playbook/specification-playbook.md`](playbook/specification-playbook.md)
 
 ---
@@ -102,7 +102,7 @@ Status columns below are informational summaries only. They do not define govern
 | Spec | Status after freeze |
 | ---- | ------------------- |
 | `spec02` Identity & Access | **Frozen — Wave 1A Complete** (2026-06-26) |
-| `spec03` Employee Context | **MVP Implemented — Wave 1A** (US1 / T001–T026a) · **Wave 1B Completed (US2)** (T027–T034) |
+| `spec03` Employee Context | **`SPEC03_CLOSED`** (2026-07-12) — US1–US4 Batch 1b + DOC-OPT + Phase 8; Phase 7 EmployeeRead **deferred** |
 | `spec04` Accommodation Resource | **Planning Authorized** (implementation not authorized) |
 | `spec05` Request Management | **Implementation Authorized** (T001–T052; tag `spec05-design-approved`) |
 | `spec07` Allocation & Occupancy | **Fully Closed** — T001–T074 (Wave 1A + Wave 1B) |
@@ -125,9 +125,9 @@ Any change to a closed OQ or bounded-context boundary requires a new entry in `c
 | ------- | ---- | ------- | ---------------------------- | ------------ | ------ | -------------- | -------------- |
 | `spec01` | **Foundation** | Bootstrap Laravel 13 application, modular monolith structure, shared kernel, database baseline, testing, quality gates, local environment, and CI foundation | Platform Foundation | None | Approved | Explicit | None |
 | `spec02` | **Identity & Access** | Identity accounts, roles, permissions, and access-control baseline for the platform | `Identity` | `spec01` | **Frozen — Wave 1A Complete** | Explicit | OA-02-01 auth UX deferred. **Delivered:** User lifecycle, RBAC, `IdentityUserReadContract`, boundary tests. Livewire admin deferred. |
-| `spec03` | **Employee Context** | Employee profiles, departments, and dependent records as an organizational domain context | `Employee` | `spec01`, `spec02` | **MVP Implemented — Wave 1A**; **Wave 1B Completed (US2)** (T027–T034; US3+ hold) | Explicit | **Delivered (US1):** Employee create, `identity_id` CD-012 boundary, `IdentityUserReadContract` consumer, BT-01–BT-05. **Delivered (US2):** Department create/deactivate, employee assignment, R-17 inactive guard. **Hold:** US3, US4, T035+. |
+| `spec03` | **Employee Context** | Employee profiles, departments, and dependent records as an organizational domain context | `Employee` | `spec01`, `spec02` | **`SPEC03_CLOSED`** (2026-07-12) | Explicit | **Delivered:** US1 (T001–T026a), US2 (T027–T034), US3 (T035–T040), US4 Batch 1b eligibility, Item A DOC-OPT, Phase 8 (T053–T058). **Deferred at Spec03 close:** Phase 7 EmployeeRead (T049–T052); Scenario 9 N/A. **Not required for close:** Request Dependent live, live Allocation, Main UI. Evidence: [`handoff/spec03-closure-handoff.md`](handoff/spec03-closure-handoff.md). |
 | `spec04` | **Accommodation Resource** | Dormitories, buildings, rooms, beds, and physical accommodation capacity/availability structures | `Dormitory` | `spec01` | **Planning Authorized** | Explicit | **Open (planning):** building/floor hierarchy — resolve during spec04 authoring. **Decided (CD-014):** owns physical room/bed occupancy state; Allocation drives updates via events. **Hold:** implementation until separate authorization. |
-| `spec05` | **Request Management** | Accommodation request submission, request lifecycle, and request-level approval state/history | `Request` | `spec01`, `spec02`, `spec03` | **Implementation Authorized** | Explicit + Inferred | **Authorized:** T001–T052 per [`handoff/spec05-implementation-authorization.md`](handoff/spec05-implementation-authorization.md). Tag `spec05-design-approved` @ `6ce0e94`; tasks @ `61e2a48`. **CD-009/010/013** frozen. **Hold:** spec03 US3 for Wave 1B; spec04 impl unchanged. |
+| `spec05` | **Request Management** | Accommodation request submission, request lifecycle, and request-level approval state/history | `Request` | `spec01`, `spec02`, `spec03` | **Implementation Authorized** | Explicit + Inferred | **Authorized:** T001–T052 per [`handoff/spec05-implementation-authorization.md`](handoff/spec05-implementation-authorization.md). Tag `spec05-design-approved` @ `6ce0e94`; tasks @ `61e2a48`. **CD-009/010/013** frozen. **spec03:** closed (`SPEC03_CLOSED`); EmployeeRead deferred Post-Spec03. **Hold:** spec04 impl unchanged. |
 | `spec06` | **Lottery Selection** | Lottery programs, registrations, draw execution, scoring, and result production | `Lottery` | `spec01`, `spec05` | Planned | Explicit + Inferred | **Decided (CD-011):** Lottery owns all lottery rules, lifecycle, and results; emits proposed allocations to Allocation. |
 | `spec07` | **Allocation & Occupancy** | Assign rooms/beds (Allocation BC); coordinate physical occupancy (Dormitory) and operational stay transitions (CheckIn/CheckOut) | `Allocation`, `Dormitory`, `CheckIn/CheckOut` (spec07 program) | `spec01`, `spec04`, `spec05`, `spec06` | **Fully Closed — Implementation Complete** | Explicit + Inferred | **Delivered:** T001–T074 per [`handoff/spec07-implementation-authorization-wave1b.md`](handoff/spec07-implementation-authorization-wave1b.md). **CD-014/CD-015** frozen. **Active execution scope:** none. **Hold:** spec04 impl; Voucher/Reporting/Notification. |
 | `spec08` | **External Accommodation** | Voucher/external-stay handling when internal capacity cannot satisfy accommodation demand | `Voucher` | `spec01`, `spec05`, `spec06` | **Nominated for Authorization** | Inferred | **Nominated:** [`handoff/spec08-nomination-record.md`](handoff/spec08-nomination-record.md). **Decided (CD-016):** Voucher owns eligibility evaluation and issuance lifecycle. **Execution:** NOT AUTHORIZED. |
@@ -208,6 +208,13 @@ This catalog is the controlling operational reference for downstream `spec.md`, 
 
 ---
 ## Change Log
+
+### 1.0.12 — 2026-07-12 (spec03 Batch B closure)
+
+- **spec03 closed** — `SPEC03_CLOSED`; see [`handoff/spec03-closure-handoff.md`](handoff/spec03-closure-handoff.md).
+- Live status rows: remove false US3+/US4 hold; record US1–US4 Batch 1b + DOC-OPT + Phase 8 delivered.
+- Phase 7 EmployeeRead (T049–T052) **deferred at Spec03 close** (not delivered).
+- Batch B governance: Items A+C completed; Item B deferred; Item D status sync.
 
 ### 1.0.11 — 2026-07-01 (spec08 nomination)
 

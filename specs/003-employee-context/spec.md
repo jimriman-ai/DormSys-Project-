@@ -4,9 +4,9 @@
 
 **Created**: 2026-06-26
 
-**Status**: Wave 1A (MVP) complete · US2 authorized (T027–T034) · US3+ not authorized
+**Status**: **`SPEC03_CLOSED`** (2026-07-12) — US1–US4 Batch 1b delivered · Item A DOC-OPT complete · Phase 8 polish (T053–T058) complete · Phase 7 EmployeeRead (T049–T052) **deferred at Spec03 close** (not delivered)
 
-**Catalog**: spec03 — **Authorized — Wave 1A** (Hard Freeze v1.0.0)
+**Catalog**: spec03 — **Closed** (Hard Freeze v1.0.0 baseline; Batch B Spec Completion Wave)
 
 **Depends on**: spec01 Foundation (Approved), spec02 Identity & Access (**Frozen — Wave 1A Complete**)
 
@@ -143,6 +143,8 @@ As the Request bounded context (future consumer), I need Employee to compute whe
 ### OA-03-03 — Eligibility inputs (DEFERRED to plan)
 
 Full BR-01 inputs (active allocation check) may stub allocation read interface until spec07; Wave 1A delivers computation skeleton + employee-side rules.
+
+**Closure note (2026-07-12):** US4 Batch 1b delivered eligibility supplier with `NullActiveAllocationReadAdapter` + live `PendingRequestReadPort` binding. Live Allocation adapter and Request Dependent live integration remain **out of Spec03 closed deliverable**. Spec03 Phase 7 EmployeeRead (T049–T052 / `EmployeeReadContract`) is **deferred at Spec03 close**. It is **not** part of the Spec03 closed deliverable. Spec03 closure does **not** claim EmployeeRead exists. Future delivery requires a new selected work item and Implementation Authorization. Quickstart Scenario 9 is **N/A — deferred**.
 
 ---
 

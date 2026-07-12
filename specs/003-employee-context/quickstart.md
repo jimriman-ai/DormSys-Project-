@@ -94,37 +94,39 @@ Capture the returned **user UUID** — used as `identity_id` below.
 
 **Proves:** FR-007, SC-004
 
+Runtime signature (accepted consumer truth / DOC-OPT v1.1.0):
+
 ```php
 $contract = app(\App\Modules\Employee\Application\Contracts\EmployeeEligibilityContract::class);
-$result = $contract->computeRequestEligibility($employeeId);
+$result = $contract->computeRequestEligibility($employeeIdString, $excludingRequestId);
 
-// Active employee + stub ports → eligible
+// Active employee + Null ActiveAllocation + no pending → eligible
 $result->eligible; // true
 
 // After deactivate employee → employee_inactive reason
 ```
 
-**Stub check:** With mock `ActiveAllocationReadPort` returning `true`, assert `active_allocation_exists` reason code.
+**Port checks:** Mock `ActiveAllocationReadPort` → `true` asserts `active_allocation_exists`; mock `PendingRequestReadPort` → `true` asserts `pending_request_exists`.  
+Feature evidence: `tests/Feature/Modules/Employee/EmployeeEligibilityContractTest.php`.
 
 ---
 
 ## Scenario 8 — Architecture boundary (BT-05)
 
 ```powershell
-docker compose exec laravel.test php artisan test tests/Architecture
-docker compose exec laravel.test php artisan test tests/Feature/Modules/Employee/EmployeeIdentityBoundaryTest.php
+php artisan test tests/Architecture/EmployeeSupplierBoundaryTest.php
+php artisan test tests/Feature/Modules/Employee/EmployeeIdentityBoundaryTest.php
 ```
 
 **Expected:** Employee module does not import `App\Modules\Identity\Infrastructure\*`.
 
 ---
 
-## Scenario 9 — Supplier read contract (optional)
+## Scenario 9 — Supplier read contract
 
-```php
-$read = app(\App\Modules\Employee\Application\Contracts\EmployeeReadContract::class);
-$read->findEmployeeSummary($employeeId); // EmployeeSummaryDTO
-```
+**Status: N/A — deferred at Spec03 close** (`SPEC03_ITEM_B_DEFERRED`).
+
+`EmployeeReadContract` / T049–T052 are **not** part of the Spec03 closed deliverable. Do **not** treat this scenario as executable Spec03 Phase 8 DoD. Future delivery requires separate Implementation Authorization.
 
 ---
 

@@ -1,0 +1,6 @@
+prompt_id: batch-b-spec03-readiness-review
+recorded_at: 2026-07-12T15:28:00+03:30
+work_item: spec03-batch-b-readiness
+stage: readiness-review
+tags: [EVIDENCE_CONFLICT, DEFERRED]
+summary: "Spec03 tasks.md Phase 6 and spec.md status still mark US3+/US4 open while US3 and US4 Batch 1b completion handoffs plus Employee module code show those slices delivered; employee-context-ui remains a closed separate UI feature outside Spec03 completion."

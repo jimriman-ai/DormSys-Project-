@@ -1,0 +1,6 @@
+prompt_id: batch-b-spec03-closure-plan
+recorded_at: 2026-07-12T15:34:00+03:30
+work_item: spec03-batch-b-closure-plan
+stage: closure-planning
+tags: [DEFERRED, SAFE_PROGRESS]
+summary: "Spec03 closure plan sequences DOC-OPT → optional EmployeeRead → Phase 8 → status sync; only EmployeeRead is deferrable without blocking SPEC03_CLOSED when deferral is recorded in status artifacts."

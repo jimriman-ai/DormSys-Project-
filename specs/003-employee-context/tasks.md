@@ -12,22 +12,22 @@
 - **CD-013:** Eligibility computation in Employee; BR-01 allocation/request via **stub ports** until spec05/spec07
 - **No** Request, Allocation, or login UI tasks
 
-**Status**: Wave 1A — **MVP complete (T001–T026a)** — Wave 1B — **complete (T027–T034)** · Wave US3 — **complete (T035–T040)** · US4+ on hold
+**Status**: **`SPEC03_CLOSED`** (2026-07-12) — Wave 1A MVP (T001–T026a) · Wave 1B US2 (T027–T034) · US3 (T035–T040) · US4 Batch 1b · Item A DOC-OPT · Phase 8 (T053–T058) **complete** · Phase 7 EmployeeRead (T049–T052) **deferred at Spec03 close**
 
 ---
 
 ## Phase Summary
 
-| Phase | Purpose | Task IDs | MVP? |
-|-------|---------|----------|------|
-| 1 — Setup | Module paths, provider wiring | T001–T004 | Yes |
-| 2 — Foundational | VOs, enums, exceptions, core migrations | T005–T014 | Yes |
-| 3 — US1 (P1) | Employee + `identity_id` boundary + MVP gate | T015–T026a | Yes |
+| Phase | Purpose | Task IDs | Closure disposition |
+|-------|---------|----------|---------------------|
+| 1 — Setup | Module paths, provider wiring | T001–T004 | **Complete** |
+| 2 — Foundational | VOs, enums, exceptions, core migrations | T005–T014 | **Complete** |
+| 3 — US1 (P1) | Employee + `identity_id` boundary + MVP gate | T015–T026a | **Complete** |
 | 4 — US2 (P2) | Department CRUD + assignment | T027–T034 | **Wave 1B — Complete** |
 | 5 — US3 (P2) | Dependent CRUD (CD-009) | T035–T040 | **US3 Batch 1 — Complete** |
-| 6 — US4 (P3) | Eligibility supplier + stub ports | T041–T048 | No |
-| 7 — Supplier read | `EmployeeReadContract` | T049–T052 | No |
-| 8 — Polish | BT-05 arch, PHPStan, quickstart | T053–T058 | Yes (quality) |
+| 6 — US4 (P3) | Eligibility supplier + stub ports | T041–T048 | **US4 Batch 1b — Delivered** (see Phase 6 notes; Null Pending / signature rewrite not claimed) |
+| 7 — Supplier read | `EmployeeReadContract` | T049–T052 | **Deferred at Spec03 close** (Post-Spec03) |
+| 8 — Polish | BT-05 arch, PHPStan, quickstart | T053–T058 | **Complete** (Item C) |
 
 **Total tasks:** 60 (MVP: T001–T026a)
 
@@ -186,69 +186,81 @@ Run after T026a before starting Wave 1B; gate **passed** at post-MVP checkpoint:
 
 ---
 
-## Phase 6: User Story 4 — Eligibility Computation (Priority: P3)
+## Phase 6: User Story 4 — Eligibility Computation (Priority: P3) — US4 Batch 1b Delivered
 
 **Goal**: `EmployeeEligibilityContract` supplier API with BR-01 partial rules and stub ports (CD-013).
 
 **Independent Test**: Active employee → eligible; inactive → `employee_inactive`; mock allocation port `true` → `active_allocation_exists`.
 
+**Closure notes (2026-07-12):** Delivered per [`spec03-us4-batch1b-completion-handoff.md`](../../.specify/docs/handoff/spec03-us4-batch1b-completion-handoff.md). Item A DOC-OPT synced eligibility/port contract markdown (v1.1.0). **Not claimed as delivered:** Null `PendingRequestReadAdapter`; `EmployeeId`-only signature rewrite on T046.
+
 ### Contracts & DTOs
 
-- [ ] T041 [US4] Create `EligibilityReasonCode` enum in `app/Modules/Employee/Domain/Enums/EligibilityReasonCode.php` per `contracts/employee-eligibility-service.md`
-- [ ] T042 [US4] Create `EligibilityResultDTO` in `app/Modules/Employee/Application/DTOs/EligibilityResultDTO.php`
-- [ ] T043 [US4] Create port interfaces `ActiveAllocationReadPort` and `PendingRequestReadPort` in `app/Modules/Employee/Application/Contracts/Ports/` per `contracts/internal-read-ports.md`
+- [x] T041 [US4] Create `EligibilityReasonCode` enum in `app/Modules/Employee/Domain/Enums/EligibilityReasonCode.php` per `contracts/employee-eligibility-service.md`
+- [x] T042 [US4] Create `EligibilityResultDTO` in `app/Modules/Employee/Application/DTOs/EligibilityResultDTO.php` — present prior to Batch 1b; not recreated
+- [x] T043 [US4] Create port interfaces `ActiveAllocationReadPort` and `PendingRequestReadPort` in `app/Modules/Employee/Application/Contracts/Ports/` per `contracts/internal-read-ports.md` — Batch 1b delivered `ActiveAllocationReadPort`; `PendingRequestReadPort` pre-existed (live adapter path; Null Pending not introduced)
 
 ### Stub adapters & domain calculator
 
-- [ ] T044 [US4] Create `NullActiveAllocationReadAdapter` in `app/Modules/Employee/Infrastructure/Adapters/NullActiveAllocationReadAdapter.php` and `NullPendingRequestReadAdapter` in `app/Modules/Employee/Infrastructure/Adapters/NullPendingRequestReadAdapter.php` — always return `false`
-- [ ] T045 [US4] Implement `EligibilityCalculator` in `app/Modules/Employee/Domain/Services/EligibilityCalculator.php` — evaluate employee active + port checks; return `EligibilityResultDTO` with stable reason codes
+- [x] T044-NA [US4] Create `NullActiveAllocationReadAdapter` in `app/Modules/Employee/Infrastructure/Adapters/NullActiveAllocationReadAdapter.php` — always return `false` (**Batch 1b**)
+- [ ] T044-NP [US4] `NullPendingRequestReadAdapter` — **not delivered** (out of Batch 1b; live PendingRequest binding retained)
+- [x] T045 [US4] Implement `EligibilityCalculator` in `app/Modules/Employee/Domain/Services/EligibilityCalculator.php` — evaluate employee active + port checks; return `EligibilityResultDTO` with stable reason codes
 
 ### Supplier service
 
-- [ ] T046 [US4] Create `EmployeeEligibilityContract` in `app/Modules/Employee/Application/Contracts/EmployeeEligibilityContract.php` per `contracts/employee-eligibility-service.md`
-- [ ] T047 [US4] Implement `EmployeeEligibilityService` in `app/Modules/Employee/Application/Services/EmployeeEligibilityService.php` and bind contract + stub ports in `app/Modules/Employee/Infrastructure/Providers/EmployeeServiceProvider.php`
+- [x] T046 [US4] Create `EmployeeEligibilityContract` in `app/Modules/Employee/Application/Contracts/EmployeeEligibilityContract.php` per `contracts/employee-eligibility-service.md` — contract present; **EmployeeId-only signature rewrite not delivered**
+- [x] T047 [US4] Implement `EmployeeEligibilityService` in `app/Modules/Employee/Application/Services/EmployeeEligibilityService.php` and bind contract + stub ports in `app/Modules/Employee/Infrastructure/Providers/EmployeeServiceProvider.php` — Batch 1b gap-fill (`T047-AA`); runtime signature `computeRequestEligibility(string $employeeId, ?string $excludingRequestId = null)`
 
 ### Tests
 
-- [ ] T048 [US4] Feature test `tests/Feature/Modules/Employee/EmployeeEligibilityContractTest.php` — active eligible; inactive ineligible; bind mock `ActiveAllocationReadPort` returning `true` → `active_allocation_exists`; bind mock `PendingRequestReadPort` → `pending_request_exists`
+- [x] T048 [US4] Feature test `tests/Feature/Modules/Employee/EmployeeEligibilityContractTest.php` — active eligible; inactive ineligible; bind mock `ActiveAllocationReadPort` returning `true` → `active_allocation_exists`; bind mock `PendingRequestReadPort` → `pending_request_exists`
+
+- [x] DOC-OPT Editorial sync of Spec03 eligibility/port contract markdown — **Item A complete** (`.specify/governance/batch-b.spec03-item-a-execution-report.md`)
 
 **Checkpoint**: US4 acceptance scenarios pass; quickstart Scenario 7 pass; SC-004 satisfied.
 
 ---
 
-## Phase 7: Supplier Read Contract (downstream prep)
+## Phase 7: Supplier Read Contract (downstream prep) — Deferred at Spec03 Close (Post-Spec03)
 
 **Goal**: Optional `EmployeeReadContract` — mirror Identity supplier pattern for spec05.
 
 **Independent Test**: `employeeExists`, `isEmployeeActive`, `findEmployeeSummary` — no PII beyond summary DTO.
 
-- [ ] T049 Create `EmployeeSummaryDTO` in `app/Modules/Employee/Application/DTOs/EmployeeSummaryDTO.php` per `contracts/employee-read-service.md`
-- [ ] T050 Create `EmployeeReadContract` in `app/Modules/Employee/Application/Contracts/EmployeeReadContract.php`
-- [ ] T051 Implement `EmployeeReadService` in `app/Modules/Employee/Application/Services/EmployeeReadService.php` delegating to `EmployeeRepository` inside module only
-- [ ] T052 [P] Feature test `tests/Feature/Modules/Employee/EmployeeReadContractTest.php` — exists, active, summary, unknown id; bind in `EmployeeServiceProvider.php`
+**Deferral (canonical — Item B):** Spec03 Phase 7 EmployeeRead (T049–T052 / `EmployeeReadContract`) is **deferred at Spec03 close**. It is **not** part of the Spec03 closed deliverable. Spec03 closure does **not** claim EmployeeRead exists. Future delivery requires a new selected work item and Implementation Authorization. Quickstart Scenario 9 is **N/A — deferred**.
 
-**Checkpoint**: quickstart Scenario 9 pass.
+Evidence: `.specify/governance/batch-b.spec03-item-b-resolution.md` (`SPEC03_ITEM_B_DEFERRED`).
+
+- [ ] T049 Create `EmployeeSummaryDTO` in `app/Modules/Employee/Application/DTOs/EmployeeSummaryDTO.php` per `contracts/employee-read-service.md` — **Deferred / Post-Spec03**
+- [ ] T050 Create `EmployeeReadContract` in `app/Modules/Employee/Application/Contracts/EmployeeReadContract.php` — **Deferred / Post-Spec03**
+- [ ] T051 Implement `EmployeeReadService` in `app/Modules/Employee/Application/Services/EmployeeReadService.php` delegating to `EmployeeRepository` inside module only — **Deferred / Post-Spec03**
+- [ ] T052 [P] Feature test `tests/Feature/Modules/Employee/EmployeeReadContractTest.php` — exists, active, summary, unknown id; bind in `EmployeeServiceProvider.php` — **Deferred / Post-Spec03**
+
+**Checkpoint**: quickstart Scenario 9 — **N/A — deferred** (not a Spec03 close DoD).
 
 ---
 
-## Phase 8: Polish & Cross-Cutting Concerns
+## Phase 8: Polish & Cross-Cutting Concerns — Complete (Item C)
 
 **Purpose**: Architecture boundary BT-05, PHPStan, documentation, quickstart validation. **Livewire HR admin deferred** (plan §Phase F).
 
-- [ ] T053 [P] Re-run / extend `tests/Architecture/EmployeeSupplierBoundaryTest.php` if new Employee files added after MVP — **BT-05** regression (duplicate of T026a scope check)
-- [ ] T054 Update `app/Modules/Employee/README.md` with module boundaries, contract usage, stub port strategy, and CD-012/CD-013 traceability
-- [ ] T055 Run `docker compose exec laravel.test vendor/bin/pint` and fix formatting across Employee module
-- [ ] T056 Run `docker compose exec laravel.test vendor/bin/phpstan analyse --memory-limit=1G app/Modules/Employee` — zero errors (SC-005)
-- [ ] T057 Execute `quickstart.md` Scenarios 1–9 via tests or documented commands and record pass/fail
-- [ ] T058 [P] Scope audit — verify no tasks introduced Request/Allocation modules, Identity Infrastructure imports, or FK `identity_id` → `identity_users`
+Evidence: `.specify/governance/batch-b.spec03-item-c-execution-report.md` (`SPEC03_ITEM_C_COMPLETED`).
+
+- [x] T053 [P] Re-run / extend `tests/Architecture/EmployeeSupplierBoundaryTest.php` if new Employee files added after MVP — **BT-05** regression (duplicate of T026a scope check)
+- [x] T054 Update `app/Modules/Employee/README.md` with module boundaries, contract usage, stub port strategy, and CD-012/CD-013 traceability
+- [x] T055 Run Pint and fix formatting across Employee module (`php vendor/bin/pint …`)
+- [x] T056 Run PHPStan on Employee paths — zero errors (SC-005) (`php vendor/bin/phpstan analyse --no-progress --memory-limit=1G app/Modules/Employee`)
+- [x] T057 Execute `quickstart.md` Scenarios 1–8 via tests (pass); Scenario 9 **N/A — deferred**
+- [x] T058 [P] Scope audit — verify no tasks introduced Request/Allocation modules, Identity Infrastructure imports, or FK `identity_id` → `identity_users`
 
 **Deferred (no tasks):**
 
 - ~~Livewire HR admin~~ — plan §Phase F
-- ~~Real `ActiveAllocationReadPort` / `PendingRequestReadPort` adapters~~ — spec07 / spec05
+- ~~Real `ActiveAllocationReadPort` / `PendingRequestReadPort` adapters~~ — spec07 / spec05 (Null ActiveAllocation retained; live PendingRequest binding retained)
 - ~~`request_id` on dependents~~ — spec05
+- ~~Phase 7 EmployeeRead (T049–T052)~~ — **deferred at Spec03 close** (Post-Spec03)
 
-**Checkpoint**: Definition of Done — PHPStan L8 Employee paths, Pint, BT-01–BT-05 green, quickstart validated.
+**Checkpoint**: Definition of Done — PHPStan L8 Employee paths, Pint, BT-01–BT-05 green, quickstart Scenarios 1–8 validated; Scenario 9 N/A.
 
 ---
 
@@ -286,8 +298,8 @@ Phase 7 read contract can parallel US4 tests after T047.
 ## Implementation Strategy
 
 1. **MVP first**: Phases 1–3 (T001–T026a) — complete; Wave 1B (T027–T034) complete.
-2. **Incremental**: US2 Department → US3 Dependent (hold) → US4 Eligibility (hold) → read contract → polish.
-3. **Defer**: Livewire admin, real allocation/request port adapters, `AuditService` central integration.
+2. **Incremental (closed path)**: US2 Department → US3 Dependent → US4 Eligibility Batch 1b → polish (Phase 8). Phase 7 EmployeeRead **deferred at Spec03 close**.
+3. **Defer**: Livewire admin, live Allocation port adapter, EmployeeRead (T049–T052), `AuditService` central integration beyond module baseline.
 4. **Validate early**: Run BT-01–BT-03 after T026 before declaring MVP complete; BT-05 after T053.
 
 ---
