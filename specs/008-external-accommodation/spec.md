@@ -4,7 +4,7 @@
 
 **Created**: 2026-07-01
 
-**Status**: **Draft — Planning specification** (planning authorized; implementation **not** authorized)
+**Status**: **FULLY CLOSED** — Implementation Complete (T001–T031); active execution scope **none** ([`spec08-implementation-closure.md`](../../.specify/docs/handoff/spec08-implementation-closure.md))
 
 **Catalog**: spec08 — External Accommodation (`spec-catalog.md` v1.0.11)
 

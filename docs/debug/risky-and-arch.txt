@@ -1,0 +1,10 @@
+﻿risky_type=integer
+risky_raw=11
+---FULL FAIL 20---
+P\Tests\Architecture\ModuleBoundaryTest::__pest_evaluable_Identity_infrastructure_is_isolated_from_App_Modules_Audit
+Expecting 'App\Modules\Identity\Infrastructure' not to use 'App\Modules\Audit\*'.
+
+---FULL FAIL 21---
+P\Tests\Architecture\ModuleBoundaryTest::__pest_evaluable_Reporting_infrastructure_is_isolated_from_App_Modules_Audit
+Expecting 'App\Modules\Reporting\Infrastructure' not to use 'App\Modules\Audit\*'.
+

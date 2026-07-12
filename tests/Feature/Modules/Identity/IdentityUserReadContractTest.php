@@ -69,6 +69,25 @@ it('returns false for userHasRole when user does not exist', function (): void {
     expect($contract->userHasRole($unknownId->value, 'operator'))->toBeFalse();
 });
 
+it('reports permission membership via userHasPermission without throwing when catalog is empty', function (): void {
+    $contract = app(IdentityUserReadContract::class);
+
+    $created = createIdentityUserThroughMutation(
+        'Permission Check User',
+        'permission-check-'.uniqid('', true).'@example.com',
+    );
+    $userId = $created->requireId()->value;
+
+    expect($contract->userHasPermission($userId, 'audit.read'))->toBeFalse();
+});
+
+it('returns false for userHasPermission when user does not exist', function (): void {
+    $contract = app(IdentityUserReadContract::class);
+    $unknownId = UserId::fromString(Uuid::uuid7()->toString());
+
+    expect($contract->userHasPermission($unknownId->value, 'audit.read'))->toBeFalse();
+});
+
 it('rejects malformed identifiers at UserId validation', function (): void {
     expect(fn () => UserId::fromString('not-a-uuid'))
         ->toThrow(ValidationException::class);

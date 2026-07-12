@@ -1,0 +1,4 @@
+﻿
+Warning: The use statement with non-compound name 'Mockery' has no effect in C:\project_nigs-dist8\DormSys Project\tests\Feature\Modules\Allocation\RequestLifecycleHandoffTest.php on line 18
+PHP Warning: The use statement with non-compound name 'Mockery' has no effect in C:\project_nigs-dist8\DormSys Project\tests\Feature\Modules\Allocation\RequestLifecycleHandoffTest.php on line 18
+{"tool":"pest","result":"passed","tests":1778,"passed":1774,"assertions":5025,"duration_ms":247527,"skipped":4,"risky":11}

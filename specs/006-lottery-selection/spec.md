@@ -4,9 +4,28 @@
 
 **Created**: 2026-06-30
 
-**Status**: Draft — execution structure initialized
+**Status**: `IMPLEMENTATION_COMPLETE_GOVERNANCE_OPEN` (Spec06-local composite; see GDR)
 
-**Catalog**: spec06 — Lottery Selection (`spec-catalog.md`)
+| Layer (Spec06-local) | Value |
+| -------------------- | ----- |
+| Planning | Complete |
+| Implementation | Complete |
+| Governance | Open |
+| Documentation / mirrors | ALIGNED |
+| Authority | `AUTHORITY_NOT_AVAILABLE` (Documented Exception — Option B) |
+| Lifecycle posture | `IMPLEMENTATION_COMPLETE_GOVERNANCE_OPEN` |
+
+> **Note:** Implementation is complete as per discovery evidence. Governance remains OPEN due to `AUTHORITY_NOT_AVAILABLE` for the Lottery Selection domain. This is a documented exception (Option B) as of 2026-07-12.
+
+**Catalog**: spec06 — see `spec-catalog.md` (Status `IMPLEMENTATION_COMPLETE_GOVERNANCE_OPEN`; not “Planned” alone; not Fully Closed)
+
+**Governance decision / evolution**: [`.specify/docs/decision/spec06-regularization-decision.md`](../../.specify/docs/decision/spec06-regularization-decision.md) — authoritative for future Spec06 regularization context
+
+**Regularization plan**: [`.specify/docs/plans/spec06-regularization-plan.md`](../../.specify/docs/plans/spec06-regularization-plan.md)
+
+**Execution authorization**: [`.specify/docs/handoff/spec06-regularization-execution-authorization.md`](../../.specify/docs/handoff/spec06-regularization-execution-authorization.md) (`GRANTED` — limited documentary alignment)
+
+**New implementation**: Not authorized by documentary regularization; Governance remains Open.
 
 **Depends on**: spec01 Foundation; spec05 Request Management (`RequestReadContract` supplier)
 
@@ -180,3 +199,23 @@ As the system, I need scheduled lock and draw jobs so that registration deadline
 - Workflow engine
 - Livewire operator UI (follow-on)
 - Physical bed tracking (spec04 / Dormitory)
+
+---
+
+## Governance & Evolution Notes
+
+**Authority:** Recorded in [`.specify/docs/decision/spec06-regularization-decision.md`](../../.specify/docs/decision/spec06-regularization-decision.md) (Decisions 1–4). This note does not create Nomination, Design Approval, Implementation Authorization, or terminal closure.
+
+### Documented exception (Option B)
+
+`tasks.md` Complete (T001–T055) and the Lottery module footprint are **acknowledged as delivery evidence**. Spec06 is **regularized via documented exception (Option B) due to pre-governance implementation** — implementation ahead of a map-backed Nomination → Design Approval → Implementation Authorization chain.
+
+This regularization is **documentary/governance alignment only**. It does **not**:
+
+- invent or backdate a Spec06 IA/DA/Nomination handoff chain
+- claim `AUTHORITY_CONFIRMED` or reconstruct authority from SPEC06-C06 (remains `UNKNOWN` unless later amended)
+- claim Full Closure / `FULLY_CLOSED` (Governance remains **Open**)
+
+**Authority statement:** Spec06-named map-backed authority is **`AUTHORITY_NOT_AVAILABLE` (Documented Exception)**.
+
+**Evidence pointers:** `.specify/governance/wave-02-conflict-register.md` (SPEC06-C01…C07); `.specify/governance/records/spec06-validation-record.md`; `.specify/governance/reports/spec06-transition-gate-record.md`; `.specify/docs/plans/spec06-regularization-plan.md`.

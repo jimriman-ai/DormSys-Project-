@@ -1,6 +1,6 @@
 # Known Architecture Exceptions Registry
 
-**Status:** Approved — updated after CheckIn matrix enrollment (2026-07-04)  
+**Status:** Approved — updated after Audit/Reporting Integration debt closure (2026-07-12)  
 **Purpose:** Keep tolerated legacy debt **visible** while CI blocks **new** regressions.
 
 CI reads this registry through `tests/Architecture/architecture.php`.  
@@ -21,11 +21,16 @@ CheckIn was enrolled in the full matrix after `OperatorRoleGate` migrated to `Id
 | Path | Edge | Binding location | Copy for new work? |
 |------|------|------------------|--------------------|
 | `app/Modules/Lottery/Application/Adapters/RequestReadAdapter.php` | Lottery → Request read | `LotteryServiceProvider` | **No** |
-| `app/Modules/Reporting/Infrastructure/Adapters/AuditHistorySourceReadAdapter.php` | Reporting → Audit history | `ReportingServiceProvider` | **No** |
-| `app/Modules/Reporting/Infrastructure/Adapters/ReportingArchiveVisibilityAdapter.php` | Reporting → Audit permissions | `ReportingServiceProvider` | **No** |
-| `app/Modules/Identity/Infrastructure/Adapters/SpatieAuditPermissionReadAdapter.php` | Identity → Audit permission port | `IdentityServiceProvider` | **No** |
 
 Function: `architectureLegacyCrossModuleAdapterPaths()`
+
+**Closed (moved to Integrations, 2026-07-12):**
+
+| Former path | Now |
+|-------------|-----|
+| `Reporting/.../AuditHistorySourceReadAdapter.php` | `app/Integrations/Reporting/AuditHistorySourceReadBridge.php` |
+| `Reporting/.../ReportingArchiveVisibilityAdapter.php` | `app/Integrations/Reporting/ReportingArchiveVisibilityBridge.php` |
+| `Identity/.../SpatieAuditPermissionReadAdapter.php` | `app/Integrations/Audit/SpatieAuditPermissionReadBridge.php` |
 
 **Mandatory rule:** new cross-module adapters **not** in this list and **not** under `app/Integrations/` → **CI failure**.
 
@@ -36,9 +41,10 @@ Function: `architectureLegacyCrossModuleAdapterPaths()`
 | Port | Approved provider file |
 |------|------------------------|
 | `LotteryRequestReadPort` | `app/Modules/Lottery/Infrastructure/Providers/LotteryServiceProvider.php` |
-| `AuditPermissionReadPort` | `app/Modules/Identity/Infrastructure/Providers/IdentityServiceProvider.php` |
 
 Function: `architectureLegacyModuleProviderPortBindings()`
+
+**Closed:** `AuditPermissionReadPort` now binds only in `IntegrationServiceProvider`.
 
 **Mandatory rule:** the integration ports in `architectureIntegrationPortClasses()` must bind **only** in `IntegrationServiceProvider`.
 

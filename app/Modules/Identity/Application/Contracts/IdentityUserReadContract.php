@@ -27,4 +27,11 @@ interface IdentityUserReadContract
      * Returns true if the user exists and has the given role name.
      */
     public function userHasRole(string $userId, string $roleName): bool;
+
+    /**
+     * Returns true if the user exists and has the given permission name.
+     *
+     * Missing permission catalog rows are treated as false (never throws).
+     */
+    public function userHasPermission(string $userId, string $permissionName): bool;
 }

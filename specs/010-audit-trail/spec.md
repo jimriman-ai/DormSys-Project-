@@ -4,7 +4,7 @@
 
 **Created**: 2026-07-02
 
-**Status**: **Draft — Planning complete** (specification + plan baseline; tasks and implementation **not** authorized)
+**Status**: **CLOSED / FROZEN** — T001–T040 program closed (`immutable_status: FROZEN`; reopen forbidden without new governance). OA-10-05 / Audit UI remains a **separate** work-item closeout (`AUDIT_UI_CLOSED`); not Spec10 baseline reopen or unfreeze.
 
 **Catalog**: spec10 — Audit (`spec-catalog.md`)
 

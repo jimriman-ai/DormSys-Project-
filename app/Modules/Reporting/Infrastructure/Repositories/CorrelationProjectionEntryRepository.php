@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Reporting\Infrastructure\Repositories;
 
-use App\Modules\Audit\Application\DTOs\AuditHistoryItemDto;
 use App\Modules\Reporting\Application\Contracts\Ports\CorrelationProjectionWritePort;
 use App\Modules\Reporting\Application\DTOs\ComplianceExportQuery;
 use App\Modules\Reporting\Application\DTOs\CorrelationBundleQuery;
+use App\Modules\Reporting\Application\DTOs\ProjectionSourceItemDto;
 use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
 use App\Modules\Reporting\Infrastructure\Persistence\Models\CorrelationProjectionEntryModel;
 use DateTimeImmutable;
@@ -17,7 +17,7 @@ use Illuminate\Support\Carbon;
 final class CorrelationProjectionEntryRepository implements CorrelationProjectionWritePort
 {
     public function upsertFromAuditItem(
-        AuditHistoryItemDto $item,
+        ProjectionSourceItemDto $item,
         ArchiveVisibilityTier $archiveVisibilityTier,
     ): bool {
         if ($item->correlationId === '') {

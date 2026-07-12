@@ -15,7 +15,7 @@
 - **External sites:** no Building/Room/Bed children (OA-04-03)
 - **No** Workflow, CheckIn/CheckOut implementation, Livewire admin (Phase H deferred)
 
-**Status**: **Design approved** — **Implementation not authorized** until separate go-ahead (`handoff/spec04-planning-authorization.md`).
+**Status**: Backend Phases 1–4 closed (`SPEC04_BACKEND_CLOSED`). Checklist below may lag phase-acceptance handoffs; residual product work remains `PENDING_RESIDUAL` / `DEFERRED_TO_FUTURE_WAVE`. See GDR `spec04-governance-decision.md`. Implementation of residuals **not** authorized by documentary alignment.
 
 ---
 

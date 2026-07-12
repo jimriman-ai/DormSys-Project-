@@ -140,9 +140,14 @@ These exist, pass CI, and are documented in boundary tests. **New cross-module e
 | Pattern | Location | Binding | Why legacy |
 |---------|----------|---------|------------|
 | Lottery → Request read adapter | `Lottery/Application/Adapters/RequestReadAdapter.php` | `LotteryServiceProvider:58` → `LotteryRequestReadPort` | Pre-Integrations; uses foreign Application contract only |
-| Reporting → Audit history | `Reporting/Infrastructure/Adapters/AuditHistorySourceReadAdapter.php` | `ReportingServiceProvider` | CD-017 read-only projection; `ReportingBoundaryTest` guards |
-| Reporting → Audit permissions | `Reporting/Infrastructure/Adapters/ReportingArchiveVisibilityAdapter.php` | `ReportingServiceProvider` | Same |
-| Identity implements Audit permission port | `Identity/Infrastructure/Adapters/SpatieAuditPermissionReadAdapter.php` | `IdentityServiceProvider:31` → `AuditPermissionReadPort` | Supplier impl hosted in consumer-adjacent module |
+
+**Closed (2026-07-12) — now under Integrations:**
+
+| Former pattern | Bridge |
+|----------------|--------|
+| Reporting → Audit history | `app/Integrations/Reporting/AuditHistorySourceReadBridge.php` |
+| Reporting → Audit permissions | `app/Integrations/Reporting/ReportingArchiveVisibilityBridge.php` |
+| Identity implements Audit permission port | `app/Integrations/Audit/SpatieAuditPermissionReadBridge.php` |
 
 ---
 

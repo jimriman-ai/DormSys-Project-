@@ -46,4 +46,9 @@ class IdentityUserReadService implements IdentityUserReadContract
     {
         return $this->users->userHasRole(UserId::fromString($userId), $roleName);
     }
+
+    public function userHasPermission(string $userId, string $permissionName): bool
+    {
+        return $this->users->userHasPermission(UserId::fromString($userId), $permissionName);
+    }
 }

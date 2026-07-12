@@ -4,7 +4,7 @@
 
 **Created**: 2026-07-01
 
-**Status**: Architecture specification — post-freeze
+**Status**: **Fully Closed** — Implementation Complete (T001–T074); active execution scope **none**
 
 **Catalog**: spec07 — Allocation & Occupancy (`spec-catalog.md`)
 

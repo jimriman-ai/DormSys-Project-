@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Modules\Reporting\Infrastructure\Repositories;
 
-use App\Modules\Audit\Application\DTOs\AuditHistoryItemDto;
 use App\Modules\Reporting\Application\Contracts\Ports\AuditWindowAggregateWritePort;
 use App\Modules\Reporting\Application\DTOs\AuditWindowSummaryQuery;
+use App\Modules\Reporting\Application\DTOs\ProjectionSourceItemDto;
 use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
 use App\Modules\Reporting\Domain\Enums\WindowGranularity;
 use App\Modules\Reporting\Infrastructure\Persistence\Models\AuditWindowAggregateModel;
@@ -18,7 +18,7 @@ use Illuminate\Support\Carbon;
 final class AuditWindowAggregateRepository implements AuditWindowAggregateWritePort
 {
     public function incrementForItem(
-        AuditHistoryItemDto $item,
+        ProjectionSourceItemDto $item,
         DateTimeImmutable $windowStart,
         DateTimeImmutable $windowEnd,
         ArchiveVisibilityTier $archiveVisibilityTier,

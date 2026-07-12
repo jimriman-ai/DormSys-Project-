@@ -4,7 +4,7 @@
 
 **Created**: 2026-07-02
 
-**Status**: **Draft — Planning complete** (specification + plan baseline; implementation **not** authorized)
+**Status**: **FULLY CLOSED** — Implementation Complete (T001–T032); active execution scope **none** ([`spec09-implementation-closure.md`](../../.specify/docs/handoff/spec09-implementation-closure.md))
 
 **Catalog**: spec09 — Notification (`spec-catalog.md`)
 

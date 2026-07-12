@@ -50,6 +50,9 @@ function architectureIntegrationPortClasses(): array
         'App\\Modules\\Request\\Application\\Contracts\\DormitoryReadContract',
         'App\\Modules\\Employee\\Application\\Contracts\\Ports\\PendingRequestReadPort',
         'App\\Modules\\Lottery\\Application\\Contracts\\ProposedAllocationPort',
+        'App\\Modules\\Audit\\Application\\Contracts\\AuditPermissionReadPort',
+        'App\\Modules\\Reporting\\Application\\Contracts\\Ports\\AuditHistorySourceReadPort',
+        'App\\Modules\\Reporting\\Application\\Contracts\\Ports\\ReportingArchiveVisibilityPort',
     ];
 }
 
@@ -62,7 +65,6 @@ function architectureLegacyModuleProviderPortBindings(): array
 {
     return [
         'App\\Modules\\Lottery\\Application\\Contracts\\LotteryRequestReadPort' => 'app/Modules/Lottery/Infrastructure/Providers/LotteryServiceProvider.php',
-        'App\\Modules\\Audit\\Application\\Contracts\\AuditPermissionReadPort' => 'app/Modules/Identity/Infrastructure/Providers/IdentityServiceProvider.php',
     ];
 }
 
@@ -76,9 +78,6 @@ function architectureLegacyCrossModuleAdapterPaths(): array
 {
     return [
         'app/Modules/Lottery/Application/Adapters/RequestReadAdapter.php',
-        'app/Modules/Reporting/Infrastructure/Adapters/AuditHistorySourceReadAdapter.php',
-        'app/Modules/Reporting/Infrastructure/Adapters/ReportingArchiveVisibilityAdapter.php',
-        'app/Modules/Identity/Infrastructure/Adapters/SpatieAuditPermissionReadAdapter.php',
     ];
 }
 

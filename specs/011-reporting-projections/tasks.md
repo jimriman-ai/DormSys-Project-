@@ -4,7 +4,9 @@
 
 **Branch**: `011-reporting-projections`
 
-**Status**: **CLOSED** — authorized implementation **I-001–I-031 COMPLETE**; final closure verification **PASS** (2026-07-03)
+**Status**: `IMPLEMENTATION_COMPLETE_GOVERNANCE_OPEN` — Planning Complete; Implementation Present; Governance Open (`GOVERNANCE_DEBT_ACTIVE`). Task checkboxes below are historical delivery record and are **not** rewritten by documentary regularization. Authority: `AUTHORITY_CLAIMED_EVIDENCE_MISSING` (exception path; Design Approval Decision Record unrecovered) as of 2026-07-12. See [`.specify/docs/decision/spec11-authority-resolution-decision.md`](../../.specify/docs/decision/spec11-authority-resolution-decision.md). New Reporting work **not** authorized by documentary alignment. Spec11 is **not** Fully Closed.
+
+> **Governance header note (Wave 02):** The historical `lifecycle_state: CLOSED` block below is a package delivery claim and is **stale relative to Wave 02 exception disposition**. It does **not** mean Spec Fully Closed, recovered Design Approval, or confirmed normal DA→IA authority. Transition-control / package CLOSED claims remain corroboration only — corroborating artifacts are not authority evidence.
 
 ```text
 lifecycle_state:        CLOSED
@@ -20,7 +22,7 @@ rollout_authorized:     false
 active_execution_scope: none
 ```
 
-**Authorization baseline**: [`implementation-authorization-decision.md`](./implementation-authorization-decision.md) — **APPROVED_WITH_CONDITIONS**
+**Authorization baseline**: [`implementation-authorization-decision.md`](./implementation-authorization-decision.md) — package record **APPROVED_WITH_CONDITIONS** (corroboration only; not recovered Design Approval source)
 
 **Predecessor baseline**: [`spec10-final-closure.md`](../../.specify/docs/handoff/spec10-final-closure.md) — **do not mutate**
 

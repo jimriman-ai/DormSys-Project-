@@ -13,7 +13,7 @@
 - **Scoring:** Formula from `settings` — never hardcoded
 - **No** Allocation, Voucher, Workflow, Livewire UI in MVP
 
-**Status**: **Complete** — T001–T055 implemented; Phase 10 integration boundary verified
+**Status**: `IMPLEMENTATION_COMPLETE_GOVERNANCE_OPEN` — Planning Complete; Implementation Complete (T001–T055; Phase 10 boundary verified); Governance Open. Task checkboxes below are historical delivery record and are **not** rewritten by documentary regularization. Authority: `AUTHORITY_NOT_AVAILABLE` (Documented Exception — Option B) as of 2026-07-12. See GDR `spec06-regularization-decision.md`. New Lottery work **not** authorized by documentary alignment.
 
 ---
 

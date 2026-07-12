@@ -1,0 +1,262 @@
+﻿result=failed
+tests=1776 passed=1751 failed=21
+assertions=4957
+top_keys=tool,result,tests,passed,assertions,duration_ms,failed,failures,skipped,risky
+failures_count=21
+---FAIL 1---
+keys=test,file,line,message
+test=P\Tests\Feature\Modules\Employee\EmployeeHubUiFlowTest::__pest_evaluable__employee_hub_ui_access__ظْ_it_renders_the_authenticated_employee_hub_page
+file=Project\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php
+message=Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+Spatie\Permission\Exceptions\PermissionDoesNotExist: There is no permission named `audit.read` for guard `web`. in C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Exceptions\PermissionDoesNotExist.php:11
+Stack trace:
+#0 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Models\Permission.php(109): Spatie\Permission\Exceptions\PermissionDoesNotExist::create('audit.read', 'web')
+#1 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Traits\HasPermissions.php(185): Spatie\Permission\Models\Permission::findByName('audit.read', 'web')
+#2 C:\project_nigs-dist8\Do
+---FAIL 2---
+test=P\Tests\Feature\Modules\Employee\EmployeeHubUiFlowTest::__pest_evaluable__employee_hub_ui_access__ظْ_it_places_┌ر╪د╪▒┌ر┘╪د┘_nav_immediately_after_╪د╪╣┘╪د┘ظî┘ç╪د
+file=Project\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php
+message=Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+Spatie\Permission\Exceptions\PermissionDoesNotExist: There is no permission named `audit.read` for guard `web`. in C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Exceptions\PermissionDoesNotExist.php:11
+Stack trace:
+#0 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Models\Permission.php(109): Spatie\Permission\Exceptions\PermissionDoesNotExist::create('audit.read', 'web')
+#1 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Traits\HasPermissions.php(185): Spatie\Permission\Models\Permission::findByName('audit.read', 'web')
+#2 C:\project_nigs-dist8\Do
+---FAIL 3---
+test=P\Tests\Feature\Modules\Notification\NotificationInboxUiFlowTest::__pest_evaluable__notification_inbox_ui_access__ظْ_it_renders_the_authenticated_notification_inbox_page
+file=Project\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php
+message=Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+Spatie\Permission\Exceptions\PermissionDoesNotExist: There is no permission named `audit.read` for guard `web`. in C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Exceptions\PermissionDoesNotExist.php:11
+Stack trace:
+#0 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Models\Permission.php(109): Spatie\Permission\Exceptions\PermissionDoesNotExist::create('audit.read', 'web')
+#1 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Traits\HasPermissions.php(185): Spatie\Permission\Models\Permission::findByName('audit.read', 'web')
+#2 C:\project_nigs-dist8\Do
+---FAIL 4---
+test=P\Tests\Feature\Modules\Notification\NotificationInboxUiFlowTest::__pest_evaluable__notification_inbox_layout_navigation__ظْ_it_renders_the_notification_inbox_nav_link_on_shared_layout_pages
+file=Project\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php
+message=Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+Spatie\Permission\Exceptions\PermissionDoesNotExist: There is no permission named `audit.read` for guard `web`. in C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Exceptions\PermissionDoesNotExist.php:11
+Stack trace:
+#0 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Models\Permission.php(109): Spatie\Permission\Exceptions\PermissionDoesNotExist::create('audit.read', 'web')
+#1 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Traits\HasPermissions.php(185): Spatie\Permission\Models\Permission::findByName('audit.read', 'web')
+#2 C:\project_nigs-dist8\Do
+---FAIL 5---
+test=P\Tests\Feature\Modules\Notification\NotificationInboxUiFlowTest::__pest_evaluable__notification_inbox_layout_navigation__ظْ_it_preserves_the_existing_requests_nav_item_unchanged
+file=Project\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php
+message=Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+Spatie\Permission\Exceptions\PermissionDoesNotExist: There is no permission named `audit.read` for guard `web`. in C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Exceptions\PermissionDoesNotExist.php:11
+Stack trace:
+#0 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Models\Permission.php(109): Spatie\Permission\Exceptions\PermissionDoesNotExist::create('audit.read', 'web')
+#1 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Traits\HasPermissions.php(185): Spatie\Permission\Models\Permission::findByName('audit.read', 'web')
+#2 C:\project_nigs-dist8\Do
+---FAIL 6---
+test=P\Tests\Feature\Modules\Notification\NotificationInboxUiFlowTest::__pest_evaluable__notification_inbox_layout_navigation__ظْ_it_applies_active_state_styling_on_the_notifications_route
+file=Project\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php
+message=Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+Spatie\Permission\Exceptions\PermissionDoesNotExist: There is no permission named `audit.read` for guard `web`. in C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Exceptions\PermissionDoesNotExist.php:11
+Stack trace:
+#0 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Models\Permission.php(109): Spatie\Permission\Exceptions\PermissionDoesNotExist::create('audit.read', 'web')
+#1 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Traits\HasPermissions.php(185): Spatie\Permission\Models\Permission::findByName('audit.read', 'web')
+#2 C:\project_nigs-dist8\Do
+---FAIL 7---
+test=P\Tests\Feature\Modules\Notification\NotificationInboxUiFlowTest::__pest_evaluable__notification_inbox_layout_navigation__ظْ_it_keeps_the_inbox_page_title_unchanged_as_observational_regression
+file=Project\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php
+message=Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+Spatie\Permission\Exceptions\PermissionDoesNotExist: There is no permission named `audit.read` for guard `web`. in C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Exceptions\PermissionDoesNotExist.php:11
+Stack trace:
+#0 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Models\Permission.php(109): Spatie\Permission\Exceptions\PermissionDoesNotExist::create('audit.read', 'web')
+#1 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Traits\HasPermissions.php(185): Spatie\Permission\Models\Permission::findByName('audit.read', 'web')
+#2 C:\project_nigs-dist8\Do
+---FAIL 8---
+test=P\Tests\Feature\Modules\Notification\NotificationInboxUiFlowTest::__pest_evaluable__notification_inbox_layout_navigation__ظْ_it_renders_numeric_unread_badge_beside_╪د╪╣┘╪د┘ظî┘ç╪د_when_unread_count_is_greater_than_zero
+file=Project\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php
+message=Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+Spatie\Permission\Exceptions\PermissionDoesNotExist: There is no permission named `audit.read` for guard `web`. in C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Exceptions\PermissionDoesNotExist.php:11
+Stack trace:
+#0 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Models\Permission.php(109): Spatie\Permission\Exceptions\PermissionDoesNotExist::create('audit.read', 'web')
+#1 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Traits\HasPermissions.php(185): Spatie\Permission\Models\Permission::findByName('audit.read', 'web')
+#2 C:\project_nigs-dist8\Do
+---FAIL 9---
+test=P\Tests\Feature\Modules\Notification\NotificationInboxUiFlowTest::__pest_evaluable__notification_inbox_layout_navigation__ظْ_it_omits_unread_badge_when_unread_count_is_zero
+file=Project\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php
+message=Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+Spatie\Permission\Exceptions\PermissionDoesNotExist: There is no permission named `audit.read` for guard `web`. in C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Exceptions\PermissionDoesNotExist.php:11
+Stack trace:
+#0 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Models\Permission.php(109): Spatie\Permission\Exceptions\PermissionDoesNotExist::create('audit.read', 'web')
+#1 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Traits\HasPermissions.php(185): Spatie\Permission\Models\Permission::findByName('audit.read', 'web')
+#2 C:\project_nigs-dist8\Do
+---FAIL 10---
+test=P\Tests\Feature\Modules\Notification\NotificationInboxUiFlowTest::__pest_evaluable__notification_inbox_layout_navigation__ظْ_it_omits_unread_badge_when_principal_has_no_linked_employee_without_layout_error
+file=Project\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php
+message=Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+Spatie\Permission\Exceptions\PermissionDoesNotExist: There is no permission named `audit.read` for guard `web`. in C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Exceptions\PermissionDoesNotExist.php:11
+Stack trace:
+#0 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Models\Permission.php(109): Spatie\Permission\Exceptions\PermissionDoesNotExist::create('audit.read', 'web')
+#1 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Traits\HasPermissions.php(185): Spatie\Permission\Models\Permission::findByName('audit.read', 'web')
+#2 C:\project_nigs-dist8\Do
+---FAIL 11---
+test=P\Tests\Feature\Modules\Notification\NotificationInboxUiFlowTest::__pest_evaluable__notification_inbox_layout_navigation__ظْ_it_scopes_layout_unread_badge_to_the_authenticated_recipient_employee
+file=Project\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php
+message=Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+Spatie\Permission\Exceptions\PermissionDoesNotExist: There is no permission named `audit.read` for guard `web`. in C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Exceptions\PermissionDoesNotExist.php:11
+Stack trace:
+#0 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Models\Permission.php(109): Spatie\Permission\Exceptions\PermissionDoesNotExist::create('audit.read', 'web')
+#1 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Traits\HasPermissions.php(185): Spatie\Permission\Models\Permission::findByName('audit.read', 'web')
+#2 C:\project_nigs-dist8\Do
+---FAIL 12---
+test=P\Tests\Feature\Modules\Notification\NotificationInboxUiFlowTest::__pest_evaluable__notification_inbox_layout_navigation__ظْ_it_uses_plain_href_transport_without_wire_navigate_on_layout_nav
+file=Project\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php
+message=Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+Spatie\Permission\Exceptions\PermissionDoesNotExist: There is no permission named `audit.read` for guard `web`. in C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Exceptions\PermissionDoesNotExist.php:11
+Stack trace:
+#0 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Models\Permission.php(109): Spatie\Permission\Exceptions\PermissionDoesNotExist::create('audit.read', 'web')
+#1 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Traits\HasPermissions.php(185): Spatie\Permission\Models\Permission::findByName('audit.read', 'web')
+#2 C:\project_nigs-dist8\Do
+---FAIL 13---
+test=P\Tests\Feature\Modules\Notification\NotificationInboxUiFlowTest::__pest_evaluable__notification_inbox_layout_navigation__ظْ_it_renders_requests_nav_before_notifications_nav_in_header_order
+file=Project\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php
+message=Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+Spatie\Permission\Exceptions\PermissionDoesNotExist: There is no permission named `audit.read` for guard `web`. in C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Exceptions\PermissionDoesNotExist.php:11
+Stack trace:
+#0 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Models\Permission.php(109): Spatie\Permission\Exceptions\PermissionDoesNotExist::create('audit.read', 'web')
+#1 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Traits\HasPermissions.php(185): Spatie\Permission\Models\Permission::findByName('audit.read', 'web')
+#2 C:\project_nigs-dist8\Do
+---FAIL 14---
+test=P\Tests\Feature\Modules\Request\RequestListDetailNavigationUiFlowTest::__pest_evaluable__request_list_detail_navigation_ui_flow__ظْ_it_employee_can_navigate_from_owned_request_list_row_to_existing_request_show
+file=Project\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php
+message=Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+Spatie\Permission\Exceptions\PermissionDoesNotExist: There is no permission named `audit.read` for guard `web`. in C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Exceptions\PermissionDoesNotExist.php:11
+Stack trace:
+#0 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Models\Permission.php(109): Spatie\Permission\Exceptions\PermissionDoesNotExist::create('audit.read', 'web')
+#1 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Traits\HasPermissions.php(185): Spatie\Permission\Models\Permission::findByName('audit.read', 'web')
+#2 C:\project_nigs-dist8\Do
+---FAIL 15---
+test=P\Tests\Feature\Modules\Request\RequestShowUiFlowTest::__pest_evaluable__request_show_ui_flow__ظْ_it_employee_can_open_owned_request_detail
+file=Project\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php
+message=Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+Spatie\Permission\Exceptions\PermissionDoesNotExist: There is no permission named `audit.read` for guard `web`. in C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Exceptions\PermissionDoesNotExist.php:11
+Stack trace:
+#0 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Models\Permission.php(109): Spatie\Permission\Exceptions\PermissionDoesNotExist::create('audit.read', 'web')
+#1 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Traits\HasPermissions.php(185): Spatie\Permission\Models\Permission::findByName('audit.read', 'web')
+#2 C:\project_nigs-dist8\Do
+---FAIL 16---
+test=P\Tests\Feature\Modules\Request\RequestUiFlowTest::__pest_evaluable__request_ui_access__ظْ_it_renders_the_authenticated_request_list_page
+file=Project\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php
+message=Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+Spatie\Permission\Exceptions\PermissionDoesNotExist: There is no permission named `audit.read` for guard `web`. in C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Exceptions\PermissionDoesNotExist.php:11
+Stack trace:
+#0 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Models\Permission.php(109): Spatie\Permission\Exceptions\PermissionDoesNotExist::create('audit.read', 'web')
+#1 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Traits\HasPermissions.php(185): Spatie\Permission\Models\Permission::findByName('audit.read', 'web')
+#2 C:\project_nigs-dist8\Do
+---FAIL 17---
+test=P\Tests\Feature\Modules\Request\RequestUiFlowTest::__pest_evaluable__request_ui_access__ظْ_it_renders_layout_unread_badge_on_requests_page_when_unread_notifications_exist
+file=Project\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php
+message=Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+Spatie\Permission\Exceptions\PermissionDoesNotExist: There is no permission named `audit.read` for guard `web`. in C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Exceptions\PermissionDoesNotExist.php:11
+Stack trace:
+#0 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Models\Permission.php(109): Spatie\Permission\Exceptions\PermissionDoesNotExist::create('audit.read', 'web')
+#1 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Traits\HasPermissions.php(185): Spatie\Permission\Models\Permission::findByName('audit.read', 'web')
+#2 C:\project_nigs-dist8\Do
+---FAIL 18---
+test=P\Tests\Feature\Modules\Request\RequestUiFlowTest::__pest_evaluable__request_ui_access__ظْ_it_renders_the_request_create_page
+file=Project\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php
+message=Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+Spatie\Permission\Exceptions\PermissionDoesNotExist: There is no permission named `audit.read` for guard `web`. in C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Exceptions\PermissionDoesNotExist.php:11
+Stack trace:
+#0 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Models\Permission.php(109): Spatie\Permission\Exceptions\PermissionDoesNotExist::create('audit.read', 'web')
+#1 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Traits\HasPermissions.php(185): Spatie\Permission\Models\Permission::findByName('audit.read', 'web')
+#2 C:\project_nigs-dist8\Do
+---FAIL 19---
+test=P\Tests\Feature\Modules\Request\RequestUiFlowTest::__pest_evaluable__request_ui_flows__ظْ_it_creates_a_request_through_the_ui_and_shows_it_on_the_list
+file=Project\vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php
+message=Expected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.
+
+The following exception occurred during the last request:
+
+Spatie\Permission\Exceptions\PermissionDoesNotExist: There is no permission named `audit.read` for guard `web`. in C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Exceptions\PermissionDoesNotExist.php:11
+Stack trace:
+#0 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Models\Permission.php(109): Spatie\Permission\Exceptions\PermissionDoesNotExist::create('audit.read', 'web')
+#1 C:\project_nigs-dist8\DormSys Project\vendor\spatie\laravel-permission\src\Traits\HasPermissions.php(185): Spatie\Permission\Models\Permission::findByName('audit.read', 'web')
+#2 C:\project_nigs-dist8\Do
+---FAIL 20---
+test=P\Tests\Architecture\ModuleBoundaryTest::__pest_evaluable_Identity_infrastructure_is_isolated_from_App_Modules_Audit
+file=Project\vendor\pestphp\pest-plugin-arch\src\SingleArchExpectation.php
+message=Expecting 'App\Modules\Identity\Infrastructure' not to use 'App\Modules\Audit\*'.
+---FAIL 21---
+test=P\Tests\Architecture\ModuleBoundaryTest::__pest_evaluable_Reporting_infrastructure_is_isolated_from_App_Modules_Audit
+file=Project\vendor\pestphp\pest-plugin-arch\src\SingleArchExpectation.php
+message=Expecting 'App\Modules\Reporting\Infrastructure' not to use 'App\Modules\Audit\*'.
+risky_count=n/a

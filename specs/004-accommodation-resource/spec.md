@@ -4,9 +4,20 @@
 
 **Created**: 2026-06-23
 
-**Status**: **Planning — spec authored** (implementation not authorized)
+**Status**: Spec04-local composite (see GDR `spec04-governance-decision.md`)
 
-**Catalog**: spec04 — **Planning Authorized** (`spec-catalog.md` v1.0.5)
+| Layer (Spec04-local) | Value |
+| -------------------- | ----- |
+| Planning | Complete |
+| Backend | CLOSED (`SPEC04_BACKEND_CLOSED` — Phases 1–4) |
+| Product | PENDING_RESIDUAL |
+| Documentation / mirrors | ALIGNED |
+
+**Catalog**: spec04 — see `spec-catalog.md` (composite Status; not “Planning Authorized” alone)
+
+**Governance decision**: [`.specify/docs/decision/spec04-governance-decision.md`](../../.specify/docs/decision/spec04-governance-decision.md)
+
+**Residual implementation**: Not authorized by documentary alignment; see Product `PENDING_RESIDUAL` and Governance & Evolution Notes.
 
 **Depends on**: spec01 Foundation (Approved)
 
@@ -212,14 +223,51 @@ As a downstream bounded context (Allocation, Reporting), I need read-only querie
 
 | Reference | Relevance |
 | --------- | --------- |
-| `spec-catalog.md` spec04 | Accommodation Resource; Planning Authorized |
-| `handoff/spec04-planning-authorization.md` | Planning scope; implementation hold |
+| `docs/decision/spec04-governance-decision.md` | Spec04 GDR — `DECISION_FINALIZED` (composition / labels / Floor / residuals) |
+| `docs/plans/spec04-alignment-plan.md` | Alignment plan — documentary sync applied |
+| `handoff/spec04-backend-closeout.md` | `SPEC04_BACKEND_CLOSED` — Phases 1–4 |
+| `handoff/spec04-implementation-authorization.md` | Historical `IMPLEMENTATION_AUTHORIZED` (backend foundation) |
+| `spec-catalog.md` spec04 | Accommodation Resource; composite Status (Backend CLOSED / Product PENDING_RESIDUAL) |
+| `handoff/spec04-planning-authorization.md` | Historical planning scope (specify/plan/tasks); superseded for execution status by IA + backend closeout |
 | `handoff/spec03-post-mvp-authorization.md` | spec03 complete; US3+ hold — unchanged |
 | CD-014 | Dormitory physical state vs Allocation assignment |
 | `context-map.md` R7 | Allocation → Dormitory (event/service) |
 | BR-12 | External dormitory scope |
 | system-flow INV-2 | Assignment only on in-service beds |
 | OQ-06 | CheckIn/CheckOut — deferred; documented only |
+
+---
+
+## Governance & Evolution Notes
+
+**Authority:** Recorded in [`.specify/docs/decision/spec04-governance-decision.md`](../../.specify/docs/decision/spec04-governance-decision.md) (Decision 3). This note does not rewrite the historical OA-04-01 decision body below.
+
+### Floor hierarchy — OA-04-01 and accepted backend evolution
+
+OA-04-01 is identified as superseded by the accepted backend domain evolution (Floor Aggregate: Dormitory → Building → Floor → Room → Bed), as recorded in Spec04 Implementation Authorization / backend design and `SPEC04_BACKEND_CLOSED`.
+
+The original OA-04-01 decision text (Floor as a Room attribute; no separate Floor aggregate) is retained for decision-chain history. Normative understanding for Spec04 alignment purposes follows the accepted Floor Aggregate evolution. Consumers and future amendments should treat the Floor Aggregate hierarchy as the current domain disposition pending any later Design Approval that reopens this topic.
+
+**Evidence pointers:** `.specify/docs/handoff/spec04-implementation-authorization.md`; `.specify/docs/handoff/spec04-backend-closeout.md`.
+
+### Residual scope (deferred — not cancelled)
+
+Per GDR Decision 4 and `spec04-backend-closeout.md` §6, the following are identified as deferred scope. Ownership is transferred to future waves/specs; items are **not** considered cancelled.
+
+| Residual item | Disposition |
+| ------------- | ----------- |
+| Authorization / policies / roles / guards for Dormitory surfaces | `DEFERRED_TO_FUTURE_WAVE` |
+| Livewire / Blade / UI | `DEFERRED_TO_FUTURE_WAVE` |
+| HTTP / API / controllers / FormRequests | `DEFERRED_TO_FUTURE_WAVE` |
+| Allocation ↔ Dormitory integration (`bedExists` / `isBedAssignable`, related Application Read extensions) | `DEFERRED_TO_FUTURE_WAVE` |
+| CheckIn/CheckOut ↔ Dormitory occupancy request wiring | `DEFERRED_TO_FUTURE_WAVE` |
+| Workflow ownership / orchestration inside Dormitory | `DEFERRED_TO_FUTURE_WAVE` |
+| Events / listeners / jobs (unless separately approved) | `DEFERRED_TO_FUTURE_WAVE` |
+| External system adapters | `DEFERRED_TO_FUTURE_WAVE` |
+| Voucher / billing / payment / notification behavior | `DEFERRED_TO_FUTURE_WAVE` |
+| Broad Request Feature-suite dormitory fixture remediation | `DEFERRED_TO_FUTURE_WAVE` |
+
+Successor Spec / Wave ids are **not** assigned by this alignment; nomination remains a separate governance act.
 
 ---
 

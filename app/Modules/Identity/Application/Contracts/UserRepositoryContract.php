@@ -21,6 +21,11 @@ interface UserRepositoryContract
 
     public function userHasRole(UserId $id, string $roleName): bool;
 
+    /**
+     * Missing permission catalog rows are treated as false (never throws).
+     */
+    public function userHasPermission(UserId $id, string $permissionName): bool;
+
     public function assignRole(UserId $id, string $roleName): void;
 
     public function revokeRole(UserId $id, string $roleName): void;

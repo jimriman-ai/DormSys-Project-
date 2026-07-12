@@ -12,7 +12,7 @@ test('reporting read contract is bound to the reporting read service', function 
     app(ReportingReadContract::class);
 });
 
-test('only audit history source adapter references audit history read contract', function (): void {
+test('reporting module does not reference audit history read contract directly', function (): void {
     $reportingPath = app_path('Modules/Reporting');
     $violations = [];
 
@@ -22,11 +22,6 @@ test('only audit history source adapter references audit history read contract',
         }
 
         $path = $file->getPathname();
-
-        if (str_contains($path, 'AuditHistorySourceReadAdapter.php')) {
-            continue;
-        }
-
         $contents = file_get_contents($path);
 
         if ($contents !== false && str_contains($contents, 'AuditHistoryReadContract')) {

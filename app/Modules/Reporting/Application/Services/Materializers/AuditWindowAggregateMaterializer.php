@@ -7,6 +7,7 @@ namespace App\Modules\Reporting\Application\Services\Materializers;
 use App\Modules\Reporting\Application\Contracts\Ports\AuditWindowAggregateWritePort;
 use App\Modules\Reporting\Application\Contracts\Ports\ProjectionIngestReceiptRepositoryPort;
 use App\Modules\Reporting\Application\Contracts\Ports\ProjectionRefreshMaterializerPort;
+use App\Modules\Reporting\Application\DTOs\ProjectionSourceItemDto;
 use App\Modules\Reporting\Application\Services\ProjectionDayWindowResolver;
 use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
 use App\Modules\Reporting\Domain\Enums\ProjectionFamily;
@@ -42,7 +43,7 @@ final class AuditWindowAggregateMaterializer implements ProjectionRefreshMateria
 
             $window = $this->windowResolver->resolve($item->occurredAt);
             $this->aggregateRepository->incrementForItem(
-                $item,
+                ProjectionSourceItemDto::fromAuditHistoryItem($item),
                 $window['windowStart'],
                 $window['windowEnd'],
                 $archiveVisibilityTier,

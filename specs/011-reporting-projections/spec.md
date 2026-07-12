@@ -4,19 +4,38 @@
 
 **Created**: 2026-07-02
 
-**Status**: **Architecture Clarified — Planning-only** (no Design Approval · no Implementation Authorization · no execution)
+**Status**: `IMPLEMENTATION_COMPLETE_GOVERNANCE_OPEN` (Spec11-local composite; Wave 02 controlled alignment)
 
-**Catalog**: spec11 — Reporting (`spec-catalog.md`)
+| Layer (Spec11-local) | Value |
+| -------------------- | ----- |
+| Planning | Complete (architecture clarified) |
+| Implementation | Present / Complete (Reporting module delivery footprint recognized) |
+| Governance | Open (`GOVERNANCE_DEBT_ACTIVE`) |
+| Documentation / mirrors | ALIGNED (exception-path documentary alignment) |
+| Authority | `AUTHORITY_CLAIMED_EVIDENCE_MISSING` (exception path; DA source unrecovered) |
+| Lifecycle posture | `IMPLEMENTATION_COMPLETE_GOVERNANCE_OPEN` |
+
+> **Exception note (2026-07-12):** Regularized through documented exception path. Authority evidence remains unavailable. Future lifecycle changes require explicit authority resolution. Corroborating package artifacts (P2/IA citations, tasks CLOSED claims) are **not** authority evidence and do **not** confirm Design Approval or re-authenticate Implementation Authorization as a recovered normal DA→IA chain. Spec11 is **not** Fully Closed / FULLY_CLOSED.
+
+**Catalog**: spec11 — Reporting (`spec-catalog.md`) — Status `IMPLEMENTATION_COMPLETE_GOVERNANCE_OPEN`; not Planning-only alone; not Fully Closed
+
+**Authority resolution**: [`.specify/docs/decision/spec11-authority-resolution-decision.md`](../../.specify/docs/decision/spec11-authority-resolution-decision.md) — `AUTHORITY_CLAIM_TREATED_AS_EXCEPTION`
+
+**Regularization plan**: [`.specify/docs/planning/spec11-regularization-plan.md`](../../.specify/docs/planning/spec11-regularization-plan.md)
+
+**Execution grant**: [`.specify/docs/decision/spec11-regularization-execution-authorization-grant.md`](../../.specify/docs/decision/spec11-regularization-execution-authorization-grant.md) (`EXECUTION_AUTHORIZATION_GRANTED` — restricted documentary alignment)
+
+**New implementation**: Not authorized by documentary regularization; Governance remains Open.
 
 **Predecessor**: spec10 — Audit Trail & Traceability — **CLOSED / FROZEN** ([`spec10-final-closure.md`](../../.specify/docs/handoff/spec10-final-closure.md))
 
 **Depends on**: spec01 Foundation; **frozen** spec10 baseline (`AuditHistoryReadContract`, append-only `audit_logs`)
 
-**Input**: Initialize spec11 as a **governance-controlled, planning-only evolution layer** for audit consumption, reporting, read-model strategy, operator visibility, and downstream audit ecosystem scaling — strictly **without** reopening, modifying, or reinterpreting spec10 as active work.
+**Input**: Initialize spec11 as a **governance-controlled evolution layer** for audit consumption, reporting, read-model strategy, operator visibility, and downstream audit ecosystem scaling — strictly **without** reopening, modifying, or reinterpreting spec10 as active work. Wave 02 documentary alignment updates lifecycle mirrors only; it does not invent recovered Design Approval.
 
 **Normative boundaries**: [`context-map.md`](../../.specify/docs/context-map.md) **R11**, **CD-017**; inherited **R10**, **AP-06** from spec10 (immutable).
 
-**Governance**: Planning and architecture framing only. **Not** nomination for execution · **Not** Implementation Authorization · **Not** task execution.
+**Governance**: Exception-path debt active. Historical planning-only framing is superseded for **catalog/`spec.md` status mirrors** by `IMPLEMENTATION_COMPLETE_GOVERNANCE_OPEN`. This does **not** claim recovered Design Approval, confirmed IA, AUTHORITY_CONFIRMED, or Spec Fully Closed.
 
 ---
 

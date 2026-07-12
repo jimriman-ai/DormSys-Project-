@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use App\Application\Mutation\Support\MutationPrincipalContextHolder;
+use App\Modules\Audit\Application\Contracts\AuditHistoryReadContract;
 use App\Modules\Audit\Application\Contracts\AuditRecordingContract;
 use App\Modules\Audit\Application\DTOs\AuditEntryDto;
+use App\Modules\Audit\Application\DTOs\PaginatedAuditHistoryDto;
 use App\Modules\Audit\Domain\Enums\ActorType;
 use App\Modules\Audit\Domain\Enums\AuditEventType;
 use App\Modules\Audit\Presentation\Livewire\AuditHistoryPage;
@@ -16,6 +18,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Livewire\Livewire;
+use Tests\Support\MockeryTest;
 
 uses(RefreshDatabase::class);
 
@@ -169,17 +172,16 @@ describe('audit ui read surface', function (): void {
         $actor = createAuditUiReader();
         authenticateAuditUiUser($actor['identity']);
 
-        $historyRead = Mockery::mock(App\Modules\Audit\Application\Contracts\AuditHistoryReadContract::class);
-        $historyRead->shouldReceive('query')
-            ->once()
-            ->andReturn(new App\Modules\Audit\Application\DTOs\PaginatedAuditHistoryDto(
+        $historyRead = MockeryTest::mock(AuditHistoryReadContract::class);
+        MockeryTest::expectOnce($historyRead, 'query')
+            ->andReturn(new PaginatedAuditHistoryDto(
                 items: [],
                 total: 0,
                 page: 1,
                 perPage: 50,
                 lastPage: 1,
             ));
-        app()->instance(App\Modules\Audit\Application\Contracts\AuditHistoryReadContract::class, $historyRead);
+        app()->instance(AuditHistoryReadContract::class, $historyRead);
 
         Livewire::actingAs($actor['identity'], 'api')
             ->test(AuditHistoryPage::class)

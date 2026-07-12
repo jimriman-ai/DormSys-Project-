@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Reporting\Infrastructure\Repositories;
 
-use App\Modules\Audit\Application\DTOs\AuditHistoryItemDto;
 use App\Modules\Reporting\Application\Contracts\Ports\ActorActivitySummaryWritePort;
+use App\Modules\Reporting\Application\DTOs\ProjectionSourceItemDto;
 use App\Modules\Reporting\Application\DTOs\SecurityActorActivityQuery;
 use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
 use App\Modules\Reporting\Domain\Enums\WindowGranularity;
@@ -17,7 +17,7 @@ use Illuminate\Support\Carbon;
 final class ActorActivitySummaryRepository implements ActorActivitySummaryWritePort
 {
     public function incrementForItem(
-        AuditHistoryItemDto $item,
+        ProjectionSourceItemDto $item,
         DateTimeImmutable $windowStart,
         DateTimeImmutable $windowEnd,
         ArchiveVisibilityTier $archiveVisibilityTier,
@@ -92,7 +92,7 @@ final class ActorActivitySummaryRepository implements ActorActivitySummaryWriteP
         );
     }
 
-    private function entityRef(AuditHistoryItemDto $item): string
+    private function entityRef(ProjectionSourceItemDto $item): string
     {
         return $item->entityType.':'.$item->entityId;
     }

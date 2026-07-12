@@ -1,6 +1,6 @@
 # DormSys Spec Catalog
 
-**Version:** 1.0.12 (spec03 closure)  
+**Version:** 1.0.16 (spec11 controlled alignment execution)  
 **Status:** Hard Freeze — Operational  
 **Last Updated:** 1405/04/21 | 2026/07/12  
 **Related Documents:** [`catalog-decisions.md`](catalog-decisions.md), [`context-map.md`](context-map.md), [`playbook/specification-playbook.md`](playbook/specification-playbook.md)
@@ -103,14 +103,16 @@ Status columns below are informational summaries only. They do not define govern
 | ---- | ------------------- |
 | `spec02` Identity & Access | **Frozen — Wave 1A Complete** (2026-06-26) |
 | `spec03` Employee Context | **`SPEC03_CLOSED`** (2026-07-12) — US1–US4 Batch 1b + DOC-OPT + Phase 8; Phase 7 EmployeeRead **deferred** |
-| `spec04` Accommodation Resource | **Planning Authorized** (implementation not authorized) |
+| `spec04` Accommodation Resource | **Backend CLOSED / Product PENDING_RESIDUAL** |
 | `spec05` Request Management | **Implementation Authorized** (T001–T052; tag `spec05-design-approved`) |
+| `spec06` Lottery Selection | **`IMPLEMENTATION_COMPLETE_GOVERNANCE_OPEN`** (Documented Exception - Authority Gap (Lottery)) |
 | `spec07` Allocation & Occupancy | **Fully Closed** — T001–T074 (Wave 1A + Wave 1B) |
 
 ### Out of scope for this freeze (not blockers)
 
 - `spec01` implementation alignment debt — **resolved (2026-06-26):** `/api/health` contract; `getId()` rejects unassigned UUID only (creation-time assignment compatible with CD-012).
-- `spec08`–`spec11` — remain Planned; boundary questions closed (CD-015 … CD-017); implementation not authorized.
+- `spec08`–`spec10` — see Spec Inventory for closure status; boundary questions closed (CD-015 … CD-017).
+- `spec11` — **`IMPLEMENTATION_COMPLETE_GOVERNANCE_OPEN`** (Documented Exception — Authority Gap (Reporting)); not Fully Closed; new Reporting implementation not authorized by documentary alignment. See inventory Notes.
 - `spec07` — **fully closed**; active execution scope **none**; see [`handoff/spec07-implementation-authorization-wave1b.md`](handoff/spec07-implementation-authorization-wave1b.md).
 
 ### Reopening policy
@@ -126,14 +128,14 @@ Any change to a closed OQ or bounded-context boundary requires a new entry in `c
 | `spec01` | **Foundation** | Bootstrap Laravel 13 application, modular monolith structure, shared kernel, database baseline, testing, quality gates, local environment, and CI foundation | Platform Foundation | None | Approved | Explicit | None |
 | `spec02` | **Identity & Access** | Identity accounts, roles, permissions, and access-control baseline for the platform | `Identity` | `spec01` | **Frozen — Wave 1A Complete** | Explicit | OA-02-01 auth UX deferred. **Delivered:** User lifecycle, RBAC, `IdentityUserReadContract`, boundary tests. Livewire admin deferred. |
 | `spec03` | **Employee Context** | Employee profiles, departments, and dependent records as an organizational domain context | `Employee` | `spec01`, `spec02` | **`SPEC03_CLOSED`** (2026-07-12) | Explicit | **Delivered:** US1 (T001–T026a), US2 (T027–T034), US3 (T035–T040), US4 Batch 1b eligibility, Item A DOC-OPT, Phase 8 (T053–T058). **Deferred at Spec03 close:** Phase 7 EmployeeRead (T049–T052); Scenario 9 N/A. **Not required for close:** Request Dependent live, live Allocation, Main UI. Evidence: [`handoff/spec03-closure-handoff.md`](handoff/spec03-closure-handoff.md). |
-| `spec04` | **Accommodation Resource** | Dormitories, buildings, rooms, beds, and physical accommodation capacity/availability structures | `Dormitory` | `spec01` | **Planning Authorized** | Explicit | **Open (planning):** building/floor hierarchy — resolve during spec04 authoring. **Decided (CD-014):** owns physical room/bed occupancy state; Allocation drives updates via events. **Hold:** implementation until separate authorization. |
+| `spec04` | **Accommodation Resource** | Dormitories, buildings, rooms, beds, and physical accommodation capacity/availability structures | `Dormitory` | `spec01` | **Backend CLOSED / Product PENDING_RESIDUAL** | Explicit | **Composite (GDR):** Planning Complete; Backend CLOSED (`SPEC04_BACKEND_CLOSED`); Product PENDING_RESIDUAL; Documentation aligned per alignment plan. **Domain:** OA-04-01 identified as superseded by Floor Aggregate — see `specs/004-accommodation-resource/spec.md` Governance & Evolution Notes (body retained). **Residuals:** `DEFERRED_TO_FUTURE_WAVE` (Auth, UI, Allocation integration, CheckIn wiring, etc.) — not cancelled. Residuals: see `spec.md` Governance & Evolution Notes — `DEFERRED_TO_FUTURE_WAVE`. **Evidence:** `docs/decision/spec04-governance-decision.md`; `handoff/spec04-backend-closeout.md`. **Hold:** residual implementation until separate authorization. Catalog hierarchy “Open (planning)” note retired as stale. |
 | `spec05` | **Request Management** | Accommodation request submission, request lifecycle, and request-level approval state/history | `Request` | `spec01`, `spec02`, `spec03` | **Implementation Authorized** | Explicit + Inferred | **Authorized:** T001–T052 per [`handoff/spec05-implementation-authorization.md`](handoff/spec05-implementation-authorization.md). Tag `spec05-design-approved` @ `6ce0e94`; tasks @ `61e2a48`. **CD-009/010/013** frozen. **spec03:** closed (`SPEC03_CLOSED`); EmployeeRead deferred Post-Spec03. **Hold:** spec04 impl unchanged. |
-| `spec06` | **Lottery Selection** | Lottery programs, registrations, draw execution, scoring, and result production | `Lottery` | `spec01`, `spec05` | Planned | Explicit + Inferred | **Decided (CD-011):** Lottery owns all lottery rules, lifecycle, and results; emits proposed allocations to Allocation. |
+| `spec06` | **Lottery Selection** | Lottery programs, registrations, draw execution, scoring, and result production | `Lottery` | `spec01`, `spec05` | **`IMPLEMENTATION_COMPLETE_GOVERNANCE_OPEN`** | Explicit + Inferred | **Documented Exception - Authority Gap (Lottery).** **Composite (GDR):** Planning Complete; Implementation Complete; Governance Open; Documentation ALIGNED per controlled alignment. **Disposition:** Option B — pre-governance implementation; does **not** invent IA/DA/Nomination. **Authority:** `AUTHORITY_NOT_AVAILABLE`. **CD-011:** Lottery owns all lottery rules, lifecycle, and results; emits proposed allocations to Allocation. **Not:** Fully Closed. **Hold:** new Lottery implementation until separate authorization. Evidence: [`docs/decision/spec06-regularization-decision.md`](decision/spec06-regularization-decision.md); [`docs/plans/spec06-regularization-plan.md`](plans/spec06-regularization-plan.md); [`handoff/spec06-regularization-execution-authorization.md`](handoff/spec06-regularization-execution-authorization.md). |
 | `spec07` | **Allocation & Occupancy** | Assign rooms/beds (Allocation BC); coordinate physical occupancy (Dormitory) and operational stay transitions (CheckIn/CheckOut) | `Allocation`, `Dormitory`, `CheckIn/CheckOut` (spec07 program) | `spec01`, `spec04`, `spec05`, `spec06` | **Fully Closed — Implementation Complete** | Explicit + Inferred | **Delivered:** T001–T074 per [`handoff/spec07-implementation-authorization-wave1b.md`](handoff/spec07-implementation-authorization-wave1b.md). **CD-014/CD-015** frozen. **Active execution scope:** none. **Hold:** spec04 impl; Voucher/Reporting/Notification. |
-| `spec08` | **External Accommodation** | Voucher/external-stay handling when internal capacity cannot satisfy accommodation demand | `Voucher` | `spec01`, `spec05`, `spec06` | **Nominated for Authorization** | Inferred | **Nominated:** [`handoff/spec08-nomination-record.md`](handoff/spec08-nomination-record.md). **Decided (CD-016):** Voucher owns eligibility evaluation and issuance lifecycle. **Execution:** NOT AUTHORIZED. |
-| `spec09` | **Notification** | Shared delivery capability for system notifications such as email, SMS, and in-app alerts | Cross-cutting Capability | `spec01` | Planned | Provisional | Is Notification only an infrastructure delivery mechanism, or does DormSys need a domain-aware notification policy layer later? |
-| `spec10` | **Audit** | Immutable audit trail, activity logging, and compliance-oriented traceability across critical actions | Cross-cutting Capability | `spec01` | **Fully Closed — Implementation Complete** | Explicit + Inferred | **Delivered:** T001–T040 per [`handoff/spec10-final-closure.md`](handoff/spec10-final-closure.md). **R10/AP-06** frozen. **M1 producers:** Identity, Voucher. **Retention:** soft-archive (84mo default). **Bridge:** present, disabled by default. **Active execution scope:** none. **Deferred:** M4 producers, UI (OA-10-05), notification audit (R-08). |
-| `spec11` | **Reporting** | Read models, operational reports, and management-facing projections for analysis and decision support | Cross-cutting / Provisional | `spec01`, spec10 frozen baseline | **Architecture Clarified** | Explicit + Provisional | **Planning-only** — [`specs/011-reporting-projections/`](../specs/011-reporting-projections/). **Decided (CD-017):** read-only cross-domain projection consumer. **Clarification:** [`architecture-clarification.md`](../specs/011-reporting-projections/architecture-clarification.md). **Predecessor:** spec10 CLOSED/FROZEN. **Execution:** NOT AUTHORIZED. |
+| `spec08` | **External Accommodation** | Voucher/external-stay handling when internal capacity cannot satisfy accommodation demand | `Voucher` | `spec01`, `spec05`, `spec06` | **Fully Closed — Implementation Complete** | Inferred | **Delivered:** T001–T031 per [`handoff/spec08-implementation-closure.md`](handoff/spec08-implementation-closure.md). **Decided (CD-016):** Voucher owns eligibility evaluation and issuance lifecycle. **Active execution scope:** none. **Open (carried):** UD-03 / UD-08. |
+| `spec09` | **Notification** | Shared delivery capability for system notifications such as email, SMS, and in-app alerts | Cross-cutting Capability | `spec01` | **Fully Closed — Implementation Complete** | Provisional | **Delivered:** T001–T032 per [`handoff/spec09-implementation-closure.md`](handoff/spec09-implementation-closure.md). **Active execution scope:** none. **Deferred:** Presentation UI (OA-09-05). Open (policy): domain-aware notification policy layer vs delivery-only? |
+| `spec10` | **Audit** | Immutable audit trail, activity logging, and compliance-oriented traceability across critical actions | Cross-cutting Capability | `spec01` | **Fully Closed — Implementation Complete** (`CLOSED` / `FROZEN`) | Explicit + Inferred | **Delivered:** T001–T040 per [`handoff/spec10-final-closure.md`](handoff/spec10-final-closure.md). **R10/AP-06** frozen. **M1 producers:** Identity, Voucher. **Retention:** soft-archive (84mo default). **Bridge:** present, disabled by default. **Active execution scope:** none. **Deferred:** M4 producers, notification audit (R-08). **OA-10-05 / Audit UI:** separate work-item closeout (`AUDIT_UI_CLOSED`) — not Spec10 T001–T040 unfreeze. |
+| `spec11` | **Reporting** | Read models, operational reports, and management-facing projections for analysis and decision support | Cross-cutting / Provisional | `spec01`, spec10 frozen baseline | **`IMPLEMENTATION_COMPLETE_GOVERNANCE_OPEN`** | Explicit + Provisional | **Documented Exception - Authority Gap (Reporting).** **Composite:** Planning Complete; Implementation Present; Governance Open (`GOVERNANCE_DEBT_ACTIVE`); Documentation ALIGNED per Wave 02 controlled alignment. **Disposition:** `AUTHORITY_CLAIM_TREATED_AS_EXCEPTION` — claimed Design Approval Decision Record (2026-07-03) **not recoverable** from repo; package P2/IA are corroboration only. **Authority:** `AUTHORITY_CLAIMED_EVIDENCE_MISSING`. **CD-017:** read-only cross-domain projection consumer. **Not:** Fully Closed / AUTHORITY_CONFIRMED / recovered DA. **Hold:** new Reporting implementation until separate authorization. Evidence: [`decision/spec11-authority-resolution-decision.md`](decision/spec11-authority-resolution-decision.md); [`planning/spec11-regularization-plan.md`](planning/spec11-regularization-plan.md); [`decision/spec11-regularization-execution-authorization-grant.md`](decision/spec11-regularization-execution-authorization-grant.md); package [`specs/011-reporting-projections/`](../specs/011-reporting-projections/). |
 
 ---
 
@@ -208,6 +210,32 @@ This catalog is the controlling operational reference for downstream `spec.md`, 
 
 ---
 ## Change Log
+
+### 1.0.16 — 2026-07-12 (spec11 controlled alignment execution)
+
+- **spec11 Status** set to `IMPLEMENTATION_COMPLETE_GOVERNANCE_OPEN` under Wave 02 execution grant `EXECUTION_AUTHORIZATION_GRANTED`.
+- **Notes:** Documented Exception - Authority Gap (Reporting); `AUTHORITY_CLAIMED_EVIDENCE_MISSING`; governance debt active; not Fully Closed.
+- Informational mirror only; does **not** invent Design Approval, re-authenticate IA via recovered DA, or authorize new Reporting implementation.
+- Evidence: [`decision/spec11-regularization-execution-authorization-grant.md`](decision/spec11-regularization-execution-authorization-grant.md); [`decision/spec11-authority-resolution-decision.md`](decision/spec11-authority-resolution-decision.md); [`validation/spec11-alignment-verification.md`](validation/spec11-alignment-verification.md).
+
+### 1.0.15 — 2026-07-12 (spec06 controlled alignment execution)
+
+- **spec06 Status** set to `IMPLEMENTATION_COMPLETE_GOVERNANCE_OPEN` under execution authorization `GRANTED`.
+- **Notes:** Documented Exception - Authority Gap (Lottery).
+- Informational mirror only; does **not** grant IA, Full Closure, or new Lottery execution.
+- Evidence: [`handoff/spec06-regularization-execution-authorization.md`](handoff/spec06-regularization-execution-authorization.md); [`docs/validation/spec06-alignment-verification.md`](validation/spec06-alignment-verification.md).
+
+### 1.0.14 — 2026-07-12 (spec06 documentary regularization)
+
+- **spec06 Status synchronized** to GDR composite labels: Implementation Complete / Governance Open (informational mirror only; does not grant IA, Full Closure, or new Lottery execution).
+- Open Questions / Notes: Documented exception (Option B); Authority `AUTHORITY_NOT_AVAILABLE` (Documented Exception); SPEC06-C06 not claimed as confirmed.
+- Evidence: [`docs/decision/spec06-regularization-decision.md`](decision/spec06-regularization-decision.md); [`docs/plans/spec06-regularization-plan.md`](plans/spec06-regularization-plan.md).
+
+### 1.0.13 — 2026-07-12 (spec04 documentary alignment)
+
+- **spec04 Status synchronized** to GDR composite labels: Backend CLOSED / Product PENDING_RESIDUAL (informational mirror only; does not grant IA or residual implementation).
+- Open Questions: Floor hierarchy “Open (planning)” retired as stale; residuals marked `DEFERRED_TO_FUTURE_WAVE` per GDR Decision 4.
+- Evidence: [`docs/decision/spec04-governance-decision.md`](decision/spec04-governance-decision.md); [`docs/plans/spec04-alignment-plan.md`](plans/spec04-alignment-plan.md); [`handoff/spec04-backend-closeout.md`](handoff/spec04-backend-closeout.md).
 
 ### 1.0.12 — 2026-07-12 (spec03 Batch B closure)
 

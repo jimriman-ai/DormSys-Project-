@@ -79,6 +79,19 @@ class UserRepository implements UserRepositoryContract
         return $model !== null && $model->hasRole($roleName);
     }
 
+    public function userHasPermission(UserId $id, string $permissionName): bool
+    {
+        $model = UserModel::query()->find($id->value);
+
+        if ($model === null) {
+            return false;
+        }
+
+        // checkPermissionTo returns false when the permission catalog row is absent
+        // (hasPermissionTo throws PermissionDoesNotExist and would 500 shared layouts).
+        return $model->checkPermissionTo($permissionName);
+    }
+
     public function assignRole(UserId $id, string $roleName): void
     {
         $model = $this->findModelOrFail($id);
