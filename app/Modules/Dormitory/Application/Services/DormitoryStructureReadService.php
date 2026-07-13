@@ -20,6 +20,7 @@ final class DormitoryStructureReadService implements DormitoryStructureReadContr
 {
     public function __construct(
         private readonly DormitoryStructureReadRepositoryContract $reads,
+        private readonly DormitoryStructureAuthorizationGate $authorization,
     ) {}
 
     /**
@@ -27,11 +28,15 @@ final class DormitoryStructureReadService implements DormitoryStructureReadContr
      */
     public function listDormitories(): array
     {
+        $this->authorization->assertStructureView();
+
         return $this->reads->listDormitories();
     }
 
     public function getDormitoryDetail(string $dormitoryId): ?DormitoryDetailData
     {
+        $this->authorization->assertStructureView();
+
         return $this->reads->findDormitoryDetail($dormitoryId);
     }
 
@@ -40,6 +45,8 @@ final class DormitoryStructureReadService implements DormitoryStructureReadContr
      */
     public function listDormitoryBuildings(string $dormitoryId): array
     {
+        $this->authorization->assertStructureView();
+
         if (! $this->reads->dormitoryExists($dormitoryId)) {
             return [];
         }
@@ -52,6 +59,8 @@ final class DormitoryStructureReadService implements DormitoryStructureReadContr
      */
     public function listBuildingFloors(string $buildingId): array
     {
+        $this->authorization->assertStructureView();
+
         if (! $this->reads->buildingExists($buildingId)) {
             return [];
         }
@@ -64,6 +73,8 @@ final class DormitoryStructureReadService implements DormitoryStructureReadContr
      */
     public function listFloorRooms(string $floorId): array
     {
+        $this->authorization->assertStructureView();
+
         if (! $this->reads->floorExists($floorId)) {
             return [];
         }
@@ -76,6 +87,8 @@ final class DormitoryStructureReadService implements DormitoryStructureReadContr
      */
     public function listRoomBeds(string $roomId): array
     {
+        $this->authorization->assertStructureView();
+
         if (! $this->reads->roomExists($roomId)) {
             return [];
         }

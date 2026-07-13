@@ -1,0 +1,6 @@
+prompt_id: SPEC02_DORMITORY_AUTHORIZATION_BINDING_IMPLEMENTATION_REVIEW
+recorded_at: 2026-07-13T14:55:00+03:30
+work_item: spec02-dormitory-authorization-binding
+stage: implementation-review
+tags: [SAFE_PROGRESS, CLOSED]
+summary: "Review accepted lock-bounded binding: only dormitory.structure.view/manage; seeder registers keys without dormitory role grants; PEP on Mutation/Read; #9–#10 hard-denied; #11/#18–#21 Integration paths unmodified and not granted by structure keys."

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Modules\Identity\Application\Authorization\DormitoryStructurePermissionCatalog;
 use App\Modules\Identity\Domain\PlatformRoles;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
@@ -22,6 +23,10 @@ class IdentityRoleSeeder extends Seeder
 
     public const string PERMISSION_AUDIT_READ = 'audit.read';
 
+    public const string PERMISSION_DORMITORY_STRUCTURE_VIEW = DormitoryStructurePermissionCatalog::VIEW;
+
+    public const string PERMISSION_DORMITORY_STRUCTURE_MANAGE = DormitoryStructurePermissionCatalog::MANAGE;
+
     /**
      * @var list<string>
      */
@@ -30,6 +35,8 @@ class IdentityRoleSeeder extends Seeder
         'identity.users.view',
         'identity.roles.manage',
         self::PERMISSION_AUDIT_READ,
+        self::PERMISSION_DORMITORY_STRUCTURE_VIEW,
+        self::PERMISSION_DORMITORY_STRUCTURE_MANAGE,
     ];
 
     /**

@@ -32,7 +32,9 @@ it('lists dormitories', function (): void {
     seedStructureReadDormitory('READ-A', 'Alpha');
     seedStructureReadDormitory('READ-B', 'Beta');
 
-    $result = app(DormitoryStructureReadContract::class)->listDormitories();
+    $result = withDormitoryStructureViewActor(
+        fn () => app(DormitoryStructureReadContract::class)->listDormitories(),
+    );
 
     expect($result)->toHaveCount(2)
         ->and($result[0]->code)->toBe('READ-A')
@@ -42,13 +44,17 @@ it('lists dormitories', function (): void {
 });
 
 it('returns an empty list when no dormitories exist', function (): void {
-    expect(app(DormitoryStructureReadContract::class)->listDormitories())->toBe([]);
+    expect(withDormitoryStructureViewActor(
+        fn () => app(DormitoryStructureReadContract::class)->listDormitories(),
+    ))->toBe([]);
 });
 
 it('retrieves one dormitory detail', function (): void {
     $dormitory = seedStructureReadDormitory('READ-DETAIL', 'Detail Site');
 
-    $detail = app(DormitoryStructureReadContract::class)->getDormitoryDetail($dormitory->getId());
+    $detail = withDormitoryStructureViewActor(
+        fn () => app(DormitoryStructureReadContract::class)->getDormitoryDetail($dormitory->getId()),
+    );
 
     expect($detail)->not->toBeNull()
         ->and($detail?->id)->toBe($dormitory->getId())
@@ -58,8 +64,10 @@ it('retrieves one dormitory detail', function (): void {
 });
 
 it('returns null for missing dormitory detail', function (): void {
-    $missing = app(DormitoryStructureReadContract::class)
-        ->getDormitoryDetail(Uuid::uuid7()->toString());
+    $missing = withDormitoryStructureViewActor(
+        fn () => app(DormitoryStructureReadContract::class)
+            ->getDormitoryDetail(Uuid::uuid7()->toString()),
+    );
 
     expect($missing)->toBeNull();
 });
@@ -70,8 +78,10 @@ it('lists buildings for a dormitory', function (): void {
     seedStructureReadBuilding($dormitory, 'A');
     seedStructureReadBuilding(seedStructureReadDormitory('READ-OTHER'), 'Z');
 
-    $buildings = app(DormitoryStructureReadContract::class)
-        ->listDormitoryBuildings($dormitory->getId());
+    $buildings = withDormitoryStructureViewActor(
+        fn () => app(DormitoryStructureReadContract::class)
+            ->listDormitoryBuildings($dormitory->getId()),
+    );
 
     expect($buildings)->toHaveCount(2)
         ->and($buildings[0]->code)->toBe('A')
@@ -80,13 +90,16 @@ it('lists buildings for a dormitory', function (): void {
 });
 
 it('returns an empty building list for a missing dormitory', function (): void {
-    expect(app(DormitoryStructureReadContract::class)
-        ->listDormitoryBuildings(Uuid::uuid7()->toString()))->toBe([]);
+    expect(withDormitoryStructureViewActor(
+        fn () => app(DormitoryStructureReadContract::class)
+            ->listDormitoryBuildings(Uuid::uuid7()->toString()),
+    ))->toBe([]);
 });
 
 it('does not write when reading', function (): void {
     $dormitory = seedStructureReadDormitory('READ-RO');
     seedStructureReadBuilding($dormitory, 'A');
+    $principalId = prepareDormitoryStructureViewPrincipalId();
 
     $beforeDormitories = DormitoryModel::query()->count();
     $beforeBuildings = BuildingModel::query()->count();
@@ -98,10 +111,12 @@ it('does not write when reading', function (): void {
         }
     });
 
-    $reads = app(DormitoryStructureReadContract::class);
-    $reads->listDormitories();
-    $reads->getDormitoryDetail($dormitory->getId());
-    $reads->listDormitoryBuildings($dormitory->getId());
+    App\Application\Mutation\Support\MutationPrincipalContext::runAs($principalId, function () use ($dormitory): void {
+        $reads = app(DormitoryStructureReadContract::class);
+        $reads->listDormitories();
+        $reads->getDormitoryDetail($dormitory->getId());
+        $reads->listDormitoryBuildings($dormitory->getId());
+    });
 
     expect($queries)->toBe(0)
         ->and(DormitoryModel::query()->count())->toBe($beforeDormitories)

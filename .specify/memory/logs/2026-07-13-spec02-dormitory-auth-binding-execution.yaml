@@ -1,0 +1,6 @@
+prompt_id: SPEC02_DORMITORY_AUTHORIZATION_BINDING_IMPLEMENTATION
+recorded_at: 2026-07-13T10:42:00Z
+work_item: spec02-dormitory-authorization-binding
+stage: IMPLEMENTATION_EXECUTION
+tags: [AMBIGUITY, SAFE_PROGRESS, CLOSED]
+summary: "PEP bound manage/view on DormitoryStructure Mutation/Read services; unresolved #9–#10 hard-denied there. Unresolved #11/#18–#20 Allocation Integration paths left unmodified so structure keys do not grant them and Spec04 bridges stay closed."

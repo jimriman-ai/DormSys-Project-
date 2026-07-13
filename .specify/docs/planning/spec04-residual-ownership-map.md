@@ -46,7 +46,7 @@ timestamp: 2026-07-12
 
 | Residual | Closeout / baseline wording (verbatim class) | Related repository context (not ownership assignment) |
 | -------- | -------------------------------------------- | ----------------------------------------------------- |
-| Auth integration | Authorization / policies / roles / guards for Dormitory surfaces | Identity / access surfaces historically under `spec02`; Dormitory surface auth still deferred |
+| Auth integration | Authorization / policies / roles / guards for Dormitory surfaces | Spec02 owns foundation (D3). **Closed bounded Spec02 packet:** Application-layer dormitory structure PEP binding (`SPEC02_DORMITORY_STRUCTURE_AUTHORIZATION_BINDING_COMPLETED`, 2026-07-13). **Still deferred:** UI/Presentation/HTTP auth, role→permission mapping for `dormitory.structure.*`, OA-02-01 / Livewire admin — not claimed by that packet |
 | UI presentation | Livewire / Blade / UI | Presentation-layer work; Spec04 backend closeout excludes UI |
 | Allocation integration / Assignability | Allocation ↔ Dormitory live assignability + markers (closed residual) | Spec04 supplier + Integration bridges; lottery `dormitory_id`→`bedId` remains non-blocking test/prod mapping debt |
 | Check-in wiring | CheckIn/CheckOut ↔ Dormitory occupancy request wiring (Spec04 tracking retired) | Ownership D2 = Spec07; readiness + reconciliation retire Spec04 active tracking; Spec07 CheckIn uncoupled from Dormitory by design |
@@ -57,9 +57,10 @@ Candidate Domain Owner for **remaining open** map rows (Auth, UI) remains as pre
 
 ## 4. Boundary Note
 
-- Spec04 Product status remains `PENDING_RESIDUAL` for **open** residuals (Auth, UI, and other deferred items **excluding** retired Check-in wiring).
+- Spec04 Product status remains `PENDING_RESIDUAL` for **open** residuals (Auth UI/Presentation/role-mapping remainder, UI, and other deferred items **excluding** retired Check-in wiring and excluding the closed Spec02 Application-layer structure PEP binding packet).
 - **Allocation Assignability** residual is **closed** (`SPEC04_RESIDUAL_CLOSED`); not reopened by this reconciliation.
 - **Check-in wiring** is **RETIRED_FROM_ACTIVE_SPEC04_TRACKING** / `CLOSED_NO_FURTHER_ACTION`; does not authorize Spec07 reopen.
+- Spec02 dormitory structure Application PEP binding is **closed as a Spec02 bounded packet** — does **not** close Spec04 Auth residual as a whole and does **not** unfreeze Spec02.
 - Remaining open residuals are deferred, not cancelled.
 - This mapping does not grant Design Approval, Implementation Authorization, or Batch Execution Permission for open residuals.
 
@@ -69,6 +70,6 @@ Candidate Domain Owner for **remaining open** map rows (Auth, UI) remains as pre
 
 | Field | Value |
 | ----- | ----- |
-| Version | 1.2.0 |
-| Status | Traceability map — Assignability CLOSED; Check-in wiring RETIRED_FROM_ACTIVE_SPEC04_TRACKING; Auth/UI still open |
-| Last updated | 2026-07-12 |
+| Version | 1.3.0 |
+| Status | Traceability map — Assignability CLOSED; Check-in wiring RETIRED; Spec02 structure PEP binding COMPLETED (bounded); Auth UI/role-mapping remainder + UI still open |
+| Last updated | 2026-07-13 |

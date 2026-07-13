@@ -38,10 +38,13 @@ final class DormitoryStructureMutationService implements DormitoryStructureMutat
 {
     public function __construct(
         private readonly DormitoryStructureWriteRepositoryContract $writes,
+        private readonly DormitoryStructureAuthorizationGate $authorization,
     ) {}
 
     public function createDormitory(CreateDormitoryData $data): CreatedResourceData
     {
+        $this->authorization->assertStructureManage();
+
         return DB::transaction(function () use ($data): CreatedResourceData {
             $id = Uuid::uuid7()->toString();
             $status = $this->resolveStatus($data->status);
@@ -66,6 +69,8 @@ final class DormitoryStructureMutationService implements DormitoryStructureMutat
 
     public function createBuilding(CreateBuildingData $data): CreatedResourceData
     {
+        $this->authorization->assertStructureManage();
+
         return DB::transaction(function () use ($data): CreatedResourceData {
             if (! $this->writes->dormitoryExists($data->dormitoryId)) {
                 throw new InvalidDormitoryHierarchy('Dormitory not found.');
@@ -100,6 +105,8 @@ final class DormitoryStructureMutationService implements DormitoryStructureMutat
 
     public function createFloor(CreateFloorData $data): CreatedResourceData
     {
+        $this->authorization->assertStructureManage();
+
         return DB::transaction(function () use ($data): CreatedResourceData {
             if (! $this->writes->buildingExists($data->buildingId)) {
                 throw new InvalidDormitoryHierarchy('Building not found.');
@@ -138,6 +145,8 @@ final class DormitoryStructureMutationService implements DormitoryStructureMutat
 
     public function createRoom(CreateRoomData $data): CreatedResourceData
     {
+        $this->authorization->assertStructureManage();
+
         return DB::transaction(function () use ($data): CreatedResourceData {
             if (! $this->writes->floorExists($data->floorId)) {
                 throw new InvalidDormitoryHierarchy('Floor not found.');
@@ -178,6 +187,8 @@ final class DormitoryStructureMutationService implements DormitoryStructureMutat
 
     public function createBed(CreateBedData $data): CreatedResourceData
     {
+        $this->authorization->assertStructureManage();
+
         return DB::transaction(function () use ($data): CreatedResourceData {
             $roomRow = $this->writes->findRoom($data->roomId);
 
@@ -231,6 +242,8 @@ final class DormitoryStructureMutationService implements DormitoryStructureMutat
 
     public function changeDormitoryStatus(string $dormitoryId, string $status): ResourceStatusChangedData
     {
+        $this->authorization->assertStructureManage();
+
         return DB::transaction(function () use ($dormitoryId, $status): ResourceStatusChangedData {
             $row = $this->writes->findDormitory($dormitoryId);
 
@@ -257,6 +270,8 @@ final class DormitoryStructureMutationService implements DormitoryStructureMutat
 
     public function changeRoomStatus(string $roomId, string $status): ResourceStatusChangedData
     {
+        $this->authorization->assertStructureManage();
+
         return DB::transaction(function () use ($roomId, $status): ResourceStatusChangedData {
             $row = $this->writes->findRoom($roomId);
 
@@ -285,6 +300,8 @@ final class DormitoryStructureMutationService implements DormitoryStructureMutat
 
     public function changeBedStatus(string $bedId, string $status): ResourceStatusChangedData
     {
+        $this->authorization->assertStructureManage();
+
         return DB::transaction(function () use ($bedId, $status): ResourceStatusChangedData {
             $row = $this->writes->findBed($bedId);
 
@@ -312,56 +329,12 @@ final class DormitoryStructureMutationService implements DormitoryStructureMutat
 
     public function recordBedOccupancyStart(string $bedId): BedOccupancyChangedData
     {
-        return DB::transaction(function () use ($bedId): BedOccupancyChangedData {
-            $row = $this->writes->findBed($bedId);
-
-            if ($row === null) {
-                throw new InvalidDormitoryHierarchy('Bed not found.');
-            }
-
-            $bed = Bed::create(
-                id: BedId::fromString($row['id']),
-                roomId: RoomId::fromString($row['room_id']),
-                label: $row['label'],
-                status: $row['status'],
-                occupancy: $row['occupancy'],
-            );
-            $bed->startOccupancy();
-
-            $this->writes->updateBedOccupancy($bed->id->value, $bed->occupancy);
-
-            return new BedOccupancyChangedData(
-                id: $bed->id->value,
-                physicalOccupancyState: $bed->occupancy->value,
-            );
-        });
+        $this->authorization->assertUnresolvedActionDenied();
     }
 
     public function recordBedOccupancyEnd(string $bedId): BedOccupancyChangedData
     {
-        return DB::transaction(function () use ($bedId): BedOccupancyChangedData {
-            $row = $this->writes->findBed($bedId);
-
-            if ($row === null) {
-                throw new InvalidDormitoryHierarchy('Bed not found.');
-            }
-
-            $bed = Bed::create(
-                id: BedId::fromString($row['id']),
-                roomId: RoomId::fromString($row['room_id']),
-                label: $row['label'],
-                status: $row['status'],
-                occupancy: $row['occupancy'],
-            );
-            $bed->endOccupancy();
-
-            $this->writes->updateBedOccupancy($bed->id->value, $bed->occupancy);
-
-            return new BedOccupancyChangedData(
-                id: $bed->id->value,
-                physicalOccupancyState: $bed->occupancy->value,
-            );
-        });
+        $this->authorization->assertUnresolvedActionDenied();
     }
 
     private function resolveStatus(?string $status): ResourceStatus

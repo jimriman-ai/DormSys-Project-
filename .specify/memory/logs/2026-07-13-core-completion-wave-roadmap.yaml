@@ -1,0 +1,6 @@
+prompt_id: DORMSYS_CORE_COMPLETION_WAVE_ROADMAP
+recorded_at: 2026-07-13T15:00:00+03:30
+work_item: core-completion-wave-roadmap
+stage: governance-planning
+tags: [AMBIGUITY, EVIDENCE_CONFLICT]
+summary: "P0 framing listed Spec03 Dependent/Family as open blocker, but catalog shows SPEC03_CLOSED; remaining Family path risk is Request Dependent live (IRG-blocked), not Spec03 reopen. Spec04 Check-in residual already retired via readiness+reconciliation."

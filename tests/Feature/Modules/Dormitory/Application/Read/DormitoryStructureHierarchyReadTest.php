@@ -68,8 +68,10 @@ it('lists floors for a building', function (): void {
     seedHierarchyReadFloor($building, '1');
     seedHierarchyReadFloor(seedHierarchyReadBuilding(seedHierarchyReadDormitory('HIER-OTHER'), 'Z'), '9');
 
-    $floors = app(DormitoryStructureReadContract::class)
-        ->listBuildingFloors($building->getId());
+    $floors = withDormitoryStructureViewActor(
+        fn () => app(DormitoryStructureReadContract::class)
+            ->listBuildingFloors($building->getId()),
+    );
 
     expect($floors)->toHaveCount(2)
         ->and($floors[0]->label)->toBe('1')
@@ -79,8 +81,10 @@ it('lists floors for a building', function (): void {
 });
 
 it('returns an empty floor list for a missing building', function (): void {
-    expect(app(DormitoryStructureReadContract::class)
-        ->listBuildingFloors(Uuid::uuid7()->toString()))->toBe([]);
+    expect(withDormitoryStructureViewActor(
+        fn () => app(DormitoryStructureReadContract::class)
+            ->listBuildingFloors(Uuid::uuid7()->toString()),
+    ))->toBe([]);
 });
 
 it('lists rooms for a floor', function (): void {
@@ -95,8 +99,10 @@ it('lists rooms for a floor', function (): void {
         'R-99',
     );
 
-    $rooms = app(DormitoryStructureReadContract::class)
-        ->listFloorRooms($floor->getId());
+    $rooms = withDormitoryStructureViewActor(
+        fn () => app(DormitoryStructureReadContract::class)
+            ->listFloorRooms($floor->getId()),
+    );
 
     expect($rooms)->toHaveCount(2)
         ->and($rooms[0]->code)->toBe('R-01')
@@ -109,8 +115,10 @@ it('lists rooms for a floor', function (): void {
 });
 
 it('returns an empty room list for a missing floor', function (): void {
-    expect(app(DormitoryStructureReadContract::class)
-        ->listFloorRooms(Uuid::uuid7()->toString()))->toBe([]);
+    expect(withDormitoryStructureViewActor(
+        fn () => app(DormitoryStructureReadContract::class)
+            ->listFloorRooms(Uuid::uuid7()->toString()),
+    ))->toBe([]);
 });
 
 it('lists beds for a room', function (): void {
@@ -128,8 +136,10 @@ it('lists beds for a room', function (): void {
         'BX',
     );
 
-    $beds = app(DormitoryStructureReadContract::class)
-        ->listRoomBeds($room->getId());
+    $beds = withDormitoryStructureViewActor(
+        fn () => app(DormitoryStructureReadContract::class)
+            ->listRoomBeds($room->getId()),
+    );
 
     expect($beds)->toHaveCount(2)
         ->and($beds[0]->label)->toBe('B1')
@@ -140,8 +150,10 @@ it('lists beds for a room', function (): void {
 });
 
 it('returns an empty bed list for a missing room', function (): void {
-    expect(app(DormitoryStructureReadContract::class)
-        ->listRoomBeds(Uuid::uuid7()->toString()))->toBe([]);
+    expect(withDormitoryStructureViewActor(
+        fn () => app(DormitoryStructureReadContract::class)
+            ->listRoomBeds(Uuid::uuid7()->toString()),
+    ))->toBe([]);
 });
 
 it('does not write when reading floors rooms and beds', function (): void {
@@ -149,6 +161,7 @@ it('does not write when reading floors rooms and beds', function (): void {
     $floor = seedHierarchyReadFloor($building, '1');
     $room = seedHierarchyReadRoom($floor, 'R-01');
     seedHierarchyReadBed($room, 'B1');
+    $principalId = prepareDormitoryStructureViewPrincipalId();
 
     $beforeFloors = FloorModel::query()->count();
     $beforeRooms = RoomModel::query()->count();
@@ -161,10 +174,12 @@ it('does not write when reading floors rooms and beds', function (): void {
         }
     });
 
-    $reads = app(DormitoryStructureReadContract::class);
-    $reads->listBuildingFloors($building->getId());
-    $reads->listFloorRooms($floor->getId());
-    $reads->listRoomBeds($room->getId());
+    App\Application\Mutation\Support\MutationPrincipalContext::runAs($principalId, function () use ($building, $floor, $room): void {
+        $reads = app(DormitoryStructureReadContract::class);
+        $reads->listBuildingFloors($building->getId());
+        $reads->listFloorRooms($floor->getId());
+        $reads->listRoomBeds($room->getId());
+    });
 
     expect($queries)->toBe(0)
         ->and(FloorModel::query()->count())->toBe($beforeFloors)

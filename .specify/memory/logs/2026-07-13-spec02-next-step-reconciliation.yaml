@@ -1,0 +1,6 @@
+prompt_id: SPEC02_NEXT_STEP_RECONCILIATION
+recorded_at: 2026-07-13T15:05:00+03:30
+work_item: spec02-dormitory-authorization-binding
+stage: governance-reconciliation
+tags: [EVIDENCE_CONFLICT, CLOSED]
+summary: "Stale review-pending wording superseded: IMPLEMENTATION_ACCEPTED already recorded; no Spec02 structure-binding closeout artifact exists; next step is limited closeout only."

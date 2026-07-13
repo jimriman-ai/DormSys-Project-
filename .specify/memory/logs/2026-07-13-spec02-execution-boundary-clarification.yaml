@@ -1,0 +1,6 @@
+prompt_id: SPEC02_EXECUTION_BOUNDARY_CLARIFICATION
+recorded_at: 2026-07-13T14:15:00+03:30
+work_item: spec02-execution-boundary
+stage: governance-clarification
+tags: [EVIDENCE_CONFLICT, EVIDENCE_GAP]
+summary: "pasted-text catalog snapshot asserted no Spec02 Implementation Lock / IA evidence, while repo already holds 2026-07-13 human IA and dormitory authorization-binding implementation lock for BOUNDED_DORMITORY_STRUCTURE_AUTHORIZATION_BINDING_ONLY. CD-006 was not found as a Spec02 execution-authority marker."
