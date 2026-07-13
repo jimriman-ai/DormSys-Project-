@@ -35,8 +35,8 @@ timestamp: 2026-07-12
 
 | Residual Scope Item | Evidence Source | Candidate Domain Owner | Ownership Status |
 | ------------------- | --------------- | ---------------------- | ---------------- |
-| Auth integration | closeout evidence — `.specify/docs/handoff/spec04-backend-closeout.md` §6 (“Authorization / policies / roles / guards for Dormitory surfaces”); Wave 02 baseline residual set; `specs/004-accommodation-resource/spec.md` Governance & Evolution Notes residual table | TBD | Pending Decision |
-| UI presentation | closeout evidence — `spec04-backend-closeout.md` §6 (“Livewire / Blade / UI”; HTTP/API/controllers/FormRequests); Wave 02 baseline residual set; Spec04 Governance & Evolution Notes | TBD | Pending Decision |
+| Auth integration | closeout evidence — `.specify/docs/handoff/spec04-backend-closeout.md` §6 (“Authorization / policies / roles / guards for Dormitory surfaces”); Wave 02 baseline residual set; `specs/004-accommodation-resource/spec.md` Governance & Evolution Notes residual table; post-binding refresh `.specify/docs/spec04/spec04-auth-residual-post-binding-status-refresh.md` | `SPEC02_IDENTITY` (D3) — foundation; Spec04 tracks Product residual only | **Ownership decided (D3).** **Closed packet:** Application structure PEP (`SPEC02_DORMITORY_STRUCTURE_AUTHORIZATION_BINDING_COMPLETED`). **Open remainder:** role mapping / Presentation / HTTP / broader auth — deferred; **not** Spec04-executable without separate Spec02/UI authority |
+| UI presentation | closeout evidence — `spec04-backend-closeout.md` §6 (“Livewire / Blade / UI”; HTTP/API/controllers/FormRequests); Wave 02 baseline residual set; Spec04 Governance & Evolution Notes | `INDEPENDENT_UI_FEATURE` (D4) | **Ownership decided (D4).** **Blocked** for intake — no product UI authorization (`dormitory-admin-ui`) |
 | Allocation integration / Allocation Assignability | closeout evidence — `spec04-backend-closeout.md` §6; ownership D1 + assignability ownership; closeout `.specify/docs/closeout/spec04-allocation-assignability-residual-closeout.md` | `SPEC04` | **CLOSED** (`SPEC04_RESIDUAL_CLOSED` / `FULLY_CLOSED`; implementation accepted 2026-07-12) |
 | Check-in wiring | closeout evidence — `spec04-backend-closeout.md` §6; ownership D2; readiness `NO_FURTHER_ACTION_RECOMMENDED`; reconciliation `.specify/docs/reconciliation/spec04-checkin-residual-closeout-reconciliation.md` | `SPEC07` (D2) | **RETIRED_FROM_ACTIVE_SPEC04_TRACKING** / `CLOSED_NO_FURTHER_ACTION` (2026-07-12) — not Spec04 execution; Spec07 not auto-reopened |
 
@@ -70,6 +70,6 @@ Candidate Domain Owner for **remaining open** map rows (Auth, UI) remains as pre
 
 | Field | Value |
 | ----- | ----- |
-| Version | 1.3.0 |
-| Status | Traceability map — Assignability CLOSED; Check-in wiring RETIRED; Spec02 structure PEP binding COMPLETED (bounded); Auth UI/role-mapping remainder + UI still open |
+| Version | 1.4.0 |
+| Status | Traceability map — Assignability CLOSED; Check-in RETIRED; Spec02 structure PEP COMPLETED (bounded); Auth ownership D3 + open remainder; UI ownership D4 blocked; Core Wave: Workflow/Spec06 deferred |
 | Last updated | 2026-07-13 |

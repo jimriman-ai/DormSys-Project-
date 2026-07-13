@@ -1,6 +1,6 @@
 # DormSys Spec Catalog
 
-**Version:** 1.0.19 (spec02 dormitory structure authorization binding closeout mirrored)  
+**Version:** 1.0.22 (product authorization gap triage mirrored)  
 **Status:** Hard Freeze — Operational  
 **Last Updated:** 1405/04/22 | 2026/07/13  
 **Related Documents:** [`catalog-decisions.md`](catalog-decisions.md), [`context-map.md`](context-map.md), [`playbook/specification-playbook.md`](playbook/specification-playbook.md)
@@ -210,6 +210,29 @@ This catalog is the controlling operational reference for downstream `spec.md`, 
 
 ---
 ## Change Log
+
+### 1.0.22 — 2026-07-13 (product authorization gap triage mirrored)
+
+- **Product authorization:** Gap triage recorded — `NO_NAMED_PRODUCT_SURFACE_AUTHORIZED`; Spec04 Auth residual remains `REQUIRES_PRODUCT_AUTHORITY`; Spec11 Reporting remains **separate authority track** (not merged into Spec04 Auth residual).
+- Informational/status only; does **not** authorize Auth packet prep, UI, role mapping, HTTP/Policy, Feature Contracts, Lottery, Workflow, or Spec02 unfreeze.
+- Evidence: [`decisions/product-authorization-gap-triage.md`](decisions/product-authorization-gap-triage.md); [`spec04/spec04-auth-residual-product-decision.md`](spec04/spec04-auth-residual-product-decision.md).
+- Next flow: `PRODUCT_SURFACE_AUTHORIZATION_DECISION` (human/product; non-executing).
+
+### 1.0.21 — 2026-07-13 (spec04 auth residual product decision mirrored)
+
+- **spec04 Auth residual:** Product decision recorded — `SPEC04_AUTH_RESIDUAL_REQUIRES_PRODUCT_AUTHORITY`. Application PEP remains completed under Spec02; Auth residual remains **OPEN**; pre-UI packet promotion **not viable** without named product-authorized surface (`dormitory-admin-ui` and peers remain unauthorized).
+- Informational/status only; does **not** authorize role mapping, UI, HTTP/Policy, Feature Contracts, stream selection, Lottery, Workflow, Full RBAC, or Spec02 unfreeze.
+- Evidence: [`spec04/spec04-auth-residual-product-decision.md`](spec04/spec04-auth-residual-product-decision.md); portfolio [`planning/deferred-portfolio-review-and-disposition.md`](planning/deferred-portfolio-review-and-disposition.md).
+- Next flow: `PRODUCT_AUTHORIZATION_GAP_TRIAGE` (non-executing).
+
+### 1.0.20 — 2026-07-13 (core completion wave membership / hygiene mirrored)
+
+- **Core Completion Wave (informational):** Workflow `WORKFLOW_REMAINS_DEFERRED`; Spec06 `SPEC06_REMAINS_DEFERRED` (out of Core Wave path); Spec04 Auth residual post-binding status refresh completed (Application structure PEP closed under Spec02; Auth residual **not** closed — role mapping / Presentation / HTTP remainder deferred; Dormitory UI product auth still blocked).
+- Spec06 inventory status unchanged: `IMPLEMENTATION_COMPLETE_GOVERNANCE_OPEN`; regularization complete; `AUTHORITY_NOT_AVAILABLE` continues to hold **new** Lottery implementation.
+- Spec02 / Spec03 / Spec04 Assignability / Check-in postures unchanged (closed / frozen / retired as previously recorded).
+- Informational/status reconciliation only; does **not** authorize implementation, stream selection, UI intake, role mapping, OA-02-01, Lottery work, or Workflow activation.
+- Evidence: [`planning/core-completion-wave-plan.md`](planning/core-completion-wave-plan.md); [`decisions/workflow-activate-vs-defer-decision.md`](decisions/workflow-activate-vs-defer-decision.md); [`spec04/spec04-auth-residual-post-binding-status-refresh.md`](spec04/spec04-auth-residual-post-binding-status-refresh.md); [`decisions/spec06-core-wave-inclusion-decision.md`](decisions/spec06-core-wave-inclusion-decision.md); [`planning/core-completion-wave-hygiene-pass.md`](planning/core-completion-wave-hygiene-pass.md).
+- Next flow: `CORE_COMPLETION_WAVE_STREAM_SELECTION` (non-executing).
 
 ### 1.0.19 — 2026-07-13 (spec02 dormitory structure authorization binding closeout mirrored)
 

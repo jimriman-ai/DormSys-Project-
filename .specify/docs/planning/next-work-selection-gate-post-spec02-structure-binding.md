@@ -157,6 +157,22 @@ This gate does **not** authorize coding, contracts, UI intake, Spec02 expansion,
 
 ---
 
+## Progression Note (hygiene — non-mutating of historical recommendation)
+
+Historical `RECOMMENDED_NEXT_GATE` of this artifact remains `CORE_COMPLETION_WAVE_PLAN` (correct at gate creation). Subsequent Core Completion Wave gates have since completed:
+
+| Gate | Outcome |
+| ---- | ------- |
+| Core Completion Wave Plan | `WAVE_PLAN_COMPLETED` |
+| Workflow activate vs defer | `WORKFLOW_REMAINS_DEFERRED` |
+| Spec04 Auth residual post-binding refresh | Refresh `COMPLETED`; Auth residual **not** closed |
+| Spec06 Core Wave inclusion | `SPEC06_REMAINS_DEFERRED` |
+| Hygiene pass | See `.specify/docs/planning/core-completion-wave-hygiene-pass.md` |
+
+**Current wave next gate (authoritative via wave plan / hygiene):** `CORE_COMPLETION_WAVE_STREAM_SELECTION`
+
+---
+
 ## No-Change Confirmation
 
 `No application, test, contract, or authorization implementation files were modified.`
@@ -169,7 +185,8 @@ Only this selection-gate artifact was created:
 
 ## Document Control
 
-- Version: 1.0.0  
+- Version: 1.0.1 (progression note only — historical next-gate text preserved)  
 - Status: **`SELECTION_GATE_RECORDED`**  
-- Recommended next gate: **`CORE_COMPLETION_WAVE_PLAN`**  
+- Recommended next gate at creation: **`CORE_COMPLETION_WAVE_PLAN`** (executed)  
+- Current wave next gate: **`CORE_COMPLETION_WAVE_STREAM_SELECTION`**  
 - Last Updated: 2026-07-13
