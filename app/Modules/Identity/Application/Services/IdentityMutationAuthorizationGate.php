@@ -10,6 +10,12 @@ use App\Modules\Identity\Application\Contracts\IdentityUserReadContract;
 
 final class IdentityMutationAuthorizationGate
 {
+    /**
+     * Actor authority for role assignment (Spatie permission).
+     * Distinct from MutationCapabilityCatalog::IDENTITY_ROLE_ASSIGN.
+     */
+    private const string ACTOR_PERMISSION_ROLES_MANAGE = 'identity.roles.manage';
+
     public function __construct(
         private readonly MutationPrincipalContextPort $principalContext,
         private readonly IdentityUserReadContract $identityRead,
@@ -27,7 +33,13 @@ final class IdentityMutationAuthorizationGate
 
     public function assertAssignRole(): void
     {
-        $this->assertActiveIdentityActor();
+        $principalId = $this->assertActiveIdentityActor();
+
+        if (! $this->identityRead->userHasPermission($principalId, self::ACTOR_PERMISSION_ROLES_MANAGE)) {
+            throw new UnauthorizedMutationException(
+                'Mutation actor must hold identity.roles.manage to assign roles.',
+            );
+        }
     }
 
     public function assertRevokeRole(): void
@@ -35,13 +47,15 @@ final class IdentityMutationAuthorizationGate
         $this->assertActiveIdentityActor();
     }
 
-    private function assertActiveIdentityActor(): void
+    private function assertActiveIdentityActor(): string
     {
         $principalId = $this->requirePrincipalId();
 
         if (! $this->identityRead->isUserActive($principalId)) {
             throw new UnauthorizedMutationException('Mutation actor must be an active identity user.');
         }
+
+        return $principalId;
     }
 
     private function requirePrincipalId(): string

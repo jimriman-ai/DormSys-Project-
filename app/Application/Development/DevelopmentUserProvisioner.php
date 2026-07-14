@@ -15,10 +15,13 @@ use App\Modules\Identity\Application\Services\AssignRoleToUserAction;
 use App\Modules\Identity\Application\Services\CreateUserAction;
 use App\Modules\Identity\Domain\Entities\User as IdentityUser;
 use App\Modules\Identity\Domain\ValueObjects\UserId;
+use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use App\Support\Development\DevelopmentUserAccountReport;
 use App\Support\ValueObjects\Identity\NationalCode;
+use Database\Seeders\IdentityRoleSeeder;
 use DateTimeImmutable;
+use Spatie\Permission\Models\Permission;
 
 final class DevelopmentUserProvisioner
 {
@@ -255,16 +258,36 @@ final class DevelopmentUserProvisioner
     {
         if (! $this->isActiveIdentityPrincipal($mutationPrincipalId)) {
             $this->withEphemeralMutationActor(
-                fn () => $this->assignRoleAction->execute($userId, $roleName),
+                function (string $actorId) use ($userId, $roleName): void {
+                    $this->ensureActorCanAssignRoles($actorId);
+                    $this->assignRoleAction->execute($userId, $roleName);
+                },
             );
 
             return;
         }
 
+        $this->ensureActorCanAssignRoles($mutationPrincipalId);
+
         MutationPrincipalContext::runAs(
             $mutationPrincipalId,
             fn () => $this->assignRoleAction->execute($userId, $roleName),
         );
+    }
+
+    private function ensureActorCanAssignRoles(string $actorId): void
+    {
+        Permission::findOrCreate(IdentityRoleSeeder::PERMISSION_IDENTITY_ROLES_MANAGE, 'web');
+
+        $model = UserModel::query()->find($actorId);
+
+        if ($model === null) {
+            return;
+        }
+
+        if (! $model->checkPermissionTo(IdentityRoleSeeder::PERMISSION_IDENTITY_ROLES_MANAGE)) {
+            $model->givePermissionTo(IdentityRoleSeeder::PERMISSION_IDENTITY_ROLES_MANAGE);
+        }
     }
 
     private function isActiveIdentityPrincipal(string $principalId): bool
@@ -277,7 +300,7 @@ final class DevelopmentUserProvisioner
     /**
      * @template TReturn
      *
-     * @param  callable(): TReturn  $callback
+     * @param  callable(string): TReturn  $callback
      * @return TReturn
      */
     private function withEphemeralMutationActor(callable $callback): mixed
@@ -290,6 +313,6 @@ final class DevelopmentUserProvisioner
             )->requireId()->value,
         );
 
-        return MutationPrincipalContext::runAs($actorId, $callback);
+        return MutationPrincipalContext::runAs($actorId, fn () => $callback($actorId));
     }
 }

@@ -23,6 +23,13 @@ class IdentityRoleSeeder extends Seeder
 
     public const string PERMISSION_AUDIT_READ = 'audit.read';
 
+    public const string PERMISSION_IDENTITY_USERS_MANAGE = 'identity.users.manage';
+
+    public const string PERMISSION_IDENTITY_USERS_VIEW = 'identity.users.view';
+
+    /** Actor permission for AssignRoleToUserAction (D-L7-1); distinct from capability identity.role.assign. */
+    public const string PERMISSION_IDENTITY_ROLES_MANAGE = 'identity.roles.manage';
+
     public const string PERMISSION_STUDENT_RECORDS_READ = 'student_records.read';
 
     public const string PERMISSION_STUDENT_RECORDS_EDIT = 'student_records.edit';
@@ -35,9 +42,9 @@ class IdentityRoleSeeder extends Seeder
      * @var list<string>
      */
     public const array PERMISSIONS = [
-        'identity.users.manage',
-        'identity.users.view',
-        'identity.roles.manage',
+        self::PERMISSION_IDENTITY_USERS_MANAGE,
+        self::PERMISSION_IDENTITY_USERS_VIEW,
+        self::PERMISSION_IDENTITY_ROLES_MANAGE,
         self::PERMISSION_AUDIT_READ,
         self::PERMISSION_STUDENT_RECORDS_READ,
         self::PERMISSION_STUDENT_RECORDS_EDIT,
@@ -64,11 +71,13 @@ class IdentityRoleSeeder extends Seeder
             Permission::findOrCreate($permissionName, $guard);
         }
 
+        // Pre-existing Spec02 mapping (unchanged by D-L7-1). D-L7-1 does not authorize
+        // new production role grants; HRMgr / Administrator do not receive roles.manage here.
         $systemAdministrator = Role::findOrCreate(self::ROLE_SYSTEM_ADMINISTRATOR, $guard);
         $systemAdministrator->syncPermissions([
-            'identity.users.manage',
-            'identity.users.view',
-            'identity.roles.manage',
+            self::PERMISSION_IDENTITY_USERS_MANAGE,
+            self::PERMISSION_IDENTITY_USERS_VIEW,
+            self::PERMISSION_IDENTITY_ROLES_MANAGE,
         ]);
 
         foreach (self::AUDIT_READ_ROLES as $roleName) {

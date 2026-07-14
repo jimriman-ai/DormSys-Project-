@@ -23,8 +23,11 @@ use App\Modules\Identity\Application\Services\DeactivateUserAction;
 use App\Modules\Identity\Application\Services\RevokeRoleFromUserAction;
 use App\Modules\Identity\Domain\Entities\User;
 use App\Modules\Identity\Domain\ValueObjects\UserId;
+use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use App\Support\ValueObjects\Identity\NationalCode;
+use Database\Seeders\IdentityRoleSeeder;
+use Spatie\Permission\Models\Permission;
 
 /**
  * @template TReturn
@@ -58,6 +61,21 @@ function createActiveMutationActorId(string $displayName = 'Mutation Actor', ?st
 }
 
 /**
+ * Test-only direct grant of the role-assign actor permission (D-L7-1).
+ * Not a production role→permission mapping decision.
+ */
+function grantIdentityRolesManagePermission(string $userId): void
+{
+    Permission::findOrCreate(IdentityRoleSeeder::PERMISSION_IDENTITY_ROLES_MANAGE, 'web');
+
+    $model = UserModel::query()->findOrFail($userId);
+
+    if (! $model->checkPermissionTo(IdentityRoleSeeder::PERMISSION_IDENTITY_ROLES_MANAGE)) {
+        $model->givePermissionTo(IdentityRoleSeeder::PERMISSION_IDENTITY_ROLES_MANAGE);
+    }
+}
+
+/**
  * @template TReturn
  *
  * @param  callable(): TReturn  $callback
@@ -70,9 +88,12 @@ function withMutationActor(callable $callback, ?string $actorId = null): mixed
 
 function assignRoleThroughMutation(UserId $userId, string $roleName, ?string $actorId = null): void
 {
-    withMutationActor(
+    $resolvedActorId = $actorId ?? createActiveMutationActorId();
+    grantIdentityRolesManagePermission($resolvedActorId);
+
+    mutationActingAs(
+        $resolvedActorId,
         fn () => app(AssignRoleToUserAction::class)->execute($userId, $roleName),
-        $actorId,
     );
 }
 

@@ -96,11 +96,33 @@ it('denies role assign without a mutation principal', function (): void {
         $target->requireId(),
         IdentityRoleSeeder::ROLE_ADMINISTRATOR,
     ))->toThrow(UnauthorizedMutationException::class);
+
+    expect(app(IdentityUserReadContract::class)->userHasRole(
+        $target->requireId()->value,
+        IdentityRoleSeeder::ROLE_ADMINISTRATOR,
+    ))->toBeFalse();
 });
 
-it('allows role assign for an active mutation actor', function (): void {
+it('denies role assign for an active actor without identity.roles.manage', function (): void {
     Artisan::call('db:seed', ['--class' => IdentityRoleSeeder::class]);
     $actorId = createIdentityEmployeeMutationActor();
+    $target = createIdentityUserThroughMutation('Role Assign Denied Target', 'role-assign-denied@example.com');
+
+    expect(fn () => mutationActingAs($actorId, fn () => app(AssignRoleToUserAction::class)->execute(
+        $target->requireId(),
+        IdentityRoleSeeder::ROLE_ADMINISTRATOR,
+    )))->toThrow(UnauthorizedMutationException::class, 'Mutation actor must hold identity.roles.manage to assign roles.');
+
+    expect(app(IdentityUserReadContract::class)->userHasRole(
+        $target->requireId()->value,
+        IdentityRoleSeeder::ROLE_ADMINISTRATOR,
+    ))->toBeFalse();
+});
+
+it('allows role assign for an active actor holding identity.roles.manage', function (): void {
+    Artisan::call('db:seed', ['--class' => IdentityRoleSeeder::class]);
+    $actorId = createIdentityEmployeeMutationActor();
+    grantIdentityRolesManagePermission($actorId);
     $target = createIdentityUserThroughMutation('Role Assign Target', 'role-assign@example.com');
 
     mutationActingAs($actorId, fn () => app(AssignRoleToUserAction::class)->execute(
@@ -114,6 +136,7 @@ it('allows role assign for an active mutation actor', function (): void {
 it('denies role revoke without a mutation principal', function (): void {
     Artisan::call('db:seed', ['--class' => IdentityRoleSeeder::class]);
     $actorId = createIdentityEmployeeMutationActor();
+    grantIdentityRolesManagePermission($actorId);
     $target = createIdentityUserThroughMutation('Revoke Target', 'revoke-target@example.com');
 
     mutationActingAs($actorId, fn () => app(AssignRoleToUserAction::class)->execute(
@@ -130,6 +153,7 @@ it('denies role revoke without a mutation principal', function (): void {
 it('allows role revoke for an active mutation actor', function (): void {
     Artisan::call('db:seed', ['--class' => IdentityRoleSeeder::class]);
     $actorId = createIdentityEmployeeMutationActor();
+    grantIdentityRolesManagePermission($actorId);
     $target = createIdentityUserThroughMutation('Allowed Revoke Target', 'allowed-revoke@example.com');
 
     mutationActingAs($actorId, fn () => app(AssignRoleToUserAction::class)->execute(

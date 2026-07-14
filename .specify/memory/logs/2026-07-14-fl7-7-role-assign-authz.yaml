@@ -1,0 +1,6 @@
+prompt_id: F-L7-7-DDG-IDENTITY-ROLE-ASSIGN-AUTHZ
+recorded_at: 2026-07-14T22:45:00+03:30
+work_item: identity-role-assign-authz
+stage: L7-remediation
+tags: [AMBIGUITY, CLOSED, SAFE_PROGRESS]
+summary: "D-L7-1 closed F-L7-7 via IdentityUserReadContract::userHasPermission(identity.roles.manage) in IdentityMutationAuthorizationGate; Spec02 seeder already granted that permission to SystemAdministrator while D-L7-1 forbids new production role grants, leaving ownership backlog open."
