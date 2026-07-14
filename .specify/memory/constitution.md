@@ -119,15 +119,19 @@ DormSys is implemented as a **server-rendered enterprise web application** with 
 When interacting with this document, contributors must assume the responsibilities of multiple architectural roles.
 
 ### Enterprise Software Architect
+
 Ensures the system architecture remains coherent, avoids unnecessary complexity, and supports long-term evolution.
 
 ### Domain Analyst
+
 Preserves the integrity of domain concepts and ensures that terminology and business rules remain consistent.
 
 ### Backend Systems Designer
+
 Maps domain concepts into maintainable backend structures while respecting architectural constraints.
 
 ### Constitution Author
+
 Maintains governance integrity and prevents accidental erosion of architectural discipline.
 
 ### Responsibility Boundaries
@@ -135,6 +139,7 @@ Maintains governance integrity and prevents accidental erosion of architectural 
 This document defines **principles and invariants**, not implementation details.
 
 When uncertainty arises:
+
 - Architectural decisions escalate to the **Tech Lead**
 - Business rule changes escalate to the **Product Owner**
 
@@ -181,6 +186,7 @@ This stack was selected based on the Why → Problem → Need → Solution → S
 | Tailwind CSS | 4.x | Utility-first styling with RTL support |
 
 **Layer Usage Rule:**
+
 - Blade → page structure, layouts, static partials
 - Livewire → any component requiring server interaction or reactive state
 - Alpine.js → purely client-side UI (open/close, tab switch, dropdown)
@@ -223,6 +229,7 @@ This stack was selected based on the Why → Problem → Need → Solution → S
 ### Constraint
 
 All technology additions or changes require:
+
 - An Architecture Decision Record (ADR)
 - Approval from the Tech Lead
 
@@ -245,6 +252,7 @@ DormSys is implemented as a **Modular Monolith** — a single deployable applica
 ### Rationale
 
 Compared to microservices, a modular monolith provides:
+
 - simpler deployment
 - easier debugging and tracing
 - simpler transactions
@@ -264,20 +272,25 @@ DormSys follows a **Clean Architecture layered structure** combined with **light
 ### Architectural Layers
 
 #### Domain Layer
+
 Contains pure business logic. Components include Entities, Value Objects, Aggregates, Domain Services, Domain Events, State Machines, and Business Invariants.
 
 Constraints:
+
 - Must not depend on framework components
 - Must not access external systems or I/O
 - Must remain pure business logic
 
 #### Application Layer
+
 Orchestrates use cases. Components include Application Services, Command Handlers, DTO Mapping, and Transaction Boundaries.
 
 #### Infrastructure Layer
+
 Implements technical concerns: Eloquent Models, Repository Implementations, Queue Workers, Cache Adapters, External Integrations, Storage Adapters.
 
 #### Presentation Layer
+
 Handles external interaction: Livewire Components, Blade Views, REST Controllers, CLI Commands, Scheduled Jobs, Form Requests.
 
 ### Dependency Rule
@@ -300,6 +313,7 @@ DormSys operates on a **single PostgreSQL database**. Logical modularity is pres
 ### Module Ownership Rules
 
 Each module:
+
 - owns its database tables exclusively
 - is the only component permitted to write to those tables
 
@@ -308,11 +322,13 @@ Other modules may interact only through **Application Services** — never throu
 ### Cross-Module Data Access
 
 Allowed:
+
 ```
 Module A → Application Service Interface → Module B
 ```
 
 Prohibited:
+
 ```
 Module A → direct SQL query → Module B tables
 ```
@@ -332,6 +348,7 @@ Across module boundaries: foreign keys are **prohibited by default**. Cross-modu
 All domain entities with lifecycle transitions must implement **explicit state machines** using `spatie/laravel-model-states`.
 
 Entities requiring state machines include:
+
 - Request lifecycle
 - Lottery Program lifecycle
 - Allocation lifecycle
@@ -342,6 +359,7 @@ State transitions must be defined in **Domain State Classes**. State transitions
 ### Defined State Machines
 
 **Request States:**
+
 ```
 Draft → Submitted → PendingDepartmentManager
      → PendingHR → PendingDormitoryManager
@@ -352,6 +370,7 @@ Draft → Submitted → PendingDepartmentManager
 ```
 
 **Lottery Program States:**
+
 ```
 Draft → WaitingApproval → Approved
      → RegistrationOpen → RegistrationClosed
@@ -366,6 +385,7 @@ Draft → WaitingApproval → Approved
 DormSys implements **full operational audit logging** using `spatie/laravel-activitylog`.
 
 All critical events must generate immutable audit records including:
+
 - Request submissions and state changes
 - Approval and rejection decisions (with reasons)
 - Lottery program creation, execution, and results
@@ -519,7 +539,9 @@ DormSys exists to provide **a transparent, auditable, and automated dormitory ma
 These rules are **non-negotiable** and must always be enforced at the domain layer. Violating these rules compromises system integrity.
 
 ## BR-01 — Request Eligibility
+
 An employee may submit a request only if:
+
 - the employee is currently active
 - the employee does not hold an active dormitory allocation
 - the employee has no active pending request
@@ -527,25 +549,33 @@ An employee may submit a request only if:
 - the requested check-out date is after the check-in date
 
 ## BR-02 — One Person One Allocation
+
 A person may not hold more than **one active allocation** at any time. This constraint applies across all allocation methods: lottery, direct, and external.
 
 ## BR-03 — FamilyDirect Room Exclusivity
+
 FamilyDirect requests must be allocated to **private rooms only**. The room must remain exclusive to the family unit for the entire allocation period. Shared beds are not permitted.
 
 ## BR-04 — Group Request Size
+
 Mission/Group requests must contain **at least 2 and at most 20 members**. Requests outside this range are invalid. Each group request must designate a **group leader**.
 
 ## BR-05 — Allocation Overlap Prevention
+
 Two allocations for the same person must never overlap in time. The domain layer must validate date ranges before confirming any allocation.
 
 ## BR-06 — Direct Allocation Justification
+
 Direct allocations must include a **mandatory reason code**: mission assignment, emergency housing, or organizational directive. Direct allocations without a valid reason are prohibited.
 
 ## BR-07 — Lottery Penalty
+
 Employees who previously won dormitory lotteries receive a **score penalty** in future lotteries. Penalty magnitude is determined by the `LotteryWinCounter` and the active `ScoringConfig`.
 
 ## BR-08 — Lottery Execution Integrity
+
 Before a lottery draw:
+
 - An **Eligible Snapshot** must be captured and frozen
 - The snapshot must remain immutable throughout execution
 - Results must use a **deterministic RandomSeed** to be reproducible
@@ -556,27 +586,35 @@ Before a lottery draw:
 - Once completed, lottery results are **immutable**; corrections require a new Lottery Run
 
 ## BR-09 — Lottery Auto-Allocation
+
 After a successful draw:
+
 - **Internal dormitories:** Allocation records and AllocationItems are created automatically (`AllocationMethod = LotteryAutomatic`). Bed and room occupancy is updated atomically.
 - **External dormitories:** Voucher codes are generated and archived. No physical allocation or occupancy tracking applies.
 
 ## BR-10 — Reserve Promotion
+
 If a winner declines or becomes ineligible, the **next Reserve** is automatically promoted. For internal dormitories, an automatic allocation is created for the promoted reserve. For external dormitories, a voucher is generated.
 
 ## BR-11 — Lottery-Based Allocation Immutability
+
 Allocations created by the lottery engine (`AllocationMethod = LotteryAutomatic`) are **read-only**. Manual modification requires explicit override with Dormitory Manager permission and audit record.
 
 ## BR-12 — External Dormitory Scope
+
 External dormitory allocations must respect:
+
 - One allocation per person rule (BR-02)
 - Occupancy lifecycle tracking via voucher only
 - Full audit logging
 External dormitories do not expose room or bed identifiers.
 
 ## BR-13 — Check-In/Check-Out Scope
+
 Check-In and Check-Out registration applies **only to internal dormitory allocations**. External dormitory lottery winners interact with the system through vouchers only.
 
 ## BR-14 — Idempotency
+
 Lottery execution, allocation creation, and approval operations must be **idempotent** or must explicitly prevent duplicate processing.
 
 ---
@@ -584,12 +622,14 @@ Lottery execution, allocation creation, and approval operations must be **idempo
 # 10. Non-Functional Requirements
 
 ## 10.1 Performance
+
 - API response time < 500ms (95th percentile) for typical requests
 - Lottery draw execution < 5 seconds for 1,000 registrations
 - Post-lottery automatic allocation < 60 seconds for 100 winners
 - Dashboard real-time updates < 10 seconds delay
 
 ## 10.2 Security
+
 - Authenticated access required for all operations
 - Role-based authorization using Spatie Laravel Permission
 - HTTPS enforcement
@@ -597,33 +637,39 @@ Lottery execution, allocation creation, and approval operations must be **idempo
 - Sensitive data access must be logged
 
 ## 10.3 Availability
+
 - 99.5% uptime during operational hours
 - Reliable deployment processes, database backup strategy, monitoring and alerting
 
 ## 10.4 Maintainability
+
 - Modular design with clear separation of concerns
 - Consistent naming conventions following PSR-12 and Laravel standards
 - 100% automated test coverage for Domain layer logic
 
 ## 10.5 Observability
+
 - Structured application logs
 - Audit logs for compliance
 - Laravel Pulse for performance monitoring
 - Sentry for error tracking
 
 ## 10.6 Data Integrity
+
 - All timestamps stored in UTC
 - All database transactions must maintain ACID guarantees
 - Lottery execution and allocation creation must be wrapped in transactional boundaries
 - Automatic rollback on partial failures
 
 ## 10.7 Localization
+
 - Primary UI language: **Persian (Farsi)**
 - RTL layout required
 - Unicode data handling throughout
 - Timezone: Asia/Tehran for display; UTC for storage
 
 ## 10.8 Scalability
+
 - Support 1,000 concurrent employees
 - Support up to 50 dormitories
 - Support up to 5,000 beds across all dormitories
@@ -653,6 +699,7 @@ DormSys is logically partitioned into the following bounded contexts. Each modul
 | **Reporting** | Read-only reporting projections (cross-module reads only) | none (projections only) |
 
 ### Module Ownership Invariant
+
 No module may write to another module's tables. The **Reporting** module is the only module permitted to read across module boundaries, and must never write.
 
 **Dependent ownership (CD-009):** The `Dependent` aggregate is owned by the **Employee** module. Request may store snapshots or references at submission time; it does not own the Dependent table or lifecycle.
@@ -673,6 +720,10 @@ Access control is governed by the **Principle of Least Privilege**.
 | Lottery Operator | — | — | ✅ | — | — | — | — |
 | Operator | — | — | — | — | — | ✅ | — |
 | Admin | — | — | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+# Role Capabilities
+
+HR Manager: can read/edit student records across all departments within the authorized product surface; non-delegatable
 
 ---
 
@@ -782,5 +833,27 @@ Before any implementation artifact is considered complete:
 | 1.3.0 | 1405/03/31 | Full alignment with ADR-001 stack; discovery document integration; Voucher, CheckIn, Report modules added; extended business rules; SPA prohibition explicit; Operator and Lottery Operator roles added; MinIO and Horizon added to stack |
 
 ---
+
+## Artifact Discipline Rule: Canonical Record Per Decision Boundary
+
+For each unresolved governance decision boundary, there must be exactly one authoritative canonical resolution record.
+
+Supporting evidence may be distributed across multiple files, but decision ownership, current status, pending human decision, and final resolution must be tracked in the canonical record only.
+
+Decision indexes, catalogs, and spec catalogs must act as pointers only. They must not duplicate canonical decision content.
+
+Agents must not create a new clarification, decision, or resolution artifact for the same unresolved decision boundary unless explicitly instructed by a human maintainer.
+
+Agents must not infer or declare resolution authority from supporting evidence alone. An unresolved governance decision remains unresolved until an explicit authoritative human decision is recorded in the canonical record.
+
+When new evidence appears for an existing unresolved decision boundary, agents must update or reference the existing canonical record instead of creating a parallel artifact.
+
+A governance gap may contain multiple distinct decision boundaries, and a single human decision question may resolve multiple related gaps. Agents must decompose gaps before escalation and must not treat partial answers as full resolution.
+
+Human decision requests must be dependency-aware. Independent questions may be batched, but dependent questions must be sequenced. Agents must not ask dependent questions before prerequisite decisions are answered.
+
+Evidence-derived answer candidates may be presented to improve clarity, but they remain suggestions only. They must not be treated as inferred or resolved decisions without explicit authoritative human confirmation recorded in the canonical record.
+
+STALE_BLOCKER is escalation only. It does not authorize implementation or imply decision resolution.
 
 **CONSTITUTION ENDS**

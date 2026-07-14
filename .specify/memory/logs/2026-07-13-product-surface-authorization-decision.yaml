@@ -1,0 +1,6 @@
+prompt_id: PRODUCT_SURFACE_AUTHORIZATION_DECISION
+recorded_at: 2026-07-13T20:07:00+03:30
+work_item: product-surface-authorization-decision
+stage: CORE_COMPLETION_WAVE
+tags: [OWNER_DECISION_NEEDED, AMBIGUITY, SAFE_PROGRESS]
+summary: "Human authorized surface employee-request-self-service with self-service scope; Business Owner remains UNRESOLVED so Spec04 Auth residual stays REQUIRES_MORE_PRODUCT_AUTHORITY and next gate is PRODUCT_SURFACE_REFINEMENT_REQUIRED."

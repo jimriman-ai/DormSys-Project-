@@ -40,7 +40,7 @@ jobs:
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Run Laravel Pint
-        run: vendor/bin/pint --test
+        run: composer run pint -- --test
 
       - name: Run PHPStan (Larastan)
-        run: vendor/bin/phpstan analyse --memory-limit=1G --ansi
+        run: composer run phpstan

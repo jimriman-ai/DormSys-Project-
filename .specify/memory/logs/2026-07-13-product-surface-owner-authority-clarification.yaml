@@ -1,0 +1,6 @@
+prompt_id: PRODUCT_SURFACE_OWNER_AUTHORITY_CLARIFICATION
+recorded_at: 2026-07-13T20:31:00+03:30
+work_item: product-surface-owner-authority-clarification
+stage: CORE_COMPLETION_WAVE
+tags: [OWNER_DECISION_NEEDED, AMBIGUITY, EVIDENCE_GAP]
+summary: "No human designation of formal Business Owner for employee-request-self-service; owner field PENDING_HUMAN_DESIGNATION; Spec04 Auth readiness remains BLOCKED."

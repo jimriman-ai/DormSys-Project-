@@ -84,6 +84,28 @@ These patterns do **not** grant Design Approval, Implementation Authorization, o
 
 ---
 
+## Core Completion Wave Gates (governance sequencing — not CD-*)
+
+Non-operational gate decisions / discovery artifacts. Consult before citing wave next-gate recommendations.
+
+| Gate / Decision ID | Title | Owner File |
+|---|---|---|
+| DEFERRED_ORIGIN_RECONCILIATION | Deferred origin recovery | `.specify/docs/decisions/deferred-origin-reconciliation.md` |
+| PRODUCT_AUTHORIZATION_GAP_TRIAGE | Product authorization gap triage | `.specify/docs/decisions/product-authorization-gap-triage.md` |
+| DOMAIN_AUTHORITY_AND_ORGANIZATION_MODEL_DISCOVERY | Domain authority / org model discovery | `.specify/docs/discovery/domain-authority-and-organization-model-discovery.md` |
+| DOMAIN_STRUCTURE_EVIDENCE_CONSOLIDATION_GATE_DECISION | Intermediate consolidation gate (Accepted) | `.specify/docs/decisions/domain-structure-evidence-consolidation-gate.md` |
+| DOMAIN_STRUCTURE_AND_RELATIONSHIP_EVIDENCE_CONSOLIDATION | Evidence consolidation (next) | Prompt: `.specify/docs/prompts/domain-structure-and-relationship-evidence-consolidation.prompt.md`; Output: `.specify/docs/discovery/domain-entity-relationship-authority-map.md` |
+| BUSINESS_OWNER_FORMALIZATION_AND_ARCHITECTURE_REVIEW | Proposed Business Owner wording review («واحد اداری / منابع انسانی») | `.specify/docs/decisions/business-owner-formalization-review.md` |
+| PRODUCT_SURFACE_AUTHORIZATION_DECISION | Named surface `employee-request-self-service` (owner UNRESOLVED) | `.specify/docs/decisions/product-surface-authorization-decision.md` |
+| PRODUCT_SURFACE_OWNER_AUTHORITY_CLARIFICATION | Owner/authority sufficiency for self-service surface | `.specify/docs/decisions/product-surface-owner-authority-clarification.md` |
+| RELATIONSHIP_EVIDENCE_CONSOLIDATION | Scoped domain relationship evidence map | `.specify/docs/discovery/domain-entity-relationship-map.md` |
+| HUMAN_DOMAIN_AUTHORITY_CLARIFICATION_PACKET | Gate B1 human clarification questions (HDAC-01–06) | `.specify/docs/clarifications/human-domain-authority-clarification.md` |
+| HUMAN_AUTHORITY_RESPONSE_RESOLUTION | HDAC-01..06 response intake / resolution | `.specify/docs/decisions/human-authority-response-resolution.md` |
+| HDAC_05_BUSINESS_OWNER_REQUERY | Formal Business Owner re-query | `.specify/docs/clarifications/hdac-05-business-owner-requery.md` |
+| HDAC_06_MANAGER_APPROVAL_SCOPE_CR | Manager approve/reject scope change request | `.specify/docs/decisions/hdac-06-manager-approval-scope-change-request.md` |
+
+---
+
 ## Authority Ownership
 
 This document is an index only.
@@ -151,7 +173,7 @@ When a new decision ID is introduced:
 ---
 
 **Document Control**
-- Version: 1.4.1
-- Last Updated: 1405/04/20 | 2026/07/11
-- Change: Added Governance Patterns index entry for Integration Readiness Gate
+- Version: 1.4.2
+- Last Updated: 1405/04/22 | 2026/07/13
+- Change: Added Core Completion Wave Gates index entries including DOMAIN_STRUCTURE_EVIDENCE_CONSOLIDATION_GATE_DECISION
 - Owner: DormSys Architecture Team

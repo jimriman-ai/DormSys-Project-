@@ -1,0 +1,6 @@
+prompt_id: RELATIONSHIP_EVIDENCE_CONSOLIDATION
+recorded_at: 2026-07-13T20:39:00+03:30
+work_item: domain-entity-relationship-map
+stage: CORE_COMPLETION_WAVE
+tags: [EVIDENCE_GAP, SAFE_PROGRESS, AMBIGUITY]
+summary: "Scoped relationship map completed: 8 EXPLICIT, 1 GAP (Department↔Dormitory); Spec04 Auth remains BLOCKED and Business Owner PENDING_HUMAN_DESIGNATION."

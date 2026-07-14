@@ -1,6 +1,6 @@
 # DormSys Spec Catalog
 
-**Version:** 1.0.22 (product authorization gap triage mirrored)  
+**Version:** 1.0.30 (human authority response resolution mirrored)  
 **Status:** Hard Freeze — Operational  
 **Last Updated:** 1405/04/22 | 2026/07/13  
 **Related Documents:** [`catalog-decisions.md`](catalog-decisions.md), [`context-map.md`](context-map.md), [`playbook/specification-playbook.md`](playbook/specification-playbook.md)
@@ -210,6 +210,61 @@ This catalog is the controlling operational reference for downstream `spec.md`, 
 
 ---
 ## Change Log
+
+### 1.0.30 — 2026-07-13 (human authority response resolution mirrored)
+
+- **HDAC response resolution:** PARTIAL — HDAC-04/06 resolved from prior surface decision; HDAC-01/02/03/05 UNRESOLVED; Business Owner not designated; Spec04 Auth **BLOCKED**.
+- `business-owner-designation.md` **not** created (no formal designation).
+- Evidence: [`decisions/human-authority-response-resolution.md`](decisions/human-authority-response-resolution.md).
+- Next flow: `HUMAN_RESPONSE_REQUIRED`.
+
+### 1.0.29 — 2026-07-13 (human domain authority clarification packet mirrored)
+
+- **Gate B1 packet:** Six OPEN human questions (HDAC-01–06) packaged; Spec04 Auth remains BLOCKED; no owner designated; no implementation/UI authorized.
+- Evidence: [`clarifications/human-domain-authority-clarification.md`](clarifications/human-domain-authority-clarification.md).
+- Next flow: `HUMAN_RESPONSE_REQUIRED` (then B2 Business Owner designation when HDAC-05 answered).
+
+### 1.0.28 — 2026-07-13 (relationship evidence consolidation mirrored)
+
+- **Relationship evidence map:** Nine scoped relationships classified (8 EXPLICIT, 1 GAP Department↔Dormitory). Consolidation COMPLETE; does **not** unblock Spec04 Auth or designate Business Owner.
+- Evidence: [`discovery/domain-entity-relationship-map.md`](discovery/domain-entity-relationship-map.md).
+- Next recommended gate (routing): `B1_HUMAN_DOMAIN_AUTHORITY_CLARIFICATION` (owner designation path remains `HUMAN_OWNER_DESIGNATION_REQUIRED` per prior clarification).
+
+### 1.0.27 — 2026-07-13 (product surface owner authority clarification mirrored)
+
+- **Owner authority clarification:** Surface `employee-request-self-service` remains authorized; formal Business Owner still not designated → `OWNER_DECISION_REQUIRED_TO_PROCEED`; Spec04 Auth readiness **BLOCKED**.
+- Informational/status only; does **not** designate an owner, authorize Auth packet prep, UI, or implementation.
+- Evidence: [`decisions/product-surface-owner-authority-clarification.md`](decisions/product-surface-owner-authority-clarification.md).
+- Next flow: `HUMAN_OWNER_DESIGNATION_REQUIRED` (non-executing).
+
+### 1.0.26 — 2026-07-13 (product surface authorization decision mirrored)
+
+- **Product surface named:** `employee-request-self-service` (authenticated employee; own-request create/list/detail/status). Business Owner remains `UNRESOLVED` (`BLOCK_PENDING_HUMAN_AUTHORITY` preserved).
+- Spec04 Auth residual: `REQUIRES_MORE_PRODUCT_AUTHORITY` — Auth packet prep **not** ready while owner unresolved.
+- Informational/status only; does **not** authorize UI, RBAC, Workflow, Lottery, Reporting, dormitory admin, or manager approval.
+- Evidence: [`decisions/product-surface-authorization-decision.md`](decisions/product-surface-authorization-decision.md); skeleton [`contracts/employee-request-self-service.feature-contract.skeleton.yaml`](contracts/employee-request-self-service.feature-contract.skeleton.yaml).
+- Next flow: `PRODUCT_SURFACE_REFINEMENT_REQUIRED` (resolve Business Owner before owner-bound Auth packet handoff).
+
+### 1.0.25 — 2026-07-13 (business owner formalization review mirrored)
+
+- **Business Owner wording review:** Proposed label «واحد اداری / منابع انسانی» classified `CONFLICTING_TERM`; owner field for next auth prompt must remain `UNRESOLVED` (`BLOCK_PENDING_HUMAN_AUTHORITY`).
+- Informational/status only; does **not** assign a Business Owner, authorize Auth/UI, invent departments, or map `hr_manager` / `department_manager` to owner.
+- Evidence: [`decisions/business-owner-formalization-review.md`](decisions/business-owner-formalization-review.md).
+- Next flow: `HUMAN_DOMAIN_AUTHORITY_CLARIFICATION` (non-executing); product-surface authorization remains blocked until human names an evidenced owner.
+
+### 1.0.24 — 2026-07-13 (domain entity/relationship/authority map consolidation mirrored)
+
+- **Evidence consolidation completed:** Canonical map recorded — entity inventory COMPLETED; relationship/actor maps PARTIAL; business owner NOT_DEFINED; org model still REQUIRES_HUMAN_CLARIFICATION; Auth basis NOT_READY.
+- Informational/status only; does **not** authorize Auth packet prep, UI, role mapping, product-surface selection, Lottery, Workflow, or Spec02 unfreeze.
+- Evidence: [`discovery/domain-entity-relationship-authority-map.md`](discovery/domain-entity-relationship-authority-map.md); gate decision [`decisions/domain-structure-evidence-consolidation-gate.md`](decisions/domain-structure-evidence-consolidation-gate.md).
+- Next flow: `HUMAN_DOMAIN_AUTHORITY_CLARIFICATION` (non-executing).
+
+### 1.0.23 — 2026-07-13 (domain structure evidence consolidation gate mirrored)
+
+- **Intermediate gate accepted:** `DOMAIN_STRUCTURE_AND_RELATIONSHIP_EVIDENCE_CONSOLIDATION` inserted after domain/org discovery and before human clarification / product-surface authorization.
+- Informational/status only; does **not** authorize Auth packet prep, UI, role mapping, human clarification completion, Lottery, Workflow, or Spec02 unfreeze.
+- Evidence: [`decisions/domain-structure-evidence-consolidation-gate.md`](decisions/domain-structure-evidence-consolidation-gate.md); upstream discovery [`discovery/domain-authority-and-organization-model-discovery.md`](discovery/domain-authority-and-organization-model-discovery.md).
+- Next flow: `DOMAIN_STRUCTURE_AND_RELATIONSHIP_EVIDENCE_CONSOLIDATION` (discovery consolidation; non-executing).
 
 ### 1.0.22 — 2026-07-13 (product authorization gap triage mirrored)
 

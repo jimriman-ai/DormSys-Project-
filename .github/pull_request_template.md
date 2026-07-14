@@ -7,7 +7,7 @@
 - [ ] Tests pass (`sail artisan test` or `php artisan test`)
 - [ ] Architecture decay prevention passes (`composer run arch`)
 - [ ] PHPStan level 8 passes (`composer run phpstan`)
-- [ ] Pint formatting applied (`composer run pint`)
+- [ ] Pint check passes (`composer run pint -- --test`; apply with `composer run pint` if needed)
 
 ---
 

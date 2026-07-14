@@ -1,0 +1,64 @@
+# Feature Contract Skeleton — employee-request-self-service
+# STRUCTURE ONLY — no business rules, permissions, PEP keys, or authority decisions.
+# Filling this skeleton is NOT authorized by PRODUCT_SURFACE_AUTHORIZATION_DECISION.
+# Owner field remains UNRESOLVED pending human authority.
+
+id: employee-request-self-service
+feature_name: employee_request_self_service
+module: requests
+version: 0.0.0-skeleton
+status: skeleton
+owner: UNRESOLVED
+
+lifecycle:
+  canonical:
+    - skeleton
+    - draft
+    - reviewed
+    - approved
+    - frozen
+    - implementation-authorized
+  current: skeleton
+
+description:
+  summary: TBD
+  intent: TBD
+
+scope:
+  in_scope:
+    - TBD # human-approved capability labels only recorded in product-surface-authorization-decision.md
+  out_of_scope:
+    - TBD
+
+boundaries:
+  data_ownership: TBD # decision record: employee-owned requests only
+  auth: TBD # decision record: self-access to own requests only
+  ui: TBD # decision record: no UI implementation authorized
+  role_mapping: deferred
+  reporting: excluded
+  lottery: excluded
+  workflow: excluded
+  manager_approval: excluded
+  full_rbac: excluded
+  oa_admin_ui: excluded
+
+backend_authority:
+  read_contract: TBD
+  mutation_contract: TBD
+
+read_model:
+  authority_type: TBD
+  authority_ref: TBD
+
+authorization:
+  business_owner: UNRESOLVED
+  pep_keys: TBD
+  role_grants: TBD
+
+ui:
+  surfaces: TBD
+  implementation_authorized: false
+
+notes:
+  - Skeleton only; do not treat as Feature Contract approval.
+  - Do not invent business rules or owner identity in this file.

@@ -5,8 +5,8 @@ mutation_permission: none
 execution_authority: none
 operating_mode: FEATURE_AND_SPEC_COMPLETION_MODE
 upstream_gate: next-work-selection-gate-post-spec02-structure-binding.md
-recommended_next_gate: PRODUCT_SURFACE_AUTHORIZATION_DECISION
-wave_membership_outcomes: "Workflow DEFERRED; Spec06 DEFERRED; Auth residual REQUIRES_PRODUCT_AUTHORITY; Product auth gap triage REQUIRES_HUMAN_DECISION; NO_NAMED_PRODUCT_SURFACE_AUTHORIZED"
+recommended_next_gate: HUMAN_OWNER_DESIGNATION_REQUIRED
+wave_membership_outcomes: "Workflow DEFERRED; Spec06 DEFERRED; Surface employee-request-self-service AUTHORIZED; OWNER PENDING_HUMAN_DESIGNATION; Spec04 Auth BLOCKED → HUMAN_OWNER_DESIGNATION_REQUIRED next"
 hygiene_artifact: .specify/docs/planning/core-completion-wave-hygiene-pass.md
 deferred_portfolio_artifact: .specify/docs/planning/deferred-portfolio-review-and-disposition.md
 auth_residual_product_decision: .specify/docs/spec04/spec04-auth-residual-product-decision.md
@@ -114,17 +114,25 @@ Non-executing gates only (ordered):
 5. DEFERRED_PORTFOLIO_REVIEW_AND_DISPOSITION    ← COMPLETED (stream selection deferred until Auth product decision)
 6. SPEC04_AUTH_RESIDUAL_PRODUCT_DECISION        ← COMPLETED → SPEC04_AUTH_RESIDUAL_REQUIRES_PRODUCT_AUTHORITY
 7. PRODUCT_AUTHORIZATION_GAP_TRIAGE             ← COMPLETED → NO_NAMED_PRODUCT_SURFACE_AUTHORIZED
-8. PRODUCT_SURFACE_AUTHORIZATION_DECISION       ← NEXT (human/product)
-9. CORE_COMPLETION_WAVE_STREAM_SELECTION        ← after product surface auth (still non-executing)
+7a. DOMAIN_AUTHORITY_AND_ORGANIZATION_MODEL_DISCOVERY ← COMPLETED
+7b. DOMAIN_STRUCTURE_EVIDENCE_CONSOLIDATION_GATE_DECISION ← ACCEPTED (mandatory intermediate)
+8. DOMAIN_STRUCTURE_AND_RELATIONSHIP_EVIDENCE_CONSOLIDATION ← COMPLETED
+9. HUMAN_DOMAIN_AUTHORITY_CLARIFICATION         ← PARTIAL / superseded for surface naming (owner still open)
+9a. BUSINESS_OWNER_FORMALIZATION_AND_ARCHITECTURE_REVIEW ← COMPLETED → CONFLICTING_TERM; owner UNRESOLVED
+10. PRODUCT_SURFACE_AUTHORIZATION_DECISION      ← COMPLETED → employee-request-self-service; owner UNRESOLVED
+10a. PRODUCT_SURFACE_REFINEMENT_REQUIRED        ← refined to owner-authority clarification
+10b. PRODUCT_SURFACE_OWNER_AUTHORITY_CLARIFICATION ← COMPLETED → OWNER_DECISION_REQUIRED_TO_PROCEED
+10c. HUMAN_OWNER_DESIGNATION_REQUIRED           ← NEXT
+11. CORE_COMPLETION_WAVE_STREAM_SELECTION       ← after owner designation + Auth readiness (still non-executing)
    (pick at most one eligible stream for discovery/IA-prep — still non-executing)
-10. (Only if selected stream requires it)
+12. (Only if selected stream requires it)
    REQUEST_DEPENDENT_LIVE_PATH_DECISION
-11. (Only after product auth exists)
+13. (Only after product auth exists)
    UI_CANDIDATE_READINESS_TRIAGE
-12. Later: stream-specific readiness → Implementation Authorization (separate authority)
+14. Later: stream-specific readiness → Implementation Authorization (separate authority)
 ```
 
-**Portfolio note:** Stream selection must not run while the deferred portfolio is unclassified. Spec04 Auth residual requires product authority. Gap triage: **no named product surface authorized** — next is human/product surface authorization decision.
+**Portfolio note:** Stream selection and Spec04 Auth packet prep must not run while owner field is `PENDING_HUMAN_DESIGNATION`. Named surface `employee-request-self-service` remains authorized. **Next** is `HUMAN_OWNER_DESIGNATION_REQUIRED`.
 
 **As-executed note:** Original plan listed Spec06 before Auth refresh. After Workflow deferral, Auth residual refresh ran next (sequence-sensitivity), then Spec06 inclusion (deferred), then hygiene. Membership outcomes are unchanged in meaning.
 
@@ -179,20 +187,26 @@ RECOMMENDED_NEXT_GATE_AT_PLAN_CREATION: WORKFLOW_ACTIVATE_VS_DEFER_DECISION
 | Deferred portfolio disposition | `DEFERRED_PORTFOLIO_DISPOSITION_COMPLETED` | `.specify/docs/planning/deferred-portfolio-review-and-disposition.md` |
 | Spec04 Auth residual product decision | `SPEC04_AUTH_RESIDUAL_REQUIRES_PRODUCT_AUTHORITY` | `.specify/docs/spec04/spec04-auth-residual-product-decision.md` |
 | Product authorization gap triage | `PRODUCT_AUTHORIZATION_REQUIRES_HUMAN_DECISION` / `NO_NAMED_PRODUCT_SURFACE_AUTHORIZED` | `.specify/docs/decisions/product-authorization-gap-triage.md` |
+| Domain authority / org model discovery | `DOMAIN_MODEL_DISCOVERY_COMPLETED` / `ORG_MODEL_STATUS: REQUIRES_HUMAN_CLARIFICATION` | `.specify/docs/discovery/domain-authority-and-organization-model-discovery.md` |
+| Domain structure evidence consolidation gate | `Accepted` — mandatory intermediate before human clarification / product-surface auth | `.specify/docs/decisions/domain-structure-evidence-consolidation-gate.md` |
+| Domain structure / relationship evidence consolidation | `DOMAIN_STRUCTURE_EVIDENCE_CONSOLIDATION_COMPLETED` — entity map COMPLETED; org/visibility/actor binding remain open | `.specify/docs/discovery/domain-entity-relationship-authority-map.md` |
+| Business owner formalization review | `CONFLICTING_TERM` / `BLOCK_PENDING_HUMAN_AUTHORITY` / owner field `UNRESOLVED` | `.specify/docs/decisions/business-owner-formalization-review.md` |
+| Product surface authorization decision | `PRODUCT_SURFACE_AUTHORIZED` — surface `employee-request-self-service`; Spec04 Auth residual `REQUIRES_MORE_PRODUCT_AUTHORITY` | `.specify/docs/decisions/product-surface-authorization-decision.md` |
+| Product surface owner authority clarification | `OWNER_DECISION_REQUIRED_TO_PROCEED` — owner `PENDING_HUMAN_DESIGNATION`; Spec04 Auth **BLOCKED** | `.specify/docs/decisions/product-surface-owner-authority-clarification.md` |
 
-**Current recommended next gate (post–gap triage):**
+**Current recommended next gate (post–owner authority clarification):**
 
 ```text
-RECOMMENDED_NEXT_GATE: PRODUCT_SURFACE_AUTHORIZATION_DECISION
+RECOMMENDED_NEXT_GATE: HUMAN_OWNER_DESIGNATION_REQUIRED
 ```
 
 **Wave membership summary (authoritative):**
 
 - Workflow: **deferred** (out of execution-preparation path)  
 - Spec06: **deferred** (out of Core Completion Wave path)  
-- Spec04 Auth: Application PEP closed under Spec02; remainder **open** — **requires product authority**; **no named product surface authorized**  
+- Spec04 Auth: Application PEP closed under Spec02; remainder **open** — Auth packet **BLOCKED** until human owner designation; named surface `employee-request-self-service`  
 - Spec11 Reporting: **separate authority track** — not Spec04 Auth residual  
-- Dormitory UI: **blocked** (no product auth)  
+- Dormitory UI: **blocked** (no product auth for admin path; self-service surface does not authorize dormitory admin)  
 
 ---
 
@@ -223,7 +237,10 @@ Workflow / Spec06 Wave Membership:
 BOTH DEFERRED
 
 Recommended Next Gate (current):
-PRODUCT_SURFACE_AUTHORIZATION_DECISION
+HUMAN_OWNER_DESIGNATION_REQUIRED
+
+Authorized Surface (recorded):
+employee-request-self-service (Owner field: PENDING_HUMAN_DESIGNATION; Spec04 Auth BLOCKED)
 
 Implementation / UI / Role Mapping / OA-02-01:
 NOT AUTHORIZED
@@ -241,23 +258,20 @@ This plan does **not** authorize:
 - Spec06/Spec11 new implementation  
 - Request Dependent live integration  
 - Main UI Feature Execution  
+- Auth packet preparation while Business Owner remains `UNRESOLVED`  
 
 ---
 
 ## No-Change Confirmation
 
-`No application, test, contract, or authorization implementation files were modified.`
-
-Only this wave plan artifact was created:
-
-- `.specify/docs/planning/core-completion-wave-plan.md`
+Wave plan is a **status mirror** for Core Completion Wave sequencing. Application files are not modified by wave-plan updates.
 
 ---
 
 ## Document Control
 
-- Version: 1.4.0 (product authorization gap triage — no named surface)  
+- Version: 1.8.0 (owner authority clarification; next gate human owner designation)  
 - Status: **`WAVE_PLAN_COMPLETED`**  
-- Recommended next gate: **`PRODUCT_SURFACE_AUTHORIZATION_DECISION`**  
+- Recommended next gate: **`HUMAN_OWNER_DESIGNATION_REQUIRED`**  
 - Last Updated: 2026-07-13  
 - Checkpoint: `core-completion-wave-plan`

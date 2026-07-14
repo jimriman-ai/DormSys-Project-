@@ -1,0 +1,6 @@
+prompt_id: BUSINESS_OWNER_FORMALIZATION_AND_ARCHITECTURE_REVIEW
+recorded_at: 2026-07-13T20:04:00+03:30
+work_item: business-owner-formalization-review
+stage: CORE_COMPLETION_WAVE
+tags: [EVIDENCE_CONFLICT, OWNER_DECISION_NEEDED, AMBIGUITY]
+summary: "Proposed Business Owner wording «واحد اداری / منابع انسانی» is absent from repo artifacts; closest hits are roles/stages/Department entity, while discovery already records BUSINESS_OWNER_STATUS NOT_DEFINED."
