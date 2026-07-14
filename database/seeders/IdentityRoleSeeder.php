@@ -23,6 +23,10 @@ class IdentityRoleSeeder extends Seeder
 
     public const string PERMISSION_AUDIT_READ = 'audit.read';
 
+    public const string PERMISSION_STUDENT_RECORDS_READ = 'student_records.read';
+
+    public const string PERMISSION_STUDENT_RECORDS_EDIT = 'student_records.edit';
+
     public const string PERMISSION_DORMITORY_STRUCTURE_VIEW = DormitoryStructurePermissionCatalog::VIEW;
 
     public const string PERMISSION_DORMITORY_STRUCTURE_MANAGE = DormitoryStructurePermissionCatalog::MANAGE;
@@ -35,6 +39,8 @@ class IdentityRoleSeeder extends Seeder
         'identity.users.view',
         'identity.roles.manage',
         self::PERMISSION_AUDIT_READ,
+        self::PERMISSION_STUDENT_RECORDS_READ,
+        self::PERMISSION_STUDENT_RECORDS_EDIT,
         self::PERMISSION_DORMITORY_STRUCTURE_VIEW,
         self::PERMISSION_DORMITORY_STRUCTURE_MANAGE,
     ];
@@ -69,5 +75,11 @@ class IdentityRoleSeeder extends Seeder
             $role = Role::findOrCreate($roleName, $guard);
             $role->givePermissionTo(self::PERMISSION_AUDIT_READ);
         }
+
+        $hrMgr = Role::findOrCreate(self::ROLE_HR_MGR, $guard);
+        $hrMgr->givePermissionTo([
+            self::PERMISSION_STUDENT_RECORDS_READ,
+            self::PERMISSION_STUDENT_RECORDS_EDIT,
+        ]);
     }
 }

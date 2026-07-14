@@ -1,6 +1,56 @@
-gap_id: HDAC-05
-status: RESOLVED
-resolved_by: HR Manager (human decision)
-resolution: Business Owner role assigned to HR Manager, system-wide
-closed_at: 2026-07-14
-note: Historical logs preserved unchanged
+gaps:
+  - gap_id: GAP-1
+    status: RESOLVED
+    resolved_by: Human Decision D1 (2026-07-14)
+    resolution: "student_records.read / student_records.edit ratified"
+    closed_at: "2026-07-14"
+  - gap_id: GAP-2
+    status: RESOLVED
+    resolved_by: Human Decision D1+D2 (2026-07-14)
+    resolution: "Capability→permission mapping ratified for HR Manager only"
+    closed_at: "2026-07-14"
+  - gap_id: GAP-3
+    status: RESOLVED
+    resolved_by: Human Decision D3 (2026-07-14)
+    resolution: "Policy + Form Request authorize() as canonical enforcement loci"
+    closed_at: "2026-07-14"
+  - gap_id: GAP-4
+    status: RESOLVED
+    resolved_by: Human Decision D4 (2026-07-14)
+    resolution: "Guard: web. API guard not authorized in this phase."
+    closed_at: "2026-07-14"
+  - gap_id: GAP-5
+    status: RESOLVED
+    resolved_by: Human Decision D5 (2026-07-14)
+    resolution: "HR Manager capability wording collapsed to D1 verbatim"
+    closed_at: "2026-07-14"
+  - gap_id: GAP-6
+    status: RESOLVED
+    resolved_by: Human Decision D6 (2026-07-14)
+    resolution: "Stage-2 rows annotated as workflow-only; Role Capabilities holds D1"
+    closed_at: "2026-07-14"
+  - gap_id: GAP-7
+    status: RESOLVED
+    resolved_by: Human Decision D7 (2026-07-14)
+    resolution: "Permission matrix role label Admin → System Administrator"
+    closed_at: "2026-07-14"
+  - gap_id: GAP-8
+    status: RESOLVED
+    resolved_by: Human Decision D8 (2026-07-14)
+    resolution: "UserRole replaced with Spatie morph (model_has_roles)"
+    closed_at: "2026-07-14"
+  - id: GAP-9
+    title: "Non-delegatable has no stated enforcement point"
+    status: DEFERRED
+    reason: "Mechanism deferred to L4; non-delegation is a confirmed capability constraint but enforcement locus is out of scope for this patch cycle."
+    decision: D9
+  - id: GAP-10
+    title: "IMPLEMENTATION_AUTHORIZED: false / gate closed"
+    status: EXPECTED
+    reason: "Gate remains closed by design until Auth Gate formally opens. No patch required; status is intentional."
+    decision: D10
+  - id: D-L6-4-C2
+    title: "student_records edit route + api middleware group not wired"
+    status: OPEN
+    reason: "D-L6-4 A binds FormRequest principal to api/UserModel but does not register routes or middleware. Runtime wiring is a separate work item. HTTP-level test under api guard required before closure."
+    decision: D-L6-4-A
