@@ -154,16 +154,17 @@ D-L7-1 did not authorize new production role grants; HRMgr / Administrator uncha
 
 ## F-L7-9 — Test Adequacy (Identity / HR Access Boundary)
 
-Status: CLOSED_ACTIONABLE_COVERED
+status: CLOSED_ACTIONABLE_COVERED
+gaps_covered: [A1, A2, C, D1, D2, E2]
+gaps_deferred: [E1, F]
+deferred_blocked_on: D-L6-4-C2
+verification: 2026-07-14 | 92 passed / 253 assertions | target: 22 tests / 41 assertions
 Finding ID: F-L7-9
 Domain: Identity / HR Access / Mutation Authorization — test suite coverage
 Decision: D-L7-2
 Note: Actionable gaps A1/A2/C/D1/D2/E2 covered by L8 tests. Full F-L7-9
 closure remains blocked on D-L6-4-C2 (deferred gaps E1, F).
 No production role mapping or authorization contract change.
-Verification (2026-07-14): full-suite run — 92 passed / 253 assertions;
-target files HRManagerStudentRecordsAuthTest + IdentityRoleAssignAuthorizationTest
-— 22 tests / 41 assertions.
 
 ### ACTIONABLE_NOW → COVERED (L8)
 
@@ -222,8 +223,7 @@ requires active principal + IdentityUserReadContract::userHasPermission
 (..., identity.roles.manage). F-L7-7 / DDG-IDENTITY-ROLE-ASSIGN-AUTHZ RESOLVED
 after IdentityRoleAssignAuthorizationTest + related Identity suites passed.
 
-D-L7-2: L8 actionable-gap work DONE — F-L7-9 gaps A1, A2, C, D1, D2, E2
-COVERED (CLOSED_ACTIONABLE_COVERED). Deferred branch (E1, F) unchanged —
-blocked pending D-L6-4-C2 resolution. Full F-L7-9 closure remains open on E1/F.
-Verification 2026-07-14: 92 passed / 253 assertions (full suite cited);
-target files 22 tests / 41 assertions.
+D-L7-2: L8 actionable-gap work DONE (A1/A2/C/D1/D2/E2 covered).
+Deferred branch (E1, F) unchanged — blocked on D-L6-4-C2.
+Full F-L7-9 closure remains open on E1/F.
+Verified: 2026-07-14.
