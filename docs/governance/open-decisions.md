@@ -13,8 +13,8 @@
 | ID | Gap | Cluster | Options | Decision Owner | Trigger / Deadline | Status | Notes |
 |----|-----|---------|---------|----------------|--------------------|--------|-------|
 | DG-01 | مالکیت boundary F2 و زمان باز شدن آن | Scope Ownership | A) F2 در مالکیت همین ماژول باقی بماند B) F2 به یک boundary مستقل منتقل شود C) F2 به backlog defer شود با owner مشخص و reopen trigger صریح | Lead | شروع برنامه‌ریزی Phase F | RESOLVED | F2 deferred. **B1 removal COMPLETE** (Round 2.1); deleted assignment tests → **BL-B1-01** in `docs/governance/risk-register.md`. RESOLVED at F2 kick-off: F2 proceeds as an independent boundary `employee-auth-ui`. B1 removal remains final; removed tests remain tracked under BL-B1-01 (unchanged, still Open/Deferred). |
-| DG-02 | تعریف دقیق Phase F: narrow vs broad | Phase F Definition | A) Phase F فقط employee-records باشد (narrow) B) Phase F شامل UI و Auth مرتبط هم باشد (broad) C) Phase F به دو زیرفاز تقسیم شود | Lead | قبل از L0 Phase F | DECIDED | F1 (employee-records — تکمیل‌شده) و F2 (UI/Auth) — split per Option C. F2 ACTIVE under DG-01 RESOLVED + product-authorization-employee-auth-ui; Option B reconciliation accepts W-01/W-06 evidence. |
-| DG-03 | مالکیت Identity Helper: ماژولی vs shared kernel | Identity Helper Ownership | A) Identity Helper در مالکیت dormitory-admin-ui بماند B) به shared kernel منتقل شود C) implementation محلی در هر boundary تا زمان تصمیم shared-kernel مجاز بماند | Lead | قبل از استفاده در boundary دوم | RESOLVED | Reopen trigger met (second consumer = employee-auth-ui). Lead: migrate IdentityRoleGuard to Shared Kernel. **W-06 executed:** `app/Shared/Auth/IdentityRoleGuard.php`. Residual formal L7/L8 still tracked in employee-auth-ui work-breakdown. |
+| DG-02 | تعریف دقیق Phase F: narrow vs broad | Phase F Definition | A) Phase F فقط employee-records باشد (narrow) B) Phase F شامل UI و Auth مرتبط هم باشد (broad) C) Phase F به دو زیرفاز تقسیم شود | Lead | قبل از L0 Phase F | DECIDED | F1 (employee-records — تکمیل‌شده) و F2 (UI/Auth) — split per Option C. F2 status **PARTIAL** (W-01…W-08 CLOSED — `docs/features/employee-auth-ui/work-breakdown.md:14`; F-W07-04 CARRIED FORWARD — `docs/features/employee-auth-ui/w07-security-review-report.md:19`). Prior “F2 ACTIVE” note superseded. (reconciled 2026-07-15, ref: DGAP-12) |
+| DG-03 | مالکیت Identity Helper: ماژولی vs shared kernel | Identity Helper Ownership | A) Identity Helper در مالکیت dormitory-admin-ui بماند B) به shared kernel منتقل شود C) implementation محلی در هر boundary تا زمان تصمیم shared-kernel مجاز بماند | Lead | قبل از استفاده در boundary دوم | RESOLVED | Reopen trigger met (second consumer = employee-auth-ui). Lead: migrate IdentityRoleGuard to Shared Kernel. **W-06 executed:** `app/Shared/Auth/IdentityRoleGuard.php`. W-07/W-08 subsequently **CLOSED** (`work-breakdown.md:11-12`). (reconciled 2026-07-15, ref: DGAP-12) |
 | DG-04 | مالک ریسک‌های پذیرفته‌شده و cadence بازبینی | Governance | A) Lead مالک تمام accepted risks باشد، بازبینی ۶ ماهه B) هر boundary مالک ریسک‌های خود باشد C) یک Risk Register مرکزی با مالک مشخص per-risk | Lead | قبل از merge PR فاز G | DECIDED | **DELIVERED** `docs/governance/risk-register.md` (1405/04/24). SEC-G-04 + BL-B1-01 seeded. |
 | DG-05 | سیاست استفاده از Student vs Employee در UI و کد | Terminology | A) Student در UI عمومی، Employee در کد داخلی B) یکسان‌سازی کامل روی یک واژه C) glossary رسمی با mapping صریح | Lead | قبل از شروع Phase F UI | DECIDED | **DELIVERED** `docs/governance/glossary.md` (1405/04/24). Student ↔ Employee mapping. |
 | DGAP-07 | F2 W-02: Eloquent/Application relation UserModel↔Employee vs `identity_id` UUID value-reference | Domain Gap / F2 W-02 | A) UUID reference sufficient — close W-02 as-is B) Eloquent relation required — new scoped work item, NOT silent code addition | Lead | F2 W-07/W-08 scoping | DECIDED | **Selected A** (Lead, 2026/07/15): UUID value-reference sufficient — close W-02 as-is. No Eloquent/Application UserModel↔Employee relation required. Source: Domain Gap Audit 2026-07-15. |
@@ -36,6 +36,8 @@
 | SGAP-07 | Spec04 Product PENDING_RESIDUAL | Spec Completion Audit | Backlog + PARK | Lead | SGAP Disposition | **BACKLOG + PARKED** | Explicit backlog; Spec04 Auth packet / DGAP-08 untouched. |
 | SGAP-08 | Spec011 outside audit list | Spec Completion Audit | DEFER | Lead | SGAP Disposition | **DEFERRED** | Separate audit only if 011 enters UI path. |
 | SGAP-09 | debug.log under specs 008/009/010 | Spec Completion Audit | Cleanup | Lead | SGAP Disposition | **CLOSED** | debug.log files deleted. |
+| DGAP-11 | Roadmap ↔ UI Productization reconciliation | Governance / Roadmap | A) merge into Roadmap as UI-1..UI-7 B) keep separate doc with cross-refs | Lead | F3 Sprint A entry | **REOPENED** (reconciled 2026-07-15, ref: DGAP-12) | Prior CLOSED — DECIDED (Option A) invalidated: claimed merge artifact never delivered — repo-wide search found no UI-1…UI-7 definitions outside this register. Historical Option A text retained below. **Resolution scheduled: F3 Sprint A — first work item** (Lead-Advisory 2026-07-15). |
+| DGAP-12 | Governance doc hard-conflict reconciliation (F2 / G / DGAP-11) | Governance / Roadmap | Docs-only status sync per Lead DGAP-12 rules | Lead | Immediate | **EXECUTED — DOCS** (reconciled 2026-07-15, ref: DGAP-12) | Conflicts 1–3 applied in `docs/governance/roadmap.md`, this file, `docs/features/employee-auth-ui/feature-brief.md`. No code. No commit. |
 
 ---
 
@@ -179,6 +181,30 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 - **Decision-Owner:** Lead
 - **Decision:** Remains frozen under BL-B1-01. Do not reopen without formal unfreeze.
 
+### DGAP-11
+
+- **Status:** **REOPENED** — artifact never delivered (reconciled 2026-07-15, ref: DGAP-12)
+- **Prior Status (historical):** CLOSED — DECIDED
+- **Decided-On:** 1405/04/24 (2026/07/15)
+- **Decision-Owner:** Lead
+- **Decision (historical, Option A — not retracted as Lead choice, but undelivered):** Option A. Merge UI Productization into the phase Roadmap; rename items UI-1..UI-7. Decided by Lead on 2026-07-15.
+- **Problem:** The UI Productization document (L6.1–L6.7) existed outside the phase Roadmap, creating two parallel planning sources and a numbering collision with the L-cycle.
+- **Options considered:**
+  - Option A — merge UI Productization into the Roadmap, rename items to UI-1..UI-7 (**CHOSEN**)
+  - Option B — keep as separate document with cross-references (**REJECTED:** dual source of truth)
+- **Evidence (historical claim — INVALIDATED):** Merged Roadmap section in `docs/governance/roadmap.md`; UI Productization items renamed and scheduled as **UI-1 .. UI-7** (replacing L6.1–L6.7 numbering).
+- **Evidence (verification 2026-07-15):** Repo-wide search for `UI-1` / `UI-7` / `F3` definitions found **no** delivered catalog outside this register’s claim text; `docs/governance/roadmap.md` had no F3/UI section before DGAP-12 stub. (reconciled 2026-07-15, ref: DGAP-12)
+- **Follow-up (open):** Deliver UI-1…UI-7 definitions into `docs/governance/roadmap.md` (or Lead-authorized alternate path) then re-close DGAP-11. Roadmap F3 stub is **PLANNED — pending DGAP-11 re-closure**. Do not invent UI-1…UI-7 content in reconciliation.
+- **Resolution scheduled: F3 Sprint A — first work item** (Lead-Advisory 2026-07-15). DGAP-11 remains REOPENED; early speculative UI-1…UI-7 definitions deferred. Not a blocker to F3 Sprint A entry.
+
+### DGAP-12
+
+- **Status:** EXECUTED — DOCS (reconciled 2026-07-15, ref: DGAP-12)
+- **Decided-On:** 1405/04/24 (2026/07/15)
+- **Decision-Owner:** Lead (supervised reconciliation)
+- **Decision:** Apply docs-only hard-conflict reconciliation rules for (1) F2 PARTIAL vs stale ACTIVE, (2) G PARTIAL vs L9 NOT READY, (3) DGAP-11 REOPENED for undelivered UI merge.
+- **Scope:** `docs/` only. No code. No commit.
+
 ### SGAP Disposition (Spec Completion Audit, Lead 2026/07/15)
 
 | ID | Status | One-line |
@@ -208,7 +234,16 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 - **Decided-On:** 1405/04/24 (2026/07/15)
 - **Accepted evidence:** `EmployeeLogin` (`app/Modules/Auth/Presentation/Livewire/EmployeeLogin.php`), `IdentityRoleGuard` (`app/Shared/Auth/IdentityRoleGuard.php`), related routes in `routes/web.php` (`employee.login`)
 - **Effect:** W-04 PASS/CLOSED; W-05 and W-06 IMPLEMENTED in `docs/features/employee-auth-ui/work-breakdown.md`. L3 §4 updated accordingly.
-- **Freeze:** No *new* F2/UI/Auth features until further Lead authorization. W-07/W-08 remain Pending.
+- **Freeze:** No *new* F2/UI/Auth features until further Lead authorization.
+- **Annotation (reconciled 2026-07-15, ref: DGAP-12):** Prior line “W-07/W-08 remain Pending” is **superseded**. W-07 and W-08 are **CLOSED** (`docs/features/employee-auth-ui/work-breakdown.md:11-12`; `w07-security-review-report.md:24`; `w08-scope.md:32`). F2 remains **PARTIAL** solely because F-W07-04 is **CARRIED FORWARD** (`w07-security-review-report.md:19`).
+
+### F-W07-04 — Carried-forward (F2 canonical ID retained)
+
+- **ID:** F-W07-04 (do **not** re-number as W-09 or other ID — one decision boundary = one canonical record).
+- **Status:** **CARRIED FORWARD** — source: `docs/features/employee-auth-ui/w07-security-review-report.md:19`.
+- **Meaning:** Post-login surface catalog / next UI slug product-authorization gate; keeps program F2 = **PARTIAL**.
+- **Carried-forward → target: F3 Sprint A (or later)** (Lead-Advisory 2026-07-15).
+- **Forbidden:** Closing F2 to COMPLETE while this ID remains open; inventing a parallel work-item ID for the same commitment.
 
 ---
 
@@ -224,6 +259,8 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| ۱۴۰۵/۰۴/۲۴ (2026/07/15) | **Lead-Advisory (DGAP-12 follow-ups):** DGAP-11 resolution-path = F3 Sprint A — first work item (remains REOPENED). F-W07-04 stays carried-forward under F2 ID; target: F3 Sprint A (or later). No new work-item ID. | Agent (Lead-Advisory apply) |
+| ۱۴۰۵/۰۴/۲۴ (2026/07/15) | **DGAP-12 reconciliation:** F2 → PARTIAL (F-W07-04 open; W-01…W-08 CLOSED); G mirrored PARTIAL on roadmap; DGAP-11 REOPENED (UI-1…UI-7 artifact never delivered); DGAP-12 EXECUTED — DOCS. Option B freeze note corrected. | Agent (Lead-supervised) |
 | ۱۴۰۵/۰۴/۲۴ (2026/07/15) | **SGAP Disposition:** SGAP-01/04/06/09 CLOSED (DOC); SGAP-02/03 ACCEPTED-MINIMAL; SGAP-05 PARKED (gate≈DGAP-08); SGAP-07 BACKLOG+PARK; SGAP-08 DEFERRED (011). No code. | Lead |
 | ۱۴۰۵/۰۴/۲۴ (2026/07/15) | **DGAP Decision Gate:** DGAP-01/02/04/10 CLOSED (NOT-A-GAP); DGAP-09 FROZEN — NO ACTION (F2) under BL-B1-01. No L6 fill. Parked DGAP-03/05/06/08 untouched. | Lead |
 | ۱۴۰۵/۰۴/۲۴ (2026/07/15) | **DGAP-07 DECIDED (A):** UUID `identity_id` value-reference sufficient — close W-02 as-is. No Eloquent UserModel↔Employee relation. Lead answer. Tier 2 DGAP-03/05/06/08 remain OPEN/PARKED. | Lead |

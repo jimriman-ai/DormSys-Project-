@@ -5,7 +5,7 @@
 | Phase       | F2                                        |
 | Boundary    | employee-auth-ui                          |
 | Guard       | auth:identity                             |
-| Status      | L1 — Active (W-07 report awaiting Lead)   |
+| Status      | **PARTIAL** — W-01…W-08 CLOSED (`work-breakdown.md:14`); F-W07-04 CARRIED FORWARD (`w07-security-review-report.md:19`). Prior “L1 — Active (W-07 report awaiting Lead)” superseded. (reconciled 2026-07-15, ref: DGAP-12) |
 | Auth record | product-authorization-employee-auth-ui.md |
 
 ## Goal

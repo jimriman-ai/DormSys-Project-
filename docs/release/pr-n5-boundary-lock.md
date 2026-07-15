@@ -72,9 +72,9 @@ Framework endpoints `livewire/update|upload` remain without `auth:*` (Livewire p
 | Baseline (pre-exec, auth) | `php artisan test --filter=ApiAuthSessionEntryTest` | passed |
 | N5 auth + exception | `php artisan test --filter="ApiAuthSessionEntryTest\|PrN5BoundaryLockExceptionRenderingTest"` | **32 passed** |
 | RequestUiFlow (alone) | `php artisan test tests/Feature/Modules/Request/RequestUiFlowTest.php` | **8 passed** |
-| Full suite (post-exec) | `php artisan test` | **1870 passed**, 4 skipped, **2 errors** |
+| Full suite (Exit Gate re-verify) | `php artisan test` | **1872 passed**, 4 skipped, **0 failed** (`duration_ms` ≈ 624616) |
 
-Full-suite errors were PostgreSQL race/deadlock noise (`relation "users"/"audit_logs" does not exist`; concurrent `DROP CASCADE` vs seed) on `RequestUiFlowTest` — **not reproducible** when that file is run serially. Not attributed to N5-1/N5-3 diffs.
+Note: An earlier post-exec full run once showed 2 transient PostgreSQL race/deadlock errors on `RequestUiFlowTest`; serial re-run of that file was green, and the Exit Gate full re-run above is clean.
 
 **New/updated tests:**
 - `tests/Feature/Auth/ApiAuthSessionEntryTest.php` — guest logout 401
@@ -106,8 +106,8 @@ Full-suite errors were PostgreSQL race/deadlock noise (`relation "users"/"audit_
 |-------|--------|
 | Each STOP GATE has explicit Lead decision | Yes (recorded above) |
 | Tests green for N5 scope | Yes (32/32) |
-| Full suite | 1870/1876 pass; 2 env race errors unrelated (serial recheck green) |
-| Diff scoped to authorization | Yes |
+| Full suite | Yes — 1872 passed, 4 skipped, 0 failed (Exit Gate re-verify) |
+| Diff scoped to authorization | Yes (see file list; memory log optional) |
 | This report complete | Yes |
 | Commit / PR | **Blocked** — needs separate Lead authorization |
 
