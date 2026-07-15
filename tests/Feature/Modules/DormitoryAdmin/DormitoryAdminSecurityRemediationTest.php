@@ -100,7 +100,7 @@ it('re-asserts identity role on Livewire refresh after revocation (SEC-G-02 mana
     $fresh = UserModel::query()->findOrFail($user->id);
     auth('identity')->setUser($fresh);
 
-    expect(\App\Support\Auth\IdentityRoleGuard::userHasIdentityRole(
+    expect(App\Shared\Auth\IdentityRoleGuard::userHasIdentityRole(
         $fresh,
         IdentityRoleSeeder::ROLE_DORMITORY_MANAGER,
     ))->toBeFalse();
@@ -125,7 +125,7 @@ it('re-asserts identity role on Livewire refresh after revocation (SEC-G-02 unit
     $fresh = UserModel::query()->findOrFail($user->id);
     auth('identity')->setUser($fresh);
 
-    expect(\App\Support\Auth\IdentityRoleGuard::userHasIdentityRole(
+    expect(App\Shared\Auth\IdentityRoleGuard::userHasIdentityRole(
         $fresh,
         IdentityRoleSeeder::ROLE_DORMITORY_UNIT_MANAGER,
     ))->toBeFalse();
@@ -135,17 +135,17 @@ it('re-asserts identity role on Livewire refresh after revocation (SEC-G-02 unit
 });
 
 it('exposes no public query-derived dormitory or room collections (SEC-G-03)', function (): void {
-    $managerPublic = collect((new \ReflectionClass(DormitoryManagerDashboard::class))->getProperties(\ReflectionProperty::IS_PUBLIC))
-        ->reject(static fn (\ReflectionProperty $property): bool => $property->isStatic())
-        ->filter(static fn (\ReflectionProperty $property): bool => $property->getDeclaringClass()->getName() === DormitoryManagerDashboard::class)
-        ->map(static fn (\ReflectionProperty $property): string => $property->getName())
+    $managerPublic = collect((new ReflectionClass(DormitoryManagerDashboard::class))->getProperties(ReflectionProperty::IS_PUBLIC))
+        ->reject(static fn (ReflectionProperty $property): bool => $property->isStatic())
+        ->filter(static fn (ReflectionProperty $property): bool => $property->getDeclaringClass()->getName() === DormitoryManagerDashboard::class)
+        ->map(static fn (ReflectionProperty $property): string => $property->getName())
         ->values()
         ->all();
 
-    $unitPublic = collect((new \ReflectionClass(DormitoryUnitManagerDashboard::class))->getProperties(\ReflectionProperty::IS_PUBLIC))
-        ->reject(static fn (\ReflectionProperty $property): bool => $property->isStatic())
-        ->filter(static fn (\ReflectionProperty $property): bool => $property->getDeclaringClass()->getName() === DormitoryUnitManagerDashboard::class)
-        ->map(static fn (\ReflectionProperty $property): string => $property->getName())
+    $unitPublic = collect((new ReflectionClass(DormitoryUnitManagerDashboard::class))->getProperties(ReflectionProperty::IS_PUBLIC))
+        ->reject(static fn (ReflectionProperty $property): bool => $property->isStatic())
+        ->filter(static fn (ReflectionProperty $property): bool => $property->getDeclaringClass()->getName() === DormitoryUnitManagerDashboard::class)
+        ->map(static fn (ReflectionProperty $property): string => $property->getName())
         ->values()
         ->all();
 
