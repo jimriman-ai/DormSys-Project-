@@ -124,6 +124,24 @@ Backlog item: re-evaluate in Phase H if schema changes required.
 
 ---
 
+## B2 — DormitoryAdmin suite (L9-R Round 2 Step 2)
+
+**Run:** `php artisan test --filter=DormitoryAdmin` (2026-07-15)  
+**Result:** failed — **8 passed / 4 failed / 7 errors** (19 total).  
+**Root cause:** `SQLSTATE[42P01] Undefined table` — `dormitory_manager_assignments` / `dormitory_unit_manager_assignments` absent after B1 `git rm` (not seeder guard-scope; not missing policy).
+
+**Failing / erroring tests:**
+
+- `DormitoryAdminSecurityRemediationTest` — happy path SEC-G-01
+- `DormitoryAdminSecurityRemediationTest` — SEC-G-02 manager refresh
+- `DormitoryAdminSecurityRemediationTest` — SEC-G-02 unit refresh
+- `DormitoryManagerDashboardTest` — empty state / scopes / occupancy counts
+- `DormitoryUnitManagerDashboardTest` — empty assignments / scopes / occupancy / zero beds / manager-route-only
+
+**STOP (Step 2):** no further seeder/policy commits; restore assignment tables via foundation merge **or** revert B1 remove before suite can go green.
+
+---
+
 ## قوانین این فایل
 
 1. هیچ گزینه‌ای بدون تأیید صریح Decision Owner به `DECIDED` تغییر نمی‌کند.
