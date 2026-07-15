@@ -1,0 +1,6 @@
+prompt_id: student-employee-terminology-audit-2026-07-15
+recorded_at: 2026-07-15T07:17:00+03:30
+work_item: hr-access-student-vs-employee-terminology
+stage: analysis
+tags: [EVIDENCE_CONFLICT, AMBIGUITY, OWNER_DECISION_NEEDED]
+summary: "HR Access governance ratifies student_records.* while codebase/specs have Employee module and no Student entity; D-L6-2 subject binding remains Deferred Pending Evidence."

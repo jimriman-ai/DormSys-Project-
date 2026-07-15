@@ -1,0 +1,6 @@
+prompt_id: student-to-employee-terminology-migration-2026-07-15
+recorded_at: 2026-07-15T07:20:00+03:30
+work_item: hr-access-employee-records-terminology-migration
+stage: implementation
+tags: [CHANGES_REQUIRED, CLOSED, SAFE_PROGRESS]
+summary: "Governance re-ratified employee_records.*; PEP/request/seeder/tests renamed; D-L6-2 closed to Employee subject; person_id and historical logs preserved."

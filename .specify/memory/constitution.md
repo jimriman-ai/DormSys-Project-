@@ -723,7 +723,7 @@ Access control is governed by the **Principle of Least Privilege**.
 
 # Role Capabilities
 
-HR Manager: can read/edit student records across all departments within the authorized product surface; non-delegatable
+HR Manager: can read/edit employee records across all departments within the authorized product surface; non-delegatable
 
 ---
 

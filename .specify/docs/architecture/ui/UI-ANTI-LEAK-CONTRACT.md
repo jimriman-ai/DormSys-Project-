@@ -337,7 +337,7 @@ php
 $this->canCheckIn =
 $allocation->status === 'assigned'
 && $allocation->start_date <= now()
-&& $allocation->student !== null;
+&& $allocation->person !== null;
 
 Why:
 Capability is being reconstructed in UI.

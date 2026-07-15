@@ -8,14 +8,15 @@ use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use Database\Seeders\IdentityRoleSeeder;
 
 /**
- * HR Manager / student_records enforcement (PolicyEnforcementPoint pattern).
+ * HR Manager / employee_records enforcement (PolicyEnforcementPoint pattern).
  *
- * Subject/model binding for student_records.* is deferred (no Student entity).
+ * Subject for employee_records.* is the Employee aggregate (Employee module).
+ * No Employee entity. Allocation person_id abstractions remain unchanged.
  *
  * Conflict note: Spatie roles/permissions for guard `web` attach to
  * {@see UserModel}, not {@see \App\Models\User} (credential login model without HasRoles).
  */
-final class StudentRecordsPolicyEnforcementPoint
+final class EmployeeRecordsPolicyEnforcementPoint
 {
     public function canRead(?UserModel $user): bool
     {
@@ -23,7 +24,7 @@ final class StudentRecordsPolicyEnforcementPoint
             return false;
         }
 
-        return $user->checkPermissionTo(IdentityRoleSeeder::PERMISSION_STUDENT_RECORDS_READ);
+        return $user->checkPermissionTo(IdentityRoleSeeder::PERMISSION_EMPLOYEE_RECORDS_READ);
     }
 
     public function canEdit(?UserModel $user): bool
@@ -32,6 +33,6 @@ final class StudentRecordsPolicyEnforcementPoint
             return false;
         }
 
-        return $user->checkPermissionTo(IdentityRoleSeeder::PERMISSION_STUDENT_RECORDS_EDIT);
+        return $user->checkPermissionTo(IdentityRoleSeeder::PERMISSION_EMPLOYEE_RECORDS_EDIT);
     }
 }

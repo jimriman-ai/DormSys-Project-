@@ -30,9 +30,9 @@ class IdentityRoleSeeder extends Seeder
     /** Actor permission for AssignRoleToUserAction (D-L7-1); distinct from capability identity.role.assign. */
     public const string PERMISSION_IDENTITY_ROLES_MANAGE = 'identity.roles.manage';
 
-    public const string PERMISSION_STUDENT_RECORDS_READ = 'student_records.read';
+    public const string PERMISSION_EMPLOYEE_RECORDS_READ = 'employee_records.read';
 
-    public const string PERMISSION_STUDENT_RECORDS_EDIT = 'student_records.edit';
+    public const string PERMISSION_EMPLOYEE_RECORDS_EDIT = 'employee_records.edit';
 
     public const string PERMISSION_DORMITORY_STRUCTURE_VIEW = DormitoryStructurePermissionCatalog::VIEW;
 
@@ -46,8 +46,8 @@ class IdentityRoleSeeder extends Seeder
         self::PERMISSION_IDENTITY_USERS_VIEW,
         self::PERMISSION_IDENTITY_ROLES_MANAGE,
         self::PERMISSION_AUDIT_READ,
-        self::PERMISSION_STUDENT_RECORDS_READ,
-        self::PERMISSION_STUDENT_RECORDS_EDIT,
+        self::PERMISSION_EMPLOYEE_RECORDS_READ,
+        self::PERMISSION_EMPLOYEE_RECORDS_EDIT,
         self::PERMISSION_DORMITORY_STRUCTURE_VIEW,
         self::PERMISSION_DORMITORY_STRUCTURE_MANAGE,
     ];
@@ -87,8 +87,8 @@ class IdentityRoleSeeder extends Seeder
 
         $hrMgr = Role::findOrCreate(self::ROLE_HR_MGR, $guard);
         $hrMgr->givePermissionTo([
-            self::PERMISSION_STUDENT_RECORDS_READ,
-            self::PERMISSION_STUDENT_RECORDS_EDIT,
+            self::PERMISSION_EMPLOYEE_RECORDS_READ,
+            self::PERMISSION_EMPLOYEE_RECORDS_EDIT,
         ]);
     }
 }

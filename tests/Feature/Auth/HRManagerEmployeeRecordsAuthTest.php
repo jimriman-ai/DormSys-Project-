@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Auth\StudentRecordsPolicyEnforcementPoint;
-use App\Http\Requests\EditStudentRecordRequest;
+use App\Auth\EmployeeRecordsPolicyEnforcementPoint;
+use App\Http\Requests\EditEmployeeRecordRequest;
 use App\Models\User;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use Database\Seeders\IdentityRoleSeeder;
@@ -22,9 +22,9 @@ beforeEach(function (): void {
  * Bind a FormRequest with the same user resolver the HTTP kernel uses,
  * so authorize()/user($guard) consult Auth guards without a full route dispatch.
  */
-function makeEditStudentRecordRequest(): EditStudentRecordRequest
+function makeEditEmployeeRecordRequest(): EditEmployeeRecordRequest
 {
-    $request = EditStudentRecordRequest::create('/api/test-student-edit', 'POST');
+    $request = EditEmployeeRecordRequest::create('/api/test-employee-edit', 'POST');
     $request->setContainer(app());
     $request->setRedirector(app('redirect'));
     $request->setUserResolver(fn (?string $guard = null) => Auth::guard($guard)->user());
@@ -37,7 +37,7 @@ it('allows read for HRMgr role', function (): void {
     $model = UserModel::query()->findOrFail($user->requireId()->value);
     $model->assignRole(IdentityRoleSeeder::ROLE_HR_MGR);
 
-    expect(app(StudentRecordsPolicyEnforcementPoint::class)->canRead($model))->toBeTrue();
+    expect(app(EmployeeRecordsPolicyEnforcementPoint::class)->canRead($model))->toBeTrue();
 });
 
 it('allows edit for HRMgr role', function (): void {
@@ -45,7 +45,7 @@ it('allows edit for HRMgr role', function (): void {
     $model = UserModel::query()->findOrFail($user->requireId()->value);
     $model->assignRole(IdentityRoleSeeder::ROLE_HR_MGR);
 
-    expect(app(StudentRecordsPolicyEnforcementPoint::class)->canEdit($model))->toBeTrue();
+    expect(app(EmployeeRecordsPolicyEnforcementPoint::class)->canEdit($model))->toBeTrue();
 });
 
 it('denies read for non-HRMgr role', function (): void {
@@ -53,7 +53,7 @@ it('denies read for non-HRMgr role', function (): void {
     $model = UserModel::query()->findOrFail($user->requireId()->value);
     $model->assignRole(IdentityRoleSeeder::ROLE_ADMINISTRATOR);
 
-    expect(app(StudentRecordsPolicyEnforcementPoint::class)->canRead($model))->toBeFalse();
+    expect(app(EmployeeRecordsPolicyEnforcementPoint::class)->canRead($model))->toBeFalse();
 });
 
 it('denies edit for non-HRMgr role', function (): void {
@@ -61,15 +61,15 @@ it('denies edit for non-HRMgr role', function (): void {
     $model = UserModel::query()->findOrFail($user->requireId()->value);
     $model->assignRole(IdentityRoleSeeder::ROLE_ADMINISTRATOR);
 
-    expect(app(StudentRecordsPolicyEnforcementPoint::class)->canEdit($model))->toBeFalse();
+    expect(app(EmployeeRecordsPolicyEnforcementPoint::class)->canEdit($model))->toBeFalse();
 });
 
 it('denies read when unauthenticated', function (): void {
-    expect(app(StudentRecordsPolicyEnforcementPoint::class)->canRead(null))->toBeFalse();
+    expect(app(EmployeeRecordsPolicyEnforcementPoint::class)->canRead(null))->toBeFalse();
 });
 
 it('denies edit when user is null', function (): void {
-    expect(app(StudentRecordsPolicyEnforcementPoint::class)->canEdit(null))->toBeFalse();
+    expect(app(EmployeeRecordsPolicyEnforcementPoint::class)->canEdit(null))->toBeFalse();
 });
 
 it('rejects wrong principal type on pep', function (): void {
@@ -77,7 +77,7 @@ it('rejects wrong principal type on pep', function (): void {
         'email' => 'wrong-type-pep@example.com',
     ]);
 
-    expect(fn () => app(StudentRecordsPolicyEnforcementPoint::class)->canEdit($credentialUser))
+    expect(fn () => app(EmployeeRecordsPolicyEnforcementPoint::class)->canEdit($credentialUser))
         ->toThrow(TypeError::class);
 });
 
@@ -87,7 +87,7 @@ it('denies edit authorize when credential web user is authenticated', function (
     ]);
     $this->actingAs($credentialUser, 'web');
 
-    expect(makeEditStudentRecordRequest()->authorize())->toBeFalse();
+    expect(makeEditEmployeeRecordRequest()->authorize())->toBeFalse();
 });
 
 it('authorize returns false for unauthenticated form request', function (): void {
@@ -95,11 +95,11 @@ it('authorize returns false for unauthenticated form request', function (): void
     Auth::guard('api')->logout();
     Auth::guard('web')->logout();
 
-    expect(makeEditStudentRecordRequest()->authorize())->toBeFalse();
+    expect(makeEditEmployeeRecordRequest()->authorize())->toBeFalse();
 });
 
-it('http api guard allows student edit for HRMgr', function (): void {
-    Route::middleware(['api', 'auth:api'])->post('/api/test-student-edit', function (EditStudentRecordRequest $request) {
+it('http api guard allows employee edit for HRMgr', function (): void {
+    Route::middleware(['api', 'auth:api'])->post('/api/test-employee-edit', function (EditEmployeeRecordRequest $request) {
         return response('ok');
     });
 
@@ -108,12 +108,12 @@ it('http api guard allows student edit for HRMgr', function (): void {
     $model->assignRole(IdentityRoleSeeder::ROLE_HR_MGR);
 
     $this->actingAs($model, 'api')
-        ->postJson('/api/test-student-edit')
+        ->postJson('/api/test-employee-edit')
         ->assertOk();
 });
 
-it('http api guard forbids student edit without student_records permission', function (): void {
-    Route::middleware(['api', 'auth:api'])->post('/api/test-student-edit', function (EditStudentRecordRequest $request) {
+it('http api guard forbids employee edit without employee_records permission', function (): void {
+    Route::middleware(['api', 'auth:api'])->post('/api/test-employee-edit', function (EditEmployeeRecordRequest $request) {
         return response('ok');
     });
 
@@ -122,21 +122,21 @@ it('http api guard forbids student edit without student_records permission', fun
     $model->assignRole(IdentityRoleSeeder::ROLE_ADMINISTRATOR);
 
     $this->actingAs($model, 'api')
-        ->postJson('/api/test-student-edit')
+        ->postJson('/api/test-employee-edit')
         ->assertForbidden();
 });
 
-it('http api guard rejects unauthenticated student edit', function (): void {
-    Route::middleware(['api', 'auth:api'])->post('/api/test-student-edit', function (EditStudentRecordRequest $request) {
+it('http api guard rejects unauthenticated employee edit', function (): void {
+    Route::middleware(['api', 'auth:api'])->post('/api/test-employee-edit', function (EditEmployeeRecordRequest $request) {
         return response('ok');
     });
 
-    $this->postJson('/api/test-student-edit')
+    $this->postJson('/api/test-employee-edit')
         ->assertUnauthorized();
 });
 
-it('rejects api student edit when only web guard authenticated', function (): void {
-    Route::middleware(['api', 'auth:api'])->post('/api/test-student-edit', function (EditStudentRecordRequest $request) {
+it('rejects api employee edit when only web guard authenticated', function (): void {
+    Route::middleware(['api', 'auth:api'])->post('/api/test-employee-edit', function (EditEmployeeRecordRequest $request) {
         return response('ok');
     });
 
@@ -145,6 +145,6 @@ it('rejects api student edit when only web guard authenticated', function (): vo
     ]);
 
     $this->actingAs($credentialUser, 'web')
-        ->postJson('/api/test-student-edit')
+        ->postJson('/api/test-employee-edit')
         ->assertUnauthorized();
 });
