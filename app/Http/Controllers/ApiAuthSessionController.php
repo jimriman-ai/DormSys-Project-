@@ -58,6 +58,7 @@ final class ApiAuthSessionController extends Controller
     public function logout(): JsonResponse
     {
         Auth::guard('api')->logout();
+        Auth::guard('identity')->logout();
         $this->logoutUserAction->execute();
 
         return response()->json([

@@ -22,6 +22,7 @@ final class EstablishApiSessionFromCredentialLoginAction
         }
 
         Auth::guard('api')->loginUsingId($identityUser->requireId()->value);
+        Auth::guard('identity')->loginUsingId($identityUser->requireId()->value);
 
         return true;
     }
