@@ -1,0 +1,6 @@
+prompt_id: pr-n5-boundary-lock-execute
+recorded_at: 2026-07-15T17:10:00+00:00
+work_item: PR-N5-boundary-lock
+stage: verify
+tags: [EVIDENCE_CONFLICT, SAFE_PROGRESS]
+summary: "Full php artisan test after N5-1/N5-3 reported 2 RequestUiFlowTest errors (missing relations / PG deadlocks under concurrent refresh); same file passed 8/8 when re-run alone. N5-scoped filter suite stayed 32/32 green."

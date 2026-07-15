@@ -130,6 +130,13 @@ it('still rejects unauthenticated reporting access', function (): void {
         ->assertJsonPath('success', false);
 });
 
+it('rejects unauthenticated logout with 401', function (): void {
+    $this->postJson('/api/auth/logout')
+        ->assertUnauthorized()
+        ->assertJsonPath('success', false)
+        ->assertJsonPath('message', 'Unauthenticated.');
+});
+
 it('clears session on logout', function (): void {
     createApiSessionCredentialPair();
 

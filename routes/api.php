@@ -15,7 +15,8 @@ Route::get('/health', HealthController::class);
 
 Route::prefix('auth')->group(function (): void {
     Route::post('/login', [ApiAuthSessionController::class, 'login']);
-    Route::post('/logout', [ApiAuthSessionController::class, 'logout']);
+    Route::post('/logout', [ApiAuthSessionController::class, 'logout'])
+        ->middleware('auth:api');
 });
 
 Route::middleware(['auth:api', 'audit.principal'])
