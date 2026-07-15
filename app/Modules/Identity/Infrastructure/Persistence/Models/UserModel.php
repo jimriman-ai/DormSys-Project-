@@ -33,6 +33,21 @@ class UserModel extends BaseModel implements AuthenticatableContract
     protected $table = 'identity_users';
 
     /**
+     * Spatie multi-guard resolution (H-01 Option B).
+     *
+     * Accepts BOTH Auth guards that may authenticate this model for RBAC:
+     * - web: historical Spatie role/permission rows (IdentityRoleSeeder)
+     * - identity: dormitory-admin-ui Auth guard + identity-scoped roles
+     *
+     * Spatie\Permission\Guard::getNames() collects array $guard_name
+     * (vendor/spatie/laravel-permission/src/Guard.php L19–37, package 8.0.0).
+     * Do not set a single-string $guard_name or a string-returning guardName().
+     *
+     * @var list<string>
+     */
+    protected array $guard_name = ['web', 'identity'];
+
+    /**
      * @var list<string>
      */
     protected $fillable = [
@@ -49,11 +64,6 @@ class UserModel extends BaseModel implements AuthenticatableContract
         return array_merge(parent::casts(), [
             'status' => UserStatus::class,
         ]);
-    }
-
-    public function guardName(): string
-    {
-        return 'web';
     }
 
     /**

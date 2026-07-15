@@ -49,6 +49,11 @@ return [
             'driver' => 'session',
             'provider' => 'identity',
         ],
+        // UI principal for dormitory-admin-ui (same UserModel provider as api).
+        'identity' => [
+            'driver' => 'session',
+            'provider' => 'identity',
+        ],
     ],
 
     /*

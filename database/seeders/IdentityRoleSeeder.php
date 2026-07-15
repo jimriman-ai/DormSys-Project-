@@ -21,6 +21,12 @@ class IdentityRoleSeeder extends Seeder
 
     public const string ROLE_HR_MGR = 'HRMgr';
 
+    /** Additive identity-guard role for dormitory-admin-ui (G-B). */
+    public const string ROLE_DORMITORY_MANAGER = 'dormitory-manager';
+
+    /** Canonical identity-guard role for unit (room) manager dashboard (G-C). */
+    public const string ROLE_DORMITORY_UNIT_MANAGER = 'dormitory-unit-manager';
+
     public const string PERMISSION_AUDIT_READ = 'audit.read';
 
     public const string PERMISSION_IDENTITY_USERS_MANAGE = 'identity.users.manage';
@@ -90,5 +96,10 @@ class IdentityRoleSeeder extends Seeder
             self::PERMISSION_EMPLOYEE_RECORDS_READ,
             self::PERMISSION_EMPLOYEE_RECORDS_EDIT,
         ]);
+
+        // G-B / Decision 3-A revised: additive roles on the identity Auth guard.
+        // Does not rename or re-guard ROLE_DORM_MGR ('DormMgr' / web). No permission grants.
+        Role::findOrCreate(self::ROLE_DORMITORY_MANAGER, 'identity');
+        Role::findOrCreate(self::ROLE_DORMITORY_UNIT_MANAGER, 'identity');
     }
 }

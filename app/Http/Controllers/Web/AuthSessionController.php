@@ -61,6 +61,7 @@ final class AuthSessionController extends Controller
     public function destroy(): RedirectResponse
     {
         Auth::guard('api')->logout();
+        Auth::guard('identity')->logout();
         $this->logoutUserAction->execute();
         request()->session()->invalidate();
         request()->session()->regenerateToken();
