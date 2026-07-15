@@ -43,5 +43,6 @@
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
         <env name="PERMISSION_TESTING" value="true"/>
+        <env name="PERMISSION_CACHE_STORE" value="array" force="true"/>
     </php>
 </phpunit>

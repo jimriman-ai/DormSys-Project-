@@ -69,37 +69,45 @@ class IdentityRoleSeeder extends Seeder
 
     public function run(): void
     {
-        app(PermissionRegistrar::class)->forgetCachedPermissions();
+        $registrar = app(PermissionRegistrar::class);
+        $registrar->forgetCachedPermissions();
 
-        $guard = 'web';
-
-        foreach (self::PERMISSIONS as $permissionName) {
-            Permission::findOrCreate($permissionName, $guard);
+        // Spec02 RBAC remains on Auth guard `web`. Dual-guard UserModel also accepts
+        // `identity` (D-G-12); mirror permission rows so Spatie lookups for either
+        // guard_name never throw PermissionDoesNotExist mid-suite (G-E-R / B2).
+        foreach (['web', 'identity'] as $permissionGuard) {
+            foreach (self::PERMISSIONS as $permissionName) {
+                Permission::findOrCreate($permissionName, $permissionGuard);
+            }
         }
+
+        $web = 'web';
 
         // Pre-existing Spec02 mapping (unchanged by D-L7-1). D-L7-1 does not authorize
         // new production role grants; HRMgr / Administrator do not receive roles.manage here.
-        $systemAdministrator = Role::findOrCreate(self::ROLE_SYSTEM_ADMINISTRATOR, $guard);
+        $systemAdministrator = Role::findOrCreate(self::ROLE_SYSTEM_ADMINISTRATOR, $web);
         $systemAdministrator->syncPermissions([
-            self::PERMISSION_IDENTITY_USERS_MANAGE,
-            self::PERMISSION_IDENTITY_USERS_VIEW,
-            self::PERMISSION_IDENTITY_ROLES_MANAGE,
+            Permission::findByName(self::PERMISSION_IDENTITY_USERS_MANAGE, $web),
+            Permission::findByName(self::PERMISSION_IDENTITY_USERS_VIEW, $web),
+            Permission::findByName(self::PERMISSION_IDENTITY_ROLES_MANAGE, $web),
         ]);
 
         foreach (self::AUDIT_READ_ROLES as $roleName) {
-            $role = Role::findOrCreate($roleName, $guard);
-            $role->givePermissionTo(self::PERMISSION_AUDIT_READ);
+            $role = Role::findOrCreate($roleName, $web);
+            $role->givePermissionTo(Permission::findByName(self::PERMISSION_AUDIT_READ, $web));
         }
 
-        $hrMgr = Role::findOrCreate(self::ROLE_HR_MGR, $guard);
+        $hrMgr = Role::findOrCreate(self::ROLE_HR_MGR, $web);
         $hrMgr->givePermissionTo([
-            self::PERMISSION_EMPLOYEE_RECORDS_READ,
-            self::PERMISSION_EMPLOYEE_RECORDS_EDIT,
+            Permission::findByName(self::PERMISSION_EMPLOYEE_RECORDS_READ, $web),
+            Permission::findByName(self::PERMISSION_EMPLOYEE_RECORDS_EDIT, $web),
         ]);
 
         // G-B / Decision 3-A revised: additive roles on the identity Auth guard.
         // Does not rename or re-guard ROLE_DORM_MGR ('DormMgr' / web). No permission grants.
         Role::findOrCreate(self::ROLE_DORMITORY_MANAGER, 'identity');
         Role::findOrCreate(self::ROLE_DORMITORY_UNIT_MANAGER, 'identity');
+
+        $registrar->forgetCachedPermissions();
     }
 }

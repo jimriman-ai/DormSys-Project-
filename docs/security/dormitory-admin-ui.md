@@ -16,4 +16,7 @@
 - **Rationale:** Only authenticated identity users with the matching identity-guard role can load the page; assignment scoping (pivot + `user_id`) closes IDOR. UUID exposure is reconnaissance-only for already-authorized managers.
 - **Decision:** Accepted risk — no code change.
 - **Date:** 2026-07-15
-- **Decision ref:** H-04b
+- **Decision ref:** H-04b / D-G-13
+- **Owner:** Tech Lead
+- **Review cadence:** every 6 months, or at the start of a major phase
+- **Authorization:** L5-G-CANONICAL-01 (`.specify/memory/dormitory-admin-ui-authorization.md`)
