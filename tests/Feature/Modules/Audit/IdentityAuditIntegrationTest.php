@@ -111,3 +111,72 @@ it('records identity role revoked and user deactivated audit entries', function 
     expect($deactivated->old_values)->toBe(['status' => 'active']);
     expect($deactivated->new_values)->toBe(['status' => 'disabled']);
 });
+
+it('records role created updated deleted and user roles synced audit entries', function (): void {
+    $actor = authenticateIdentityActor();
+    grantIdentityRolesManagePermission($actor->id);
+
+    $created = mutationActingAs(
+        $actor->id,
+        fn () => app(App\Modules\Identity\Application\Services\CreateRoleAction::class)->execute('AuditSurfaceRole'),
+    );
+
+    $createdEntry = AuditLogModel::query()
+        ->where('event_type', AuditEventType::RoleCreated)
+        ->where('entity_type', 'identity_role')
+        ->where('actor_id', $actor->id)
+        ->first();
+
+    expect($createdEntry)->not->toBeNull();
+    expect($createdEntry?->new_values)->toMatchArray(['name' => 'AuditSurfaceRole', 'roleId' => $created->id]);
+
+    mutationActingAs(
+        $actor->id,
+        fn () => app(App\Modules\Identity\Application\Services\RenameRoleAction::class)->execute($created->id, 'AuditSurfaceRoleRenamed'),
+    );
+
+    $updatedEntry = AuditLogModel::query()
+        ->where('event_type', AuditEventType::RoleUpdated)
+        ->where('actor_id', $actor->id)
+        ->first();
+
+    expect($updatedEntry)->not->toBeNull();
+    expect($updatedEntry?->old_values)->toBe(['name' => 'AuditSurfaceRole']);
+    expect($updatedEntry?->new_values)->toMatchArray(['name' => 'AuditSurfaceRoleRenamed']);
+
+    mutationActingAs(
+        $actor->id,
+        fn () => app(App\Modules\Identity\Application\Services\DeleteRoleAction::class)->execute($created->id),
+    );
+
+    $deletedEntry = AuditLogModel::query()
+        ->where('event_type', AuditEventType::RoleDeleted)
+        ->where('actor_id', $actor->id)
+        ->first();
+
+    expect($deletedEntry)->not->toBeNull();
+    expect($deletedEntry?->old_values)->toMatchArray(['name' => 'AuditSurfaceRoleRenamed', 'roleId' => $created->id]);
+
+    $target = createIdentityUserThroughMutation('Sync Audit Target', 'sync-audit-target@example.com');
+    $hrId = (int) Spatie\Permission\Models\Role::query()
+        ->where('name', IdentityRoleSeeder::ROLE_HR_MGR)
+        ->where('guard_name', 'web')
+        ->value('id');
+
+    mutationActingAs(
+        $actor->id,
+        fn () => app(App\Modules\Identity\Application\Services\SyncUserRolesAction::class)->execute(
+            $target->requireId()->value,
+            [$hrId],
+        ),
+    );
+
+    $synced = AuditLogModel::query()
+        ->where('event_type', AuditEventType::UserRolesSynced)
+        ->where('entity_id', $target->requireId()->value)
+        ->where('actor_id', $actor->id)
+        ->first();
+
+    expect($synced)->not->toBeNull();
+    expect($synced?->new_values)->toBe(['roles' => [IdentityRoleSeeder::ROLE_HR_MGR]]);
+});

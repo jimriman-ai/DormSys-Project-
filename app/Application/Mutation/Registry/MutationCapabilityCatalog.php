@@ -30,6 +30,8 @@ final class MutationCapabilityCatalog
 
     public const string IDENTITY_ROLE_REVOKE = 'identity.role.revoke';
 
+    public const string IDENTITY_ROLE_MANAGE = 'identity.role.manage';
+
     public const string EMPLOYEE_CREATE = 'employee.create';
 
     public const string EMPLOYEE_DEPARTMENT_CREATE = 'employee.department.create';
@@ -79,6 +81,7 @@ final class MutationCapabilityCatalog
             self::IDENTITY_USER_DEACTIVATE,
             self::IDENTITY_ROLE_ASSIGN,
             self::IDENTITY_ROLE_REVOKE,
+            self::IDENTITY_ROLE_MANAGE,
             self::EMPLOYEE_CREATE,
             self::EMPLOYEE_DEPARTMENT_CREATE,
             self::EMPLOYEE_DEPARTMENT_DEACTIVATE,

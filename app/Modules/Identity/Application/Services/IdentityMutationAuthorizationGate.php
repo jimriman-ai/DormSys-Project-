@@ -42,6 +42,17 @@ final class IdentityMutationAuthorizationGate
         }
     }
 
+    public function assertManageRoles(): void
+    {
+        $principalId = $this->assertActiveIdentityActor();
+
+        if (! $this->identityRead->userHasPermission($principalId, self::ACTOR_PERMISSION_ROLES_MANAGE)) {
+            throw new UnauthorizedMutationException(
+                'Mutation actor must hold identity.roles.manage to manage roles.',
+            );
+        }
+    }
+
     public function assertRevokeRole(): void
     {
         $this->assertActiveIdentityActor();

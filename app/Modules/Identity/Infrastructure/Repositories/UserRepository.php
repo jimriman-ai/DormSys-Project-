@@ -72,6 +72,14 @@ class UserRepository implements UserRepositoryContract
             ->count();
     }
 
+    public function countSystemAdministratorsExcluding(UserId $excludeId): int
+    {
+        return UserModel::query()
+            ->role(PlatformRoles::SYSTEM_ADMINISTRATOR)
+            ->where('id', '!=', $excludeId->value)
+            ->count();
+    }
+
     public function userHasRole(UserId $id, string $roleName): bool
     {
         $model = UserModel::query()->find($id->value);

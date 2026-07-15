@@ -6,6 +6,7 @@ use App\Http\Controllers\ApiAuthSessionController;
 use App\Http\Controllers\HealthController;
 use App\Modules\Allocation\Presentation\Providers\AllocationPresentationServiceProvider;
 use App\Modules\CheckIn\Presentation\Providers\CheckInPresentationServiceProvider;
+use App\Modules\Identity\Presentation\Providers\IdentityPresentationServiceProvider;
 use App\Modules\Lottery\Presentation\Providers\LotteryPresentationServiceProvider;
 use App\Modules\Reporting\Presentation\Providers\ReportingPresentationServiceProvider;
 use App\Modules\Request\Presentation\Providers\RequestPresentationServiceProvider;
@@ -17,6 +18,15 @@ Route::prefix('auth')->group(function (): void {
     Route::post('/login', [ApiAuthSessionController::class, 'login']);
     Route::post('/logout', [ApiAuthSessionController::class, 'logout']);
 });
+
+Route::middleware([
+    'auth:api',
+    'permission:identity.roles.manage,api',
+    'request.mutation.principal',
+    'audit.principal',
+])
+    ->prefix('identity')
+    ->group(IdentityPresentationServiceProvider::identityRoutePath());
 
 Route::middleware(['auth:api', 'audit.principal'])
     ->prefix('reporting')

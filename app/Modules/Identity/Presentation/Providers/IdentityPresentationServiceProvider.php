@@ -19,4 +19,9 @@ class IdentityPresentationServiceProvider extends ServiceProvider
             ]);
         }
     }
+
+    public static function identityRoutePath(): string
+    {
+        return app_path('Modules/Identity/Presentation/Routes/identity.php');
+    }
 }

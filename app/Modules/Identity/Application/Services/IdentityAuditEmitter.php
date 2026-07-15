@@ -11,12 +11,15 @@ use App\Modules\Identity\Domain\Enums\UserStatus;
 use App\Modules\Identity\Domain\ValueObjects\UserId;
 use DateTimeImmutable;
 use DateTimeZone;
+use Ramsey\Uuid\Uuid;
 
 final class IdentityAuditEmitter
 {
     private const string SOURCE_CONTEXT = 'identity';
 
-    private const string ENTITY_TYPE = 'identity_user';
+    private const string ENTITY_TYPE_USER = 'identity_user';
+
+    private const string ENTITY_TYPE_ROLE = 'identity_role';
 
     public function __construct(
         private readonly AuditRecordingContract $auditRecording,
@@ -26,9 +29,10 @@ final class IdentityAuditEmitter
     public function recordUserCreated(UserId $userId, DateTimeImmutable $occurredAt): void
     {
         $this->record(
-            correlationId: $this->correlationId($userId, 'identity.user_created', 'created'),
+            correlationId: $this->correlationId(self::ENTITY_TYPE_USER, $userId->value, 'identity.user_created', 'created'),
             eventType: 'identity.user_created',
-            userId: $userId,
+            entityType: self::ENTITY_TYPE_USER,
+            entityId: $userId->value,
             oldValues: null,
             newValues: ['status' => UserStatus::Active->value],
             metadata: ['lifecycleAction' => 'created'],
@@ -39,9 +43,10 @@ final class IdentityAuditEmitter
     public function recordUserDeactivated(UserId $userId, DateTimeImmutable $occurredAt): void
     {
         $this->record(
-            correlationId: $this->correlationId($userId, 'identity.user_deactivated', 'deactivated'),
+            correlationId: $this->correlationId(self::ENTITY_TYPE_USER, $userId->value, 'identity.user_deactivated', 'deactivated'),
             eventType: 'identity.user_deactivated',
-            userId: $userId,
+            entityType: self::ENTITY_TYPE_USER,
+            entityId: $userId->value,
             oldValues: ['status' => UserStatus::Active->value],
             newValues: ['status' => UserStatus::Disabled->value],
             metadata: ['lifecycleAction' => 'deactivated'],
@@ -52,9 +57,10 @@ final class IdentityAuditEmitter
     public function recordRoleAssigned(UserId $userId, string $roleName, DateTimeImmutable $occurredAt): void
     {
         $this->record(
-            correlationId: $this->correlationId($userId, 'identity.role_changed', 'assigned:'.$roleName),
+            correlationId: $this->correlationId(self::ENTITY_TYPE_USER, $userId->value, 'identity.role_changed', 'assigned:'.$roleName),
             eventType: 'identity.role_changed',
-            userId: $userId,
+            entityType: self::ENTITY_TYPE_USER,
+            entityId: $userId->value,
             oldValues: null,
             newValues: ['role' => $roleName],
             metadata: ['assignmentAction' => 'assigned'],
@@ -65,12 +71,78 @@ final class IdentityAuditEmitter
     public function recordRoleRevoked(UserId $userId, string $roleName, DateTimeImmutable $occurredAt): void
     {
         $this->record(
-            correlationId: $this->correlationId($userId, 'identity.role_changed', 'revoked:'.$roleName),
+            correlationId: $this->correlationId(self::ENTITY_TYPE_USER, $userId->value, 'identity.role_changed', 'revoked:'.$roleName),
             eventType: 'identity.role_changed',
-            userId: $userId,
+            entityType: self::ENTITY_TYPE_USER,
+            entityId: $userId->value,
             oldValues: ['role' => $roleName],
             newValues: null,
             metadata: ['assignmentAction' => 'revoked'],
+            occurredAt: $occurredAt,
+        );
+    }
+
+    public function recordRoleCreated(int $roleId, string $name, DateTimeImmutable $occurredAt): void
+    {
+        $entityId = $this->roleEntityUuid($roleId);
+
+        $this->record(
+            correlationId: $this->correlationId(self::ENTITY_TYPE_ROLE, $entityId, 'role.created', 'created:'.$name),
+            eventType: 'role.created',
+            entityType: self::ENTITY_TYPE_ROLE,
+            entityId: $entityId,
+            oldValues: null,
+            newValues: ['name' => $name, 'roleId' => $roleId],
+            metadata: ['lifecycleAction' => 'created'],
+            occurredAt: $occurredAt,
+        );
+    }
+
+    public function recordRoleUpdated(int $roleId, string $oldName, string $newName, DateTimeImmutable $occurredAt): void
+    {
+        $entityId = $this->roleEntityUuid($roleId);
+
+        $this->record(
+            correlationId: $this->correlationId(self::ENTITY_TYPE_ROLE, $entityId, 'role.updated', 'renamed:'.$newName),
+            eventType: 'role.updated',
+            entityType: self::ENTITY_TYPE_ROLE,
+            entityId: $entityId,
+            oldValues: ['name' => $oldName],
+            newValues: ['name' => $newName, 'roleId' => $roleId],
+            metadata: ['lifecycleAction' => 'updated'],
+            occurredAt: $occurredAt,
+        );
+    }
+
+    public function recordRoleDeleted(int $roleId, string $name, DateTimeImmutable $occurredAt): void
+    {
+        $entityId = $this->roleEntityUuid($roleId);
+
+        $this->record(
+            correlationId: $this->correlationId(self::ENTITY_TYPE_ROLE, $entityId, 'role.deleted', 'deleted:'.$name),
+            eventType: 'role.deleted',
+            entityType: self::ENTITY_TYPE_ROLE,
+            entityId: $entityId,
+            oldValues: ['name' => $name, 'roleId' => $roleId],
+            newValues: null,
+            metadata: ['lifecycleAction' => 'deleted'],
+            occurredAt: $occurredAt,
+        );
+    }
+
+    /**
+     * @param  list<string>  $roleNames
+     */
+    public function recordUserRolesSynced(UserId $userId, array $roleNames, DateTimeImmutable $occurredAt): void
+    {
+        $this->record(
+            correlationId: $this->correlationId(self::ENTITY_TYPE_USER, $userId->value, 'user.roles.synced', 'synced'),
+            eventType: 'user.roles.synced',
+            entityType: self::ENTITY_TYPE_USER,
+            entityId: $userId->value,
+            oldValues: null,
+            newValues: ['roles' => $roleNames],
+            metadata: ['assignmentAction' => 'synced'],
             occurredAt: $occurredAt,
         );
     }
@@ -83,7 +155,8 @@ final class IdentityAuditEmitter
     private function record(
         string $correlationId,
         string $eventType,
-        UserId $userId,
+        string $entityType,
+        string $entityId,
         ?array $oldValues,
         ?array $newValues,
         ?array $metadata,
@@ -92,8 +165,8 @@ final class IdentityAuditEmitter
         $this->auditRecording->record(AuditEntryDto::fromArray([
             'correlationId' => $correlationId,
             'eventType' => $eventType,
-            'entityType' => self::ENTITY_TYPE,
-            'entityId' => $userId->value,
+            'entityType' => $entityType,
+            'entityId' => $entityId,
             'actorType' => $this->actorType(),
             'actorId' => $this->actorId(),
             'sourceContext' => self::SOURCE_CONTEXT,
@@ -114,16 +187,21 @@ final class IdentityAuditEmitter
         return $this->principalContext->currentPrincipalId() ?? 'system:scheduler';
     }
 
-    private function correlationId(UserId $userId, string $eventType, string $outcomeToken): string
+    private function correlationId(string $entityType, string $entityId, string $eventType, string $outcomeToken): string
     {
         return sprintf(
             '%s:%s:%s:%s:%s',
             self::SOURCE_CONTEXT,
-            self::ENTITY_TYPE,
-            $userId->value,
+            $entityType,
+            $entityId,
             $eventType,
             $outcomeToken,
         );
+    }
+
+    private function roleEntityUuid(int $roleId): string
+    {
+        return Uuid::uuid5(Uuid::NAMESPACE_OID, 'dormsys:identity_role:'.$roleId)->toString();
     }
 
     public static function occurredNow(): DateTimeImmutable

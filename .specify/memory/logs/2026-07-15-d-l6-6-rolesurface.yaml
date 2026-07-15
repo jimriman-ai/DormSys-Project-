@@ -1,0 +1,6 @@
+prompt_id: d-l6-6-rolesurface-2026-07-15
+recorded_at: 2026-07-15T10:19:00+03:30
+work_item: d-l6-6-rolesurface
+stage: implementation
+tags: [CHANGES_REQUIRED, CLOSED, SAFE_PROGRESS]
+summary: "Implemented /api/identity role CRUD+sync surface with web guard_name invariants I1–I4; Spatie permission middleware uses api guard; filter Role 45 passed."

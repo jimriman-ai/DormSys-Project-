@@ -8,8 +8,10 @@ use App\Modules\Identity\Domain\Enums\UserStatus;
 use App\Modules\Identity\Domain\PlatformRoles;
 use App\Support\Models\BaseModel;
 use Illuminate\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Foundation\Auth\Access\Authorizable;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -20,14 +22,17 @@ use Spatie\Permission\Traits\HasRoles;
  * Password-based login is explicitly out of scope (OA-02-01); credentials
  * belong to {@see \App\Models\User} on the default `web` guard.
  *
+ * {@see AuthorizableContract} enables Spatie `permission:` middleware (`can` / `canAny`).
+ *
  * @property string $id
  * @property UserStatus $status
  * @property string $display_name
  * @property string|null $email
  */
-class UserModel extends BaseModel implements AuthenticatableContract
+class UserModel extends BaseModel implements AuthenticatableContract, AuthorizableContract
 {
     use Authenticatable;
+    use Authorizable;
     use HasRoles;
 
     protected $table = 'identity_users';

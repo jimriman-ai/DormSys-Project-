@@ -24,5 +24,9 @@ enum AuditEventType: string
     case IdentityPermissionChanged = 'identity.permission_changed';
     case IdentityUserCreated = 'identity.user_created';
     case IdentityUserDeactivated = 'identity.user_deactivated';
+    case RoleCreated = 'role.created';
+    case RoleUpdated = 'role.updated';
+    case RoleDeleted = 'role.deleted';
+    case UserRolesSynced = 'user.roles.synced';
     case DormitoryRoomStatusChanged = 'dormitory.room_status_changed';
 }

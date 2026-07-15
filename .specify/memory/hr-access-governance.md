@@ -2,7 +2,7 @@
 
 # Boundary: HR Access Governance Cluster
 
-# Phase: Spec / Domain Decision (Pre-Implementation)
+# Phase: Phase E CLOSED → Ready for Phase F (Auth Gate)
 
 # Naming convention: All roles and entities are recorded in English
 
@@ -10,16 +10,39 @@
 
 ## Status
 
-CLUSTER_PHASE: Pre-Implementation
-ALL_ACTIVE_GAPS_IN_THIS_CLUSTER_CLOSED: false # identity.roles.manage production ownership backlog open
+CLUSTER_PHASE: Phase_E_CLOSED_READY_FOR_PHASE_F_AUTH_GATE
+PHASE_E_EXIT_READINESS: CLOSED
+PHASE_F_AUTH_GATE: READY
+ALL_PHASE_D_GAPS_CLOSED: true
+# Phase D closures: D-L6-4-C2, D-L6-5-DORMSTRUCT, D-L6-6-ROLESURFACE (+ security findings)
+ALL_ACTIVE_GAPS_IN_THIS_CLUSTER_CLOSED: false # non-blocking: identity.roles.manage production ownership (TEST_ONLY_PERMISSION) deferred
 IMPLEMENTATION_GATE_OPEN: true
 IMPLEMENTATION_AUTHORIZED: true # scope-limited: HR Manager / employee_records only
 IMPLEMENTATION_SCOPE_NOTE: HR Manager / employee_records cycle only
-ACTIVE_OPEN_GAP: identity.roles.manage production ownership backlog
+ACTIVE_OPEN_GAP: identity.roles.manage production ownership backlog (non-blocking for Phase F Auth Gate)
 
 Operational note: Full-suite acceptance runs MUST be exclusive: no concurrent
 php artisan test processes against the shared testing database. Contention
 symptoms (deadlocks, missing tables, seed races) invalidate the run.
+
+### Phase E — Exit Readiness Cleanup (CLOSED 2026-07-15)
+
+Confirmed closed:
+
+| Gap | Status |
+|-----|--------|
+| D-L6-4-C2 | CLOSED |
+| D-L6-5-DORMSTRUCT | CLOSED (TEST-SETUP DEFECT; exclusive acceptance green) |
+| D-L6-6-ROLESURFACE | CLOSED |
+| S2-I3 last-admin | FIXED |
+| S2-I4 transactional delete + lockForUpdate | FIXED |
+| S3 trim | FIXED |
+| S5 audit emit | FIXED |
+
+Final gate (post findings resolution): **1841 passed / 0 failed** (4 skipped);
+PHPStan 0 errors; Pint pass. Governance artifacts verified. No blocking TODO/FIXME.
+
+**STATUS: Phase E CLOSED → Ready for Phase F (Auth Gate)**
 
 ---
 
@@ -241,6 +264,73 @@ SEED_GAP (a production holder already exists). Guard rows are consistent (`web`)
 
 Gap remains **OPEN**. No seeder/config/app/test change in this triage round.
 
+### D-L6-6-ROLESURFACE — Production API surface for identity.roles.manage
+
+Status: **IMPLEMENTED** (2026-07-15)
+
+Routes under `/api/identity` (middleware: `auth:api`,
+`permission:identity.roles.manage,api`, `request.mutation.principal`,
+`audit.principal`):
+
+- `GET|POST /roles`, `PATCH|DELETE /roles/{role}`, `GET /roles/{role}/users`
+- `PUT /users/{user}/roles` (atomic sync)
+
+Invariants: I1 new roles `guard_name=web`; I2 SystemAdministrator rename/delete → 409;
+I3 cannot remove SystemAdministrator from self → 409; I4 delete role with users → 409.
+Permission-to-role assignment remains out of scope (seeder-only / runtime read-only).
+
+Note: Spatie middleware requires `,api` guard argument so Auth resolves Identity
+`UserModel` (default auth guard is `web` credential model). Application gate
+`assertManageRoles()` remains defense-in-depth.
+
+Verification: `php artisan test --filter=Role` — 45 passed.
+
+### D-L6-6-ROLESURFACE — L7 Security Review + L8 Acceptance (2026-07-15)
+
+#### S1 Guard-resolution chain (OK)
+
+1. `routes/api.php` — middleware `auth:api` then `permission:identity.roles.manage,api`
+2. Spatie `PermissionMiddleware` → `Auth::guard('api')->user()` → Identity `UserModel`
+3. `UserModel::guardName()` returns `'web'` → Spatie permission lookup on `guard_name=web`
+4. Seeded permission `identity.roles.manage` rows use `guard_name=web` (`IdentityRoleSeeder`)
+5. No path authenticates credential `App\Models\User` for this surface when `,api` is present.
+
+#### Security findings table
+
+| ID | Severity | Location | Status |
+|----|----------|----------|--------|
+| S1 | — | Guard chain api→UserModel→Spatie web | OK |
+| S2-I2 | — | RenameRoleAction exact name match; case/whitespace payload tests | OK |
+| S2-I3 | HIGH | SyncUserRolesAction self-only; no last-admin-overall | FINDING |
+| S2-I4 | MEDIUM | DeleteRoleAction count then delete — not one transaction | FINDING |
+| S3-sync | — | SyncUserRolesRequest exists+guard web; api role → 422 | OK |
+| S3-store-trim | LOW | StoreRoleRequest no `trim`/prepareForValidation | FINDING |
+| S4 | — | assertManageRoles without HTTP middleware (defense test) | OK |
+| S5-principal | — | request.mutation.principal sets audit_principal from api UserModel | OK |
+| S5-audit-emit | MEDIUM | Create/Rename/Delete/Sync do not call IdentityAuditEmitter | FINDING |
+| A1-MPEP | — | Wired IDENTITY_ROLE_MANAGE + MPEP for architecture boundary | OK (gate fix) |
+
+#### L8 Acceptance
+
+- A1 `php artisan test` — **1838 passed / 0 failed / 4 skipped** (1842 total; 5180 assertions)
+- A2 `php vendor/bin/phpstan analyse --no-progress` — **0 errors**
+- A3 `php vendor/bin/pint --test` — **passed**
+
+**Verdict: FINDINGS_BLOCK** — L8 tools green; L7 residual FINDINGs (I3 HIGH last-admin-overall missing; I4 MEDIUM TOCTOU; S3-store-trim LOW; S5-audit-emit MEDIUM) block security CLOSE of D-L6-6. Do not expand scope in this gate; schedule remediation after human priority on I3.
+
+### D-L6-6-ROLESURFACE — Finding Resolution Round (2026-07-15)
+
+| Finding | Fix | Status |
+|---------|-----|--------|
+| S2-I3 | `SyncUserRolesAction` last-admin via `countSystemAdministratorsExcluding` → `LastSystemAdministratorException` 409 | FIXED |
+| S2-I4 | `RoleRepository::deleteWebRole` — `DB::transaction` + `lockForUpdate` + `UserModel::role` count | FIXED |
+| S5-audit | `IdentityAuditEmitter` role.created/updated/deleted + user.roles.synced; `AuditEventType` extended | FIXED |
+| S3-trim | `StoreRoleRequest` / `UpdateRoleRequest` `prepareForValidation` trim | FIXED |
+
+L8 re-run: A1 **1841 passed / 0 failed** (1845 total, 4 skipped); A2 PHPStan **0**; A3 Pint **pass**.
+
+**Verdict: CLOSE_READY**
+
 ---
 
 ## F-L7-9 — Test Adequacy (Identity / HR Access Boundary)
@@ -301,9 +391,13 @@ F_L7_9_STATUS: CLOSED_COVERED
 F_L7_6_STATUS: CLOSED
 D_L6_4_C2_STATUS: CLOSED
 D_L6_5_DORMSTRUCT_STATUS: CLOSED
+D_L6_6_ROLESURFACE_STATUS: CLOSED
+PHASE_E_EXIT_READINESS: CLOSED
+PHASE_F_AUTH_GATE: READY
 NO_GATE_OPENED: false
 NO_IMPLEMENTATION_DETAIL_IN_GOVERNANCE_DECISIONS: true
-ALL_ACTIVE_GAPS_IN_THIS_CLUSTER_CLOSED: false
+ALL_ACTIVE_GAPS_IN_THIS_CLUSTER_CLOSED: false # ownership backlog non-blocking
+ALL_PHASE_D_GAPS_CLOSED: true
 IMPLEMENTATION_AUTHORIZED: true
 IMPLEMENTATION_AUTHORIZED_SCOPE: HR Manager / employee_records cycle only
 
@@ -375,3 +469,16 @@ Helpers/tests touched (R1–R3): structure-authorization.php;
 Request/Lottery/Allocation http-mutation + mutation-principal helpers;
 DormitoryReadIntegrationTest; MissionRequestTest; FamilyDirectSnapshotTest;
 HRManagerEmployeeRecordsAuthTest; DormitoryStructureAuthorizationBindingTest.
+
+D-L6-6-ROLESURFACE: IMPLEMENTED (2026-07-15) — HTTP API under `/api/identity`
+for identity.roles.manage holders. Verified: php artisan test --filter=Role
+(45 passed). Ownership backlog (ACTIVE_OPEN_GAP) remains OPEN separately.
+
+D-L6-6-FINDINGS-FIX: CLOSED (2026-07-15) — I3 last-admin, I4 delete lock,
+audit emit, name trim. L8: 1841 passed / 0 failed; PHPStan 0; Pint pass.
+Verdict CLOSE_READY.
+
+PHASE-E-EXIT: CLOSED (2026-07-15) — Exit Readiness Cleanup complete.
+Phase D gaps D-L6-4-C2 / D-L6-5-DORMSTRUCT / D-L6-6-ROLESURFACE closed;
+ROLESURFACE security findings resolved. Ready for Phase F (Auth Gate).
+Ownership backlog remains OPEN non-blocking (TEST_ONLY_PERMISSION).

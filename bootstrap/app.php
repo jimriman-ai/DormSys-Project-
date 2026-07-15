@@ -15,6 +15,13 @@ use App\Modules\CheckIn\Domain\Exceptions\NoOpenCheckInRecordException;
 use App\Modules\CheckIn\Domain\Exceptions\OpenCheckInRecordExistsException;
 use App\Modules\CheckIn\Domain\Exceptions\OperatorRoleRequiredException;
 use App\Modules\CheckIn\Presentation\Http\Support\CheckInApiExceptionResponse;
+use App\Modules\Identity\Domain\Exceptions\CannotRemoveOwnSystemAdministratorRoleException;
+use App\Modules\Identity\Domain\Exceptions\LastSystemAdministratorException;
+use App\Modules\Identity\Domain\Exceptions\ProtectedRoleException;
+use App\Modules\Identity\Domain\Exceptions\RoleHasAssignedUsersException;
+use App\Modules\Identity\Domain\Exceptions\RoleNotFoundException;
+use App\Modules\Identity\Domain\Exceptions\UserNotFoundException;
+use App\Modules\Identity\Presentation\Http\Support\IdentityRoleApiExceptionResponse;
 use App\Modules\Lottery\Domain\Exceptions\LotteryDomainException;
 use App\Modules\Lottery\Presentation\Http\Support\LotteryApiExceptionResponse;
 use App\Modules\Reporting\Domain\Exceptions\UnauthorizedArchiveVisibilityException;
@@ -34,6 +41,8 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Validation\ValidationException as HttpValidationException;
+use Spatie\Permission\Exceptions\UnauthorizedException as SpatieUnauthorizedException;
+use Spatie\Permission\Middleware\PermissionMiddleware;
 use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -53,6 +62,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'audit.principal' => ResolveAuditPrincipalMiddleware::class,
             'request.mutation.principal' => EnforceSessionMutationPrincipalMiddleware::class,
+            'permission' => PermissionMiddleware::class,
         ]);
 
         $middleware->redirectGuestsTo('/login');
@@ -93,6 +103,33 @@ return Application::configure(basePath: dirname(__DIR__))
                 'success' => false,
                 'message' => $exception->getMessage(),
             ], Response::HTTP_FORBIDDEN);
+        });
+
+        $exceptions->render(function (SpatieUnauthorizedException $exception, Request $request) {
+            if (! $request->is('api/*')) {
+                return null;
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ], Response::HTTP_FORBIDDEN);
+        });
+
+        $exceptions->render(function (
+            ProtectedRoleException
+            |RoleHasAssignedUsersException
+            |CannotRemoveOwnSystemAdministratorRoleException
+            |LastSystemAdministratorException
+            |RoleNotFoundException
+            |UserNotFoundException $exception,
+            Request $request,
+        ) {
+            if (! $request->is('api/identity', 'api/identity/*')) {
+                return null;
+            }
+
+            return IdentityRoleApiExceptionResponse::fromDomainException($exception);
         });
 
         $exceptions->render(function (UnauthorizedArchiveVisibilityException $exception, Request $request) {

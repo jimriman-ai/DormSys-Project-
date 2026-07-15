@@ -1,0 +1,6 @@
+prompt_id: d-l6-6-findings-resolution-2026-07-15
+recorded_at: 2026-07-15T10:55:00+03:30
+work_item: d-l6-6-findings-resolution
+stage: acceptance
+tags: [CHANGES_REQUIRED, CLOSED, SAFE_PROGRESS]
+summary: "Resolved I3 last-admin, I4 delete TOCTOU lock, role audit emit, name trim; L8 1841 pass/0 fail — CLOSE_READY."

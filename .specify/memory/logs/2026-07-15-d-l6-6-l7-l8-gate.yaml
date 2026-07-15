@@ -1,0 +1,6 @@
+prompt_id: d-l6-6-l7-l8-gate-2026-07-15
+recorded_at: 2026-07-15T10:37:00+03:30
+work_item: d-l6-6-rolesurface-l7-l8
+stage: acceptance
+tags: [EVIDENCE_GAP, OWNER_DECISION_NEEDED, SAFE_PROGRESS]
+summary: "L8 green (1838 pass/0 fail; PHPStan 0; Pint pass). L7 FINDINGS_BLOCK: I3 last-admin self-only HIGH; I4 delete TOCTOU; StoreRole no trim; role CRUD lacks audit emit."

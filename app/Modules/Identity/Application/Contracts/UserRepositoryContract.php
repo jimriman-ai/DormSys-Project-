@@ -19,6 +19,11 @@ interface UserRepositoryContract
 
     public function countActiveSystemAdministrators(): int;
 
+    /**
+     * Count of users holding SystemAdministrator (guard web), excluding one user id.
+     */
+    public function countSystemAdministratorsExcluding(UserId $excludeId): int;
+
     public function userHasRole(UserId $id, string $roleName): bool;
 
     /**
