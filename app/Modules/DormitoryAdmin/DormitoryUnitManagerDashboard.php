@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\DormitoryAdmin;
 
-use App\Support\Auth\IdentityRoleGuard;
+use App\Shared\Auth\IdentityRoleGuard;
 use Database\Seeders\IdentityRoleSeeder;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Support\Auth;
+namespace App\Shared\Auth;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;

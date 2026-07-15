@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\EmployeeRecordController;
 use App\Http\Controllers\Web\AuthSessionController;
 use App\Modules\Audit\Presentation\Providers\AuditPresentationServiceProvider;
+use App\Modules\Auth\Presentation\Livewire\EmployeeLogin;
 use App\Modules\DormitoryAdmin\DormitoryManagerDashboard;
 use App\Modules\DormitoryAdmin\DormitoryUnitManagerDashboard;
 use App\Modules\Employee\Presentation\Providers\EmployeePresentationServiceProvider;
@@ -15,6 +16,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('guest:api')->group(function (): void {
     Route::get('/login', [AuthSessionController::class, 'create'])->name('login');
     Route::post('/login', [AuthSessionController::class, 'store']);
+
+    // F2 / W-01 employee-auth-ui — Livewire login (does not replace legacy /login).
+    Route::get('/employee/login', EmployeeLogin::class)->name('employee.login');
 });
 
 Route::prefix('dormitory-admin')
