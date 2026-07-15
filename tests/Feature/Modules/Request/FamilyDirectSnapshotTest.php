@@ -70,18 +70,40 @@ function seedEligibleDependentSnapshot(Employee $employee, ?string $dependentId 
     return $dependentId;
 }
 
+/**
+ * CreateFamilyDirectRequestAction → DormitoryReadBridge::siteExists requires
+ * dormitory.structure.view principal (D-L6-5-DORMSTRUCT Option A).
+ *
+ * @param  list<string>  $sourceDependentIds
+ */
+function executeFamilyDirectWithStructureView(
+    Employee $employee,
+    string $dormitoryId,
+    array $sourceDependentIds,
+    DateTimeImmutable $checkInDate = new DateTimeImmutable('2026-07-01'),
+    DateTimeImmutable $checkOutDate = new DateTimeImmutable('2026-12-31'),
+): mixed {
+    return withDormitoryStructureViewActor(
+        fn () => app(CreateFamilyDirectRequestAction::class)->execute(
+            employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
+            dormitoryId: DormitorySiteId::fromString($dormitoryId),
+            checkInDate: $checkInDate,
+            checkOutDate: $checkOutDate,
+            sourceDependentIds: $sourceDependentIds,
+        ),
+    );
+}
+
 it('creates and submits a family direct request with immutable dependent snapshots (BT-R06)', function (): void {
     Event::fake([RequestSubmitted::class]);
 
     $employee = createEmployeeForFamilyDirectTest();
     $dependentId = seedEligibleDependentSnapshot($employee);
 
-    $request = app(CreateFamilyDirectRequestAction::class)->execute(
-        employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
-        checkInDate: new DateTimeImmutable('2026-07-01'),
-        checkOutDate: new DateTimeImmutable('2026-12-31'),
-        sourceDependentIds: [$dependentId],
+    $request = executeFamilyDirectWithStructureView(
+        $employee,
+        createDormitorySiteForRequestTests(),
+        [$dependentId],
     );
 
     expect($request->type)->toBe(RequestType::FamilyDirect);
@@ -115,24 +137,20 @@ it('rejects submission when employee eligibility fails (CD-013)', function (): v
     $employee->deactivate();
     app(EmployeeRepositoryContract::class)->save($employee);
 
-    expect(fn () => app(CreateFamilyDirectRequestAction::class)->execute(
-        employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
-        checkInDate: new DateTimeImmutable('2026-07-01'),
-        checkOutDate: new DateTimeImmutable('2026-12-31'),
-        sourceDependentIds: [$dependentId],
+    expect(fn () => executeFamilyDirectWithStructureView(
+        $employee,
+        createDormitorySiteForRequestTests(),
+        [$dependentId],
     ))->toThrow(RequestNotEligibleException::class, 'Request is not eligible for submission.');
 });
 
 it('rejects submission when dependent snapshot source is missing', function (): void {
     $employee = createEmployeeForFamilyDirectTest();
 
-    expect(fn () => app(CreateFamilyDirectRequestAction::class)->execute(
-        employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
-        checkInDate: new DateTimeImmutable('2026-07-01'),
-        checkOutDate: new DateTimeImmutable('2026-12-31'),
-        sourceDependentIds: [UuidGenerator::uuid7()],
+    expect(fn () => executeFamilyDirectWithStructureView(
+        $employee,
+        createDormitorySiteForRequestTests(),
+        [UuidGenerator::uuid7()],
     ))->toThrow(RequestValidationException::class);
 });
 
@@ -150,12 +168,10 @@ it('rejects submission when dependent snapshot source marks dependent ineligible
         eligible: false,
     ));
 
-    expect(fn () => app(CreateFamilyDirectRequestAction::class)->execute(
-        employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
-        checkInDate: new DateTimeImmutable('2026-07-01'),
-        checkOutDate: new DateTimeImmutable('2026-12-31'),
-        sourceDependentIds: [$dependentId],
+    expect(fn () => executeFamilyDirectWithStructureView(
+        $employee,
+        createDormitorySiteForRequestTests(),
+        [$dependentId],
     ))->toThrow(RequestValidationException::class);
 });
 
@@ -163,12 +179,10 @@ it('blocks updates to dependent snapshot records (CD-009 append-only)', function
     $employee = createEmployeeForFamilyDirectTest();
     $dependentId = seedEligibleDependentSnapshot($employee);
 
-    app(CreateFamilyDirectRequestAction::class)->execute(
-        employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
-        checkInDate: new DateTimeImmutable('2026-07-01'),
-        checkOutDate: new DateTimeImmutable('2026-12-31'),
-        sourceDependentIds: [$dependentId],
+    executeFamilyDirectWithStructureView(
+        $employee,
+        createDormitorySiteForRequestTests(),
+        [$dependentId],
     );
 
     $model = RequestDependentSnapshotModel::query()->firstOrFail();

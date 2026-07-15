@@ -13,6 +13,27 @@ function seedDormitoryStructurePermissionCatalog(): void
     Artisan::call('db:seed', ['--class' => IdentityRoleSeeder::class]);
 }
 
+/**
+ * Test-only grant for DormitoryStructureAuthorizationGate::assertStructureView consumers
+ * (e.g. DormitoryReadBridge::siteExists → getDormitoryDetail).
+ */
+function grantDormitoryStructureViewPermission(string $userId): void
+{
+    seedDormitoryStructurePermissionCatalog();
+
+    $model = UserModel::query()->find($userId);
+
+    if ($model === null) {
+        // Synthetic principal UUIDs (no identity row) — skip grant; callers must
+        // not rely on DormitoryStructureAuthorizationGate for those principals.
+        return;
+    }
+
+    if (! $model->checkPermissionTo(DormitoryStructurePermissionCatalog::VIEW)) {
+        $model->givePermissionTo(DormitoryStructurePermissionCatalog::VIEW);
+    }
+}
+
 function prepareDormitoryStructureViewPrincipalId(): string
 {
     seedDormitoryStructurePermissionCatalog();
@@ -20,8 +41,7 @@ function prepareDormitoryStructureViewPrincipalId(): string
         'Dormitory Structure Viewer',
         'dorm.structure.view.'.uniqid('', true).'@example.com',
     );
-    $model = UserModel::query()->findOrFail($user->requireId()->value);
-    $model->givePermissionTo(DormitoryStructurePermissionCatalog::VIEW);
+    grantDormitoryStructureViewPermission($user->requireId()->value);
 
     return $user->requireId()->value;
 }

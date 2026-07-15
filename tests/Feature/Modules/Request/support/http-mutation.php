@@ -38,6 +38,7 @@ function createRequestHttpMutationEmployee(
     );
 
     $identity = UserModel::query()->findOrFail($identityUser->requireId()->value);
+    grantDormitoryStructureViewPermission($identity->id);
 
     return [
         'employee' => $employee,
@@ -49,6 +50,7 @@ function createRequestHttpMutationEmployee(
 
 function authenticateRequestHttpMutationUser(UserModel $identity): void
 {
+    grantDormitoryStructureViewPermission($identity->id);
     test()->actingAs($identity, 'api');
     request()->attributes->set('audit_principal_user_id', $identity->id);
 }

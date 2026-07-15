@@ -22,6 +22,7 @@ function createLotteryHttpOperator(
 
     $principalId = createActiveMutationActorId('Lottery HTTP Operator', $email);
     $identity = UserModel::query()->findOrFail($principalId);
+    grantDormitoryStructureViewPermission($principalId);
 
     return [
         'identity' => $identity,
@@ -33,6 +34,7 @@ function createLotteryHttpOperator(
 
 function authenticateLotteryHttpUser(UserModel $identity): void
 {
+    grantDormitoryStructureViewPermission($identity->id);
     test()->actingAs($identity, 'api');
     request()->attributes->set('audit_principal_user_id', $identity->id);
     app(MutationPrincipalContextHolder::class)->clear();

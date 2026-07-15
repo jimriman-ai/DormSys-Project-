@@ -17,6 +17,8 @@ use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
  */
 function asRequestMutationPrincipal(string $principalId, callable $callback): mixed
 {
+    grantDormitoryStructureViewPermission($principalId);
+
     return MutationPrincipalContext::runAs($principalId, $callback);
 }
 
@@ -41,6 +43,7 @@ function createMutationApprover(): array
         'approver.'.uniqid('', true).'@example.com',
     );
     $principalId = $user->requireId()->value;
+    grantDormitoryStructureViewPermission($principalId);
 
     return [
         'principalId' => $principalId,

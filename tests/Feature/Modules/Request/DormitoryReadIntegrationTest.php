@@ -19,9 +19,19 @@ it('returns true when dormitory detail exists', function (): void {
         'status' => ResourceStatus::Available,
     ]);
 
-    expect(app(DormitoryReadContract::class)->siteExists($dormitory->getId()))->toBeTrue();
+    // Intent: live bridge boolean when detail exists (authorized structure viewer).
+    $exists = withDormitoryStructureViewActor(
+        fn (): bool => app(DormitoryReadContract::class)->siteExists($dormitory->getId()),
+    );
+
+    expect($exists)->toBeTrue();
 });
 
 it('returns false when dormitory detail is missing', function (): void {
-    expect(app(DormitoryReadContract::class)->siteExists(Uuid::uuid7()->toString()))->toBeFalse();
+    // Intent: live bridge boolean when detail is absent (authorized structure viewer).
+    $exists = withDormitoryStructureViewActor(
+        fn (): bool => app(DormitoryReadContract::class)->siteExists(Uuid::uuid7()->toString()),
+    );
+
+    expect($exists)->toBeFalse();
 });

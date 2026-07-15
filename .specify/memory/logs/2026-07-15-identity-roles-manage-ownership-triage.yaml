@@ -1,0 +1,6 @@
+prompt_id: identity-roles-manage-ownership-triage-2026-07-15
+recorded_at: 2026-07-15T10:05:00+03:30
+work_item: identity-roles-manage-ownership-gap
+stage: analysis
+tags: [OWNER_DECISION_NEEDED, DEFERRED, SAFE_PROGRESS]
+summary: "Triaged identity.roles.manage as TEST_ONLY_PERMISSION: SystemAdministrator holds it in seeder; no production role-assign surface; gap kept OPEN pending human ownership decision."

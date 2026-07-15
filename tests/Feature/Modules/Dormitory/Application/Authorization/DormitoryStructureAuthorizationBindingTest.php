@@ -44,7 +44,7 @@ it('allows structure view with the approved view permission', function (): void 
         fn () => app(DormitoryStructureReadContract::class)->listDormitories(),
     );
 
-    expect($listed)->toBeArray();
+    expect($listed)->toBe([]);
 });
 
 it('denies structure view without the approved view permission', function (): void {

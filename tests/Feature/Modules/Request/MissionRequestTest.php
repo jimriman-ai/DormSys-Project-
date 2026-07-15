@@ -82,6 +82,32 @@ function missionMemberPayload(array $employees, int $leaderIndex): array
 }
 
 /**
+ * CreateMissionRequestAction → DormitoryReadBridge::siteExists requires
+ * dormitory.structure.view principal (D-L6-5-DORMSTRUCT Option A).
+ *
+ * @param  list<array{employeeId: string, isLeader: bool}>  $members
+ */
+function executeMissionWithStructureView(
+    Employee $coordinator,
+    string $dormitoryId,
+    array $members,
+    string $description,
+    ?string $missionDocumentUrl = null,
+): mixed {
+    return withDormitoryStructureViewActor(
+        fn () => app(CreateMissionRequestAction::class)->execute(
+            employeeId: EmployeeReferenceId::fromString($coordinator->requireId()->value),
+            dormitoryId: DormitorySiteId::fromString($dormitoryId),
+            checkInDate: new DateTimeImmutable('2026-07-01'),
+            checkOutDate: new DateTimeImmutable('2026-12-31'),
+            members: $members,
+            description: $description,
+            missionDocumentUrl: $missionDocumentUrl,
+        ),
+    );
+}
+
+/**
  * @return list<array{employeeId: string, isLeader: bool}>
  */
 function syntheticMissionMembers(int $count, bool $withLeader = true): array
@@ -101,39 +127,33 @@ function syntheticMissionMembers(int $count, bool $withLeader = true): array
 it('rejects mission with fewer than two members (BT-R07 / BR-04)', function (): void {
     $coordinator = createEmployeeForMissionTest('coord');
 
-    expect(fn () => app(CreateMissionRequestAction::class)->execute(
-        employeeId: EmployeeReferenceId::fromString($coordinator->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
-        checkInDate: new DateTimeImmutable('2026-07-01'),
-        checkOutDate: new DateTimeImmutable('2026-12-31'),
-        members: syntheticMissionMembers(1),
-        description: 'Single member mission',
+    expect(fn () => executeMissionWithStructureView(
+        $coordinator,
+        createDormitorySiteForRequestTests(),
+        syntheticMissionMembers(1),
+        'Single member mission',
     ))->toThrow(InvalidGroupRequestException::class);
 });
 
 it('rejects mission with more than twenty members (BT-R07 / BR-04)', function (): void {
     $coordinator = createEmployeeForMissionTest('coord');
 
-    expect(fn () => app(CreateMissionRequestAction::class)->execute(
-        employeeId: EmployeeReferenceId::fromString($coordinator->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
-        checkInDate: new DateTimeImmutable('2026-07-01'),
-        checkOutDate: new DateTimeImmutable('2026-12-31'),
-        members: syntheticMissionMembers(21),
-        description: 'Oversized mission',
+    expect(fn () => executeMissionWithStructureView(
+        $coordinator,
+        createDormitorySiteForRequestTests(),
+        syntheticMissionMembers(21),
+        'Oversized mission',
     ))->toThrow(InvalidGroupRequestException::class);
 });
 
 it('rejects mission with no designated leader (BT-R07 / BR-04)', function (): void {
     $coordinator = createEmployeeForMissionTest('coord');
 
-    expect(fn () => app(CreateMissionRequestAction::class)->execute(
-        employeeId: EmployeeReferenceId::fromString($coordinator->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
-        checkInDate: new DateTimeImmutable('2026-07-01'),
-        checkOutDate: new DateTimeImmutable('2026-12-31'),
-        members: syntheticMissionMembers(3, withLeader: false),
-        description: 'Leaderless mission',
+    expect(fn () => executeMissionWithStructureView(
+        $coordinator,
+        createDormitorySiteForRequestTests(),
+        syntheticMissionMembers(3, withLeader: false),
+        'Leaderless mission',
     ))->toThrow(InvalidGroupRequestException::class);
 });
 
@@ -145,14 +165,12 @@ it('creates and submits a valid mission with persisted members and details', fun
     $memberB = createEmployeeForMissionTest('b');
     $memberC = createEmployeeForMissionTest('c');
 
-    $request = app(CreateMissionRequestAction::class)->execute(
-        employeeId: EmployeeReferenceId::fromString($coordinator->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
-        checkInDate: new DateTimeImmutable('2026-07-01'),
-        checkOutDate: new DateTimeImmutable('2026-12-31'),
-        members: missionMemberPayload([$memberA, $memberB, $memberC], leaderIndex: 1),
-        description: 'Maintenance crew housing',
-        missionDocumentUrl: 'https://example.com/mission.pdf',
+    $request = executeMissionWithStructureView(
+        $coordinator,
+        createDormitorySiteForRequestTests(),
+        missionMemberPayload([$memberA, $memberB, $memberC], leaderIndex: 1),
+        'Maintenance crew housing',
+        'https://example.com/mission.pdf',
     );
 
     expect($request->type)->toBe(RequestType::Mission);
@@ -177,13 +195,11 @@ it('persists mission members as immutable records after submit (CD-014)', functi
     $memberA = createEmployeeForMissionTest('a');
     $memberB = createEmployeeForMissionTest('b');
 
-    $request = app(CreateMissionRequestAction::class)->execute(
-        employeeId: EmployeeReferenceId::fromString($coordinator->requireId()->value),
-        dormitoryId: DormitorySiteId::fromString(createDormitorySiteForRequestTests()),
-        checkInDate: new DateTimeImmutable('2026-07-01'),
-        checkOutDate: new DateTimeImmutable('2026-12-31'),
-        members: missionMemberPayload([$memberA, $memberB], leaderIndex: 0),
-        description: 'Immutable member test',
+    $request = executeMissionWithStructureView(
+        $coordinator,
+        createDormitorySiteForRequestTests(),
+        missionMemberPayload([$memberA, $memberB], leaderIndex: 0),
+        'Immutable member test',
     );
 
     $persistedLeaderId = app(RequestMemberRepositoryContract::class)

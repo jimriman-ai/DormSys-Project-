@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\EmployeeRecordController;
 use App\Http\Controllers\Web\AuthSessionController;
 use App\Modules\Audit\Presentation\Providers\AuditPresentationServiceProvider;
 use App\Modules\Employee\Presentation\Providers\EmployeePresentationServiceProvider;
@@ -27,6 +28,11 @@ Route::middleware(['auth:api', 'request.mutation.principal', 'audit.principal'])
 
     Route::prefix('employees')
         ->group(EmployeePresentationServiceProvider::employeeWebRoutePath());
+
+    // D-L6-4-C2: production employee_records surface — auth:api + PEP via FormRequest/controller.
+    // (Project uses auth:api Identity UserModel; not web `auth`+`verified`.)
+    Route::resource('employee-records', EmployeeRecordController::class)
+        ->only(['index', 'show', 'create', 'store', 'edit', 'update', 'destroy']);
 
     Route::prefix('audit')
         ->group(AuditPresentationServiceProvider::auditWebRoutePath());

@@ -77,7 +77,12 @@ it('rejects wrong principal type on pep', function (): void {
         'email' => 'wrong-type-pep@example.com',
     ]);
 
-    expect(fn () => app(EmployeeRecordsPolicyEnforcementPoint::class)->canEdit($credentialUser))
+    // Credential User is intentional: PEP requires Identity UserModel; invoke via Reflection
+    // so PHPStan does not treat this call site as a typed canEdit(?UserModel) violation.
+    $pep = app(EmployeeRecordsPolicyEnforcementPoint::class);
+    $canEdit = new ReflectionMethod(EmployeeRecordsPolicyEnforcementPoint::class, 'canEdit');
+
+    expect(fn () => $canEdit->invoke($pep, $credentialUser))
         ->toThrow(TypeError::class);
 });
 
