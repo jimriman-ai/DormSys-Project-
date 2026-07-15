@@ -62,9 +62,9 @@ app/Modules/{Module}/
 └── Presentation/    # Livewire Components, Controllers, Blade Views, Form Requests
 ```
 
-**Core modules:** `Identity`, `Employee`, `Request`, `Workflow` (deferred orchestration), `Dormitory`, `Allocation`, `Lottery`, `Notification`, `Audit`, `Reporting`
+**Core modules:** `Identity`, `Employee`, `Request`, `Workflow` (deferred orchestration), `Dormitory`, `Allocation`, `Lottery`, `Notification`, `Audit`, `Reporting`, `Voucher`, `CheckIn`
 
-**Candidate contexts (not active modules):** `CheckIn` / `CheckOut` — see OQ-06, `spec07` planning
+**CheckIn / CheckOut:** Spec07 **CLOSED** — operational stay lives under `app/Modules/CheckIn/` (no separate `CheckOut` module directory). Do not treat as “candidate / inactive.”
 
 **Shared kernel** lives in `app/Support/` — `BaseModel`, `HasUuid`, `RecordsActivity`, value objects, and repository contracts.
 

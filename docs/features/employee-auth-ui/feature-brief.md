@@ -5,7 +5,7 @@
 | Phase       | F2                                        |
 | Boundary    | employee-auth-ui                          |
 | Guard       | auth:identity                             |
-| Status      | L1 — Active                               |
+| Status      | L1 — Active (W-07 report awaiting Lead)   |
 | Auth record | product-authorization-employee-auth-ui.md |
 
 ## Goal
@@ -18,22 +18,22 @@ Session-based authentication UI for the employee boundary using the
 `App\Modules\Identity\Infrastructure\Persistence\Models\UserModel` (table: `identity_users`,
 `$guard_name = ['web','identity']`)
 
-## Known gaps (from readiness review — must be addressed in L3)
+## Known gaps / disposition (synced 1405/04/24)
 
-1. Two distinct User models exist (`App\Models\User` for `web`/`users`;
-   UserModel for `identity`) — wiring risk.
-2. No password broker for `identity` provider.
-3. No Eloquent relationship UserModel ↔ Employee.
-4. Default guard is `web` — all F2 routes must explicitly use
-   `auth:identity`.
-5. Dual `$guard_name` on UserModel — role checks must pin the guard.
+| # | Topic | Status |
+|---|-------|--------|
+| 1 | Two User models (`App\Models\User` web credentials vs `UserModel` identity) — wiring risk | Open (operational; documented in L3 + W-07) |
+| 2 | Password broker for `identity` provider | **RESOLVED — NO ACTION** (W-03; L3 §2–§3) |
+| 3 | Eloquent relationship UserModel ↔ Employee | **CLOSED** — DGAP-07 Decision A: `identity_id` UUID value-reference sufficient (W-02 CLOSED); see `docs/governance/open-decisions.md` |
+| 4 | Default guard is `web` — F2 routes must pin `auth:identity` | Open (mitigated by explicit middleware / L3) |
+| 5 | Dual `$guard_name` on UserModel — role checks must pin guard | Open (mitigated by `IdentityRoleGuard` / SEC-G-01) |
 
-## Deferred Execution
+## Shared Kernel (BL-04)
 
-- BL-04: IdentityRoleGuard → Shared Kernel (L6, W-06)
+- **BL-04:** IdentityRoleGuard → Shared Kernel — **DELIVERED** via W-06 (`app/Shared/Auth/IdentityRoleGuard.php`); DG-03 RESOLVED. See `docs/governance/risk-register.md` (BL-04 Mitigated/Delivered).
 
 ## Out of Scope
 
-- Password broker / reset flow (pending decision, W-03)
-- BL-B1-01 remediation (remains Open/Deferred; reopen at Phase H or on
-  consumer demand)
+- Password broker / reset flow (W-03 NO ACTION)
+- BL-B1-01 remediation (remains Open/Deferred; reopen at Phase H or on consumer demand)
+- Spec04 Auth / DGAP-03/05/06/08 (parked behind Business Owner)

@@ -255,6 +255,9 @@ B1_HUMAN_DOMAIN_AUTHORITY_CLARIFICATION
 | UI / implementation | **Not authorized** |
 | Auth packet / auth design | **Not started** |
 
+> **Footnote (DOC hygiene 1405/04/24 — framing only, no new decision):**  
+> **F2 login AUTHORIZED ≠ Spec04 Auth unblocked.** Product authorization for boundary `employee-auth-ui` (`docs/product/product-authorization-employee-auth-ui.md`) covers employee login/session UI only. Rows above for Spec04 Auth `BLOCKED` / Business Owner `PENDING_HUMAN_DESIGNATION` / “UI not authorized” remain the Auth-packet and self-service *expansion* posture — they are not contradicted by F2 login authorization, nor do they authorize Spec04 Auth or invent Organization/Unit aggregates.
+
 ---
 
 ## Required Final Lines
