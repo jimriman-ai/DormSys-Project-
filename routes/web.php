@@ -5,6 +5,8 @@ declare(strict_types=1);
 use App\Http\Controllers\EmployeeRecordController;
 use App\Http\Controllers\Web\AuthSessionController;
 use App\Modules\Audit\Presentation\Providers\AuditPresentationServiceProvider;
+use App\Modules\DormitoryAdmin\DormitoryManagerDashboard;
+use App\Modules\DormitoryAdmin\DormitoryUnitManagerDashboard;
 use App\Modules\Employee\Presentation\Providers\EmployeePresentationServiceProvider;
 use App\Modules\Notification\Presentation\Providers\NotificationPresentationServiceProvider;
 use App\Modules\Request\Presentation\Providers\RequestPresentationServiceProvider;
@@ -14,6 +16,19 @@ Route::middleware('guest:api')->group(function (): void {
     Route::get('/login', [AuthSessionController::class, 'create'])->name('login');
     Route::post('/login', [AuthSessionController::class, 'store']);
 });
+
+Route::prefix('dormitory-admin')
+    ->middleware(['auth:identity'])
+    ->name('dormitory-admin.')
+    ->group(function (): void {
+        Route::middleware(['identity.role:dormitory-manager'])
+            ->get('/', DormitoryManagerDashboard::class)
+            ->name('manager');
+
+        Route::middleware(['identity.role:dormitory-unit-manager'])
+            ->get('/unit', DormitoryUnitManagerDashboard::class)
+            ->name('unit-manager');
+    });
 
 Route::middleware(['auth:api', 'request.mutation.principal', 'audit.principal'])->group(function (): void {
     Route::post('/logout', [AuthSessionController::class, 'destroy'])->name('logout');
