@@ -96,6 +96,19 @@ Also referenced (unit assignments): `dormitory_unit_manager_assignments` in `Dor
 
 Former `l9-b1-migration-split-note.md` content absorbed here; that note file is deleted.
 
+### Resolved 2026-07-15 (L9-R Round 2 Step 1 — remove from this PR tip)
+
+Resolved 2026-07-15: migrations removed from PR diff (`git rm` of
+`database/migrations/modules/dormitory/2026_07_15_000001_create_dormitory_manager_assignments_table.php`
+and `…000002_create_dormitory_unit_manager_assignments_table.php`).
+
+Evidence: grep of live references is **NON-EMPTY** (dashboards + dashboard tests still
+reference `dormitory_manager_assignments` / `dormitory_unit_manager_assignments`).
+Tables must land via foundation branch (`60d9b6c` / `foundation/dormitory-admin-tables`)
+or equivalent before assignment-scoped tests can pass against a clean base.
+
+Backlog item: re-evaluate in Phase H if schema changes required.
+
 ---
 
 ## Changelog
@@ -107,6 +120,7 @@ Former `l9-b1-migration-split-note.md` content absorbed here; that note file is 
 | ۱۴۰۵/۰۴/۲۴ | DG-01 / DG-03 / DG-04 → DECIDED per L5-G-CANONICAL-01 (D-G-10, D-G-11, D-G-13) | Lead (recorded) |
 | ۱۴۰۵/۰۴/۲۴ (2026/07/15) | DG-01…DG-05 finalized by Lead. Selections: DG-01(C), DG-02(C), DG-03(A), DG-04(C), DG-05(C). DG-01 و DG-03 دارای reopen trigger هستند (status: DECIDED-DEFERRED-EXECUTION). | Lead |
 | ۱۴۰۵/۰۴/۲۴ (2026/07/15) | B1 Option 1 executed (grep NON-EMPTY); foundation/dormitory-admin-tables extracted; security rebased; l9-b1 note absorbed | Agent (L9-R Round 2) |
+| ۱۴۰۵/۰۴/۲۴ (2026/07/15) | B1 Step 1: assignment migrations removed from PR tip tree; live code refs remain (foundation dependency) | Agent (L9-R Round 2) |
 
 ---
 
