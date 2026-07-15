@@ -55,6 +55,7 @@ This decision opens **UI governance intake only**. Exact MVF screen and capabili
 | Workflow UI | **Excluded** |
 | Notification UI | **Excluded** |
 | Employee UI / reopening `employee-context-ui` | **Excluded** |
+| Note: Employee UI is now separately authorized under product-authorization-employee-auth-ui.md (F2). Exclusion here remains valid for THIS record's scope. | — |
 | Request UI | **Excluded** |
 | Dormitory UI / Lottery UI / Voucher UI / Allocation UI | **Excluded** |
 | Any unauthorized domain expansion / backend expansion under this UI grant | **Excluded** unless a separate product/backend authorization is issued |
