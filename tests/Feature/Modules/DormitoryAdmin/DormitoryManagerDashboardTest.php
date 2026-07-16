@@ -229,3 +229,118 @@ it('reports correct unit and occupancy counts for assigned dormitory', function 
         ->toContain('data-testid="bed-occupied">3</dd>')
         ->toContain('data-testid="bed-available">2</dd>');
 });
+
+/**
+ * S-6: soft-deleted rooms/beds must not inflate UI-M1 aggregate counts.
+ */
+it('excludes soft-deleted rooms and beds from manager occupancy aggregates', function (): void {
+    $user = createDormitoryAdminIdentityUser('Soft Delete Manager');
+    assignIdentityGuardRole($user, IdentityRoleSeeder::ROLE_DORMITORY_MANAGER);
+
+    $now = now();
+    $dormitoryId = Uuid::uuid7()->toString();
+    $buildingId = Uuid::uuid7()->toString();
+    $floorId = Uuid::uuid7()->toString();
+    $visibleRoomId = Uuid::uuid7()->toString();
+    $trashedRoomId = Uuid::uuid7()->toString();
+    $visibleBedId = Uuid::uuid7()->toString();
+    $trashedBedOnVisibleRoomId = Uuid::uuid7()->toString();
+    $bedOnTrashedRoomId = Uuid::uuid7()->toString();
+
+    DB::table('dormitories')->insert([
+        'id' => $dormitoryId,
+        'code' => 'DORM-SOFT-DEL',
+        'name' => 'Dormitory Soft Delete Fixture',
+        'status' => 'available',
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+    DB::table('dormitory_buildings')->insert([
+        'id' => $buildingId,
+        'dormitory_id' => $dormitoryId,
+        'code' => 'B-SD',
+        'name' => 'Building Soft Delete',
+        'status' => 'available',
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+    DB::table('dormitory_floors')->insert([
+        'id' => $floorId,
+        'building_id' => $buildingId,
+        'label' => '1',
+        'status' => 'available',
+        'created_at' => $now,
+        'updated_at' => $now,
+    ]);
+    DB::table('dormitory_rooms')->insert([
+        [
+            'id' => $visibleRoomId,
+            'floor_id' => $floorId,
+            'code' => 'R-VIS',
+            'name' => 'Visible Room',
+            'capacity_total' => 2,
+            'status' => 'available',
+            'created_at' => $now,
+            'updated_at' => $now,
+            'deleted_at' => null,
+        ],
+        [
+            'id' => $trashedRoomId,
+            'floor_id' => $floorId,
+            'code' => 'R-DEL',
+            'name' => 'Trashed Room',
+            'capacity_total' => 2,
+            'status' => 'available',
+            'created_at' => $now,
+            'updated_at' => $now,
+            'deleted_at' => $now,
+        ],
+    ]);
+    DB::table('dormitory_beds')->insert([
+        [
+            'id' => $visibleBedId,
+            'room_id' => $visibleRoomId,
+            'label' => 'VIS-0',
+            'status' => 'available',
+            'physical_occupancy_state' => 'occupied',
+            'created_at' => $now,
+            'updated_at' => $now,
+            'deleted_at' => null,
+        ],
+        [
+            'id' => $trashedBedOnVisibleRoomId,
+            'room_id' => $visibleRoomId,
+            'label' => 'VIS-TRASH',
+            'status' => 'available',
+            'physical_occupancy_state' => 'occupied',
+            'created_at' => $now,
+            'updated_at' => $now,
+            'deleted_at' => $now,
+        ],
+        [
+            'id' => $bedOnTrashedRoomId,
+            'room_id' => $trashedRoomId,
+            'label' => 'DEL-0',
+            'status' => 'available',
+            'physical_occupancy_state' => 'occupied',
+            'created_at' => $now,
+            'updated_at' => $now,
+            'deleted_at' => null,
+        ],
+    ]);
+
+    assignManagerToDormitory($user->id, $dormitoryId);
+
+    // N=1 visible room, N=1 visible occupied bed; M soft-deleted room + bed must not inflate.
+    $html = $this->actingAs($user, 'identity')
+        ->get('/dormitory-admin')
+        ->assertOk()
+        ->assertSee('Dormitory Soft Delete Fixture', false)
+        ->getContent();
+
+    expect($html)
+        ->toContain('data-testid="unit-count">1</dd>')
+        ->toContain('data-testid="bed-total">1</dd>')
+        ->toContain('data-testid="bed-occupied">1</dd>')
+        ->toContain('data-testid="bed-available">0</dd>');
+});

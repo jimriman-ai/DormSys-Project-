@@ -38,6 +38,7 @@
 | SGAP-09 | debug.log under specs 008/009/010 | Spec Completion Audit | Cleanup | Lead | SGAP Disposition | **CLOSED** | debug.log files deleted. |
 | DGAP-11 | Roadmap ↔ UI Productization reconciliation | Governance / Roadmap | A) merge into Roadmap as UI-1..UI-7 B) keep separate doc with cross-refs | Lead | F3 Sprint A entry | **CLOSED — RESOLVED** (2026-07-15) | Lead AUTHORIZED Option A (scope corrected): canonical catalog **UI-M1, UI-M2, UI-A1** in `docs/governance/roadmap.md` § F3 Catalog (supersedes UI-1…UI-7 claim). Artifact delivered; F3 ACTIVE — Sprint A. |
 | DGAP-12 | Governance doc hard-conflict reconciliation (F2 / G / DGAP-11) | Governance / Roadmap | Docs-only status sync per Lead DGAP-12 rules | Lead | Immediate | **EXECUTED — DOCS** (reconciled 2026-07-15, ref: DGAP-12) | Conflicts 1–3 applied in `docs/governance/roadmap.md`, this file, `docs/features/employee-auth-ui/feature-brief.md`. No code. No commit. |
+| UI-M1-COV | UI-M1 residual test-coverage risk (S-2, S-4, S-5) | UI-M1 / Verification | ACCEPT residual depth; mitigate via dedicated test DB hygiene | Lead | UI-M1 L8 closeout | **ACCEPTED** (Lead, 2026-07-16) | Boundary: UI-M1 audit-history / dashboard verification depth. S-2 dual-session e2e ACCEPT-BY-RISK; S-4 raw-query grep CI ACCEPT (defer N-11); S-5 injection fuzz ACCEPT-BY-RISK. Hygiene: suite must use dedicated DB — overlapping runs on shared DB caused transient `40P01` (FLAKE, L8-RERUN). |
 
 ---
 
@@ -214,6 +215,19 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 - **Decision:** Apply docs-only hard-conflict reconciliation rules for (1) F2 PARTIAL vs stale ACTIVE, (2) G PARTIAL vs L9 NOT READY, (3) DGAP-11 REOPENED for undelivered UI merge.
 - **Scope:** `docs/` only. No code. No commit.
 
+### UI-M1 residual test-coverage risk — ACCEPTED (Lead, 2026-07-16)
+
+- **ID:** UI-M1-COV
+- **Status:** **ACCEPTED**
+- **Decided-On:** 1405/04/25 (2026/07/16)
+- **Decision-Owner:** Lead
+- **Boundary:** UI-M1 audit-history verification depth (manager dashboard aggregates + related L7/L8 security depth).
+- **S-2 dual-session e2e:** ACCEPT-BY-RISK — session architecture verified by evidence at L6; e2e cost/benefit unfavorable.
+- **S-4 raw-query grep in CI:** ACCEPT — deferred to hygiene pass (N-11).
+- **S-5 injection fuzz:** ACCEPT-BY-RISK — parameterized bindings verified.
+- **Mitigation note:** Test suite must run against a dedicated database; overlapping suite runs on a shared DB caused transient `SQLSTATE[40P01]` deadlocks (dispositioned FLAKE, L8-RERUN). Single-process suite (no ParaTest) — prior deadlocks were external concurrent DB clients, not in-suite parallelism.
+- **L8-TEST-ADD:** S-6 soft-delete fixture covered in `tests/Feature/Modules/DormitoryAdmin/DormitoryManagerDashboardTest.php` (`excludes soft-deleted rooms and beds from manager occupancy aggregates`).
+
 ### SGAP Disposition (Spec Completion Audit, Lead 2026/07/15)
 
 | ID | Status | One-line |
@@ -268,6 +282,7 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| ۱۴۰۵/۰۴/۲۵ (2026/07/16) | **UI-M1-COV ACCEPTED:** residual coverage S-2/S-4/S-5 accepted at UI-M1 L8 closeout; dedicated-test-DB hygiene noted; S-6 soft-delete fixture test added. | Agent (Lead AUTHORIZE L8-TEST-ADD + closeout) |
 | ۱۴۰۵/۰۴/۲۵ (2026/07/16) | **DGAP-09 RE-FROZEN** after scoped BL-B1-01 unfreeze+execute (RM-BL-B1). BL-B1-01 → RESOLVED (pending Lead commit). | Agent (Lead AUTHORIZE ALL) |
 | ۱۴۰۵/۰۴/۲۴ (2026/07/15) | **DGAP-11 CLOSED — RESOLVED:** Lead AUTHORIZED Option A (scope corrected). Catalog UI-M1/M2/A1 → `roadmap.md` § F3; F3 ACTIVE — Sprint A. Supersedes UI-1…UI-7. Docs-only; no code/commit. | Agent (Lead AUTHORIZED) |
 | ۱۴۰۵/۰۴/۲۴ (2026/07/15) | **Lead-Advisory (DGAP-12 follow-ups):** DGAP-11 resolution-path = F3 Sprint A — first work item (remains REOPENED). F-W07-04 stays carried-forward under F2 ID; target: F3 Sprint A (or later). No new work-item ID. | Agent (Lead-Advisory apply) |
