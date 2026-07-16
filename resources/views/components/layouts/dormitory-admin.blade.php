@@ -21,6 +21,19 @@
                             <a href="{{ route('dormitory-admin.unit-manager') }}" class="hover:text-slate-900">داشبورد واحد</a>
                         </nav>
                     </div>
+
+                    {{-- UI-A1: principal via auth('identity') helper only — no UserModel FQCN (FR-3 / DEC-UIA1-G5). --}}
+                    <div class="flex items-center gap-4">
+                        @if (auth('identity')->check())
+                            <span class="text-sm text-slate-600" data-testid="dormitory-admin-identity-label">
+                                {{ auth('identity')->user()?->display_name }}
+                            </span>
+                        @endif
+                        <form method="POST" action="{{ route('logout') }}" data-testid="dormitory-admin-logout">
+                            @csrf
+                            <x-ui.button type="submit" variant="secondary">خروج</x-ui.button>
+                        </form>
+                    </div>
                 </div>
             </header>
 

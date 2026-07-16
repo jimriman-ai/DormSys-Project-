@@ -36,7 +36,7 @@
 | SGAP-07 | Spec04 Product PENDING_RESIDUAL | Spec Completion Audit | Backlog + PARK | Lead | SGAP Disposition | **BACKLOG + PARKED** | Explicit backlog; Spec04 Auth packet / DGAP-08 untouched. |
 | SGAP-08 | Spec011 outside audit list | Spec Completion Audit | DEFER | Lead | SGAP Disposition | **DEFERRED** | Separate audit only if 011 enters UI path. |
 | SGAP-09 | debug.log under specs 008/009/010 | Spec Completion Audit | Cleanup | Lead | SGAP Disposition | **CLOSED** | debug.log files deleted. |
-| DGAP-11 | Roadmap ↔ UI Productization reconciliation | Governance / Roadmap | A) merge into Roadmap as UI-1..UI-7 B) keep separate doc with cross-refs | Lead | F3 Sprint A entry | **REOPENED** (reconciled 2026-07-15, ref: DGAP-12) | Prior CLOSED — DECIDED (Option A) invalidated: claimed merge artifact never delivered — repo-wide search found no UI-1…UI-7 definitions outside this register. Historical Option A text retained below. **Resolution scheduled: F3 Sprint A — first work item** (Lead-Advisory 2026-07-15). |
+| DGAP-11 | Roadmap ↔ UI Productization reconciliation | Governance / Roadmap | A) merge into Roadmap as UI-1..UI-7 B) keep separate doc with cross-refs | Lead | F3 Sprint A entry | **CLOSED — RESOLVED** (2026-07-15) | Lead AUTHORIZED Option A (scope corrected): canonical catalog **UI-M1, UI-M2, UI-A1** in `docs/governance/roadmap.md` § F3 Catalog (supersedes UI-1…UI-7 claim). Artifact delivered; F3 ACTIVE — Sprint A. |
 | DGAP-12 | Governance doc hard-conflict reconciliation (F2 / G / DGAP-11) | Governance / Roadmap | Docs-only status sync per Lead DGAP-12 rules | Lead | Immediate | **EXECUTED — DOCS** (reconciled 2026-07-15, ref: DGAP-12) | Conflicts 1–3 applied in `docs/governance/roadmap.md`, this file, `docs/features/employee-auth-ui/feature-brief.md`. No code. No commit. |
 
 ---
@@ -183,19 +183,25 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 
 ### DGAP-11
 
-- **Status:** **REOPENED** — artifact never delivered (reconciled 2026-07-15, ref: DGAP-12)
-- **Prior Status (historical):** CLOSED — DECIDED
+- **Status:** **CLOSED — RESOLVED** (2026-07-15)
+- **Prior Status (historical):** CLOSED — DECIDED (undelivered) → **REOPENED** (DGAP-12, artifact missing) → closed herein
 - **Decided-On:** 1405/04/24 (2026/07/15)
 - **Decision-Owner:** Lead
-- **Decision (historical, Option A — not retracted as Lead choice, but undelivered):** Option A. Merge UI Productization into the phase Roadmap; rename items UI-1..UI-7. Decided by Lead on 2026-07-15.
+- **Decision (historical, Option A — UI-1…UI-7):** Merge UI Productization into the phase Roadmap; rename items UI-1..UI-7. Decided by Lead on 2026-07-15. **Superseded** by Lead AUTHORIZED Option A (scope corrected), 2026-07-15.
 - **Problem:** The UI Productization document (L6.1–L6.7) existed outside the phase Roadmap, creating two parallel planning sources and a numbering collision with the L-cycle.
 - **Options considered:**
-  - Option A — merge UI Productization into the Roadmap, rename items to UI-1..UI-7 (**CHOSEN**)
+  - Option A — merge UI Productization into the Roadmap, rename items to UI-1..UI-7 (**CHOSEN historically; undelivered**)
   - Option B — keep as separate document with cross-references (**REJECTED:** dual source of truth)
-- **Evidence (historical claim — INVALIDATED):** Merged Roadmap section in `docs/governance/roadmap.md`; UI Productization items renamed and scheduled as **UI-1 .. UI-7** (replacing L6.1–L6.7 numbering).
-- **Evidence (verification 2026-07-15):** Repo-wide search for `UI-1` / `UI-7` / `F3` definitions found **no** delivered catalog outside this register’s claim text; `docs/governance/roadmap.md` had no F3/UI section before DGAP-12 stub. (reconciled 2026-07-15, ref: DGAP-12)
-- **Follow-up (open):** Deliver UI-1…UI-7 definitions into `docs/governance/roadmap.md` (or Lead-authorized alternate path) then re-close DGAP-11. Roadmap F3 stub is **PLANNED — pending DGAP-11 re-closure**. Do not invent UI-1…UI-7 content in reconciliation.
-- **Resolution scheduled: F3 Sprint A — first work item** (Lead-Advisory 2026-07-15). DGAP-11 remains REOPENED; early speculative UI-1…UI-7 definitions deferred. Not a blocker to F3 Sprint A entry.
+- **Evidence (historical claim — INVALIDATED):** Merged Roadmap section claiming UI-1…UI-7 without content.
+- **Evidence (verification 2026-07-15):** Repo-wide search found no UI-1…UI-7 definitions; F3 stub only (DGAP-12).
+- **Resolution (Lead AUTHORIZED Option A — scope corrected, 2026-07-15):**
+  - Canonical catalog: **UI-M1**, **UI-M2**, **UI-A1** (supersedes UI-1…UI-7 claim).
+  - **UI-M1:** Manager Dashboard — wire data (dep: BL-B1-01).
+  - **UI-M2:** Unit-Manager Dashboard — wire data (dep: BL-B1-01).
+  - **UI-A1:** Auth layout / identity guard integration (`IdentityRoleGuard`, dual-guard). Assignment schema/UI is **not** UI-A1; propose **UI-A2** separately if needed.
+  - **Artifact:** `docs/governance/roadmap.md` § **F3 — Catalog (Sprint A)** (all three items **PENDING**).
+  - **Phase entry:** F3 **ACTIVE — Sprint A**. Docs-only; no PHP/migrations authorized by this closure.
+- **Follow-up (open):** Implement / L3 per UI-M1/M2/A1 under separate Lead authorization. F-W07-04 remains CARRIED FORWARD (target F3 Sprint A or later) under F2 ID.
 
 ### DGAP-12
 
@@ -259,6 +265,7 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| ۱۴۰۵/۰۴/۲۴ (2026/07/15) | **DGAP-11 CLOSED — RESOLVED:** Lead AUTHORIZED Option A (scope corrected). Catalog UI-M1/M2/A1 → `roadmap.md` § F3; F3 ACTIVE — Sprint A. Supersedes UI-1…UI-7. Docs-only; no code/commit. | Agent (Lead AUTHORIZED) |
 | ۱۴۰۵/۰۴/۲۴ (2026/07/15) | **Lead-Advisory (DGAP-12 follow-ups):** DGAP-11 resolution-path = F3 Sprint A — first work item (remains REOPENED). F-W07-04 stays carried-forward under F2 ID; target: F3 Sprint A (or later). No new work-item ID. | Agent (Lead-Advisory apply) |
 | ۱۴۰۵/۰۴/۲۴ (2026/07/15) | **DGAP-12 reconciliation:** F2 → PARTIAL (F-W07-04 open; W-01…W-08 CLOSED); G mirrored PARTIAL on roadmap; DGAP-11 REOPENED (UI-1…UI-7 artifact never delivered); DGAP-12 EXECUTED — DOCS. Option B freeze note corrected. | Agent (Lead-supervised) |
 | ۱۴۰۵/۰۴/۲۴ (2026/07/15) | **SGAP Disposition:** SGAP-01/04/06/09 CLOSED (DOC); SGAP-02/03 ACCEPTED-MINIMAL; SGAP-05 PARKED (gate≈DGAP-08); SGAP-07 BACKLOG+PARK; SGAP-08 DEFERRED (011). No code. | Lead |

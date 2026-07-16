@@ -34,9 +34,12 @@ Route::prefix('dormitory-admin')
             ->name('unit-manager');
     });
 
-Route::middleware(['auth:api', 'request.mutation.principal', 'audit.principal'])->group(function (): void {
-    Route::post('/logout', [AuthSessionController::class, 'destroy'])->name('logout');
+// UI-A1 L6-R1 Amend: accept api OR identity principal (dormitory-admin is auth:identity-only).
+Route::post('/logout', [AuthSessionController::class, 'destroy'])
+    ->middleware('auth:api,identity')
+    ->name('logout');
 
+Route::middleware(['auth:api', 'request.mutation.principal', 'audit.principal'])->group(function (): void {
     Route::redirect('/', '/requests')->name('home');
 
     Route::prefix('requests')
