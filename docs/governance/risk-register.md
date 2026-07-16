@@ -10,21 +10,22 @@
 | SEC-G-02 | Livewire subsequent requests skip Spatie route middleware role check | High (stale privilege) | Medium | Tech Lead | `assertIdentityRole()` first in both dashboard `render()` methods | 6 months / major phase | Mitigated |
 | SEC-G-03 | Public Livewire props hydratable for query-derived collections | Medium (client tampering) | Low | Tech Lead | Collections local to `render()` + `->with()` | 6 months | Mitigated |
 | SEC-G-04 | Internal UUIDs exposed in `data-*-id` Blade attributes | Low (recon only if already authorized) | Low | Tech Lead | Accepted risk (H-04b); IDOR closed by assignment scoping when schema present | 6 months / major phase start | Accepted |
-| BL-B1-01 | **B1 deferred — schema gap if dependent feature ships** (assignment tables removed from Phase G tip; dashboards no longer query them) | High (assignment/occupancy UI cannot ship) | High if Stage-3 / assignment UI started without tables | Tech Lead | Reopen when assignment schema lands (`foundation/dormitory-admin-tables` or Phase H). Deleted B1 behavior tests logged below. | On Phase H start or consumer needing assignments | Open / deferred |
+| BL-B1-01 | **B1 deferred — schema gap if dependent feature ships** (assignment tables removed from Phase G tip; dashboards no longer query them) | High (assignment/occupancy UI cannot ship) | High if Stage-3 / assignment UI started without tables | Tech Lead | Schema restored RM-BL-B1 (2026-07-16): `dormitory_manager_assignments` + `dormitory_unit_manager_assignments` (`2026_07_16_000001/000002`); dashboards wired; B1 tests restored. | On Phase H start or consumer needing assignments | **RESOLVED (pending Lead commit)** |
 | G-E-R-CACHE | Spatie permission Redis cache + RefreshDatabase pollution under dual-guard | Medium (flaky PermissionDoesNotExist) | Medium in CI | Tech Lead | Test env `PERMISSION_CACHE_STORE=array`; seeder mirrors permissions on `web`+`identity` | After CI flake | Mitigated (test) |
 | F-W07-02 | EmployeeLogin Establish-fail path: only default `LogoutUserAction` / `Auth::logout()` — not full multi-guard invalidate parity with `AuthSessionController::destroy` | Medium if Establish ever bound before fail | Low (Establish returns false before `api`/`identity` login) | Lead | **Risk accepted** (Lead); **verified** by W08-C-01/C-02 — Establish fail leaves `api`/`identity` guests. See `docs/features/employee-auth-ui/w07-security-review-report.md` | On F2 reopen / auth path change | Accepted + verified (W-08) |
 | TD-FE-001 | PHPUnit Vite manifest stub persists into browser runtime asset path (`public/build/manifest.json`) | Medium (local UI without CSS; `assets/app.css` 404) | Medium for local/dev after test runs | Tech Lead | **Accepted technical debt** (Lead). Workaround: `npm run build` after tests. Do **not** fix test bootstrap now. Future remediation: tests must not write under `public/build`; isolate test manifest handling. | Multiple developers onboarded / incident recurrence / pre-release hardening | Accepted (workflow debt) |
 
-## BL-B1-01 — Deleted tests (assignment / B1 behavior)
+## BL-B1-01 — Assignment / B1 behavior tests (restored 2026-07-16, RM-07)
 
-Reopen trigger: restore assignment schema + reintroduce these tests (or successors).
+Status: **restored** under RM-BL-B1 (pending Lead commit). Prior “deleted” list retained for audit trail.
 
-- `it scopes dashboard to assigned dormitories only` (`DormitoryManagerDashboardTest`)
-- `it reports correct unit and occupancy counts for assigned dormitory` (`DormitoryManagerDashboardTest`)
-- `it scopes unit dashboard to assigned rooms only` (`DormitoryUnitManagerDashboardTest`)
-- `it counts occupied reserved and vacant independently` (`DormitoryUnitManagerDashboardTest`)
-- `it renders zero-bed assigned rooms with zero counts` (`DormitoryUnitManagerDashboardTest`)
-- Helpers removed: `assignManagerToDormitory`, `assignUnitManagerToRoom`, `seedDormitoryHierarchyForDashboard` (assignment path), `seedUnitManagerHierarchy` / `seedBedsForRoom` (assignment path)
+- `it scopes dashboard to assigned dormitories only` (`DormitoryManagerDashboardTest`) — restored
+- `it reports correct unit and occupancy counts for assigned dormitory` (`DormitoryManagerDashboardTest`) — restored
+- `it scopes unit dashboard to assigned rooms only` (`DormitoryUnitManagerDashboardTest`) — restored
+- `it counts occupied reserved and vacant independently` (`DormitoryUnitManagerDashboardTest`) — restored
+- `it renders zero-bed assigned rooms with zero counts` (`DormitoryUnitManagerDashboardTest`) — restored
+- Helpers restored: `assignManagerToDormitory`, `assignUnitManagerToRoom`, `seedDormitoryHierarchyForDashboard`, `seedUnitManagerHierarchy`, `seedBedsForRoom`
+- FK suite: `tests/Feature/Modules/DormitoryAdmin/AssignmentForeignKeyTest.php` (RM-06)
 
 ## BL-04 — IdentityRoleGuard ownership / Shared Kernel migration
 

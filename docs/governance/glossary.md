@@ -16,7 +16,7 @@
 | Dormitory unit (room) manager role | `dormitory-unit-manager` | مدیر واحد خوابگاه | **Must** exist as Spatie role with `guard_name = identity` |
 | Identity primary keys | UUID (`identity_users.id`) | — | Opaque string UUID / UUIDv7 in tests |
 | Physical bed occupancy enum | `vacant` \| `reserved` \| `occupied` | خالی / رزرو / اشغال | Column `physical_occupancy_state` |
-| Assignment schema (deferred) | `dormitory_manager_assignments` / `dormitory_unit_manager_assignments` | تخصیص‌ها | **BL-B1-01** — not in Phase G tip tree |
+| Assignment schema (BL-B1-01) | `dormitory_manager_assignments` / `dormitory_unit_manager_assignments` | تخصیص‌ها | Restored 2026-07-16 (RM-BL-B1); `user_id` → `identity_users` CONSTRAINED_IDENTITY + restrictOnDelete |
 
 ## Product / UI terms (non-code)
 

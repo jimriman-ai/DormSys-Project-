@@ -25,7 +25,7 @@
 | E | Exit Criteria / Domain Stabilization Exit | COMPLETE |
 | F1 | Auth: employee-records | COMPLETE |
 | F2 | Auth: Employee UI/Auth broad scope | **PARTIAL** (boundary work-items W-01…W-08 CLOSED — `docs/features/employee-auth-ui/work-breakdown.md:14`; F-W07-04 open/CARRIED FORWARD — target **F3 Sprint A (or later)** — `docs/features/employee-auth-ui/w07-security-review-report.md:19`; `docs/governance/open-decisions.md` § F-W07-04). **No** next UI slug / Spec04 Auth authorized from F2 closeout. (reconciled 2026-07-15, ref: DGAP-12) |
-| G | UI: dormitory-admin-ui | **PARTIAL** (BL-B1-01 open — `docs/governance/risk-register.md:13`; L9 checklist NOT READY — `.specify/governance/l9-merge-checklist-dormitory-admin-ui.md:6-8`). (reconciled 2026-07-15, ref: DGAP-12) |
+| G | UI: dormitory-admin-ui | **PARTIAL** (BL-B1-01 **RESOLVED (pending Lead commit)** — `docs/governance/risk-register.md:13`; L9 checklist NOT READY — `.specify/governance/l9-merge-checklist-dormitory-admin-ui.md:6-8`). |
 | F3 | Dormitory Admin UI productization | **ACTIVE — Sprint A** (catalog AUTHORIZED Lead Option A, 2026-07-15). Canonical IDs: **UI-M1, UI-M2, UI-A1** (supersedes historical UI-1…UI-7 claim). DGAP-11 CLOSED — see § F3 Catalog. |
 
 ### F3 — Catalog (Sprint A)
@@ -36,8 +36,8 @@
 
 | ID | Title / Scope | Status | Dependency / Evidence |
 |----|---------------|--------|------------------------|
-| **UI-M1** | Manager Dashboard — wire data (`/dormitory-admin`, manager role) | **PENDING** | Dep: **BL-B1-01** (`docs/governance/risk-register.md:13`). Shell: `routes/web.php:28-30`; `app/Modules/DormitoryAdmin/DormitoryManagerDashboard.php` (`$dormitories = []`); Blade `resources/views/livewire/dormitory-admin/dormitory-manager-dashboard.blade.php`. |
-| **UI-M2** | Unit-Manager Dashboard — wire data (`/dormitory-admin/unit`) | **PENDING** | Dep: **BL-B1-01**. Shell: `routes/web.php:32-34`; `app/Modules/DormitoryAdmin/DormitoryUnitManagerDashboard.php` (`$rooms = []`); Blade `resources/views/livewire/dormitory-admin/dormitory-unit-manager-dashboard.blade.php`. |
+| **UI-M1** | Manager Dashboard — wire data (`/dormitory-admin`, manager role) | **UNBLOCKED — READY FOR L3/L6** | BL-B1-01 **RESOLVED (pending Lead commit)**. Shell: `routes/web.php:28-30`; wired `DormitoryManagerDashboard.php` (assignment-scoped aggregate); Blade `resources/views/livewire/dormitory-admin/dormitory-manager-dashboard.blade.php`. |
+| **UI-M2** | Unit-Manager Dashboard — wire data (`/dormitory-admin/unit`) | **UNBLOCKED — READY FOR L3/L6** | BL-B1-01 **RESOLVED (pending Lead commit)**. Shell: `routes/web.php:32-34`; wired `DormitoryUnitManagerDashboard.php`; Blade `resources/views/livewire/dormitory-admin/dormitory-unit-manager-dashboard.blade.php`. |
 | **UI-A1** | Auth layout / identity guard integration (`IdentityRoleGuard`, dual-guard) | **COMPLETE — READY FOR COMMIT AND CLOSURE REVIEW** (L8 2026-07-15). Evidence: `docs/features/ui-a1/l7-verification.md` PASS; `docs/features/ui-a1/l8-closeout.md`. L6: Option A routes; L6-R1 Amend `auth:api,identity` logout; layout logout form. | Shell: `resources/views/components/layouts/dormitory-admin.blade.php`; logout: `routes/web.php:37-40`; tests: `tests/Feature/Modules/DormitoryAdmin/UiA1AuthLayoutTest.php`. |
 
 **Out of this catalog (do not conflate):** Assignment schema / assignment UI is **not** UI-A1. If required later, propose separately as **UI-A2** (Lead note, 2026-07-15).
@@ -63,6 +63,7 @@
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| 1405/04/25 (2026/07/16) | **BL-B1-01 / RM-BL-B1:** UI-M1/UI-M2 → UNBLOCKED — READY FOR L3/L6; assignment schema restored; DGAP-09 RE-FROZEN | Agent (Lead AUTHORIZE ALL) |
 | 1405/04/24 (2026/07/15) | **UI-A1 L8 closeout:** status → COMPLETE — READY FOR COMMIT AND CLOSURE REVIEW (`docs/features/ui-a1/l8-closeout.md`); L7 PASS | Agent (L8 docs) |
 | 1405/04/24 (2026/07/15) | **F3 Sprint A entry / DGAP-11 close:** Canonical catalog UI-M1, UI-M2, UI-A1 (PENDING); supersedes UI-1…UI-7 claim; F3 ACTIVE — Sprint A | Agent (Lead AUTHORIZED Option A) |
 | 1405/04/24 (2026/07/15) | **DGAP-12 reconciliation:** F2 → PARTIAL (F-W07-04 open); G → PARTIAL (BL-B1-01 + L9 NOT READY); F3 stub PLANNED (DGAP-11 reopened — UI-1…UI-7 never delivered); L9 checklist cross-ref added | Agent (Lead-supervised docs) |
