@@ -10,7 +10,7 @@ use App\Modules\Request\Application\Services\AssignStage1ApproverSnapshotAction;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Application\Services\RequestCodeGenerator;
 use App\Modules\Request\Domain\Entities\Request;
-use App\Modules\Request\Domain\Exceptions\Stage1ApproverUnresolvedException;
+use App\Modules\Request\Domain\Exceptions\NoStage1ApproverAvailableException;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
@@ -21,7 +21,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
- * [PERMIT-ID: IMPL-PERMIT-02] Create-time Stage-1 approver snapshot.
+ * [PERMIT-ID: IMPL-PERMIT-02] Create-time Stage-1 Dormitory Manager snapshot.
  */
 final class CreatePersonalRequestStage1SnapshotTest extends TestCase
 {
@@ -38,10 +38,9 @@ final class CreatePersonalRequestStage1SnapshotTest extends TestCase
         $approverIdentityId = UuidGenerator::uuid7();
         $dormitoryId = UuidGenerator::uuid7();
 
-        $orgChart = Mockery::mock(Stage1ApproverIdentityReadContract::class);
-        $orgChart->shouldReceive('resolveForEmployee')
+        $resolver = Mockery::mock(Stage1ApproverIdentityReadContract::class);
+        $resolver->shouldReceive('resolveActiveDormitoryManagerIdentityId')
             ->once()
-            ->with($employeeId)
             ->andReturn($approverIdentityId);
 
         $codeRepo = Mockery::mock(RequestRepositoryContract::class);
@@ -61,7 +60,7 @@ final class CreatePersonalRequestStage1SnapshotTest extends TestCase
         $action = new CreatePersonalRequestAction(
             codeGenerator: $codeGenerator,
             requests: $requests,
-            assignStage1Approver: new AssignStage1ApproverSnapshotAction($orgChart),
+            assignStage1Approver: new AssignStage1ApproverSnapshotAction($resolver),
         );
 
         $created = $action->execute(
@@ -75,14 +74,13 @@ final class CreatePersonalRequestStage1SnapshotTest extends TestCase
     }
 
     #[Test]
-    public function it_throws_when_stage1_approver_cannot_be_resolved(): void
+    public function it_throws_when_no_stage1_approver_is_available_and_does_not_persist(): void
     {
         $employeeId = UuidGenerator::uuid7();
 
-        $orgChart = Mockery::mock(Stage1ApproverIdentityReadContract::class);
-        $orgChart->shouldReceive('resolveForEmployee')
+        $resolver = Mockery::mock(Stage1ApproverIdentityReadContract::class);
+        $resolver->shouldReceive('resolveActiveDormitoryManagerIdentityId')
             ->once()
-            ->with($employeeId)
             ->andReturn(null);
 
         $codeRepo = Mockery::mock(RequestRepositoryContract::class);
@@ -95,16 +93,19 @@ final class CreatePersonalRequestStage1SnapshotTest extends TestCase
         $action = new CreatePersonalRequestAction(
             codeGenerator: $codeGenerator,
             requests: $requests,
-            assignStage1Approver: new AssignStage1ApproverSnapshotAction($orgChart),
+            assignStage1Approver: new AssignStage1ApproverSnapshotAction($resolver),
         );
 
-        $this->expectException(Stage1ApproverUnresolvedException::class);
-
-        $action->execute(
-            employeeId: EmployeeReferenceId::fromString($employeeId),
-            dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
-            checkInDate: new DateTimeImmutable('2026-07-01'),
-            checkOutDate: new DateTimeImmutable('2026-12-31'),
-        );
+        try {
+            $action->execute(
+                employeeId: EmployeeReferenceId::fromString($employeeId),
+                dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+                checkInDate: new DateTimeImmutable('2026-07-01'),
+                checkOutDate: new DateTimeImmutable('2026-12-31'),
+            );
+            $this->fail('Expected NoStage1ApproverAvailableException to be thrown.');
+        } catch (NoStage1ApproverAvailableException) {
+            $this->assertTrue(true);
+        }
     }
 }

@@ -5,10 +5,9 @@ declare(strict_types=1);
 use App\Modules\Request\Application\Contracts\Stage1ApproverIdentityReadContract;
 
 /**
- * [PERMIT-ID: IMPL-PERMIT-02] Feature-test stub: satisfy FK + fail-closed create path
- * without requiring every fixture to wire full org-chart.
+ * [PERMIT-ID: IMPL-PERMIT-02] Feature-test stub: satisfy FK + fail-closed create path.
  *
- * Production uses Stage1ApproverIdentityReadBridge (department.manager_id → identity).
+ * Production resolves via IdentityRoleGuard → dormitory-manager (identity guard).
  */
 function bindStage1ApproverIdentityFixtureForTests(): string
 {
@@ -24,7 +23,7 @@ function bindStage1ApproverIdentityFixtureForTests(): string
         {
             public function __construct(private readonly string $identityId) {}
 
-            public function resolveForEmployee(string $employeeId): ?string
+            public function resolveActiveDormitoryManagerIdentityId(): ?string
             {
                 return $this->identityId;
             }

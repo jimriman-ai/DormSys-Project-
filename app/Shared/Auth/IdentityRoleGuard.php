@@ -14,6 +14,15 @@ use Spatie\Permission\Models\Role;
  */
 final class IdentityRoleGuard
 {
+    /**
+     * Morph type for identity_users (string only — Shared must not import Modules).
+     */
+    private const string IDENTITY_USER_MODEL_TYPE = 'App\\Modules\\Identity\\Infrastructure\\Persistence\\Models\\UserModel';
+
+    private const string IDENTITY_USERS_TABLE = 'identity_users';
+
+    private const string ACTIVE_STATUS = 'active';
+
     public static function userHasIdentityRole(Authenticatable $user, string ...$roles): bool
     {
         if ($roles === [] || ! $user instanceof Model) {
@@ -44,5 +53,33 @@ final class IdentityRoleGuard
         if ($user === null || ! self::userHasIdentityRole($user, $role)) {
             abort(403);
         }
+    }
+
+    /**
+     * [PERMIT-ID: IMPL-PERMIT-02] Resolve an active identity UUID holding the given identity-guard role.
+     *
+     * Uses Spatie role/pivot + identity_users.status. Does not use Auth::user().
+     *
+     * @return non-empty-string|null
+     */
+    public static function resolveActiveIdentityIdForRole(string $role): ?string
+    {
+        $pivot = (string) config('permission.table_names.model_has_roles');
+
+        $identityId = Role::query()
+            ->where('roles.name', $role)
+            ->where('roles.guard_name', 'identity')
+            ->join($pivot, $pivot.'.role_id', '=', 'roles.id')
+            ->join(self::IDENTITY_USERS_TABLE, self::IDENTITY_USERS_TABLE.'.id', '=', $pivot.'.model_id')
+            ->where($pivot.'.model_type', self::IDENTITY_USER_MODEL_TYPE)
+            ->where(self::IDENTITY_USERS_TABLE.'.status', self::ACTIVE_STATUS)
+            ->orderBy(self::IDENTITY_USERS_TABLE.'.id')
+            ->value(self::IDENTITY_USERS_TABLE.'.id');
+
+        if (! is_string($identityId) || $identityId === '') {
+            return null;
+        }
+
+        return $identityId;
     }
 }

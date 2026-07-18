@@ -16,6 +16,7 @@ use App\Modules\Reporting\Application\Services\QueryComplianceExportAction;
 use App\Modules\Reporting\Application\Services\QueryCorrelationBundleAction;
 use App\Modules\Reporting\Application\Services\QueryEntityAuditTimelineAction;
 use App\Modules\Reporting\Application\Services\QuerySecurityActorActivityAction;
+use App\Modules\Request\Application\Services\AssignStage1ApproverSnapshotAction;
 
 final class ExemptMutationActionRegistry
 {
@@ -25,6 +26,7 @@ final class ExemptMutationActionRegistry
      * @var list<class-string>
      */
     private const EXEMPT = [
+        AssignStage1ApproverSnapshotAction::class,
         RecordAuditAction::class,
         QueryAuditHistoryAction::class,
         QueryEntityAuditTimelineAction::class,

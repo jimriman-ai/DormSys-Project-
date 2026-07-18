@@ -10,12 +10,13 @@ use App\Modules\Request\Domain\Enums\RequestType;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
 use DateTimeImmutable;
+use Illuminate\Support\Facades\DB;
 
 /**
  * [PERMIT-ID: IMPL-PERMIT-02] Create draft personal request with Stage-1 approver snapshot.
  *
- * Identity role assertion (employee) is enforced at the Presentation boundary via
- * IdentityRoleGuard / identity.role middleware — not Auth::user() here.
+ * Snapshot resolves active Dormitory Manager via IdentityRoleGuard (through the read contract).
+ * No Auth::user() in this layer.
  */
 final class CreatePersonalRequestAction
 {
@@ -31,18 +32,20 @@ final class CreatePersonalRequestAction
         DateTimeImmutable $checkInDate,
         DateTimeImmutable $checkOutDate,
     ): Request {
-        $stage1ApproverIdentityId = $this->assignStage1Approver->execute($employeeId);
+        return DB::transaction(function () use ($employeeId, $dormitoryId, $checkInDate, $checkOutDate): Request {
+            $stage1ApproverIdentityId = $this->assignStage1Approver->execute();
 
-        $request = Request::createDraft(
-            code: $this->codeGenerator->generate(),
-            employeeId: $employeeId,
-            dormitoryId: $dormitoryId,
-            type: RequestType::Personal,
-            checkInDate: $checkInDate,
-            checkOutDate: $checkOutDate,
-            assignedStage1ApproverIdentityId: $stage1ApproverIdentityId,
-        );
+            $request = Request::createDraft(
+                code: $this->codeGenerator->generate(),
+                employeeId: $employeeId,
+                dormitoryId: $dormitoryId,
+                type: RequestType::Personal,
+                checkInDate: $checkInDate,
+                checkOutDate: $checkOutDate,
+                assignedStage1ApproverIdentityId: $stage1ApproverIdentityId,
+            );
 
-        return $this->requests->save($request);
+            return $this->requests->save($request);
+        });
     }
 }

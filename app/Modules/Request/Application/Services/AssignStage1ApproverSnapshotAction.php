@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\Request\Application\Services;
 
 use App\Modules\Request\Application\Contracts\Stage1ApproverIdentityReadContract;
-use App\Modules\Request\Domain\Exceptions\Stage1ApproverUnresolvedException;
-use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
+use App\Modules\Request\Domain\Exceptions\NoStage1ApproverAvailableException;
 
 /**
- * [PERMIT-ID: IMPL-PERMIT-02] Resolve Stage-1 identity for create-time snapshot (IMP-Q-02).
+ * [PERMIT-ID: IMPL-PERMIT-02] Resolve Dormitory Manager identity for create-time snapshot.
  */
 final class AssignStage1ApproverSnapshotAction
 {
@@ -20,12 +19,12 @@ final class AssignStage1ApproverSnapshotAction
     /**
      * @return non-empty-string
      */
-    public function execute(EmployeeReferenceId $employeeId): string
+    public function execute(): string
     {
-        $identityId = $this->stage1ApproverIdentity->resolveForEmployee($employeeId->value);
+        $identityId = $this->stage1ApproverIdentity->resolveActiveDormitoryManagerIdentityId();
 
         if ($identityId === null || $identityId === '') {
-            throw new Stage1ApproverUnresolvedException;
+            throw new NoStage1ApproverAvailableException;
         }
 
         return $identityId;

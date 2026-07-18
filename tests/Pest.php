@@ -41,6 +41,8 @@ uses()
     ->in(
         'Feature/Modules/Request',
         'Feature/Modules/Allocation',
+        'Feature/Modules/CheckIn',
+        'Feature/Mutation',
     );
 
 pest()->extend(TestCase::class)->in('Architecture');
