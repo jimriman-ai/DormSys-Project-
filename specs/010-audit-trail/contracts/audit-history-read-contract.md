@@ -66,7 +66,7 @@ At least one filter dimension required (entity, actor, or event+date range).
 | ---- | ---- |
 | **Permission** | `audit.read` (Spatie) |
 | **Granted roles** | `Administrator`, `DormMgr`, `HRMgr` |
-| **Denied** | `Employee`, `Operator`, `DeptMgr`, `DormUnitMgr` (v1) |
+| **Denied** | `Employee`, `Operator`, `dormitory-manager`, `DormUnitMgr` (v1) |
 | **Enforcement** | Contract implementation checks permission before query |
 | **Failure** | `403` / `UnauthorizedAuditAccessException` — no partial leak |
 

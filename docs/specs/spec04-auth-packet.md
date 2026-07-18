@@ -57,7 +57,7 @@ Source: `docs/governance/open-decisions.md`
 | **DGAP-03** | **OPEN / PARKED** | Structural Department↔Dormitory link still parked |
 | **DGAP-05** | **DECIDED** | **A** — Department line manager = Stage-1 approver |
 | **DGAP-06** | **DECIDED** | **V1** + **U2** |
-| **OQ-AUTH-01** | **DECIDED** | **B** — `employee` + `DeptMgr` |
+| **OQ-AUTH-01** | **DECIDED** | **B** — `employee` + `dormitory-manager` |
 | **OQ-AUTH-02** | **DECIDED** | **B** — dual role stacks + middleware V1 |
 | **OQ-AUTH-03** | **DECIDED** | **B** — snapshot Stage-1 identity at submit |
 | **OQ-AUTH-05** | **DECIDED** | **A** — Spec04 Auth Packet accepted as governance-ready; impl unauthorized |
@@ -74,16 +74,16 @@ Source: `docs/governance/open-decisions.md`
 | **A** | `identity` Authenticatable (`identity_users`) | Spatie role on `guard_name = identity` | Matches Dual-Principal; `IdentityRoleGuard` | Requires role catalog |
 | **B** | `web` / `App\Models\User` | Default guard roles | Familiar Laravel default | Conflicts with Dual-Principal / SEC-G-01 |
 
-**Selected path:** Principal = **`identity`**. Canonical role **names** per **OQ-AUTH-01 B**: `employee` (self-service) + `DeptMgr` (Stage-1 / U2 console).
+**Selected path:** Principal = **`identity`**. Canonical role **names** per **OQ-AUTH-01 B**: `employee` (self-service) + `dormitory-manager` (Stage-1 / U2 console).
 
 ### 3.2 Where the gate applies in UI
 
 **Selected — OQ-AUTH-02 B:**
 
-- Dual route stacks: `auth:identity` + `identity.role:employee` (self-service); `auth:identity` + `identity.role:DeptMgr` (approver console)
+- Dual route stacks: `auth:identity` + `identity.role:employee` (self-service); `auth:identity` + `identity.role:dormitory-manager` (approver console)
 - Thicker middleware: on request-scoped routes, abort unless principal is **subject** OR **assigned Stage-1 approver** (V1)
 - Livewire / Application may re-assert via `IdentityRoleGuard` (defense-in-depth)
-- Approve/reject routes **only** under `DeptMgr` console stack (U2)
+- Approve/reject routes **only** under `dormitory-manager` console stack (U2)
 
 ### 3.3 Fit with IdentityRoleGuard + Dual-Principal
 
@@ -126,7 +126,7 @@ Source: `docs/governance/open-decisions.md`
 |----|--------|----------|
 | DGAP-05 | **DECIDED** | A — dept line manager |
 | DGAP-06 | **DECIDED** | V1 + U2 |
-| OQ-AUTH-01 | **DECIDED** | B — `employee` + `DeptMgr` |
+| OQ-AUTH-01 | **DECIDED** | B — `employee` + `dormitory-manager` |
 | OQ-AUTH-02 | **DECIDED** | B — middleware V1 bridge |
 | OQ-AUTH-03 | **DECIDED** | B — snapshot at submit |
 | OQ-AUTH-05 | **DECIDED** | **A** — governance-accepted; impl unauthorized |
@@ -167,7 +167,7 @@ Source: `docs/governance/open-decisions.md`
 
 | Field | Value |
 |-------|-------|
-| **Selected** | **B** — `employee` + `DeptMgr` (`guard_name = identity`) |
+| **Selected** | **B** — `employee` + `dormitory-manager` (`guard_name = identity`) |
 | **Rationale** | Aligns Stage-1 role with existing workflow abbreviations (`HRMgr` / `DormMgr`) while keeping a distinct `employee` role for self-service; supports U2 without reusing `dormitory-manager` roles (DGAP-05 A). |
 | **Impl** | **Not authorized** (no seeder/route changes) |
 
@@ -203,7 +203,7 @@ request.employee_id
 
 | OQ | Selected | Status |
 |----|----------|--------|
-| OQ-AUTH-01 | **B** — `employee` + `DeptMgr` | **DECIDED** |
+| OQ-AUTH-01 | **B** — `employee` + `dormitory-manager` | **DECIDED** |
 | OQ-AUTH-02 | **B** — middleware V1 bridge | **DECIDED** |
 | OQ-AUTH-03 | **B** — snapshot at submit | **DECIDED** |
 
@@ -262,7 +262,7 @@ request.employee_id
 | Business actor | Dept line manager = Stage-1 (DGAP-05 A) |
 | Visibility | Subject + assigned approver (DGAP-06 V1) |
 | UI | Separate approver console (DGAP-06 U2) |
-| Roles | `employee` + `DeptMgr` on `identity` (OQ-AUTH-01 B) |
+| Roles | `employee` + `dormitory-manager` on `identity` (OQ-AUTH-01 B) |
 | L5 gate | Dual role stacks + middleware V1 check (OQ-AUTH-02 B) |
 | Binding | Snapshot Stage-1 identity at request submit (OQ-AUTH-03 B) |
 | Packet | **GOVERNANCE-ACCEPTED** (OQ-AUTH-05 A) |

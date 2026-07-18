@@ -243,7 +243,7 @@ requests
 
 | Stage | Permission (planned) |
 | ----- | -------------------- |
-| `DepartmentManager` | `request.approve.department` |
+| `dormitory-manager` | `request.approve.department` |
 | `HR` | `request.approve.hr` |
 | `DormitoryManager` | `request.approve.dormitory` |
 | `DormitoryUnit` | `request.approve.dormitory_unit` |

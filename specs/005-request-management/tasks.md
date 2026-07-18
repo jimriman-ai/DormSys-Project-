@@ -45,7 +45,7 @@
 |-------|----------|--------|------------------|
 | US1 — Personal Request | P1 | 2→3 | Draft/submit with eligibility + dates |
 | US2 — Lifecycle & Cancellation | P1 | 4 | Cancel early; reject terminal |
-| US3 — Four-Stage Approval | P2 | 5 | DeptMgr → … → `Approved` |
+| US3 — Four-Stage Approval | P2 | 5 | dormitory-manager → … → `Approved` |
 | US4 — FamilyDirect Snapshots | P2 | 6 | Immutable dependent rows |
 | US5 — Mission Group | P3 | 7 | 2–20 members + leader |
 | US6 — LotteryRegistration | P3 | 8 | Type flag; supplier read |

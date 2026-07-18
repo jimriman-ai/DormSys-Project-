@@ -16,7 +16,7 @@
 
 ## Ambiguity (recorded)
 
-Permit prose may say “Dormitory Manager”; Spec04 DGAP-05 A / OQ-AUTH-01 bind Stage-1 to **department line manager (`DeptMgr`)**. Implementation follows department org-chart.
+Permit prose may say “Dormitory Manager”; Spec04 DGAP-05 A / OQ-AUTH-01 bind Stage-1 to **department line manager (`dormitory-manager`)**. Implementation follows department org-chart.
 
 ## Prefix
 

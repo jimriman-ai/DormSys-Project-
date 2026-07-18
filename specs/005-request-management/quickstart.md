@@ -49,7 +49,7 @@ docker compose exec laravel.test php artisan migrate
 **Proves:** FR-007, FR-008, SC-005, BT-R03
 
 1. Submit personal request
-2. Approve as DeptMgr → HR → DormMgr → DormUnit (commands or actions)
+2. Approve as dormitory-manager → HR → DormMgr → DormUnit (commands or actions)
 3. Assert 4 `request_approvals` rows append-only
 4. Assert terminal status `approved`
 

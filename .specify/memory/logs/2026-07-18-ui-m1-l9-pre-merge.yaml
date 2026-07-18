@@ -1,0 +1,6 @@
+prompt_id: ui-m1-l9-pre-merge-2026-07-18
+recorded_at: 2026-07-18T19:45:00+03:30
+work_item: ui-m1-l9-pre-merge
+stage: L9-pre-merge-verification
+tags: [EVIDENCE_CONFLICT, OWNER_DECISION_NEEDED, DEAD_END]
+summary: "Full suite on release/f2-employee-auth-ui-l9 @ 25104a7 was not green (1880 passed / 15 failed / 5409 assertions): 14 Redis StreamInitException under REDIS_HOST=127.0.0.1 plus one Allocation ReleaseAllocationTest PostgreSQL deadlock; snapshot coherence test passed. Governance open-decisions.md had uncommitted edits; both open-decisions.md and project-state.md are absent on main and 011-reporting-projections; bootstrap/app.php remains changed-in-both vs merge target."

@@ -28,8 +28,8 @@
 | DGAP-10 | Dual User model (`App\Models\User` vs `UserModel`) | Domain Gap Audit | CLOSE — NOT-A-GAP by design | Lead | DGAP Decision Gate | **CLOSED — NOT-A-GAP by design** | Lead (2026/07/15): Intentional dual-guard architecture. No L6 fill. |
 | DGAP-09 | Manager/unit assignment schema | Domain Gap / BL-B1-01 | NO ACTION this phase | Lead | DGAP Decision Gate | **FROZEN (RE-FROZEN 2026-07-16 after scoped BL-B1-01)** | Temporary unfreeze YES scoped to BL-B1-01 only (Lead); schema+wire executed RM-BL-B1; **RE-FROZEN** — no further schema without new unfreeze. |
 | DGAP-13 | Canonical Stage-1 approver role: DeptMgr vs dormitory-manager | Domain Gap / IMPL-PERMIT-03 | Canonical auth-path role = `dormitory-manager` | Lead | IMPL-PERMIT-03 gate/snapshot conflict | **DECIDED** | Lead 2026-07-18. **ID note:** Lead prompt labeled this gap **DGAP-09**; register ID **DGAP-09** already FROZEN (assignment schema) — recorded as **DGAP-13** (collision STOP). Scoped to IMPL-PERMIT-03 Stage-1 authorization path only. IMPL-PERMIT-02 CLOSED @ 32c677b untouched. |
-| IMPL-PERMIT-03 | Stage-1 Approval Console Wiring (approve/reject + role alignment) | Spec04 / Implementation Permit | — | Lead | After DGAP-13 + gate alignment | **CLOSED** | Closed 1405/04/27 \| 2026-07-18. Decision basis **DGAP-13**; Lead commit `<LEAD-FILLS-IN>`. Residual DeptMgr inventory → **DGAP-14** (OPEN). |
-| DGAP-14 | Residual DeptMgr references outside the Stage-1 authorization path | Domain Gap / Spec04 residual | Inventory recorded; dispositions PROPOSED only | Lead | Post IMPL-PERMIT-03 close | **OPEN** | Undecided. Inventory from IMPL-PERMIT-03 report-only grep. Human Decision Authority applies. |
+| IMPL-PERMIT-03 | Stage-1 Approval Console Wiring (approve/reject + role alignment) | Spec04 / Implementation Permit | — | Lead | After DGAP-13 + gate alignment | **CLOSED** | Closed 1405/04/27 \| 2026-07-18. Decision basis **DGAP-13**; Lead commit `25104a70ed381d4d81ab8b9b5570e3dd51ad3efd` (from § IMPL-PERMIT-03 metadata — Decision Gate Table placeholder sync). Residual DeptMgr inventory → **DGAP-14** (DECIDED). |
+| DGAP-14 | Residual DeptMgr references outside the Stage-1 authorization path | Domain Gap / Spec04 residual | Inventory recorded; dispositions PROPOSED only | Lead | Post IMPL-PERMIT-03 close | **DECIDED** | See decision block — DECIDED 2026-07-18. Residual items tracked separately. |
 | SGAP-01 | Spec001 Status Draft vs delivered | Spec Completion Audit | DOC Status sync | Lead | SGAP Disposition | **CLOSED** | Status header → delivered/CLOSED (DOC-only). |
 | SGAP-02 | Spec006 missing research/quickstart | Spec Completion Audit | ACCEPTED-MINIMAL | Lead | SGAP Disposition | **ACCEPTED-MINIMAL** | Intentional post-impl; do not create artifacts. |
 | SGAP-03 | Spec007 missing research/quickstart | Spec Completion Audit | ACCEPTED-MINIMAL | Lead | SGAP Disposition | **ACCEPTED-MINIMAL** | Intentional post-impl; do not create artifacts. |
@@ -274,6 +274,7 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 | **Non-canonical for this path only** | `DeptMgr` — remove only from Stage-1 approver authorization path gates |
 
 **Evidence:**
+
 - Gate code (pre-alignment): `routes/web.php` middleware `identity.role:DeptMgr`; `Stage1ApproverConsolePage` `IdentityRoleGuard::assertIdentityRole(ROLE_DEPT_MGR)`; `ApproveStage1RequestAction` / `RejectStage1RequestAction` same.
 - Snapshot (CLOSED): IMPL-PERMIT-02 @ `32c677b` — `Stage1ApproverIdentityReadBridge` / `IdentityRoleGuard::resolveActiveIdentityIdForRole` with `IdentityRoleSeeder::ROLE_DORMITORY_MANAGER`.
 - Seeder: `database/seeders/IdentityRoleSeeder.php` — `ROLE_DORMITORY_MANAGER = 'dormitory-manager'`; `ROLE_DEPT_MGR = 'DeptMgr'` (latter remains seeded; not Stage-1 gate).
@@ -291,9 +292,9 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 | **Closed-On** | 1405/04/27 \| 2026-07-18 |
 | **Decision-Owner** | Lead |
 | **Decision basis** | **DGAP-13** (canonical Stage-1 approver authorization-path role = `dormitory-manager`) |
-| **Lead commit** | `<LEAD-FILLS-IN>` |
+| **Lead commit** | `25104a70ed381d4d81ab8b9b5570e3dd51ad3efd` |
 | **Delivered** | Stage-1 approve/reject Application Actions + console wiring; gates aligned to `dormitory-manager` via `IdentityRoleGuard`; coherence test green |
-| **Residual** | Report-only `DeptMgr` inventory registered as **DGAP-14** (OPEN — undecided) |
+| **Residual** | Report-only `DeptMgr` inventory registered as **DGAP-14** (DECIDED) |
 | **Non-Scope retained** | Does not reopen DGAP-09 (FROZEN) or widen DGAP-13 beyond Stage-1 auth path |
 
 ### DGAP-14 — Residual DeptMgr references outside the Stage-1 authorization path
@@ -302,7 +303,7 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 |-------|-------|
 | **ID** | **DGAP-14** |
 | **Title** | Residual DeptMgr references outside the Stage-1 authorization path |
-| **Status** | **OPEN** — inventory recorded, no decision taken |
+| **Status** | **DECIDED** |
 | **Registered** | 1405/04/27 \| 2026-07-18 |
 | **Decision-Owner** | Lead (Human Decision Authority) |
 | **ID verification** | Decision Gate Table scanned: DGAP-01…13 present; **DGAP-14** absent → next free DGAP integer. Not a FROZEN ID. |
@@ -311,25 +312,33 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 
 **Evidence — report-only inventory (verbatim from IMPL-PERMIT-03 / DGAP-13 alignment report):**
 
-| Hit | Apparent purpose | PROPOSED disposition category (not decided) |
-|-----|------------------|-----------------------------------------------|
-| `IdentityRoleSeeder::ROLE_DEPT_MGR` (`database/seeders/IdentityRoleSeeder.php`) | Role seed / OQ-AUTH-01 catalog | **PROPOSED:** historical record / catalog retention — leave as-is candidate |
-| Historical governance: **DGAP-05 A** (department line manager = Stage-1) | Decided Spec04 actor binding (business) | **PROPOSED:** historical record — leave as-is candidate; reconcile with DGAP-13 only via new Lead decision |
-| Historical governance: **OQ-AUTH-01 B** (`employee` + `DeptMgr`) | Decided Spec04 Spatie role naming | **PROPOSED:** historical record — leave as-is candidate |
-| `docs/governance/IMPL-PERMIT-01.md` | Historical permit middleware / role text (`identity.role:DeptMgr`) | **PROPOSED:** historical record — leave as-is candidate |
-| `docs/specs/spec04-auth-packet.md` + Spec04 decision/IMP-Q packs | Packet / decision-pack role naming | **PROPOSED:** historical record — leave as-is candidate |
-| `docs/governance/spec04-imp-q-human-decision-pack.md` / `spec04-imp-q-technical-proposal.md` | IMP-Q rationale naming DeptMgr console | **PROPOSED:** historical record — leave as-is candidate |
-| `specs/005-request-management/*` (spec.md, tasks.md, quickstart.md) | Workflow stage naming (DeptMgr → HR → …) | **PROPOSED:** domain naming — needs decision |
-| `specs/010-audit-trail/contracts/audit-history-read-contract.md` | Audit deny matrix lists `DeptMgr` | **PROPOSED:** historical / matrix label — leave as-is candidate (or needs decision if RBAC sync required) |
-| `docs/ui/contracts/requests/employee-request-self-service.feature-contract.yaml` | Feature-contract role label `stage1_approver: DeptMgr` | **PROPOSED:** UI / contract label — needs decision |
-| Domain status `PendingDepartmentManagerState` | Request lifecycle Stage-1 state name | **PROPOSED:** domain naming — needs decision |
-| Console Blade «مدیر واحد» (`resources/views/livewire/request/stage1-approver-console-page.blade.php`) | UI label (not a role gate) | **PROPOSED:** UI label — needs decision |
-| Test helper names using DeptMgr as negative-path fixture (`Stage1ApproverConsoleActionsTest` DeptMgr-only 403) | Negative-path fixture for gate rejection | **PROPOSED:** test fixture naming — leave as-is candidate |
-| `CLAUDE.md` workflow abbreviation line | Docs workflow shorthand | **PROPOSED:** historical / docs shorthand — leave as-is candidate |
-| `.specify/docs/discovery/hr-semantic-evidence-clarification.md` | Discovery evidence citing Spec05 DeptMgr stage | **PROPOSED:** historical record — leave as-is candidate |
-| `docs/governance/IMPL-PERMIT-02.md` ambiguity note referencing DeptMgr | Closed permit narrative | **PROPOSED:** historical record — leave as-is candidate |
+| Hit | Apparent purpose | Disposition |
+|-----|------------------|-------------|
+| `IdentityRoleSeeder::ROLE_DEPT_MGR` (`database/seeders/IdentityRoleSeeder.php`) | Role seed / OQ-AUTH-01 catalog | **RESIDUAL (Sprint B)** |
+| Historical governance: **DGAP-05 A** (department line manager = Stage-1) | Decided Spec04 actor binding (business) | **EXCLUDED** |
+| Historical governance: **OQ-AUTH-01 B** (`employee` + `DeptMgr`) | Decided Spec04 Spatie role naming | **EXCLUDED** |
+| `docs/governance/IMPL-PERMIT-01.md` | Historical permit middleware / role text (`identity.role:DeptMgr`) | **APPLIED (R5.1, 2026-07-18)** |
+| `docs/specs/spec04-auth-packet.md` | Packet role naming | **APPLIED (R5.1, 2026-07-18)** |
+| `docs/specs/spec04-imp-q-technical-proposal.md` | IMP-Q technical proposal role naming | **APPLIED (R5.1, 2026-07-18)** |
+| `docs/governance/spec04-imp-q-human-decision-pack.md` | IMP-Q human-decision pack (outside R5.1 path) | **EXCLUDED** |
+| `specs/005-request-management/*` (spec.md, tasks.md, quickstart.md) | Workflow stage naming (DeptMgr → HR → …) | **APPLIED (R5.1, 2026-07-18)** |
+| `specs/010-audit-trail/contracts/audit-history-read-contract.md` | Audit deny matrix lists `DeptMgr` | **APPLIED (R5.1, 2026-07-18)** |
+| `docs/ui/contracts/requests/employee-request-self-service.feature-contract.yaml` | Feature-contract role label `stage1_approver: DeptMgr` | **APPLIED (R5.1, 2026-07-18)** |
+| Domain status `PendingDepartmentManagerState` | Request lifecycle Stage-1 state name | **RESIDUAL (Sprint B)** |
+| Console Blade «مدیر واحد» (`resources/views/livewire/request/stage1-approver-console-page.blade.php`) | UI label (not a role gate) | **RESIDUAL (Sprint B)** |
+| Test helper names using DeptMgr as negative-path fixture (`Stage1ApproverConsoleActionsTest` DeptMgr-only 403) | Negative-path fixture for gate rejection | **RESIDUAL (Sprint B)** |
+| `CLAUDE.md` workflow abbreviation line | Docs workflow shorthand | **APPLIED (R5.1, 2026-07-18)** |
+| `.specify/docs/discovery/hr-semantic-evidence-clarification.md` | Discovery evidence citing Spec05 DeptMgr stage | **EXCLUDED** |
+| `docs/governance/IMPL-PERMIT-02.md` ambiguity note referencing DeptMgr | Closed permit narrative | **APPLIED (R5.1, 2026-07-18)** |
 
-**Effect:** Inventory parked for Lead disposition. No disposition above is authoritative until Human Decision Authority decides.
+**Effect:** DECIDED (Option A, 2026-07-18 / 1405-04-27, Lead). `dormitory-manager` is the canonical role. Documentation/contract dispositions below are APPLIED per R5.1 (22 points). Runtime identifiers are RESIDUAL — accepted out-of-scope, tracked for Sprint B. See governance-log.md.
+
+**Decision (DECIDED — Option A):**
+- Canonical role: `dormitory-manager` (supersedes `DeptMgr`).
+- Applied: R5.1 replacement across 22 documented points (docs/contracts).
+- Exclusions: runtime code identifiers (classes, seeders, state names) — intentionally untouched.
+- Residuals → Sprint B: `RoleSeeder`, `PendingDepartmentManagerState`.
+- Authority: Lead, 2026-07-18. Logged in governance-log.md.
 
 ### DGAP-11
 
@@ -502,6 +511,7 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| ۱۴۰۵/۰۴/۲۷ (2026-07-18) | **W2 hygiene (merge-independent):** Decision Gate Table IMPL-PERMIT-03 commit placeholder synced from § metadata SHA `25104a70…`. Merge SHA **UNVERIFIED**. Report: `docs/governance/w2-hygiene-sync-report.md`. No new decision. | Agent (docs sync) |
 | ۱۴۰۵/۰۴/۲۷ (2026-07-18) | **IMPL-PERMIT-03 CLOSED** (basis DGAP-13; Lead commit `<LEAD-FILLS-IN>`). **DGAP-14 OPEN:** residual DeptMgr references outside Stage-1 auth path — inventory recorded, dispositions PROPOSED only, undecided. DGAP-09/13 unmodified. Ref: PATCH-F3A-SYNC (IMPL-PERMIT-03 close / DGAP-14). | Agent (Lead closeout docs) |
 | ۱۴۰۵/۰۴/۲۷ (2026-07-18) | **DGAP-13 DECIDED** (Lead prompt label DGAP-09; ID collision with FROZEN assignment-schema DGAP-09 → registered as DGAP-13): canonical Stage-1 approver **authorization path** role = `dormitory-manager`. Non-Scope: IMPL-PERMIT-03 only; no Stage-2/3 / RBAC-wide consolidation. IMPL-PERMIT-02 CLOSED untouched. **no downstream decision implied beyond DGAP-09/13 scope.** Ref: PATCH-F3A-SYNC (DGAP-13). | Agent (Lead Decision Record) |
 | ۱۴۰۵/۰۴/۲۷ (2026-07-18) | **OQ-AUTH-05 DECIDED — A:** Spec04 Auth Packet **governance-accepted**. Rationale: Spec04-specific decisions complete; unrelated deps non-blocking. **No** L5/L6/impl auth. Spec04 → 0.5.0-GOVERNANCE-ACCEPTED. DGAP-03/SGAP-05 untouched. | Agent (Lead Decision Record) |
@@ -542,3 +552,23 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 2. هر تصمیم باید با ID، تاریخ، و نام تأییدکننده در Changelog ثبت شود.
 3. شناسه هر gap immutable است. به‌روزرسانی Status / Notes / Decision Owner فقط با ثبت changelog مجاز است.
 4. gap جدید فقط با شناسه‌ی بعدی (`DG-06`, ...) اضافه می‌شود.
+
+-**Status:** OPEN
++**Status:** DECIDED
++**Decided by:** Lead
++**Decision date:** [تاریخ]
++
++**Decision:**
++Canonical governance references in documentation and contracts
++shall use `dormitory-manager`. This applies to governance artifacts,
++UI contracts, and implementation permits only.
++
++**Explicit scope exclusions:**
++Runtime identifiers, domain class names, and historical specs
++are out of scope and require separate authorization to change.
++
++**Open residuals (not decided here — tracked separately):**
++- `config/roles.php` string value `'DeptMgr'` — runtime constraint
++- `PendingDepartmentManagerState` and related class names — domain layer
++- `RoleSeeder` string values — runtime constraint
++- `spec04-auth-packet.md` — intentional archival, no change

@@ -46,18 +46,18 @@ The following are the **sole** permitted implementation actions under IMPL-PERMI
 | Surface | Path prefix | Named routes | Middleware (conceptual) |
 |---------|-------------|--------------|-------------------------|
 | Employee self-service | `/employee/requests/*` | `employee.requests.*` | `auth:identity` + `identity.role:employee` (+ V1 as applicable) |
-| Stage-1 Approver Console | `/approvals/stage1/*` | `approvals.stage1.*` | `auth:identity` + `identity.role:DeptMgr` (+ V1 as applicable) |
+| Stage-1 Approver Console | `/approvals/stage1/*` | `approvals.stage1.*` | `auth:identity` + `identity.role:dormitory-manager` (+ V1 as applicable) |
 
 **Allowed:** Register these route groups and wire Livewire/HTTP entry points needed for authorized UI/logic only.  
-**Forbidden:** Embedding approve/reject under `/employee/requests/*`; using dormitory-manager roles for Stage-1.
+**Forbidden:** Embedding approve/reject under `/employee/requests/*`.
 
 ### 2.3 Roles — IdentityRoleSeeder (IMP-Q-06 A)
 
 | Item | Authorization |
 |------|----------------|
 | Seeder | Extend `database/seeders/IdentityRoleSeeder.php` |
-| Roles | Ensure Spatie roles **`employee`** and **`DeptMgr`** exist with **`guard_name = identity`** |
-| Forbidden | Creating these roles on `web` guard; reusing `dormitory-manager` / `dormitory-unit-manager` as Stage-1 |
+| Roles | Ensure Spatie roles **`employee`** and **`dormitory-manager`** exist with **`guard_name = identity`** |
+| Forbidden | Creating these roles on `web` guard |
 
 ### 2.4 Logic — Application Actions (IMP-Q-04 B)
 
@@ -106,7 +106,7 @@ The following are the **sole** permitted implementation actions under IMPL-PERMI
 
 1. Snapshot migration applied with rollback; column + FK `restrictOnDelete` as authorized.
 2. Route groups `/employee/requests/*` and `/approvals/stage1/*` registered with identity role gates.
-3. `employee` and `DeptMgr` identity roles seedable via IdentityRoleSeeder.
+3. `employee` and `dormitory-manager` identity roles seedable via IdentityRoleSeeder.
 4. Employee List / Show / Create / Cancel operable without approve/reject on employee UI.
 5. Approver Console Stage-1 approve/reject via Application Actions only.
 6. PHPStan level 8 and Pint clean for touched code; tests covering authorized paths.

@@ -67,7 +67,7 @@ As a department manager, HR manager, dormitory manager, or dormitory unit manage
 
 **Why this priority**: CD-010 assigns `RequestApproval` ownership to Request; four-stage chain is constitution-defined before Workflow activation.
 
-**Independent Test**: Progress request through DeptMgr → HR → DormMgr → DormUnitMgr approval stages with `RequestApproval` rows — inline routing rules in Request (Workflow deferred).
+**Independent Test**: Progress request through dormitory-manager → HR → DormMgr → DormUnitMgr approval stages with `RequestApproval` rows — inline routing rules in Request (Workflow deferred).
 
 **Acceptance Scenarios**:
 
@@ -156,7 +156,7 @@ As an employee, I need to register a **LotteryRegistration** request type so tha
 - **FR-005**: System MUST enforce **BR-01** at submission: invoke **`EmployeeEligibilityContract`** (CD-013) plus Request-owned date rules (check-in not past; check-out after check-in)
 - **FR-006**: System MUST implement **explicit Request lifecycle state machine** per constitution AP-05 (OA-05-01)
 - **FR-007**: System MUST own **`RequestApproval`** entity, approval **state**, and **history** (CD-010)
-- **FR-008**: System MUST implement **four-stage approval chain** inline in Request while Workflow is deferred: DepartmentManager → HR → DormitoryManager → DormitoryUnit (OA-05-02)
+- **FR-008**: System MUST implement **four-stage approval chain** inline in Request while Workflow is deferred: dormitory-manager → HR → DormitoryManager → DormitoryUnit (OA-05-02)
 - **FR-009**: System MUST emit **domain events** on material state transitions for future Workflow subscription (CD-010 integration pattern)
 - **FR-010**: System MUST capture **dependent snapshots** on FamilyDirect requests — not own Dependent lifecycle (CD-009, OA-05-04)
 - **FR-011**: System MUST enforce **BR-04** for Mission requests (2–20 members, designated leader in member set)

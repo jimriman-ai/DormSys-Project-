@@ -1,0 +1,6 @@
+prompt_id: bug1-composer-test-ansi-2026-07-18
+recorded_at: 2026-07-18T19:50:00+03:30
+work_item: ci-composer-test-ansi
+stage: verification
+tags: [EVIDENCE_CONFLICT, CLOSED]
+summary: "Alleged silent drop of --ansi via composer run test -- --ansi was disproven on Composer 2.10.1: config:clear keeps @no_additional_args while artisan test receives forwarded args (composer run test -- --help executed as artisan test --help)."

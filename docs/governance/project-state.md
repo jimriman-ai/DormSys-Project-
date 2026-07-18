@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3-AUTH | Session: noted stale full-suite notify (719015)_
+_Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3 Sprint B | Session: Lead CONFIRM Sprint A CLOSE / Sprint B ENTRY_
 
-**Authority note:** IMPL-PERMIT-02 DormMgr snapshot landed in **32c677b**. Stale suite run 719015 is superseded by later retest.
+**Authority note:** Lead CONFIRM — Sprint A CLOSED; Sprint B ACTIVE with backlog RESIDUAL-01/02, UI-M2, F-W07-04.
 
 ---
 
@@ -13,13 +13,15 @@ _Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3-AUTH | Session: noted stale 
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| Notify 719015 | full suite | superseded | later run 14 Redis-only fails |
+| Sprint A | roadmap F3 | **CLOSED** (Lead CONFIRM) | roadmap.md |
+| Sprint B | roadmap + backlog table | **ACTIVE** + RESIDUAL-01/02, UI-M2, F-W07-04 | roadmap § F3 Sprint B Backlog |
+| Log | governance-log.md | + SPRINT CONFIRMED | Lead CONFIRM |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🔀 **Lifecycle — L6 under IMPL-PERMIT-01/02** (snapshot committed; Approver Console next)
+🔀 **Lifecycle — F3 Sprint B ACTIVE** (backlog: RESIDUAL-01 → RESIDUAL-02 → UI-M2 → F-W07-04)
 
 ---
 
@@ -27,28 +29,23 @@ _Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3-AUTH | Session: noted stale 
 
 | ID | Title | Status | Stage | Blocker |
 |----|-------|--------|-------|---------|
-| IMPL-PERMIT-02 | Stage-1 create snapshot | **COMMITTED** | 32c677b | — |
-
----
-
-## 6. Lifecycle Matrix
-
-| Feature | Status |
-|---------|--------|
-| IMPL-PERMIT-02 | ✅ 32c677b |
+| RESIDUAL-01 | Runtime id `ROLE_DEPT_MGR` | OPEN | Sprint B | Lead auth for disposition |
+| RESIDUAL-02 | Domain class `PendingDepartmentManagerState` | OPEN | Sprint B | Lead auth for disposition |
+| UI-M2 | Unit-Manager Dashboard L3 | READY FOR L3 | Sprint B | Band 4 auth |
+| F-W07-04 | Next UI slug / product gate | CARRIED | Sprint B | Lead product auth |
 
 ---
 
 ## 7. Next Step
 
-**Action:** Wire Stage-1 Approver Console approve/reject via Application Actions.  
-**Owner:** Agent under IMPL-PERMIT-01  
-**Gate:** Permit §2 only  
-**Done when:** Console wired  
-**Blocker:** none  
+**Action:** Lead pick first Sprint B item (suggested: RESIDUAL-01 triage or UI-M2 L3 Band 4); commit pending docs when ready.  
+**Owner:** Lead  
+**Gate:** per-item IA  
+**Done when:** first Sprint B item authorized  
+**Blocker:** none for backlog registration  
 
 **Suggested user prompt:**
-> Continue IMPL-PERMIT-01: wire Approver Console Stage-1 approve/reject via Application Actions.
+> Authorize Sprint B first item: RESIDUAL-01 triage OR UI-M2 L3 (Band 4).
 
 ---
 
@@ -56,5 +53,11 @@ _Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3-AUTH | Session: noted stale 
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| IMPL-PERMIT-02 | COMMITTED | 32c677b |
-| Redis phpunit host | OOS | 127.0.0.1 refused inside Sail |
+| Sprint A | CLOSED | Lead CONFIRM |
+| Sprint B | ACTIVE | backlog registered |
+| RESIDUAL-01 | OPEN | ROLE_DEPT_MGR |
+| RESIDUAL-02 | OPEN | PendingDepartmentManagerState |
+| UI-M2 | READY FOR L3 | Band 4 |
+| F-W07-04 | CARRIED | Sprint B |
+| GAP-GOV-02 | OPEN | tip SHA pending Lead commit |
+| DGAP-14 | DECIDED | residuals → Sprint B backlog |

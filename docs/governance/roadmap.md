@@ -26,7 +26,7 @@
 | F1 | Auth: employee-records | COMPLETE |
 | F2 | Auth: Employee UI/Auth broad scope | **PARTIAL** (boundary work-items W-01…W-08 CLOSED — `docs/features/employee-auth-ui/work-breakdown.md:14`; F-W07-04 **CARRIED FORWARD → F3 Sprint B** — `open-decisions.md` HD-05A / AUTH-013). **No** next UI slug / Spec04 Auth authorized from F2 closeout. (reconciled 2026-07-15, ref: DGAP-12) |
 | G | UI: dormitory-admin-ui | **PARTIAL** (BL-B1-01 **RESOLVED** on branch `369a106`; L9 checklist refreshed 2026-07-18 — `.specify/governance/l9-merge-checklist-dormitory-admin-ui.md`; merge into `011-reporting-projections` pending Lead). |
-| F3 | Dormitory Admin UI productization | **ACTIVE — Sprint A** (catalog AUTHORIZED Lead Option A, 2026-07-15). Canonical IDs: **UI-M1, UI-M2, UI-A1**. W1 COMPLETE (verified); **W2 ACTIVE** (hygiene). DGAP-11 CLOSED — see § F3 Catalog. |
+| F3 | Dormitory Admin UI productization | **Sprint A = CLOSED** \| **Sprint B = ACTIVE** (Lead CONFIRM 1405/04/27 \| 2026-07-18). Catalog: **UI-M1, UI-M2, UI-A1**. DGAP-11 CLOSED. See § F3 Sprint B Backlog. |
 
 ### F3 — Catalog (Sprint A)
 
@@ -44,6 +44,17 @@
 
 **Sprint A first work item posture:** Catalog defined; implementation / L3 per item requires separate Lead authorization (docs-only close of DGAP-11 does **not** authorize PHP/migrations).
 
+### F3 — Sprint B Backlog (Lead CONFIRM 1405/04/27 \| 2026-07-18)
+
+| Priority | ID | Title / Scope | Status |
+|----------|-----|---------------|--------|
+| 1 | **RESIDUAL-01** | بررسی شناسه runtime: `ROLE_DEPT_MGR` (`IdentityRoleSeeder`) | OPEN — Sprint B |
+| 2 | **RESIDUAL-02** | بررسی نام کلاس دامنه: `PendingDepartmentManagerState` | OPEN — Sprint B |
+| 3 | **UI-M2** | Unit-Manager Dashboard — L3 / wire (`/dormitory-admin/unit`) | READY FOR L3 (Band 4) |
+| 4 | **F-W07-04** | Post-login surface catalog / next UI slug (carried from F2 W-07) | CARRIED — Sprint B |
+
+> Sprint B backlog is sequencing guidance only. Implementation of each ID requires separate Lead authorization.
+
 ---
 
 ## F3 Execution Waves (AUTH-013 — sequencing only)
@@ -57,11 +68,11 @@
 | **W1 — L9 Merge** | Refresh checklist → disposition unstaged files → union `bootstrap/app.php` verified → readiness for Lead merge | GAP-DOC-04, GAP-GOV-01, GAP-GOV-03 closed in working tree; GAP-GOV-02 pending Lead merge SHA | **AUTH-011 Band 2** — **COMPLETE** (verified 1405/04/27 \| 2026-07-18); merge commit pending Lead |
 | **W2 — Hygiene & Doc-lag Batch** | N-11 (S-4 grep CI + dedicated test DB note) + all doc-lags: GAP-DOC-01/02/03, GAP-UI-M1-01, spec02/spec05 closeout (HD-07A), GAP-N11-01 | All doc-lag tags in `project-state.md` §8 | **AUTH-011 Band 3** — **ACTIVE** (hygiene execution 1405/04/27 \| 2026-07-18) |
 | **W3 — UI-M2 L3** | `docs/features/ui-m2/l3-spec.md` per UI-M1 pattern | GAP-UI-M2-01 executed | **AUTH-011 Band 4** |
-| **P — Parked Lane** (no work) | DGAP-08/03/05/06, SGAP-07, spec06/11 authority debt, Workflow, F-W07-04 | — each with explicit re-entry trigger in `open-decisions.md` | Future Lead decision |
+| **P — Parked Lane** (no work) | DGAP-03 (OPEN/PARKED), DGAP-14 (DECIDED), SGAP-05, SGAP-07, spec06/11 authority debt, Workflow, F-W07-04 → Sprint B | — each with explicit re-entry trigger in `open-decisions.md`. **Removed (stale):** DGAP-08 RESOLVED; DGAP-05/06 DECIDED — not parked. | Future Lead decision |
 
 **W2 acceptance criterion:** After W2, `project-state.md` §8 contains only decision-pending rows with explicit triggers — **zero open doc-lag rows**.
 
-**Current wave:** **W2 ACTIVE** (Documentation Hygiene) — entry executed 2026-07-18. W1 verified COMPLETE; Lead merge SHA still pending (GAP-GOV-02).
+**Current wave:** **Sprint B ACTIVE** (Lead CONFIRM 1405/04/27 \| 2026-07-18). Sprint A **CLOSED**. Backlog: RESIDUAL-01, RESIDUAL-02, UI-M2, F-W07-04. GAP-GOV-02 tip SHA pending Lead commit.
 
 ---
 
@@ -84,6 +95,9 @@
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| 1405/04/27 (2026/07/18) | **SPRINT-A CLOSE / SPRINT-B ENTRY (Lead CONFIRM):** Sprint A = CLOSED; Sprint B = ACTIVE. Backlog: RESIDUAL-01, RESIDUAL-02, UI-M2, F-W07-04. | Agent (Lead CONFIRM) |
+| 1405/04/27 (2026/07/18) | **Sprint A CLOSED / Sprint B ACTIVE:** DGAP-14 F1–F3 decision block applied (NO-COMMIT). Priorities: UI-M2, F-W07-04, residuals. | Agent (Lead RATIFY F1-F3) |
+| 1405/04/27 (2026/07/18) | **W2 hygiene (merge-independent):** Parked Lane membership synced to open-decisions (drop stale DGAP-08/05/06). Merge SHA **UNVERIFIED**. Report: `docs/governance/w2-hygiene-sync-report.md`. | Agent (docs sync) |
 | 1405/04/27 (2026/07/18) | **IMPL-PERMIT-02:** Stage-1 approver identity snapshot at personal-request **create** time (org-chart dept manager); unit test PASS. Tracker: `project-state.md`. | Agent (IMPL-PERMIT-02) |
 | 1405/04/27 (2026/07/18) | **W2 hygiene:** F3 catalog status sync (UI-M1 L8/L9-pending; UI-M2 READY FOR L3; Phase G L9 checklist refreshed). Doc-lag HIGH batch. | Agent (Lead W2 auth) |
 | 1405/04/27 (2026/07/18) | **W1-CLOSE:** Union `bootstrap/app.php` verified PASS; suite 1888/0; W1 COMPLETE (merge pending Lead); W2 ACTIVE — entry **W2-start**. Facts only. | Agent (Lead W1-CLOSE auth) |

@@ -36,7 +36,8 @@
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="redis" force="true"/>
         <env name="REDIS_CLIENT" value="predis" force="true"/>
-        <env name="REDIS_HOST" value="127.0.0.1" force="true"/>
+        <!-- Sail/CI baseline (L8 1888/0). Host-side 127.0.0.1 belongs in local .env — not here; force keeps Sail hostname. -->
+        <env name="REDIS_HOST" value="redis" force="true"/>
         <env name="REDIS_PASSWORD" value=""/>
         <env name="REDIS_PORT" value="6379" force="true"/>
         <env name="SESSION_DRIVER" value="array"/>

@@ -1,0 +1,6 @@
+prompt_id: ui-m1-l9-blocker-remediation-2026-07-18
+recorded_at: 2026-07-18T20:40:00+03:30
+work_item: ui-m1-l9-blocker-remediation
+stage: L9-pre-merge
+tags: [SAFE_PROGRESS, CLOSED, OWNER_DECISION_NEEDED]
+summary: "phpunit.xml REDIS_HOST aligned to redis (Sail/L8 baseline); full suite inside laravel.test reached 1895 passed / 0 failed / 5454 assertions with snapshot coherence green and no Allocation deadlock. G3 bootstrap three-way is a clean union: branch df5b19a is a strict superset of 011 0887b55 over base 2ea1797 (shared Spatie/IdentityRole hunks identical); Lead merge still required for GAP-GOV-02 and env-fix commit."

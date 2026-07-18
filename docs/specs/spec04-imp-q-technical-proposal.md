@@ -22,15 +22,15 @@
 
 - `routes/web.php`: `employee.login`; dormitory dashboards under `identity.role:dormitory-manager` / `dormitory-unit-manager`; home redirects to `/requests`.
 - Feature contracts reference named routes `requests.index`, `requests.show` (`/requests/{requestId}`).
-- No Spec04 `employee` / `DeptMgr` route groups registered yet.
-- OQ-AUTH-02 B requires dual stacks: `auth:identity` + `identity.role:employee` vs `identity.role:DeptMgr`.
+- No Spec04 `employee` / `dormitory-manager` route groups registered yet.
+- OQ-AUTH-02 B requires dual stacks: `auth:identity` + `identity.role:employee` vs `identity.role:dormitory-manager`.
 
 **2. Options**
 
 | Option | Proposal |
 |--------|----------|
-| **A** | Prefix split: `/employee/requests/*` (self-service) + `/approvals/stage1/*` (DeptMgr console); names `employee.requests.*` / `approvals.stage1.*` |
-| **B** | Keep `/requests/*` for employee; add sibling `/manager/requests/*` for DeptMgr |
+| **A** | Prefix split: `/employee/requests/*` (self-service) + `/approvals/stage1/*` (dormitory-manager console); names `employee.requests.*` / `approvals.stage1.*` |
+| **B** | Keep `/requests/*` for employee; add sibling `/manager/requests/*` for dormitory-manager |
 | **C** | Single `/requests/*` tree; differentiate only by middleware role (same URLs, different gates) |
 
 **3. Advantages / disadvantages**
@@ -43,7 +43,7 @@
 
 **4. Dependencies:** OQ-AUTH-01 roles; U2 boundary; existing contract route names (`requests.show`) if reused (IMP-Q-03).
 
-**5. Risks:** Breaking notification deep links (`requests.show`); confusing DeptMgr with `dormitory-manager`.
+**5. Risks:** Breaking notification deep links (`requests.show`); confusing dormitory-manager with `dormitory-manager`.
 
 **6. Recommendation:** **Option A** (or B if Lead prioritizes preserving `/requests` employee URLs).  
 **TECHNICAL PROPOSAL — REQUIRES HUMAN APPROVAL**
@@ -189,14 +189,14 @@
 **1. Current evidence**
 
 - `IdentityRoleSeeder`: identity-guard roles today include `dormitory-manager`, `dormitory-unit-manager`; legacy `HRMgr`/`DormMgr` on **web**.
-- OQ-AUTH-01 B: identity roles **`employee`** + **`DeptMgr`** — **not** seeded yet.
+- OQ-AUTH-01 B: identity roles **`employee`** + **`dormitory-manager`** — **not** seeded yet.
 - Must not reuse dormitory-manager for Stage-1 (DGAP-05 A).
 
 **2. Options**
 
 | Option | Proposal |
 |--------|----------|
-| **A** | Extend `IdentityRoleSeeder`: `Role::findOrCreate('employee'|'DeptMgr', 'identity')` only; no permission grants until catalog decided |
+| **A** | Extend `IdentityRoleSeeder`: `Role::findOrCreate('employee'|'dormitory-manager', 'identity')` only; no permission grants until catalog decided |
 | **B** | New dedicated seeder `Spec04IdentityRoleSeeder` |
 | **C** | Manual/ops role creation via existing Identity role-manage permission UI/API |
 
@@ -210,7 +210,7 @@
 
 **4. Dependencies:** Implementation + seeder execution authorization; Spatie cache clear; assignment of roles to users (separate ops).
 
-**5. Risks:** Creating `DeptMgr` on **web** by mistake (SEC-G-01); colliding with future kebab rename.
+**5. Risks:** Creating `dormitory-manager` on **web** by mistake (SEC-G-01); colliding with future kebab rename.
 
 **6. Recommendation:** **Option A** (or B if Lead wants isolation); enforce `guard_name = identity` only.  
 **TECHNICAL PROPOSAL — REQUIRES HUMAN APPROVAL**
@@ -223,7 +223,7 @@
 
 - DGAP-06 U2: separate console; not embedded in employee self-service.
 - Draft contract placeholder: `department-request-approver-console`.
-- No approved Feature Contract or routes for DeptMgr console today.
+- No approved Feature Contract or routes for dormitory-manager console today.
 - Employee request-show explicitly excludes approve/reject.
 
 **2. Options**
@@ -278,7 +278,7 @@ Then: Feature Contract draft → reviewed/approved → **separate** Implementati
 | Explicit Lead **implementation authorization** permit | Not issued |
 | L5 / L6 authorization | Not issued |
 | Migration permit for snapshot column (if Option A/B) | Not issued |
-| Seeder/catalog execution authorization for `employee` + `DeptMgr` | Not issued |
+| Seeder/catalog execution authorization for `employee` + `dormitory-manager` | Not issued |
 | Implementation lock(s) for chosen surfaces | Not issued |
 | DGAP-03 / SGAP-05 | Unrelated — **do not block** Spec04 per OQ-AUTH-05 A; **unchanged** |
 

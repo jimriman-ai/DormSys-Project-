@@ -82,7 +82,7 @@ app/Modules/{Module}/
 - **Allocation overlap:** PostgreSQL exclusion constraint on `(person_id, daterange)` prevents double-booking. Zero incidents is the target.
 - **Lottery scoring** is deterministic: `weighted_score = normalized_weight + PRNG(random_seed, registration_id)`. The formula is configurable via `settings` table — never hardcode it.
 - **Family requests** always receive room-based (private room) allocation; bed-based is prohibited.
-- **Approval workflow** is four stages: DeptMgr → HRMgr → DormMgr → DormUnitMgr. Each stage may be configured for auto-approval via `settings` table.
+- **Approval workflow** is four stages: dormitory-manager → HRMgr → DormMgr → DormUnitMgr. Each stage may be configured for auto-approval via `settings` table.
 - **External dormitories** generate voucher codes for lottery winners; no physical bed tracking or check-in/out.
 - **Check-in/out** is only for internal dormitories and can only be performed by the `Operator` role.
 

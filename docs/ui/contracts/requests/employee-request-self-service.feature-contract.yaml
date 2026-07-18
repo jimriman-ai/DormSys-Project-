@@ -129,7 +129,7 @@ imp_q_bindings:
     selected: A
     roles:
       employee: employee
-      stage1_approver: DeptMgr
+      stage1_approver: dormitory-manager
     guard_name: identity
     seeder_approach: extend_IdentityRoleSeeder
     seeder_execution_authorized: false
@@ -229,7 +229,6 @@ authorization:
     - web_guard_Spatie_roles_for_this_surface
     - approval_or_reject_controls_on_employee_self_service_UI
     - client_supplied_approverId_spoofing
-    - dormitory-manager_as_Stage1_on_this_surface
     - cross_principal_visibility_beyond_subject_on_this_surface
 
 # -----------------------------------------------------------------------------
@@ -326,8 +325,8 @@ schema:
     employee:
       name: employee
       guard_name: identity
-    DeptMgr:
-      name: DeptMgr
+    dormitory-manager:
+      name: dormitory-manager
       guard_name: identity
       used_by_this_contract: false
       used_by: department-request-approver-console
