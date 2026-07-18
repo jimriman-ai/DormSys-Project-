@@ -8,9 +8,9 @@
 
 ## Explicit non-authorization
 
-- **Feature Contract NOT started.**
+- **Feature Contract ACCEPTED** — `docs/features/stage1-approver-console/feature-contract.md`; decision `docs/governance/governance-log.md:16` (F-W07-04-D2).
 - **Implementation Authorization NOT granted.**
-- Program **F2 remains PARTIAL** pending Feature Contract finalization (`work-breakdown.md` phase status; open-decisions § F-W07-04).
+- Program **F2 = PASS** for F-W07-04 (`docs/governance/governance-log.md:16`, F-W07-04-D2).
 - Slug **DECIDED** under **F-W07-04-D1** (2026-07-18): `stage1-approver-console` (mint; park rejected).
 
 ---
@@ -27,6 +27,7 @@
 | Audit / reporting UI entry | **NOT SELECTED** | TBD | Cross-cutting read surfaces | Spec10/11 governance posture | Likely projections only |
 
 Decision recorded in governance-log.md (F-W07-04-D1). Next step: Feature Contract (separate prompt).
+Feature Contract draft: `docs/features/stage1-approver-console/feature-contract.md`.
 
 ---
 

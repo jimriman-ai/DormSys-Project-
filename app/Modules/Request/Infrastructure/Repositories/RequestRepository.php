@@ -7,12 +7,14 @@ namespace App\Modules\Request\Infrastructure\Repositories;
 use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
 use App\Modules\Request\Domain\Entities\Request;
 use App\Modules\Request\Domain\Exceptions\RequestNotFoundException;
+use App\Modules\Request\Domain\States\PendingDepartmentManagerState;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
 use App\Modules\Request\Domain\ValueObjects\RequestCode;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
 use App\Modules\Request\Infrastructure\Persistence\Models\RequestModel;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
 class RequestRepository implements RequestRepositoryContract
 {
@@ -90,6 +92,19 @@ class RequestRepository implements RequestRepositoryContract
         }
 
         return RequestCode::fromString($latestCode)->sequence() + 1;
+    }
+
+    /**
+     * @return Collection<int, Request>
+     */
+    public function listPendingStage1(): Collection
+    {
+        return RequestModel::query()
+            ->where('status', PendingDepartmentManagerState::$name)
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(fn (RequestModel $model): Request => $this->toDomain($model))
+            ->values();
     }
 
     private function toDomain(RequestModel $model): Request
