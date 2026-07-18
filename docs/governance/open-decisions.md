@@ -21,7 +21,7 @@
 | DGAP-03 | Department↔Dormitory / Organization structural link | Domain Gap / Spec04 Auth | — (parked; options deferred) | Lead | Spec04 Auth packet | OPEN / PARKED | Blocker: **DGAP-08**. Source: Domain Gap Audit 2026-07-15. Not for answer now. |
 | DGAP-05 | Approver actor binding / stage visibility | Domain Gap / Spec04 Auth | — (parked; options deferred) | Lead | Spec04 Auth packet | OPEN / PARKED | Blocker: **DGAP-08**. Source: Domain Gap Audit 2026-07-15. Not for answer now. |
 | DGAP-06 | Department.managerId vs Stage-1 approver binding | Domain Gap / Spec04 Auth | — (parked; options deferred) | Lead | Spec04 Auth packet | OPEN / PARKED | Blocker: **DGAP-08**. Source: Domain Gap Audit 2026-07-15. Not for answer now. |
-| DGAP-08 | Business Owner designation | Domain Gap / HDAC | — (parked; designation by org authority) | human org authority (HDAC track) | HDAC track (root blocker) | OPEN / PARKED | Root blocker for DGAP-03/05/06. Source: Domain Gap Audit 2026-07-15. Not for answer now via this gate. |
+| DGAP-08 | Business Owner designation | Domain Gap / HDAC | — (parked; designation by org authority) | human org authority (HDAC track) | HDAC track (root blocker) | OPEN / PARKED | **HD-01 → B (AUTH-013):** stays PARKED; Sprint A does not need Spec04 Auth. **Re-entry trigger:** `employee-request-self-service` enters scope. Root blocker for DGAP-03/05/06 when Spec04 Auth re-enters. |
 | DGAP-01 | Organization aggregate | Domain Gap Audit | CLOSE — NOT-A-GAP | Lead | DGAP Decision Gate | **CLOSED — NOT-A-GAP** | Lead (2026/07/15): No product requirement for Organization aggregate. No L6 fill. |
 | DGAP-02 | Unit entity | Domain Gap Audit | CLOSE — NOT-A-GAP | Lead | DGAP Decision Gate | **CLOSED — NOT-A-GAP** | Lead (2026/07/15): Unit only meaningful under assignment schema (frozen). No L6 fill. |
 | DGAP-04 | Workflow module / engine | Domain Gap Audit | CLOSE — NOT-A-GAP | Lead | DGAP Decision Gate | **CLOSED — NOT-A-GAP** | Lead (2026/07/15): Workflow shell intentional per CD-010 deferral. No L6 fill. |
@@ -39,6 +39,14 @@
 | DGAP-11 | Roadmap ↔ UI Productization reconciliation | Governance / Roadmap | A) merge into Roadmap as UI-1..UI-7 B) keep separate doc with cross-refs | Lead | F3 Sprint A entry | **CLOSED — RESOLVED** (2026-07-15) | Lead AUTHORIZED Option A (scope corrected): canonical catalog **UI-M1, UI-M2, UI-A1** in `docs/governance/roadmap.md` § F3 Catalog (supersedes UI-1…UI-7 claim). Artifact delivered; F3 ACTIVE — Sprint A. |
 | DGAP-12 | Governance doc hard-conflict reconciliation (F2 / G / DGAP-11) | Governance / Roadmap | Docs-only status sync per Lead DGAP-12 rules | Lead | Immediate | **EXECUTED — DOCS** (reconciled 2026-07-15, ref: DGAP-12) | Conflicts 1–3 applied in `docs/governance/roadmap.md`, this file, `docs/features/employee-auth-ui/feature-brief.md`. No code. No commit. |
 | UI-M1-COV | UI-M1 residual test-coverage risk (S-2, S-4, S-5) | UI-M1 / Verification | ACCEPT residual depth; mitigate via dedicated test DB hygiene | Lead | UI-M1 L8 closeout | **ACCEPTED** (Lead, 2026-07-16) | Boundary: UI-M1 audit-history / dashboard verification depth. S-2 dual-session e2e ACCEPT-BY-RISK; S-4 raw-query grep CI ACCEPT (defer N-11); S-5 injection fuzz ACCEPT-BY-RISK. Hygiene: suite must use dedicated DB — overlapping runs on shared DB caused transient `40P01` (FLAKE, L8-RERUN). |
+| AUTH-012 | Spec/governance disposition audit — 18 rows §3 | Governance / Catalog | CONFIRM all dispositions as recorded | Lead | AUTH-013 recording | **CONFIRMED** (Lead, 2026-07-16) | All 18 disposition rows CONFIRMED verbatim, including mismatches corrected: **spec05 → DELIVERED-NEEDS-CLOSEOUT**; **spec06 → DECISION-BLOCKED** (not NOT-STARTED). Cursor reconciliation validated. Cite AUTH-013. |
+| HD-01 | DGAP-08 Business Owner designation posture | Domain Gap / F3 Sprint A | A) Resolve now B) Remain PARKED C) Defer to HDAC only | Lead | AUTH-013 | **DECIDED — B** | **DGAP-08 stays PARKED.** Sprint A does not require Spec04 Auth. **Re-entry trigger:** `employee-request-self-service` enters scope. (AUTH-013) |
+| HD-02 | spec06 Lottery governance posture | Spec06 / Governance debt | A) Exception accepted; governance debt; new Lottery FROZEN B) Treat as NOT-STARTED C) Full closeout now | Lead | AUTH-013 | **DECIDED — A** | Exception ACCEPTED; governance debt recorded; **new Lottery work FROZEN** pending authority resolution. Treating delivered code as NOT-STARTED is falsification of history. (AUTH-013) |
+| HD-03 | spec11 Reporting governance posture | Spec11 / F3 scope | A) Same exception as spec06 B) Full closeout C) In-scope for F3 | Lead | AUTH-013 | **DECIDED — A (+C posture)** | Same exception pattern as spec06; **Reporting parked OUT-OF-CURRENT-F3.** Re-entry trigger: explicit F-next feature requiring reporting enters scope. **No blocker on L9.** (AUTH-013) |
+| HD-04 | Workflow module posture | CD-010 / Workflow | A) Deferred placeholder per CD-010 B) Activate now C) NOT-A-GAP retract | Lead | AUTH-013 | **DECIDED — A** | Workflow **deferred** per CD-010; activation criterion **≥2 workflow instances**. Placeholder only — **not a work-gap.** (AUTH-013) |
+| HD-05 | F-W07-04 carry target | F2 / F3 sequencing | A) Carry to F3 Sprint B B) Close now C) Carry to Sprint A | Lead | AUTH-013 | **DECIDED — A** | **F-W07-04 carry to F3 Sprint B.** Consistent with work-breakdown posture. (AUTH-013) |
+| HD-06 | L9 merge scope / checklist freshness | Phase G / L9 | A) Formal A1 waiver after checklist refresh B) Merge with stale checklist C) Refresh checklist first, then waiver | Lead | AUTH-013 | **DECIDED — C then A** | **First:** refresh L9 checklist (resolves GAP-DOC-04). **Then:** Lead issues formal waiver — UI-A1 presence in branch is **intentional and accepted**. Merge with stale checklist = invalid evidence. (AUTH-013) |
+| HD-07 | spec02 + spec05 docs-only closeout timing | Spec closeout / doc-lag | A) Docs-only closure per spec03 pattern in Wave 2 B) Execute now C) Defer indefinitely | Lead | AUTH-013 | **DECIDED — A** | **spec02 + spec05 docs-only closure** following spec03 pattern; execute in **Wave 2 (after merge)**, not now. One write, not two. (AUTH-013) |
 
 ---
 
@@ -215,6 +223,78 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 - **Decision:** Apply docs-only hard-conflict reconciliation rules for (1) F2 PARTIAL vs stale ACTIVE, (2) G PARTIAL vs L9 NOT READY, (3) DGAP-11 REOPENED for undelivered UI merge.
 - **Scope:** `docs/` only. No code. No commit.
 
+### AUTH-012 — Disposition confirmation (Lead, 2026-07-16)
+
+- **ID:** AUTH-012
+- **Status:** **CONFIRMED** (recorded under AUTH-013, 2026-07-16)
+- **Decision-Owner:** Lead
+- **Scope:** All 18 rows of spec/governance disposition audit §3
+- **Effect:** Every disposition row accepted verbatim. Corrected mismatches:
+  - **spec05** → `DELIVERED-NEEDS-CLOSEOUT` (not merely Implementation Authorized)
+  - **spec06** → `DECISION-BLOCKED` / governance exception (not NOT-STARTED)
+- **Authority:** AUTH-013 (docs-only recording)
+
+### HD-01 — DGAP-08 stays PARKED (AUTH-013)
+
+- **Selected Option:** B
+- **Decided-On:** 1405/04/25 (2026/07/16)
+- **Decision-Owner:** Lead
+- **Rationale:** Sprint A does not require Spec04 Auth.
+- **Re-entry trigger:** `employee-request-self-service` enters scope.
+
+### HD-02 — spec06 exception accepted (AUTH-013)
+
+- **Selected Option:** A
+- **Decided-On:** 1405/04/25 (2026/07/16)
+- **Decision-Owner:** Lead
+- **Rationale:** Delivered Lottery code cannot be labeled NOT-STARTED; governance debt recorded; new Lottery work FROZEN.
+
+### HD-03 — spec11 exception + OUT-OF-CURRENT-F3 (AUTH-013)
+
+- **Selected Option:** A (+C posture)
+- **Decided-On:** 1405/04/25 (2026/07/16)
+- **Decision-Owner:** Lead
+- **Rationale:** Parallel spec06 exception; Reporting outside current F3; no L9 blocker.
+- **Re-entry trigger:** Explicit F-next feature requiring reporting enters scope.
+
+### HD-04 — Workflow deferred placeholder (AUTH-013)
+
+- **Selected Option:** A
+- **Decided-On:** 1405/04/25 (2026/07/16)
+- **Decision-Owner:** Lead
+- **Rationale:** CD-010 deferral; activation criterion ≥2 workflow instances; not a work-gap.
+
+### HD-05 — F-W07-04 → F3 Sprint B (AUTH-013)
+
+- **Selected Option:** A
+- **Decided-On:** 1405/04/25 (2026/07/16)
+- **Decision-Owner:** Lead
+- **Rationale:** Consistent with `work-breakdown.md` carry posture.
+
+### HD-06 — L9 checklist refresh then A1 waiver (AUTH-013)
+
+- **Selected Option:** C then A
+- **Decided-On:** 1405/04/25 (2026/07/16)
+- **Decision-Owner:** Lead
+- **Sequence:** (1) Refresh `.specify/governance/l9-merge-checklist-dormitory-admin-ui.md`; (2) Formal waiver — UI-A1 in branch intentional/accepted.
+
+### W1-A1 — UI-A1 L9 scope waiver (AUTH-011 Band 2 / D1)
+
+- **ID:** W1-A1 / GAP-GOV-01
+- **Status:** **ACTIVE** (attached to checklist refreshed 2026-07-16)
+- **Decision-Owner:** Lead
+- **Decided-On:** 1405/04/25 (2026/07/16)
+- **Verbatim waiver:**
+  > WAIVER W1-A1 (Lead, 2026-07-16): The presence of UI-A1 artifacts in the UI-M1 branch is intentional and accepted for the L9 merge. UI-A1 items on the L9 checklist are marked WAIVED (not PASS). This waiver is valid ONLY when attached to a checklist refreshed in this session (per HD-06: stale checklist = invalid evidence).
+- **Effect:** L9 checklist A1 → WAIVED; broad file set accepted for UI-M1 merge.
+
+### HD-07 — spec02/spec05 closeout in Wave 2 (AUTH-013)
+
+- **Selected Option:** A
+- **Decided-On:** 1405/04/25 (2026/07/16)
+- **Decision-Owner:** Lead
+- **Rationale:** Docs-only closure per spec03 pattern; execute after merge (W2), not before.
+
 ### UI-M1 residual test-coverage risk — ACCEPTED (Lead, 2026-07-16)
 
 - **ID:** UI-M1-COV
@@ -265,7 +345,7 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 - **ID:** F-W07-04 (do **not** re-number as W-09 or other ID — one decision boundary = one canonical record).
 - **Status:** **CARRIED FORWARD** — source: `docs/features/employee-auth-ui/w07-security-review-report.md:19`.
 - **Meaning:** Post-login surface catalog / next UI slug product-authorization gate; keeps program F2 = **PARTIAL**.
-- **Carried-forward → target: F3 Sprint A (or later)** (Lead-Advisory 2026-07-15).
+- **Carried-forward → target: F3 Sprint B** (Lead **HD-05 → A**, AUTH-013, 2026-07-16). Prior Sprint A target superseded.
 - **Forbidden:** Closing F2 to COMPLETE while this ID remains open; inventing a parallel work-item ID for the same commitment.
 
 ---
@@ -282,6 +362,7 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| ۱۴۰۵/۰۴/۲۵ (2026/07/16) | **AUTH-013 W0:** AUTH-012 disposition CONFIRMED (18 rows); HD-01…HD-07 recorded verbatim; F-W07-04 target → F3 Sprint B; DGAP-08 re-entry trigger set. Docs-only. | Agent (Lead AUTH-013) |
 | ۱۴۰۵/۰۴/۲۵ (2026/07/16) | **UI-M1-COV ACCEPTED:** residual coverage S-2/S-4/S-5 accepted at UI-M1 L8 closeout; dedicated-test-DB hygiene noted; S-6 soft-delete fixture test added. | Agent (Lead AUTHORIZE L8-TEST-ADD + closeout) |
 | ۱۴۰۵/۰۴/۲۵ (2026/07/16) | **DGAP-09 RE-FROZEN** after scoped BL-B1-01 unfreeze+execute (RM-BL-B1). BL-B1-01 → RESOLVED (pending Lead commit). | Agent (Lead AUTHORIZE ALL) |
 | ۱۴۰۵/۰۴/۲۴ (2026/07/15) | **DGAP-11 CLOSED — RESOLVED:** Lead AUTHORIZED Option A (scope corrected). Catalog UI-M1/M2/A1 → `roadmap.md` § F3; F3 ACTIVE — Sprint A. Supersedes UI-1…UI-7. Docs-only; no code/commit. | Agent (Lead AUTHORIZED) |

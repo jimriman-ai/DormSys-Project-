@@ -72,7 +72,7 @@
             "@arch:test"
         ],
         "pint": "pint",
-        "phpstan": "@php vendor/bin/phpstan analyse --memory-limit=1G --ansi",
+        "phpstan": "@php vendor/bin/phpstan analyse --memory-limit=1G --ansi --no-progress",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"

@@ -15,6 +15,17 @@
 | F-W07-02 | EmployeeLogin Establish-fail path: only default `LogoutUserAction` / `Auth::logout()` — not full multi-guard invalidate parity with `AuthSessionController::destroy` | Medium if Establish ever bound before fail | Low (Establish returns false before `api`/`identity` login) | Lead | **Risk accepted** (Lead); **verified** by W08-C-01/C-02 — Establish fail leaves `api`/`identity` guests. See `docs/features/employee-auth-ui/w07-security-review-report.md` | On F2 reopen / auth path change | Accepted + verified (W-08) |
 | TD-FE-001 | PHPUnit Vite manifest stub persists into browser runtime asset path (`public/build/manifest.json`) | Medium (local UI without CSS; `assets/app.css` 404) | Medium for local/dev after test runs | Tech Lead | **Accepted technical debt** (Lead). Workaround: `npm run build` after tests. Do **not** fix test bootstrap now. Future remediation: tests must not write under `public/build`; isolate test manifest handling. | Multiple developers onboarded / incident recurrence / pre-release hardening | Accepted (workflow debt) |
 
+## L9 Backlog Tracker — BL-01…BL-04 (AUTH-011 Band 2 W1)
+
+> Minimal tracker per GAP-GOV-03 / L9 §E2. Origin: `.specify/memory/dormitory-admin-ui-authorization.md` §4 (D-G-10/D-G-12/D-G-15/D-G-16).
+
+| ID | Scope (one line) | Origin | Status |
+|----|------------------|--------|--------|
+| **BL-01** | F2 global guard-confusion review (beyond dormitory-admin-ui PR scope) | D-G-10 / L5 §4 | OPEN — future F2 boundary |
+| **BL-02** | Impact analysis: removing `web` from `UserModel.$guard_name` | D-G-12 / glossary | OPEN — separate boundary |
+| **BL-03** | Global security register (beyond `docs/security/dormitory-admin-ui.md`) | D-G-15 | OPEN — future phase |
+| **BL-04** | IdentityRoleGuard promotion to Shared Kernel | D-G-11 → DG-03 | **DELIVERED** — `app/Shared/Auth/IdentityRoleGuard.php`; see § BL-04 below |
+
 ## BL-B1-01 — Assignment / B1 behavior tests (restored 2026-07-16, RM-07)
 
 Status: **restored** under RM-BL-B1 (pending Lead commit). Prior “deleted” list retained for audit trail.
