@@ -14,6 +14,7 @@ use App\Modules\Request\Application\Contracts\RequestMemberRepositoryContract;
 use App\Modules\Request\Application\Contracts\RequestReadContract;
 use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
 use App\Modules\Request\Application\Services\ApproveRequestStageAction;
+use App\Modules\Request\Application\Services\ApproveStage1RequestAction;
 use App\Modules\Request\Application\Services\AssignStage1ApproverSnapshotAction;
 use App\Modules\Request\Application\Services\AutoApprovalSettingsReader;
 use App\Modules\Request\Application\Services\CancelRequestAction;
@@ -22,6 +23,7 @@ use App\Modules\Request\Application\Services\CreateLotteryRegistrationRequestAct
 use App\Modules\Request\Application\Services\CreateMissionRequestAction;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Application\Services\RejectRequestAction;
+use App\Modules\Request\Application\Services\RejectStage1RequestAction;
 use App\Modules\Request\Application\Services\RequestCodeGenerator;
 use App\Modules\Request\Application\Services\RequestMutationAuthorizationGate;
 use App\Modules\Request\Application\Services\RequestReadService;
@@ -67,6 +69,8 @@ class RequestServiceProvider extends ServiceProvider
         $this->app->singleton(CancelRequestAction::class);
         $this->app->singleton(ApproveRequestStageAction::class);
         $this->app->singleton(RejectRequestAction::class);
+        $this->app->singleton(ApproveStage1RequestAction::class);
+        $this->app->singleton(RejectStage1RequestAction::class);
     }
 
     public function boot(): void

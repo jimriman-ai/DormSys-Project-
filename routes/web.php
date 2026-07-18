@@ -41,7 +41,7 @@ Route::prefix('employee/requests')
     ->group(RequestPresentationServiceProvider::employeeRequestWebRoutePath());
 
 Route::prefix('approvals/stage1')
-    ->middleware(['auth:identity', 'identity.role:DeptMgr'])
+    ->middleware(['auth:identity', 'identity.role:'.App\Shared\Auth\IdentityRoleGuard::ROLE_DORMITORY_MANAGER])
     ->name('approvals.stage1.')
     ->group(RequestPresentationServiceProvider::stage1ApprovalWebRoutePath());
 

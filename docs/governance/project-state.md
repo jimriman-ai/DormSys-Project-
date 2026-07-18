@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3-AUTH / F2-Production-Hardening | Session: two manual commits — PERMIT-02 + phpunit DB_HOST_
+_Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3-AUTH | Session: noted stale full-suite notify (719015)_
 
-**Authority note:** IMPL-PERMIT-02 artefacts + test-env fix committed per Lead request. Unstaged docs/specs remain outside those commits.
+**Authority note:** IMPL-PERMIT-02 DormMgr snapshot landed in **32c677b**. Stale suite run 719015 is superseded by later retest.
 
 ---
 
@@ -13,14 +13,13 @@ _Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3-AUTH / F2-Production-Hardeni
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| Commit 1 | snapshot impl + tests | **e1c665d** | PERMIT-02 |
-| Commit 2 | `phpunit.xml` only | **dd6b960** | test-env |
+| Notify 719015 | full suite | superseded | later run 14 Redis-only fails |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🔀 **Lifecycle — L6 under IMPL-PERMIT-01** (snapshot committed; Approver Console approve/reject next)
+🔀 **Lifecycle — L6 under IMPL-PERMIT-01/02** (snapshot committed; Approver Console next)
 
 ---
 
@@ -28,7 +27,7 @@ _Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3-AUTH / F2-Production-Hardeni
 
 | ID | Title | Status | Stage | Blocker |
 |----|-------|--------|-------|---------|
-| IMPL-PERMIT-02 | Create-time Stage-1 snapshot | **COMMITTED** | e1c665d | — |
+| IMPL-PERMIT-02 | Stage-1 create snapshot | **COMMITTED** | 32c677b | — |
 
 ---
 
@@ -36,8 +35,7 @@ _Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3-AUTH / F2-Production-Hardeni
 
 | Feature | Status |
 |---------|--------|
-| IMPL-PERMIT-02 snapshot | ✅ committed |
-| Spec04 Impl | ⏳ §2 remainder |
+| IMPL-PERMIT-02 | ✅ 32c677b |
 
 ---
 
@@ -46,7 +44,7 @@ _Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3-AUTH / F2-Production-Hardeni
 **Action:** Wire Stage-1 Approver Console approve/reject via Application Actions.  
 **Owner:** Agent under IMPL-PERMIT-01  
 **Gate:** Permit §2 only  
-**Done when:** Console approve/reject wired  
+**Done when:** Console wired  
 **Blocker:** none  
 
 **Suggested user prompt:**
@@ -58,5 +56,5 @@ _Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3-AUTH / F2-Production-Hardeni
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| IMPL-PERMIT-02 | COMMITTED | e1c665d; phpunit separate |
-| Outside §2 | NOT AUTHORIZED | — |
+| IMPL-PERMIT-02 | COMMITTED | 32c677b |
+| Redis phpunit host | OOS | 127.0.0.1 refused inside Sail |

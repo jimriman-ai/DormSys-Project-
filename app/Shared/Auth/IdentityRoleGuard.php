@@ -15,6 +15,11 @@ use Spatie\Permission\Models\Role;
 final class IdentityRoleGuard
 {
     /**
+     * Canonical identity-guard role for Stage-1 approver authorization path (DGAP-13 / Lead DGAP-09 scoped).
+     */
+    public const string ROLE_DORMITORY_MANAGER = 'dormitory-manager';
+
+    /**
      * Morph type for identity_users (string only — Shared must not import Modules).
      */
     private const string IDENTITY_USER_MODEL_TYPE = 'App\\Modules\\Identity\\Infrastructure\\Persistence\\Models\\UserModel';
@@ -53,6 +58,14 @@ final class IdentityRoleGuard
         if ($user === null || ! self::userHasIdentityRole($user, $role)) {
             abort(403);
         }
+    }
+
+    /**
+     * Stage-1 approver console / action gate (DGAP-13 scoped).
+     */
+    public static function assertDormitoryManager(): void
+    {
+        self::assertIdentityRole(self::ROLE_DORMITORY_MANAGER);
     }
 
     /**
