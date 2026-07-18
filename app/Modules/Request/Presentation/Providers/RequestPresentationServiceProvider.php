@@ -29,4 +29,16 @@ class RequestPresentationServiceProvider extends ServiceProvider
     {
         return app_path('Modules/Request/Presentation/Routes/web.php');
     }
+
+    /** [PERMIT-ID: IMPL-PERMIT-01] §2.2 — employee self-service route file. */
+    public static function employeeRequestWebRoutePath(): string
+    {
+        return app_path('Modules/Request/Presentation/Routes/employee-requests.php');
+    }
+
+    /** [PERMIT-ID: IMPL-PERMIT-01] §2.2 — Stage-1 approver console route file. */
+    public static function stage1ApprovalWebRoutePath(): string
+    {
+        return app_path('Modules/Request/Presentation/Routes/stage1-approvals.php');
+    }
 }

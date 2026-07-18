@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3-AUTH / F2-Production-Hardening | Session: W2-CLOSE COMPLETE_
+_Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3-AUTH / F2-Production-Hardening | Session: IMPL-PERMIT-01 APPROVED — migration + route scaffold started_
 
-**Authority note:** Lead W2-CLOSE (1405/04/27). D4 waived; D3 accepted. GAP-GOV-02 deferred post-F3. No git write.
+**Authority note:** IMPL-PERMIT-01 **APPROVED**; L5/L6 **OPEN** for §2 only. Scaffold: snapshot migration, dual routes, IdentityRoleSeeder roles, Stage1 console stub. Prefix `[PERMIT-ID: IMPL-PERMIT-01]`.
 
 ---
 
@@ -13,17 +13,17 @@ _Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3-AUTH / F2-Production-Hardeni
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| Phase status | W2 | → **W2-CLOSE COMPLETE** | Lead AUTH W2-CLOSE 1405/04/27 |
-| Current phase | W2 hygiene | → **F3-AUTH / F2-Production-Hardening** | Lead AUTH W2-CLOSE |
-| GAP-GOV-02 | merge before close? | **OPEN — deferred post-F3** (UI-M1 merge) | Lead Q1 = B |
-| D4 waiver | zero doc-lags | **D4 waived; D3 accepted** | Lead Q2 |
-| open-decisions | W2-MEDIUM | **Confirmed: zero new open decisions** | Lead Q3 |
+| IMPL-PERMIT-01 | docs/governance | Lead **APPROVED**; L5/L6 **OPEN** | FINAL LEAD AUDIT |
+| Migration | `2026_07_18_000001_add_assigned_stage1...` | **added** | §2.1 |
+| Routes | `web.php` + employee/stage1 route files | **scaffolded** | §2.2 |
+| Seeder | IdentityRoleSeeder | `employee` + `DeptMgr` identity | §2.3 |
+| UI stub | Stage1ApproverConsolePage | **scaffolded** | §2.5 |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🔀 **Lifecycle — F3-AUTH / F2-Production-Hardening** (Sprint A kickoff) — W2-CLOSE COMPLETE; prerequisite met for F3-AUTH.
+🔀 **Lifecycle — L6 under IMPL-PERMIT-01** (migration + route scaffold in progress; snapshot write / approve UI next)
 
 ---
 
@@ -31,32 +31,33 @@ _Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3-AUTH / F2-Production-Hardeni
 
 | ID | Title | Status | Stage | Blocker |
 |----|-------|--------|-------|---------|
-| UI-M1 | Manager Dashboard | OBSERVED-L8-COMPLETE | L9 merge deferred post-F3 | GAP-GOV-02 |
-| UI-M2 | Unit-Manager Dashboard | READY-FOR-L3 | W3 scheduled | — |
-| UI-A1 | Auth layout | COMPLETE | L8 done | — |
+| IMPL-PERMIT-01 | Limited Spec04 impl | **APPROVED** | L5/L6 OPEN §2 | — |
+| Snapshot migration | assigned_stage1_approver_identity_id | added | run migrate | env |
+| Dual routes | employee.requests + approvals.stage1 | scaffolded | wire logic | — |
 
 ---
 
 ## 6. Lifecycle Matrix
 
-| Feature | L3 | L8 | L9 |
-|---------|----|----|-----|
-| UI-M1 | ✅ | ✅ | ⏳ deferred post-F3 (GAP-GOV-02) |
-| UI-M2 | — | — | — |
-| UI-A1 | ✅ | ✅ | ⏳ |
+| Feature | Status |
+|---------|--------|
+| Spec04 Auth | ✅ |
+| Spec04 FC | ✅ 1.0.0-READY |
+| IMPL-PERMIT-01 | ✅ APPROVED |
+| Spec04 Impl | ⏳ in progress (§2) |
 
 ---
 
 ## 7. Next Step
 
-**Action:** F3-AUTH Sprint A Kickoff (read-only gap list) → Lead defines Sprint A backlog.  
-**Owner:** Lead  
-**Gate:** F3-AUTH Sprint A Kickoff  
-**Done when:** Kickoff gap list accepted; backlog authorized  
-**Blocker:** GAP-GOV-02 deferred post-F3 (not blocking W2-CLOSE)  
+**Action:** Persist snapshot on submit; harden employee List/Show/Create/Cancel under identity; wire Stage-1 approve/reject Application Actions on console.  
+**Owner:** Agent under IMPL-PERMIT-01  
+**Gate:** Permit §2 only  
+**Done when:** Permit DoD met  
+**Blocker:** none for §2  
 
 **Suggested user prompt:**
-> Lead: review F3-AUTH kickoff gap list; authorize Sprint A backlog items.
+> Continue IMPL-PERMIT-01: wire Stage-1 snapshot on submit + Approver Console approve/reject via Application Actions.
 
 ---
 
@@ -64,11 +65,7 @@ _Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3-AUTH / F2-Production-Hardeni
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| GAP-GOV-02 | **OPEN** | UI-M1 merge **deferred post-F3** (Lead W2-CLOSE) |
-| GAP-N11-01 | **OPEN** | CI — not a doc-lag mirror |
-| GAP-HD-07 | **OPEN** | closeout depth — decision-pending (Wave 2 timing) |
-| GAP-W2-MEDIUM | **CLOSED** | #11–#16 applied |
-| Gap 3 / AuditPermission checklist | **OPEN** | out of W2-MEDIUM scope |
-| P-lane / DGAP parked | **PARKED** | pre-existing |
+| IMPL-PERMIT-01 | APPROVED | coding authorized §2 |
+| Outside §2 | NOT AUTHORIZED | — |
 
-**W2 acceptance:** **W2-CLOSE COMPLETE.** D4 scan **waived**; D3 accepted as sufficient. W2-MEDIUM produced **zero** new open decisions (Lead confirmed).
+**W2 acceptance:** W2-CLOSE COMPLETE.

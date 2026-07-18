@@ -27,6 +27,12 @@ class IdentityRoleSeeder extends Seeder
     /** Canonical identity-guard role for unit (room) manager dashboard (G-C). */
     public const string ROLE_DORMITORY_UNIT_MANAGER = 'dormitory-unit-manager';
 
+    /** [PERMIT-ID: IMPL-PERMIT-01] §2.3 / OQ-AUTH-01 B — employee self-service. */
+    public const string ROLE_EMPLOYEE = 'employee';
+
+    /** [PERMIT-ID: IMPL-PERMIT-01] §2.3 / OQ-AUTH-01 B — Stage-1 DeptMgr approver console. */
+    public const string ROLE_DEPT_MGR = 'DeptMgr';
+
     public const string PERMISSION_AUDIT_READ = 'audit.read';
 
     public const string PERMISSION_IDENTITY_USERS_MANAGE = 'identity.users.manage';
@@ -107,6 +113,10 @@ class IdentityRoleSeeder extends Seeder
         // Does not rename or re-guard ROLE_DORM_MGR ('DormMgr' / web). No permission grants.
         Role::findOrCreate(self::ROLE_DORMITORY_MANAGER, 'identity');
         Role::findOrCreate(self::ROLE_DORMITORY_UNIT_MANAGER, 'identity');
+
+        // [PERMIT-ID: IMPL-PERMIT-01] §2.3 / IMP-Q-06 A — Spec04 identity roles (no permission grants yet).
+        Role::findOrCreate(self::ROLE_EMPLOYEE, 'identity');
+        Role::findOrCreate(self::ROLE_DEPT_MGR, 'identity');
 
         $registrar->forgetCachedPermissions();
     }

@@ -14,6 +14,7 @@ use Spatie\ModelStates\HasStates;
  * @property string $id
  * @property string $code
  * @property string $employee_id
+ * @property string|null $assigned_stage1_approver_identity_id
  * @property string $dormitory_id
  * @property RequestType $type
  * @property Carbon $check_in_date
@@ -35,6 +36,7 @@ class RequestModel extends BaseModel
     protected $fillable = [
         'code',
         'employee_id',
+        'assigned_stage1_approver_identity_id',
         'dormitory_id',
         'type',
         'check_in_date',

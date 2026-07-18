@@ -1,0 +1,347 @@
+# Feature Contract — employee-request-self-service (Spec04)
+# Status: READY (v1.0.0). Aligned to recorded IMP-Q decisions.
+# Implementation / L5 / L6 remain NOT AUTHORIZED until a separate Implementation Permit.
+#
+# Authority refs:
+#   - docs/specs/spec04-auth-packet.md (0.5.0-GOVERNANCE-ACCEPTED)
+#   - docs/governance/spec04-imp-q-human-decision-pack.md (DECISIONS RECORDED)
+#   - docs/governance/open-decisions.md (DGAP-05/06, OQ-AUTH-01…03/05)
+
+contract:
+  id: employee-request-self-service
+  feature: employee-request-self-service
+  version: 1.0.0-READY
+  status: ready
+  binding: governance-aligned
+  implementation_authorized: false
+  l5_authorized: false
+  l6_authorized: false
+  prior_version: 0.1.0-draft
+  ready_on: "2026-07-18"
+  ready_on_jalali: "1405/04/27"
+
+meta:
+  module: Request
+  product_surface: employee-request-self-service
+  feature_type: employee_self_service
+  ownership_scope: employee-scoped
+  business_owner: "HR Business Owner / Human Resources Department"
+  business_owner_ref: DGAP-08
+  auth_packet_ref: docs/specs/spec04-auth-packet.md
+  auth_packet_version: 0.5.0-GOVERNANCE-ACCEPTED
+  governance_acceptance: OQ-AUTH-05-A
+  imp_q_decision_pack_ref: docs/governance/spec04-imp-q-human-decision-pack.md
+  successor_of:
+    - docs/ui/contracts/requests/request-list.feature-contract.yaml
+    - docs/ui/contracts/requests/request-show.feature-contract.yaml
+  successor_policy: IMP-Q-03-B
+  successor_policy_rule: >
+    Frozen/approved list and show contracts remain untouched.
+    This contract is a Spec04 successor surface definition.
+
+lifecycle:
+  current: ready
+  canonical:
+    - draft
+    - ready
+    - reviewed
+    - approved
+    - frozen
+    - implementation-authorized
+  next_expected: implementation-permit
+  requires_before_code:
+    - explicit_implementation_permit
+    - implementation_lock_when_required
+    - authorized_migration_for_snapshot_column
+    - authorized_identity_role_seed_execution
+
+purpose:
+  summary: >
+    Employee accommodation-request self-service under identity guard:
+    List, Show, Create, and Cancel only. Approval belongs exclusively on the
+    separate Approver Console surface (out of scope for this contract).
+  intent:
+    - Employee creates and manages own requests (list/show/create/cancel).
+    - No approval or rejection controls on this surface (DGAP-06 U2).
+    - Visibility for this surface is subject-owned; Stage-1 assignee visibility
+      is enforced via snapshot for V1 system-wide, not via employee UI approve.
+
+# -----------------------------------------------------------------------------
+# Recorded IMP-Q bindings (immutable for this READY contract)
+# -----------------------------------------------------------------------------
+
+imp_q_bindings:
+  IMP-Q-01:
+    selected: A
+    routes:
+      employee_prefix: /employee/requests/*
+      employee_route_names: employee.requests.*
+      approver_console_prefix: /approvals/stage1/*
+      approver_console_route_names: approvals.stage1.*
+      note: Approver console routes are owned by the separate console contract.
+  IMP-Q-02:
+    selected: A
+    snapshot:
+      storage: column_on_requests
+      field_name: assigned_stage1_approver_identity_id
+      type: uuid
+      nullable: true
+      fk: false
+      value_ref: identity_user_uuid
+      written_at: request_submit
+      purpose: DGAP-06-V1 assigned Stage-1 approver identity (OQ-AUTH-03-B)
+      resolution_chain:
+        - request.employee_id
+        - employee_employees.department_id
+        - employee_departments.manager_id
+        - manager.employee_employees.identity_id
+        - persist_to_assigned_stage1_approver_identity_id
+      migration_authorized: false
+  IMP-Q-03:
+    selected: B
+    strategy: successor_contracts
+    frozen_files_untouched: true
+  IMP-Q-04:
+    selected: B
+    interaction_model: livewire_to_application_actions
+    employee_mutations:
+      - CreatePersonalRequestAction
+      - CancelRequestAction
+      - SubmitRequestAction
+    rule: >
+      Presentation (Livewire) invokes Application Actions directly.
+      Must not bypass Application authorization / principal asserts.
+      Approve/Reject Application Actions are forbidden on this surface.
+  IMP-Q-05:
+    selected: B
+    supported_operations:
+      - list
+      - show
+      - create
+      - cancel
+    forbidden_operations:
+      - approve
+      - reject
+      - edit_draft
+      - family_flows
+      - multi_type_expanded
+  IMP-Q-06:
+    selected: A
+    roles:
+      employee: employee
+      stage1_approver: DeptMgr
+    guard_name: identity
+    seeder_approach: extend_IdentityRoleSeeder
+    seeder_execution_authorized: false
+  IMP-Q-07:
+    selected: A
+    employee_surface: employee-request-self-service
+    approver_console_surface: department-request-approver-console
+    approval_on_employee_surface: false
+    approver_console_in_this_contract: false
+
+# -----------------------------------------------------------------------------
+# Surface definition (this contract = employee only)
+# -----------------------------------------------------------------------------
+
+surface:
+  id: employee-request-self-service
+  ui_boundary: employee_only
+  approval_actions_allowed: false
+  related_surface_out_of_scope:
+    id: department-request-approver-console
+    reason: IMP-Q-07-A separate Approver Console Feature Contract required
+    approval_actions_allowed: true
+    owned_by: separate_feature_contract
+
+actors:
+  - key: employee
+    display: Employee
+    principal: identity
+    role: employee
+    role_guard: identity
+    role_ref: OQ-AUTH-01-B
+    capabilities:
+      - list_own_requests
+      - show_own_request
+      - create_own_request
+      - cancel_own_request
+    forbidden:
+      - approve_request
+      - reject_request
+      - view_unrelated_requests
+      - stage1_approver_console_actions
+
+# -----------------------------------------------------------------------------
+# Governance bindings
+# -----------------------------------------------------------------------------
+
+governance_bindings:
+  DGAP-05:
+    status: DECIDED
+    selected: A
+    rule: Department line manager is Stage-1 approver (console surface, not this contract).
+  DGAP-06-V1:
+    status: DECIDED
+    selected: V1
+    rule: Subject + assigned Stage-1 approver only (system visibility).
+    employee_surface_rule: Employee may access only own (subject) requests.
+  DGAP-06-U2:
+    status: DECIDED
+    selected: U2
+    rule: Separate Approver Console; approval not embedded in employee self-service.
+  OQ-AUTH-01:
+    status: DECIDED
+    selected: B
+    employee_role: employee
+    guard_name: identity
+  OQ-AUTH-02:
+    status: DECIDED
+    selected: B
+    employee_gate:
+      - auth:identity
+      - identity.role:employee
+    v1_enforcement: middleware_plus_optional_application_reassert
+  OQ-AUTH-03:
+    status: DECIDED
+    selected: B
+    snapshot_ref: IMP-Q-02-A
+
+# -----------------------------------------------------------------------------
+# Authorization
+# -----------------------------------------------------------------------------
+
+authorization:
+  principal_model: Dual-Principal
+  session_guard: identity
+  credential_guard_forbidden_for_surface_auth: web
+  identity_role_guard: App\Shared\Auth\IdentityRoleGuard
+  surface_gate:
+    middleware:
+      - auth:identity
+      - identity.role:employee
+    reassert: IdentityRoleGuard.assertIdentityRole("employee")
+  visibility:
+    model: V1
+    employee_surface_access: subject_only
+    assigned_approver_access: via_separate_console_and_snapshot
+  forbidden_access_paths:
+    - web_guard_Spatie_roles_for_this_surface
+    - approval_or_reject_controls_on_employee_self_service_UI
+    - client_supplied_approverId_spoofing
+    - dormitory-manager_as_Stage1_on_this_surface
+    - cross_principal_visibility_beyond_subject_on_this_surface
+
+# -----------------------------------------------------------------------------
+# Scope — operations (IMP-Q-05 B)
+# -----------------------------------------------------------------------------
+
+scope:
+  in_scope:
+    operations:
+      list:
+        description: Employee lists own accommodation requests.
+        route_group: employee.requests.*
+        path_prefix: /employee/requests
+      show:
+        description: Employee views own request detail (read-only regarding approval).
+        route_group: employee.requests.*
+        forbidden_ui:
+          - approve_control
+          - reject_control
+      create:
+        description: Employee creates a personal accommodation request.
+        interaction: livewire_to_application_action
+        application_action: CreatePersonalRequestAction
+      cancel:
+        description: Employee cancels an eligible own request.
+        interaction: livewire_to_application_action
+        application_action: CancelRequestAction
+    flows:
+      create_flow:
+        steps:
+          - present_create_form
+          - invoke_CreatePersonalRequestAction
+          - on_submit_persist_assigned_stage1_approver_identity_id_snapshot
+        snapshot_requirement: IMP-Q-02-A
+      cancel_flow:
+        steps:
+          - present_cancel_affordance_on_owned_request
+          - invoke_CancelRequestAction
+      list_flow:
+        steps:
+          - resolve_employee_principal
+          - list_subject_owned_requests_only
+      show_flow:
+        steps:
+          - resolve_employee_principal
+          - load_subject_owned_request_only
+          - render_summary_and_history_without_approval_controls
+  out_of_scope:
+    - approve
+    - reject
+    - department-request-approver-console_implementation
+    - workflow_engine_redesign
+    - DGAP-03_resolution
+    - SGAP-05_Spec06_changes
+    - password_broker_changes
+    - cross_module_FK
+    - editing_frozen_request-list_or_request-show_contracts
+    - implementation_without_separate_permit
+
+scope_guards:
+  - No approval logic on the employee-side UI or employee Livewire components.
+  - ApproveRequestStageAction and RejectRequestAction must not be invoked from this surface.
+  - Frozen request-list / request-show contracts must not be edited (IMP-Q-03 B).
+  - Snapshot column write is required at submit (IMP-Q-02 A); migration not authorized by this contract.
+
+# -----------------------------------------------------------------------------
+# Interaction model (IMP-Q-04 B)
+# -----------------------------------------------------------------------------
+
+interaction_model:
+  pattern: livewire_to_application_actions
+  presentation: Livewire
+  domain_mutations: Application Actions only
+  http_mutation_controller: not_required_for_employee_surface_v1
+  reads: Application read contracts / services only
+  forbidden:
+    - UI_owned_authorization_decisions
+    - direct_Eloquent_from_Livewire
+    - approve_reject_from_employee_Livewire
+
+# -----------------------------------------------------------------------------
+# Schema (formal)
+# -----------------------------------------------------------------------------
+
+schema:
+  request_snapshot_field:
+    table: requests
+    column: assigned_stage1_approver_identity_id
+    type: uuid
+    nullable: true
+    foreign_key: false
+    semantics: Stage-1 assigned approver identity snapshot at submit (IMP-Q-02 A / OQ-AUTH-03 B)
+  roles:
+    employee:
+      name: employee
+      guard_name: identity
+    DeptMgr:
+      name: DeptMgr
+      guard_name: identity
+      used_by_this_contract: false
+      used_by: department-request-approver-console
+
+# -----------------------------------------------------------------------------
+# Non-authorization
+# -----------------------------------------------------------------------------
+
+non_authorization:
+  implementation_authorized: false
+  l5_authorized: false
+  l6_authorized: false
+  statement: >
+    READY status means the Feature Contract is aligned to recorded IMP-Q
+    decisions and fit for Implementation Permit review. It does not authorize
+    code, routes, migrations, seeders, middleware registration, or UI work.
+  next_gate: AWAITING IMPL PERMIT

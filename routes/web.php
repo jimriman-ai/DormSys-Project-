@@ -34,6 +34,17 @@ Route::prefix('dormitory-admin')
             ->name('unit-manager');
     });
 
+// [PERMIT-ID: IMPL-PERMIT-01] §2.2 — Spec04 dual URL boundaries (IMP-Q-01 A).
+Route::prefix('employee/requests')
+    ->middleware(['auth:identity', 'identity.role:employee'])
+    ->name('employee.requests.')
+    ->group(RequestPresentationServiceProvider::employeeRequestWebRoutePath());
+
+Route::prefix('approvals/stage1')
+    ->middleware(['auth:identity', 'identity.role:DeptMgr'])
+    ->name('approvals.stage1.')
+    ->group(RequestPresentationServiceProvider::stage1ApprovalWebRoutePath());
+
 // UI-A1 L6-R1 Amend: accept api OR identity principal (dormitory-admin is auth:identity-only).
 Route::post('/logout', [AuthSessionController::class, 'destroy'])
     ->middleware('auth:api,identity')
