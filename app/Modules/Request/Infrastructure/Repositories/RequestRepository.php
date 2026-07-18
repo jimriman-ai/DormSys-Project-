@@ -22,6 +22,7 @@ class RequestRepository implements RequestRepositoryContract
             $model = new RequestModel([
                 'code' => (string) $request->code,
                 'employee_id' => $request->employeeId->value,
+                'assigned_stage1_approver_identity_id' => $request->assignedStage1ApproverIdentityId,
                 'dormitory_id' => $request->dormitoryId->value,
                 'type' => $request->type,
                 'check_in_date' => $request->checkInDate->format('Y-m-d'),
@@ -45,6 +46,7 @@ class RequestRepository implements RequestRepositoryContract
         $model->fill([
             'code' => (string) $request->code,
             'employee_id' => $request->employeeId->value,
+            'assigned_stage1_approver_identity_id' => $request->assignedStage1ApproverIdentityId,
             'dormitory_id' => $request->dormitoryId->value,
             'type' => $request->type,
             'check_in_date' => $request->checkInDate->format('Y-m-d'),
@@ -108,6 +110,7 @@ class RequestRepository implements RequestRepositoryContract
                 ? Carbon::instance($model->cancelled_at)->utc()->toDateTimeImmutable()
                 : null,
             rejectionReason: $model->rejection_reason,
+            assignedStage1ApproverIdentityId: $model->assigned_stage1_approver_identity_id,
         );
     }
 }

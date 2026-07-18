@@ -14,6 +14,7 @@ use App\Integrations\Reporting\ReportingArchiveVisibilityBridge;
 use App\Integrations\Request\DormitoryReadBridge;
 use App\Integrations\Request\EmployeeEligibilityBridge;
 use App\Integrations\Request\PendingRequestReadBridge;
+use App\Integrations\Request\Stage1ApproverIdentityReadBridge;
 use App\Modules\Allocation\Application\Contracts\Ports\ApprovedRequestReadPort;
 use App\Modules\Allocation\Application\Contracts\Ports\DormitoryReadPort;
 use App\Modules\Allocation\Application\Contracts\Ports\PhysicalStateSignalPort;
@@ -26,6 +27,7 @@ use App\Modules\Reporting\Application\Contracts\Ports\AuditHistorySourceReadPort
 use App\Modules\Reporting\Application\Contracts\Ports\ReportingArchiveVisibilityPort;
 use App\Modules\Request\Application\Contracts\DormitoryReadContract;
 use App\Modules\Request\Application\Contracts\Internal\RequestEligibilityGatewayContract;
+use App\Modules\Request\Application\Contracts\Stage1ApproverIdentityReadContract;
 use Illuminate\Support\ServiceProvider;
 
 final class IntegrationServiceProvider extends ServiceProvider
@@ -40,6 +42,7 @@ final class IntegrationServiceProvider extends ServiceProvider
         $this->app->singleton(PendingRequestReadPort::class, PendingRequestReadBridge::class);
         $this->app->singleton(ProposedAllocationPort::class, ProposedAllocationConsumer::class);
         $this->app->singleton(DormitoryReadContract::class, DormitoryReadBridge::class);
+        $this->app->singleton(Stage1ApproverIdentityReadContract::class, Stage1ApproverIdentityReadBridge::class);
         $this->app->singleton(AuditPermissionReadPort::class, SpatieAuditPermissionReadBridge::class);
         $this->app->singleton(AuditHistorySourceReadPort::class, AuditHistorySourceReadBridge::class);
         $this->app->singleton(ReportingArchiveVisibilityPort::class, ReportingArchiveVisibilityBridge::class);

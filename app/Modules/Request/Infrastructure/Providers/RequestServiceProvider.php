@@ -14,6 +14,7 @@ use App\Modules\Request\Application\Contracts\RequestMemberRepositoryContract;
 use App\Modules\Request\Application\Contracts\RequestReadContract;
 use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
 use App\Modules\Request\Application\Services\ApproveRequestStageAction;
+use App\Modules\Request\Application\Services\AssignStage1ApproverSnapshotAction;
 use App\Modules\Request\Application\Services\AutoApprovalSettingsReader;
 use App\Modules\Request\Application\Services\CancelRequestAction;
 use App\Modules\Request\Application\Services\CreateFamilyDirectRequestAction;
@@ -56,7 +57,8 @@ class RequestServiceProvider extends ServiceProvider
         $this->app->singleton(PendingRequestQueryPort::class, PendingRequestQuery::class);
         $this->app->singleton(RequestReadContract::class, RequestReadService::class);
         $this->app->singleton(RequestCodeGenerator::class);
-        // DormitoryReadContract binds in IntegrationServiceProvider → DormitoryReadBridge.
+        // DormitoryReadContract / Stage1ApproverIdentityReadContract bind in IntegrationServiceProvider.
+        $this->app->singleton(AssignStage1ApproverSnapshotAction::class);
         $this->app->singleton(CreatePersonalRequestAction::class);
         $this->app->singleton(CreateFamilyDirectRequestAction::class);
         $this->app->singleton(CreateMissionRequestAction::class);

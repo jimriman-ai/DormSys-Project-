@@ -21,6 +21,7 @@ require_once __DIR__.'/Support/mutation-bypass.php';
 require_once __DIR__.'/Feature/Modules/Request/support/mutation-principal.php';
 require_once __DIR__.'/Feature/Modules/Request/support/http-mutation.php';
 require_once __DIR__.'/Feature/Modules/Request/support/dormitory-site.php';
+require_once __DIR__.'/Feature/Modules/Request/support/stage1-snapshot.php';
 require_once __DIR__.'/Feature/Modules/CheckIn/support/mutation-principal.php';
 require_once __DIR__.'/Feature/Modules/Lottery/support/mutation-principal.php';
 require_once __DIR__.'/Feature/Modules/Lottery/support/http-mutation.php';
@@ -32,6 +33,15 @@ require_once __DIR__.'/Feature/Modules/Allocation/support/assignable-bed.php';
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
     ->in('Feature');
+
+uses()
+    ->beforeEach(function (): void {
+        bindStage1ApproverIdentityFixtureForTests();
+    })
+    ->in(
+        'Feature/Modules/Request',
+        'Feature/Modules/Allocation',
+    );
 
 pest()->extend(TestCase::class)->in('Architecture');
 

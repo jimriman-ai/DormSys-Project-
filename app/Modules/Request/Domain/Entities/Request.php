@@ -34,6 +34,7 @@ final class Request
         public ?DateTimeImmutable $submittedAt = null,
         public ?DateTimeImmutable $cancelledAt = null,
         public ?string $rejectionReason = null,
+        public ?string $assignedStage1ApproverIdentityId = null,
     ) {}
 
     public static function createDraft(
@@ -43,6 +44,7 @@ final class Request
         RequestType $type,
         DateTimeImmutable $checkInDate,
         DateTimeImmutable $checkOutDate,
+        ?string $assignedStage1ApproverIdentityId = null,
     ): self {
         return new self(
             id: null,
@@ -53,24 +55,13 @@ final class Request
             checkInDate: $checkInDate,
             checkOutDate: $checkOutDate,
             status: DraftState::$name,
+            assignedStage1ApproverIdentityId: $assignedStage1ApproverIdentityId,
         );
     }
 
     public function assignId(RequestId $id): self
     {
-        return new self(
-            id: $id,
-            code: $this->code,
-            employeeId: $this->employeeId,
-            dormitoryId: $this->dormitoryId,
-            type: $this->type,
-            checkInDate: $this->checkInDate,
-            checkOutDate: $this->checkOutDate,
-            status: $this->status,
-            submittedAt: $this->submittedAt,
-            cancelledAt: $this->cancelledAt,
-            rejectionReason: $this->rejectionReason,
-        );
+        return $this->copy(id: $id);
     }
 
     public function isDraft(): bool
@@ -119,52 +110,30 @@ final class Request
 
     public function withStatus(string $status, ?string $rejectionReason = null): self
     {
-        return new self(
-            id: $this->id,
-            code: $this->code,
-            employeeId: $this->employeeId,
-            dormitoryId: $this->dormitoryId,
-            type: $this->type,
-            checkInDate: $this->checkInDate,
-            checkOutDate: $this->checkOutDate,
+        return $this->copy(
             status: $status,
-            submittedAt: $this->submittedAt,
-            cancelledAt: $this->cancelledAt,
             rejectionReason: $rejectionReason ?? $this->rejectionReason,
         );
     }
 
+    public function withAssignedStage1ApproverIdentityId(string $identityId): self
+    {
+        return $this->copy(assignedStage1ApproverIdentityId: $identityId);
+    }
+
     public function markSubmitted(DateTimeImmutable $submittedAt): self
     {
-        return new self(
-            id: $this->id,
-            code: $this->code,
-            employeeId: $this->employeeId,
-            dormitoryId: $this->dormitoryId,
-            type: $this->type,
-            checkInDate: $this->checkInDate,
-            checkOutDate: $this->checkOutDate,
+        return $this->copy(
             status: PendingDepartmentManagerState::$name,
             submittedAt: $submittedAt,
-            cancelledAt: $this->cancelledAt,
-            rejectionReason: $this->rejectionReason,
         );
     }
 
     public function markCancelled(DateTimeImmutable $cancelledAt): self
     {
-        return new self(
-            id: $this->id,
-            code: $this->code,
-            employeeId: $this->employeeId,
-            dormitoryId: $this->dormitoryId,
-            type: $this->type,
-            checkInDate: $this->checkInDate,
-            checkOutDate: $this->checkOutDate,
+        return $this->copy(
             status: CancelledState::$name,
-            submittedAt: $this->submittedAt,
             cancelledAt: $cancelledAt,
-            rejectionReason: $this->rejectionReason,
         );
     }
 
@@ -175,5 +144,30 @@ final class Request
         }
 
         return $this->id;
+    }
+
+    private function copy(
+        ?RequestId $id = null,
+        ?string $status = null,
+        ?DateTimeImmutable $submittedAt = null,
+        ?DateTimeImmutable $cancelledAt = null,
+        ?string $rejectionReason = null,
+        ?string $assignedStage1ApproverIdentityId = null,
+        bool $clearRejectionReason = false,
+    ): self {
+        return new self(
+            id: $id ?? $this->id,
+            code: $this->code,
+            employeeId: $this->employeeId,
+            dormitoryId: $this->dormitoryId,
+            type: $this->type,
+            checkInDate: $this->checkInDate,
+            checkOutDate: $this->checkOutDate,
+            status: $status ?? $this->status,
+            submittedAt: $submittedAt ?? $this->submittedAt,
+            cancelledAt: $cancelledAt ?? $this->cancelledAt,
+            rejectionReason: $clearRejectionReason ? null : ($rejectionReason ?? $this->rejectionReason),
+            assignedStage1ApproverIdentityId: $assignedStage1ApproverIdentityId ?? $this->assignedStage1ApproverIdentityId,
+        );
     }
 }
