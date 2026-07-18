@@ -10,7 +10,7 @@
 - **Authorization:** RBAC via Spatie only
 - **Events:** Exactly `UserCreated` + `UserDeactivated` (sync); no `IdentityLinked`, no outbox
 
-**Status**: Wave 1A implementation complete (T001–T034, T038–T042). Livewire admin T035–T037 deferred per plan §Phase E.
+**Status**: Wave 1A implementation complete (T001–T034, T038–T042). Livewire admin T035–T037 deferred per plan §Phase E. **HD-07 docs-only closeout COMPLETE** (2026-07-18) — does not unfreeze Spec02.
 
 ---
 

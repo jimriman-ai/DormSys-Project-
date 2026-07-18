@@ -4,11 +4,11 @@
 
 **Created**: 2026-06-26
 
-**Status**: **Frozen — Wave 1A Complete** (2026-06-26)
+**Status**: **Frozen — Wave 1A Complete** (2026-06-26). **HD-07 docs-only closeout COMPLETE** (1405/04/27 | 2026-07-18, AUTH-013) — does **not** unfreeze Spec02; deferred T035–T037 / OA-02-01 unchanged.
 
 **Frozen artifacts**: `spec.md`, `plan.md`, `tasks.md` (T001–T034, T038–T042), `contracts/`, `events.md`, `data-model.md`, `quickstart.md`. **Deferred**: T035–T037 Livewire admin (plan §Phase E); OA-02-01 auth UX.
 
-**Catalog**: spec02 — **Frozen — Wave 1A Complete** (2026-06-26)
+**Catalog**: spec02 — **Frozen — Wave 1A Complete**; HD-07 docs closeout **COMPLETE** (2026-07-18)
 
 **Depends on**: spec01 Foundation (Approved)
 

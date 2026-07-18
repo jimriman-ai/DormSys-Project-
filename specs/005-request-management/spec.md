@@ -4,11 +4,11 @@
 
 **Created**: 2026-06-23
 
-**Status**: **Implementation authorized — T001–T052 complete** ([`handoff/spec05-implementation-authorization.md`](../../.specify/docs/handoff/spec05-implementation-authorization.md))
+**Status**: **`SPEC05_CLOSED`** — docs-only closeout (HD-07 / AUTH-013, 1405/04/27 | 2026-07-18). Implementation deliverable T001–T052 unchanged; no new implementation authorization.
 
-**Catalog**: spec05 — **Implementation authorized** (`spec-catalog.md` v1.0.7)
+**Catalog**: spec05 — **`SPEC05_CLOSED`** (HD-07 docs-only; AUTH-012 prior disposition was `DELIVERED-NEEDS-CLOSEOUT`)
 
-**Depends on**: spec01 Foundation (Approved), spec02 Identity & Access (**Frozen — Wave 1A**), spec03 Employee Context (**Wave 1A + 1B complete**; US3 Dependent on hold)
+**Depends on**: spec01 Foundation (Approved), spec02 Identity & Access (**Frozen — Wave 1A**), spec03 Employee Context (**`SPEC03_CLOSED`**)
 
 **Optional reference (no catalog dependency)**: spec04 Accommodation Resource (**Design approved** — `dormitory_id` as immutable UUID reference only; no Dormitory module required for spec05 planning)
 

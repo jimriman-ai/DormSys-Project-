@@ -84,6 +84,7 @@
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| 1405/04/27 (2026/07/18) | **IMPL-PERMIT-02:** Stage-1 approver identity snapshot at personal-request **create** time (org-chart dept manager); unit test PASS. Tracker: `project-state.md`. | Agent (IMPL-PERMIT-02) |
 | 1405/04/27 (2026/07/18) | **W2 hygiene:** F3 catalog status sync (UI-M1 L8/L9-pending; UI-M2 READY FOR L3; Phase G L9 checklist refreshed). Doc-lag HIGH batch. | Agent (Lead W2 auth) |
 | 1405/04/27 (2026/07/18) | **W1-CLOSE:** Union `bootstrap/app.php` verified PASS; suite 1888/0; W1 COMPLETE (merge pending Lead); W2 ACTIVE — entry **W2-start**. Facts only. | Agent (Lead W1-CLOSE auth) |
 | 1405/04/25 (2026/07/16) | **AUTH-013 W0:** Four-wave + Parked Lane sequencing recorded; W0 complete / W1 next. HD-01…07 decisions cite AUTH-013. | Agent (Lead AUTH-013) |

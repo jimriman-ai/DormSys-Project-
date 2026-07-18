@@ -18,10 +18,10 @@
 | DG-04 | مالک ریسک‌های پذیرفته‌شده و cadence بازبینی | Governance | A) Lead مالک تمام accepted risks باشد، بازبینی ۶ ماهه B) هر boundary مالک ریسک‌های خود باشد C) یک Risk Register مرکزی با مالک مشخص per-risk | Lead | قبل از merge PR فاز G | DECIDED | **DELIVERED** `docs/governance/risk-register.md` (1405/04/24). SEC-G-04 + BL-B1-01 seeded. |
 | DG-05 | سیاست استفاده از Student vs Employee در UI و کد | Terminology | A) Student در UI عمومی، Employee در کد داخلی B) یکسان‌سازی کامل روی یک واژه C) glossary رسمی با mapping صریح | Lead | قبل از شروع Phase F UI | DECIDED | **DELIVERED** `docs/governance/glossary.md` (1405/04/24). Student ↔ Employee mapping. |
 | DGAP-07 | F2 W-02: Eloquent/Application relation UserModel↔Employee vs `identity_id` UUID value-reference | Domain Gap / F2 W-02 | A) UUID reference sufficient — close W-02 as-is B) Eloquent relation required — new scoped work item, NOT silent code addition | Lead | F2 W-07/W-08 scoping | DECIDED | **Selected A** (Lead, 2026/07/15): UUID value-reference sufficient — close W-02 as-is. No Eloquent/Application UserModel↔Employee relation required. Source: Domain Gap Audit 2026-07-15. |
-| DGAP-03 | Department↔Dormitory / Organization structural link | Domain Gap / Spec04 Auth | — (parked; options deferred) | Lead | Spec04 Auth packet | OPEN / PARKED | Blocker: **DGAP-08**. Source: Domain Gap Audit 2026-07-15. Not for answer now. |
-| DGAP-05 | Approver actor binding / stage visibility | Domain Gap / Spec04 Auth | — (parked; options deferred) | Lead | Spec04 Auth packet | OPEN / PARKED | Blocker: **DGAP-08**. Source: Domain Gap Audit 2026-07-15. Not for answer now. |
-| DGAP-06 | Department.managerId vs Stage-1 approver binding | Domain Gap / Spec04 Auth | — (parked; options deferred) | Lead | Spec04 Auth packet | OPEN / PARKED | Blocker: **DGAP-08**. Source: Domain Gap Audit 2026-07-15. Not for answer now. |
-| DGAP-08 | Business Owner designation | Domain Gap / HDAC | — (parked; designation by org authority) | human org authority (HDAC track) | HDAC track (root blocker) | OPEN / PARKED | **HD-01 → B (AUTH-013):** stays PARKED; Sprint A does not need Spec04 Auth. **Re-entry trigger:** `employee-request-self-service` enters scope. Root blocker for DGAP-03/05/06 when Spec04 Auth re-enters. |
+| DGAP-03 | Department↔Dormitory / Organization structural link | Domain Gap / Spec04 Auth | — (parked; options deferred) | Lead | Spec04 Auth packet | OPEN / PARKED | Blocker cleared — DGAP-08 RESOLVED, BO = HR Business Owner (2026-07-18). Source: Domain Gap Audit 2026-07-15. Not for answer now. |
+| DGAP-05 | Approver actor binding / stage visibility | Domain Gap / Spec04 Auth | A) Dept line manager B) Dorm ops authority C) Dual/split Stage-1 | Lead | Spec04 Auth packet | **DECIDED** | **Selected A** (Lead, 1405/04/27 \| 2026-07-18): Department line manager = Stage-1 approver. Dorm ops = downstream capacity/ops. |
+| DGAP-06 | Department.managerId vs Stage-1 approver binding | Domain Gap / Spec04 Auth | Visibility V1–V3; UI U1–U3 (Lead decision packet) | Lead | Spec04 Auth packet | **DECIDED** | **Selected V1 + U2** (Lead, 1405/04/27 \| 2026-07-18): Visibility = subject + assigned approver only; UI = separate approver console. Stage-1 actor identity follows DGAP-05 A (dept manager). |
+| DGAP-08 | Business Owner designation | Domain Gap / HDAC | — (parked; designation by org authority) | human org authority (HDAC track) | HDAC track (root blocker) | **RESOLVED** | **BO = HR Business Owner** / Human Resources Department (`employee-request-self-service`). Resolved 1405/04/27. Unblocks DGAP-05, DGAP-06, SGAP-05. |
 | DGAP-01 | Organization aggregate | Domain Gap Audit | CLOSE — NOT-A-GAP | Lead | DGAP Decision Gate | **CLOSED — NOT-A-GAP** | Lead (2026/07/15): No product requirement for Organization aggregate. No L6 fill. |
 | DGAP-02 | Unit entity | Domain Gap Audit | CLOSE — NOT-A-GAP | Lead | DGAP Decision Gate | **CLOSED — NOT-A-GAP** | Lead (2026/07/15): Unit only meaningful under assignment schema (frozen). No L6 fill. |
 | DGAP-04 | Workflow module / engine | Domain Gap Audit | CLOSE — NOT-A-GAP | Lead | DGAP Decision Gate | **CLOSED — NOT-A-GAP** | Lead (2026/07/15): Workflow shell intentional per CD-010 deferral. No L6 fill. |
@@ -31,7 +31,7 @@
 | SGAP-02 | Spec006 missing research/quickstart | Spec Completion Audit | ACCEPTED-MINIMAL | Lead | SGAP Disposition | **ACCEPTED-MINIMAL** | Intentional post-impl; do not create artifacts. |
 | SGAP-03 | Spec007 missing research/quickstart | Spec Completion Audit | ACCEPTED-MINIMAL | Lead | SGAP Disposition | **ACCEPTED-MINIMAL** | Intentional post-impl; do not create artifacts. |
 | SGAP-04 | Spec008 missing data-model/contracts | Spec Completion Audit | DOC mirror from Voucher code | Lead | SGAP Disposition | **CLOSED** | data-model.md + contracts/ mirrored from `app/Modules/Voucher` only. |
-| SGAP-05 | Spec006 GOVERNANCE_OPEN / AUTHORITY_NOT_AVAILABLE | Spec Completion Audit | PARK | Lead | SGAP Disposition | **PARKED** | Unlock gate shared with DGAP-08 (BO designation). Separate entry — not conflated. |
+| SGAP-05 | Spec006 GOVERNANCE_OPEN / AUTHORITY_NOT_AVAILABLE | Spec Completion Audit | PARK | Lead | SGAP Disposition | **PARKED** | unlock gate: DGAP-08 RESOLVED (2026-07-18); remaining gate: Spec06 GOVERNANCE_OPEN |
 | SGAP-06 | CLAUDE/AGENTS CheckIn “candidate” wording | Spec Completion Audit | DOC wording sync | Lead | SGAP Disposition | **CLOSED** | Synced to Spec07 CLOSED + `app/Modules/CheckIn`. |
 | SGAP-07 | Spec04 Product PENDING_RESIDUAL | Spec Completion Audit | Backlog + PARK | Lead | SGAP Disposition | **BACKLOG + PARKED** | Explicit backlog; Spec04 Auth packet / DGAP-08 untouched. |
 | SGAP-08 | Spec011 outside audit list | Spec Completion Audit | DEFER | Lead | SGAP Disposition | **DEFERRED** | Separate audit only if 011 enters UI path. |
@@ -47,6 +47,10 @@
 | HD-05 | F-W07-04 carry target | F2 / F3 sequencing | A) Carry to F3 Sprint B B) Close now C) Carry to Sprint A | Lead | AUTH-013 | **DECIDED — A** | **F-W07-04 carry to F3 Sprint B.** Consistent with work-breakdown posture. (AUTH-013) |
 | HD-06 | L9 merge scope / checklist freshness | Phase G / L9 | A) Formal A1 waiver after checklist refresh B) Merge with stale checklist C) Refresh checklist first, then waiver | Lead | AUTH-013 | **DECIDED — C then A** | **First:** refresh L9 checklist (resolves GAP-DOC-04). **Then:** Lead issues formal waiver — UI-A1 presence in branch is **intentional and accepted**. Merge with stale checklist = invalid evidence. (AUTH-013) |
 | HD-07 | spec02 + spec05 docs-only closeout timing | Spec closeout / doc-lag | A) Docs-only closure per spec03 pattern in Wave 2 B) Execute now C) Defer indefinitely | Lead | AUTH-013 | **DECIDED — A** | **spec02 + spec05 docs-only closure** following spec03 pattern; execute in **Wave 2 (after merge)**, not now. One write, not two. (AUTH-013) |
+| OQ-AUTH-01 | Spec04 Spatie role naming (`identity` guard) | Spec04 Auth / Technical | A) Dual kebab B) `employee` + `DeptMgr` C) Single shared role | Lead | Spec04 Auth packet | **DECIDED** | **Selected B** (Lead, 1405/04/27 \| 2026-07-18). No impl auth. |
+| OQ-AUTH-02 | Spec04 L5 middleware / V1 request bridge | Spec04 Auth / Technical | A) App V1 B) Middleware V1 C) App-only bridge | Lead | Spec04 Auth packet | **DECIDED** | **Selected B** (Lead, 1405/04/27 \| 2026-07-18). No impl auth. |
+| OQ-AUTH-03 | Spec04 Stage-1 dept-manager → identity binding | Spec04 Auth / Technical | A) Live manager_id B) Snapshot at submit C) Alternate HR rule | Lead | Spec04 Auth packet | **DECIDED** | **Selected B** (Lead, 1405/04/27 \| 2026-07-18). No impl auth. |
+| OQ-AUTH-05 | Spec04 Auth Packet DRAFT → acceptance | Spec04 Auth / Governance | A) Accept after recorded/validated decisions (impl unauthorized) B) Keep DRAFT until named external deps resolved | Lead | Spec04 Auth packet | **DECIDED** | **Selected A** (Lead, 1405/04/27 \| 2026-07-18): governance-accepted artifact. No L5/L6/impl auth. DGAP-03/SGAP-05 unchanged. |
 
 ---
 
@@ -107,7 +111,7 @@
 ### DGAP-03
 
 - **Status:** OPEN / PARKED
-- **Blocker:** DGAP-08
+- **Blocker:** Blocker cleared — DGAP-08 RESOLVED, BO = HR Business Owner (2026-07-18)
 - **Decision-Owner:** Lead
 - **Source:** Domain Gap Audit (READ-ONLY, 2026-07-15)
 - **Tier:** 2 — PARKED (Spec04 Auth packet)
@@ -115,29 +119,86 @@
 
 ### DGAP-05
 
-- **Status:** OPEN / PARKED
-- **Blocker:** DGAP-08
-- **Decision-Owner:** Lead
-- **Source:** Domain Gap Audit (READ-ONLY, 2026-07-15)
-- **Tier:** 2 — PARKED (Spec04 Auth packet)
-- **Selected Option:** — (not for answer now)
+- **Status:** **DECIDED**
+- **Selected Option:** A — Department line manager is the Stage-1 approver
+- **Decided-On:** 1405/04/27 (2026-07-18)
+- **Decision-Owner / Authority:** Lead Decision
+- **Business rationale:** Stage-1 represents organizational confirmation of employee housing need. The direct department manager owns the first business acceptance of the employee request. Dormitory operations remains responsible for downstream operational/capacity concerns.
+- **Prior status:** OPEN / PARKED (blocker DGAP-08 cleared 2026-07-18)
+- **Source:** Domain Gap Audit (READ-ONLY, 2026-07-15); Lead decision after criteria review
+- **Effect:** Stage-1 accountable actor = department line manager for `employee-request-self-service`. Does **not** authorize implementation.
 
 ### DGAP-06
 
-- **Status:** OPEN / PARKED
-- **Blocker:** DGAP-08
-- **Decision-Owner:** Lead
-- **Source:** Domain Gap Audit (READ-ONLY, 2026-07-15)
-- **Tier:** 2 — PARKED (Spec04 Auth packet)
-- **Selected Option:** — (not for answer now)
+- **Status:** **DECIDED**
+- **Selected Options:**
+  - **Visibility V1** — Subject + assigned approver only
+  - **UI Boundary U2** — Separate approver console
+- **Decided-On:** 1405/04/27 (2026-07-18)
+- **Decision-Owner / Authority:** Lead Decision
+- **Business rationale (V1):** Visibility follows minimum necessary access. Request status is visible only to the employee and the accountable assigned approver.
+- **Business rationale (U2):** Employee self-service and approval workflows are separate business surfaces. Approval actions must not be embedded into the employee self-service surface.
+- **Linkage:** Stage-1 approver identity follows **DGAP-05 Option A** (department line manager).
+- **Prior status:** OPEN / PARKED (blocker DGAP-08 cleared 2026-07-18)
+- **Source:** Domain Gap Audit (READ-ONLY, 2026-07-15); Lead decision after criteria review
+- **Effect:** Visibility and UI ownership fixed for governance. Does **not** authorize implementation.
 
-### DGAP-08
+### OQ-AUTH-01 — Spec04 Spatie role naming
 
-- **Status:** OPEN / PARKED
-- **Decision-Owner:** human org authority (HDAC track)
-- **Source:** Domain Gap Audit (READ-ONLY, 2026-07-15)
-- **Tier:** 2 — PARKED (root blocker for Spec04 Auth–parked items)
-- **Selected Option:** — (not for answer now via this gate)
+- **Status:** **DECIDED**
+- **Selected Option:** **B** — `employee` + `DeptMgr` (`guard_name = identity`)
+- **Decided-On:** 1405/04/27 (2026-07-18)
+- **Decision-Owner / Authority:** Lead Decision
+- **Rationale:** Aligns Stage-1 approver role with existing workflow abbreviations (`HRMgr` / `DormMgr`) while keeping a distinct `employee` role for self-service; supports U2 surface split without reusing dormitory-manager roles (DGAP-05 A).
+- **Effect:** Canonical identity-guard role names for Spec04 surfaces. Does **not** authorize seeders, routes, or implementation.
+- **Packet:** `docs/specs/spec04-auth-packet.md` §8.1 — v0.4.0-DRAFT
+
+### OQ-AUTH-02 — Spec04 L5 middleware / V1 bridge
+
+- **Status:** **DECIDED**
+- **Selected Option:** **B** — Dual `identity.role:*` stacks + thicker middleware enforcing V1 (subject OR assigned Stage-1 approver); optional Application re-assert
+- **Decided-On:** 1405/04/27 (2026-07-18)
+- **Decision-Owner / Authority:** Lead Decision
+- **Rationale:** Early reject at the HTTP edge for principals outside V1; dual role stacks keep approve/reject off the employee self-service surface (U2).
+- **Effect:** L5 gate pattern fixed for Spec04. Does **not** authorize middleware registration or routes.
+- **Packet:** `docs/specs/spec04-auth-packet.md` §8.2 — v0.4.0-DRAFT
+
+### OQ-AUTH-03 — Spec04 Stage-1 identity binding
+
+- **Status:** **DECIDED**
+- **Selected Option:** **B** — Snapshot at submit: resolve `manager_id` chain once; store assigned Stage-1 identity UUID on the request (value-ref only)
+- **Decided-On:** 1405/04/27 (2026-07-18)
+- **Decision-Owner / Authority:** Lead Decision
+- **Rationale:** Literal fit to DGAP-06 V1 “assigned approver” — accountability frozen at submit; later org-chart manager changes do not silently reassign visibility/approval.
+- **Effect:** Binding mechanism fixed for governance. Does **not** authorize migrations or schema changes.
+- **Packet:** `docs/specs/spec04-auth-packet.md` §8.3 — v0.4.0-READY-FOR-REVIEW
+
+### OQ-AUTH-05 — Spec04 DRAFT → acceptance (Human Gate)
+
+- **Status:** **DECIDED**
+- **Selected Option:** **A** — Accept Spec04 Auth Packet as a governance-ready artifact
+- **Decided-On:** 1405/04/27 (2026-07-18)
+- **Decision-Owner / Authority:** Lead Decision
+- **Rationale:** All Spec04-specific business and authentication decisions have been resolved (DGAP-05, DGAP-06, OQ-AUTH-01, OQ-AUTH-02, OQ-AUTH-03). Remaining unrelated dependencies do not block Spec04 governance acceptance.
+- **Constraints:**
+  - No implementation authorization
+  - No L5/L6 authorization
+  - No code, migration, route, or UI implementation permitted
+- **Next gate:** Separate implementation authorization process after required contracts and execution approvals
+- **Packet:** `docs/specs/spec04-auth-packet.md` — **0.5.0-GOVERNANCE-ACCEPTED**
+- **Unchanged:** DGAP-03 (OPEN/PARKED); SGAP-05 (PARKED)
+
+### DGAP-08 — Business Owner: employee-request-self-service
+
+| Field | Value |
+|-------|-------|
+| **Status** | **RESOLVED** |
+| **Resolved** | 1405/04/27 |
+| **Authority** | Lead Decision |
+| **Business Owner** | HR Business Owner / Human Resources Department |
+| **BO Scope** | Business requirements, product-surface scope, accountable business authority |
+| **Excluded from BO** | Technical implementation, architecture, permission enforcement, code approval |
+| **Unblocks** | DGAP-05, DGAP-06, SGAP-05 |
 
 ### DGAP-01
 
@@ -298,6 +359,7 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 - **Decision-Owner:** Lead
 - **Rationale:** Docs-only closure per spec03 pattern; execute after merge (W2), not before.
 - **W2 hygiene note (2026-07-18):** Decision remains **DECIDED — A**. Full closeout package (spec03-pattern handoff) **not authored in this hygiene pass** — awaiting Lead confirmation of artifact depth (see W2 D3). Catalog already annotated `DELIVERED-NEEDS-CLOSEOUT` / Frozen Wave 1A.
+- **Execution (1405/04/27 | 2026-07-18):** **COMPLETE** — Lead F3 Sprint A authorization. UI-M1 merge **not** required. Status sync: spec02 HD-07 docs closeout COMPLETE (remains Frozen); spec05 → **`SPEC05_CLOSED`**. Evidence: Identity/Request modules + prior handoffs; `spec-catalog.md` §1.0.32. No UI IA implied.
 
 ### UI-M1 residual test-coverage risk — ACCEPTED (Lead, 2026-07-16)
 
@@ -320,7 +382,7 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 | SGAP-02 | ACCEPTED-MINIMAL | Spec006 missing research/quickstart intentional; no files created. |
 | SGAP-03 | ACCEPTED-MINIMAL | Spec007 missing research/quickstart intentional; no files created. |
 | SGAP-04 | CLOSED | Spec008 data-model + contracts mirrored from Voucher code only. |
-| SGAP-05 | PARKED | Spec06 GOVERNANCE_OPEN / AUTHORITY_NOT_AVAILABLE; unlock gate = DGAP-08 BO (not conflated). |
+| SGAP-05 | PARKED | Spec06 GOVERNANCE_OPEN / AUTHORITY_NOT_AVAILABLE; unlock gate: DGAP-08 RESOLVED (2026-07-18); remaining gate: Spec06 GOVERNANCE_OPEN |
 | SGAP-06 | CLOSED | CLAUDE.md / AGENTS.md CheckIn wording synced to Spec07 + module. |
 | SGAP-07 | BACKLOG + PARKED | Spec04 Product PENDING_RESIDUAL → backlog below; Auth packet untouched. |
 | SGAP-08 | DEFERRED | Spec011 observation only until UI-path entry. |
@@ -366,6 +428,15 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| ۱۴۰۵/۰۴/۲۷ (2026-07-18) | **OQ-AUTH-05 DECIDED — A:** Spec04 Auth Packet **governance-accepted**. Rationale: Spec04-specific decisions complete; unrelated deps non-blocking. **No** L5/L6/impl auth. Spec04 → 0.5.0-GOVERNANCE-ACCEPTED. DGAP-03/SGAP-05 untouched. | Agent (Lead Decision Record) |
+| ۱۴۰۵/۰۴/۲۷ (2026-07-18) | **OQ-AUTH-05 reframed → AWAITING HUMAN DECISION:** Options A (accept now) vs B (hold DRAFT for external deps). Spec04 → **0.4.0-DRAFT**. Prior “DECIDED/READY-FOR-REVIEW” superseded for acceptance path; §9.1 criteria retained. DGAP-03/SGAP-05 untouched. No impl auth. | Agent (Lead Human Decision Gate) |
+| ۱۴۰۵/۰۴/۲۷ (2026-07-18) | **OQ-AUTH-05 DECIDED:** Spec04 §9 Exit Criteria defined; packet → **0.4.0-READY-FOR-REVIEW**. Docs-only; **no impl auth**. *(Superseded for acceptance-path gate — see row above.)* | Agent (Lead Exit Criteria) |
+| ۱۴۰۵/۰۴/۲۷ (2026-07-18) | **OQ-AUTH-01/02/03 DECIDED — B/B/B** (Lead): roles `employee`+`DeptMgr`; middleware V1 bridge; snapshot Stage-1 identity at submit. Spec04 → 0.4.0-DRAFT. Docs-only; **no impl auth**. | Agent (Lead Technical Selection) |
+| ۱۴۰۵/۰۴/۲۷ (2026-07-18) | **DGAP-05 DECIDED — A:** Department line manager = Stage-1 approver (Lead). **DGAP-06 DECIDED — V1 + U2:** visibility subject+assignee; separate approver console (Lead). Docs-only; no impl auth. | Agent (Lead Human Decision) |
+| ۱۴۰۵/۰۴/۲۷ (2026-07-18) | Blocker-sync: DGAP-03 notes/metadata updated to reflect DGAP-08 resolution. No gap status changed. Ref: PATCH-F3A-SYNC-03. | Agent (PATCH-F3A-SYNC-03) |
+| ۱۴۰۵/۰۴/۲۷ (2026-07-18) | Blocker-sync: DGAP-06 and SGAP-05 notes/metadata updated to reflect DGAP-08 resolution. No gap statuses changed. Ref: PATCH-F3A-SYNC-02. | Agent (PATCH-F3A-SYNC-02) |
+| ۱۴۰۵/۰۴/۲۷ (2026-07-18) | **Lead confirm:** DGAP-03 remains **OPEN/PARKED** (no gate change). DGAP-08 draft awaits **Business Owner** designation for `employee-request-self-service`. Cascade DGAP-05/06 + SGAP-05 blocked until BO. Cursor assigns no BO. | Agent (Lead confirm) |
+| ۱۴۰۵/۰۴/۲۷ (2026-07-18) | **HD-07 EXECUTED:** spec02 docs closeout COMPLETE (Frozen retained); spec05 → `SPEC05_CLOSED`. **DGAP-08 Decision Record Draft** added (DRAFT — Pending Lead Decision; not a new gate OPEN row; BO not assigned). DGAP-03 “closed” claim from prompt **not** applied — gate still OPEN/PARKED. | Agent (Lead F3 Sprint A auth) |
 | ۱۴۰۵/۰۴/۲۷ (2026-07-18) | **W2-FIX Group D:** DG-03 → **CLOSED**, Selected Option **B**, Resolution Date **2026-07-16**, Evidence **AUTH-013**. Docs-only. | Agent (Lead W2-FIX auth) |
 | ۱۴۰۵/۰۴/۲۷ (2026/07/18) | **W2 Documentation Hygiene (facts sync):** GAP-DOC-01/02/03 + GAP-UI-M1-01 closed in docs; F-W07-04 advisory text → Sprint B (HD-05A already decided). No new decision. HD-07 / N-11 remain for Lead depth choice (D3). | Agent (Lead W2 auth) |
 | ۱۴۰۵/۰۴/۲۵ (2026/07/16) | **AUTH-013 W0:** AUTH-012 disposition CONFIRMED (18 rows); HD-01…HD-07 recorded verbatim; F-W07-04 target → F3 Sprint B; DGAP-08 re-entry trigger set. Docs-only. | Agent (Lead AUTH-013) |

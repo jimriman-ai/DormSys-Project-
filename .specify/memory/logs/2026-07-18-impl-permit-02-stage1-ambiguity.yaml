@@ -1,0 +1,6 @@
+prompt_id: IMPL-PERMIT-02-create-snapshot
+recorded_at: 2026-07-18T14:30:00+00:00
+work_item: spec04-stage1-snapshot
+stage: L6-implementation
+tags: [AMBIGUITY, EVIDENCE_CONFLICT, CLOSED]
+summary: "IMPL-PERMIT-02 prose referenced Dormitory Manager for Stage-1 routing while DGAP-05 A / schema bind Stage-1 to department.manager_id (DeptMgr). Implementation used the department org-chart path and recorded the conflict in IMPL-PERMIT-02.md."

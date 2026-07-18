@@ -16,7 +16,7 @@
 - **OA-05-01:** Terminal at `Approved` — no `WaitingForAllocation`+ states (spec07)
 - **No** Workflow engine, Allocation, Lottery implementation, Livewire UI
 
-**Status**: **Design approved** · **Implementation complete** — T001–T052 per [`handoff/spec05-implementation-authorization.md`](../../.specify/docs/handoff/spec05-implementation-authorization.md)
+**Status**: **Design approved** · **Implementation complete** (T001–T052) · **`SPEC05_CLOSED`** docs-only (HD-07 / AUTH-013, 2026-07-18) — [`handoff/spec05-implementation-authorization.md`](../../.specify/docs/handoff/spec05-implementation-authorization.md)
 
 ---
 
