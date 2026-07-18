@@ -18,7 +18,7 @@
 |-------|--------|
 | **UI-A1 status** | **COMPLETE — READY FOR COMMIT AND CLOSURE REVIEW** |
 | **Upstream gates** | L3 AUTHORIZED → L5 AUTH GATE **PASS** → L6 EXECUTED → L7 VERIFICATION **PASS** → L8 CLOSEOUT (this artifact) |
-| **Program F3** | Remains **ACTIVE — Sprint A** (UI-M1 / UI-M2 still PENDING) |
+| **Program F3** | Remains **ACTIVE — Sprint A** (UI-M1: OBSERVED-L8-COMPLETE / L9 pending Lead merge; UI-M2: READY FOR L3 / W3) |
 | **Canonical status mirror** | `docs/governance/roadmap.md` § F3 Catalog — UI-A1 row updated to COMPLETE (closeout sync) |
 
 UI-A1 is ready for Lead commit / PR / closure review. This closeout does **not** create a git commit.
@@ -104,8 +104,8 @@ UI-A1 closeout does **not** include:
 
 | Excluded | Owner / later item |
 |----------|-------------------|
-| UI-M1 Manager Dashboard wire data | BL-B1-01 blocked; catalog PENDING |
-| UI-M2 Unit-Manager Dashboard wire data | BL-B1-01 blocked; catalog PENDING |
+| UI-M1 Manager Dashboard wire data | **OBSERVED-L8-COMPLETE — L9 merge pending Lead** (W2 hygiene 2026-07-18; was PENDING at UI-A1 closeout) |
+| UI-M2 Unit-Manager Dashboard wire data | **UNBLOCKED — READY FOR L3** (W3); BL-B1-01 no longer blocking |
 | Dashboard occupancy/assignment widgets or queries | Out of UI-A1 |
 | Assignment schema / UI-A2 | Separate Lead proposal if needed |
 | New migrations | C-1 |

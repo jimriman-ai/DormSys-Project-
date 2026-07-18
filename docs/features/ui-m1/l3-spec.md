@@ -1,6 +1,7 @@
 # L3 Spec — UI-M1 (Manager Dashboard — wire data)
 
-**Layer:** L3 (Spec) only — **no L6 authorization** in this artifact.  
+**Layer:** L3 (Spec) artifact (requirements record).  
+**Lifecycle status:** **L9-pending (L8-COMPLETE)**  
 **Catalog ID:** UI-M1 (F3 Sprint A)  
 **Authority:** Lead `AUTHORIZE L3-SPEC: UI-M1` (2026-07-16)  
 **Canonical path:** `docs/features/ui-m1/l3-spec.md`  
@@ -23,9 +24,9 @@ All of the following are **preconditions**, not UI-M1 deliverables:
 | Assignment schema present | `dormitory_manager_assignments` migration `database/migrations/modules/dormitory/2026_07_16_000001_create_dormitory_manager_assignments_table.php`; glossary `docs/governance/glossary.md:19` |
 | `user_id` FK → `identity_users` with `restrictOnDelete()` | Same migration; Lead FK policy CONSTRAINED_IDENTITY |
 | Dashboard query wiring landed | Commit `369a106` — `feat(dormitory-admin): resolve BL-B1-01 — assignment schema + dashboard scoping (RM-BL-B1)`; component `app/Modules/DormitoryAdmin/DormitoryManagerDashboard.php` |
-| BL-B1-01 resolved (governance) | `docs/governance/risk-register.md:13` — **RESOLVED (pending Lead commit)** |
+| BL-B1-01 resolved (governance) | `docs/governance/risk-register.md:13` — **RESOLVED (commit 369a106)** |
 | DGAP-09 RE-FROZEN | `docs/governance/open-decisions.md:29`, `:177–185` — no further assignment-schema work without new unfreeze |
-| Catalog status | `docs/governance/roadmap.md:39` — **UNBLOCKED — READY FOR L3/L6** |
+| Catalog status | `docs/governance/roadmap.md:39` — **L9-pending (L8-COMPLETE)** |
 | UI-A1 auth/layout shell | `docs/governance/roadmap.md:41`; layout `resources/views/components/layouts/dormitory-admin.blade.php` |
 
 **Sequencing note (Evidence):** Roadmap lists UI-M1 and UI-M2 as **sibling** catalog rows with the **same** dependency (BL-B1-01). No roadmap line states UI-M1 as a prerequisite of UI-M2 (`docs/governance/roadmap.md:39–40`). Lead sequencing preference (UI-M1 first) does **not** contradict roadmap.
@@ -89,7 +90,7 @@ All of the following are **preconditions**, not UI-M1 deliverables:
 
 ## §6 Acceptance criteria (L8-mappable)
 
-L8 (when authorized) MUST demonstrate:
+L8 COMPLETE — criteria demonstrated:
 
 1. **AC-1** Guest → redirect `/login` on `GET /dormitory-admin`.
 2. **AC-2** Identity user without `dormitory-manager` → **403**.
@@ -113,7 +114,7 @@ L8 (when authorized) MUST demonstrate:
 - Changes to `config/auth.php` guard topology
 - Cross-guard use of `web` / `App\Models\User` for this surface
 - Allocation/Check-in/Request mutation flows
-- Any L6 code change under this L3 authorization alone
+- Residual product scope outside UI-M1 (see catalog / out-of-scope rows above)
 
 ---
 
@@ -121,12 +122,13 @@ L8 (when authorized) MUST demonstrate:
 
 **None blocking this L3 document.**
 
-Informational (non-blocking) hygiene for Lead — not UI-M1 scope decisions:
+Informational (non-blocking) — W2 hygiene 2026-07-18 closed prior doc-lag notes:
 
 | Note | Detail |
 |------|--------|
-| Doc lag | `risk-register.md:13` / roadmap still say BL-B1-01 **RESOLVED (pending Lead commit)** while commit `369a106` exists locally — update wording when Lead closes commit/push. |
-| Stale closeout | `docs/features/ui-a1/l8-closeout.md:107–108` still lists UI-M1/M2 as PENDING — superseded by `roadmap.md:39–40` UNBLOCKED. |
+| ~~Doc lag~~ | `risk-register.md` / roadmap BL-B1-01 wording → **RESOLVED** (W2 HIGH; commit `369a106`) |
+| ~~Stale closeout~~ | `ui-a1/l8-closeout.md` UI-M1/M2 rows → **synced** (W2 HIGH) |
+| Remaining | Lead merge SHA for UI-M1 L9 (GAP-GOV-02) — not an L3 decision |
 
 ---
 
@@ -145,7 +147,7 @@ Informational (non-blocking) hygiene for Lead — not UI-M1 scope decisions:
 
 | Field | Value |
 |-------|--------|
-| Status | **L3 AUTHORED** — awaiting Lead L6 authorization if further implementation/polish required |
-| Implementation baseline | RM-BL-B1 / commit `369a106` (already wires FR-1…FR-11 contract) |
-| Next gate | Lead may authorize L7 verification and/or L6 only if residual gaps vs this spec are identified |
-| VCS | No commit by this L3 task |
+| Status | **L9-pending (L8-COMPLETE)** |
+| Implementation baseline | RM-BL-B1 / commit `369a106` (wires FR-1…FR-11 contract) |
+| Next gate | Lead merge SHA (GAP-GOV-02) — L9 |
+| VCS | No commit by this L3 docs task |

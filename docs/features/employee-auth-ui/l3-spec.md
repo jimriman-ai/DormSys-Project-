@@ -1,5 +1,7 @@
 # L3 Spec — employee-auth-ui
 
+**Lifecycle status:** **L9-pending (L8-COMPLETE)** — W-01…W-08 CLOSED (`work-breakdown.md`); residual F-W07-04 CARRIED FORWARD does not reopen L6/L7/L8 for closed boundary items.
+
 ## §1 Scope
 
 - Login UI for dormitory-manager employees using guard `identity`.
@@ -18,11 +20,11 @@
 
 - **Decision:** no password broker required.
 - **Rationale:** F2 auth flow is credential/token-based via `EstablishApiSessionFromCredentialLoginAction`; no password reset in scope.
-- **Reference:** DG-03 / Option A (Lead-confirmed for this phase: login via `EstablishApiSessionFromCredentialLoginAction`; W-03 Option A — no password broker).
+- **Reference:** W-03 Option A — no password broker (Lead-confirmed for this phase). Login via `EstablishApiSessionFromCredentialLoginAction`.
 
 ## §4 W-01 Work Item Spec
 
-*(W-01/W-06 implementation evidence accepted under Lead Option B — Governance Reconciliation. Further F2/UI/Auth features remain frozen unless newly authorized. Formal L7/L8 still open — see work-breakdown.md.)*
+*(W-01/W-06 implementation evidence accepted under Lead Option B — Governance Reconciliation. Further F2/UI/Auth features remain frozen unless newly authorized. Boundary W-07/W-08 **CLOSED** — lifecycle **L9-pending (L8-COMPLETE)**; see work-breakdown.md.)*
 
 - **Livewire component:** `EmployeeLogin` — landed at `app/Modules/Auth/Presentation/Livewire/EmployeeLogin.php`
 - **View:** `resources/views/livewire/auth/employee-login.blade.php`

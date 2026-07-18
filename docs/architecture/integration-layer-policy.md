@@ -3,7 +3,7 @@
 **Status:** Approved  
 **Location:** `app/Integrations/`  
 **Composition root:** `app/Providers/IntegrationServiceProvider.php`  
-**Registration:** `IntegrationServiceProvider::register()` — provider must remain **last** in `bootstrap/providers.php` (line 46)
+**Registration:** `IntegrationServiceProvider::register()` — provider must remain **last** in `bootstrap/providers.php`
 
 **ENFORCED indirectly:** cross-module ports bound here are exercised by feature tests; bridge shape for Employee↔Request is **ENFORCED** by `RequestConsumerBoundaryTest.php` (method parity with `PendingRequestReadPort`).
 
@@ -73,12 +73,17 @@ All approved cross-module port bindings live in **`IntegrationServiceProvider::r
 
 ```php
 // app/Providers/IntegrationServiceProvider.php (current)
-ApprovedRequestReadPort::class          → ApprovedRequestReadBridge::class
-AllocationAssignmentReadPort::class     → AllocationAssignmentReadBridge::class
+ApprovedRequestReadPort::class           → ApprovedRequestReadBridge::class
+DormitoryReadPort::class                 → DormitoryAssignabilityReadBridge::class
+PhysicalStateSignalPort::class           → PhysicalStateSignalBridge::class
+AllocationAssignmentReadPort::class      → AllocationAssignmentReadBridge::class
 RequestEligibilityGatewayContract::class → EmployeeEligibilityBridge::class
-PendingRequestReadPort::class           → PendingRequestReadBridge::class
-ProposedAllocationPort::class           → ProposedAllocationConsumer::class
-DormitoryReadContract::class            → DormitoryReadBridge::class
+PendingRequestReadPort::class            → PendingRequestReadBridge::class
+ProposedAllocationPort::class            → ProposedAllocationConsumer::class
+DormitoryReadContract::class             → DormitoryReadBridge::class
+AuditPermissionReadPort::class           → SpatieAuditPermissionReadBridge::class
+AuditHistorySourceReadPort::class        → AuditHistorySourceReadBridge::class
+ReportingArchiveVisibilityPort::class    → ReportingArchiveVisibilityBridge::class
 ```
 
 **Rules:**

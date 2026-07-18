@@ -27,7 +27,7 @@ Legend:
 | Legacy port binding location | Tolerated debt visibility | Lottery + Identity legacy ports | Architecture test (`IntegrationCompositionRootTest`) | Yes (wrong file only) | Low | **Now** |
 | Cross-module adapter location (new code) | Integrations-first policy | `Application/Adapters`, `Infrastructure/Adapters` | Architecture test (`CrossModuleAdapterLocationTest`) + static scan | Yes | Low–medium | **Now** |
 | Forbidden import static scan | Obvious textual violations | Domain + Application layers | Script + architecture test | Yes | Low | **Now** |
-| Module pair boundary isolation | Full matrix cross-talk | 11 matrix modules | Architecture test (`ModuleBoundaryTest`) | Yes | Low | **Now** |
+| Module pair boundary isolation | Full matrix cross-talk | 12 matrix modules | Architecture test (`ModuleBoundaryTest`) | Yes | Low | **Now** |
 | Service provider registration | Module bootstrapping parity | Matrix modules | Architecture test (`ServiceProviderRegistrationTest`) | Yes | Low | **Now** |
 | Edge-specific boundary tests | Approved context edges | Request, Lottery, Reporting, etc. | Architecture test (module edge files) | Yes | Low | **Now** |
 | CheckIn full matrix enrollment | Complete CheckIn isolation | CheckIn all layers | `ModuleBoundaryTest` | Yes | Low | **Done (2026-07-04)** |

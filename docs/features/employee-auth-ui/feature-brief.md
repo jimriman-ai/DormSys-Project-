@@ -30,10 +30,10 @@ Session-based authentication UI for the employee boundary using the
 
 ## Shared Kernel (BL-04)
 
-- **BL-04:** IdentityRoleGuard → Shared Kernel — **DELIVERED** via W-06 (`app/Shared/Auth/IdentityRoleGuard.php`); DG-03 RESOLVED. See `docs/governance/risk-register.md` (BL-04 Mitigated/Delivered).
+- **BL-04:** IdentityRoleGuard → Shared Kernel — **DELIVERED** via W-06 (`app/Shared/Auth/IdentityRoleGuard.php`); DG-03 **CLOSED** (Option B, AUTH-013). See `docs/governance/risk-register.md` (BL-04 Mitigated/Delivered).
 
 ## Out of Scope
 
 - Password broker / reset flow (W-03 NO ACTION)
-- BL-B1-01 remediation (remains Open/Deferred; reopen at Phase H or on consumer demand)
+- BL-B1-01 remediation — **RESOLVED** in commit `369a106` — assignment schema + dashboard scoping (RM-BL-B1).
 - Spec04 Auth / DGAP-03/05/06/08 (parked behind Business Owner)

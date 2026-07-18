@@ -244,8 +244,8 @@ PR adds cross-module coupling
 | Pattern | Location | Why blocked |
 |---------|----------|-------------|
 | Lottery read adapter | `Lottery/Application/Adapters/RequestReadAdapter.php` | Pre-Integrations; CI closes this folder |
-| Reporting audit adapters | `Reporting/Infrastructure/Adapters/AuditHistory*.php` | Legacy projection wiring |
-| Identity audit permission | `Identity/Infrastructure/Adapters/SpatieAuditPermissionReadAdapter.php` | Inverted supplier placement |
+| Reporting audit adapters | `Reporting/Infrastructure/Adapters/AuditHistory*.php` | Legacy projection wiring — [REMOVED] |
+| Identity audit permission | `Identity/Infrastructure/Adapters/SpatieAuditPermissionReadAdapter.php` | Inverted supplier placement — [REMOVED] |
 
 Full list: [known-exceptions-registry.md](./known-exceptions-registry.md)
 

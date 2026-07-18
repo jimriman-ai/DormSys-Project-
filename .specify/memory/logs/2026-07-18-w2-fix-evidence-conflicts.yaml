@@ -1,0 +1,6 @@
+prompt_id: W2-FIX-2026-07-18
+recorded_at: 2026-07-18T15:45:00+03:30
+work_item: W2-FIX-documentation-hygiene
+stage: W2 Documentation Hygiene
+tags: [EVIDENCE_CONFLICT, OWNER_DECISION_NEEDED, AMBIGUITY]
+summary: "Lead-authorized BL-B1-01 note tied IdentityRoleGuard to commit 369a106, but that commit is RM-BL-B1 assignment schema; File 5 superseded text claiming OperatorRoleGate removed conflicts with live OperatorRoleGate; File 6 CheckIn/OperatorRoleGate checklist item was absent."

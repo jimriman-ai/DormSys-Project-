@@ -1,10 +1,8 @@
 # L9 PR Package — F2 employee-auth-ui chain closeout
 
 **Suggested branch:** `release/f2-employee-auth-ui-l9`  
-**Suggested base:** project default (`main` / `master` — confirm remote)  
-**Note:** Working tree currently sits on `security/g-phase-dormitory-admin-ui` with mixed Phase G + F2 dirty files. Prefer a **dedicated F2-only branch** from the intended base for this L9 PR so dormitory-admin Phase G history does not dilute the decision boundary.
-
-**Commit evidence:** As of prepare time, W-01…W-08 / SGAP DOC batch artifacts are largely **working-tree / untracked** — **no per-W commit SHAs** exist yet. Traceability below uses **work-breakdown + artifact paths only** (constraint: do not fabricate commit links).
+**Suggested base:** `main`  
+**Commit evidence:** Artifacts landed on `release/f2-employee-auth-ui-l9`. Traceability uses work-breakdown paths plus commit SHAs below.
 
 ---
 
@@ -36,7 +34,7 @@ Closes the **F2 `employee-auth-ui`** decision boundary: dual-guard employee logi
 | W-07 | CLOSED | [work-breakdown.md](docs/features/employee-auth-ui/work-breakdown.md) · [w07-security-review-report.md](docs/features/employee-auth-ui/w07-security-review-report.md) |
 | W-08 | CLOSED | [work-breakdown.md](docs/features/employee-auth-ui/work-breakdown.md) · [w08-scope.md](docs/features/employee-auth-ui/w08-scope.md) · `EmployeeLoginW08Test` + RateLimit + regression run |
 
-**Commits:** _none attributable yet — land branch + commits before merge; do not invent SHAs._
+**Commits:** `0796275` (F2 L9 chain closeout); `7517508` (EmployeeLogin + IdentityRoleGuard + RateLimiter); `f73053b` (F2/SGAP governance docs).
 
 ## Security
 

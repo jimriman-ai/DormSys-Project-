@@ -74,11 +74,11 @@ This record documents what was repaired, why, and how to maintain the approved m
 
 | Item | Type | CI today | Next step |
 |------|------|----------|-----------|
-| `CheckIn/OperatorRoleGate` → `Identity\Domain\UserId` | **Violation (latent)** | Passes — CheckIn not in matrix | Contract change, then add CheckIn to matrix |
-| CheckIn absent from `architectureModuleNames()` | **Coverage gap** | Partial `CheckInBoundaryTest` only | Add after OperatorRoleGate fix |
+| `CheckIn/OperatorRoleGate` → `Identity\Domain\UserId` | **[SUPERSEDED]** | N/A — debt closed | OperatorRoleGate uses `IdentityUserReadContract` (not removed); CheckIn in `architectureModuleNames()`; `AllocationAssignmentReadPort` binds via `IntegrationServiceProvider`. See § CheckIn matrix enrollment (2026-07-04). |
+| CheckIn absent from `architectureModuleNames()` | **[SUPERSEDED]** | N/A — debt closed | CheckIn enrolled in 12-module matrix (same section). |
 | `Lottery/Application/Adapters/RequestReadAdapter` | **Legacy tolerated** | Passes — Application→Application allowed | Move to Integrations when authorized |
-| Reporting Infrastructure → Audit Application adapters | **Legacy tolerated** | `ReportingBoundaryTest` guards | New Audit edges → Integrations |
-| `IdentityServiceProvider` binds `AuditPermissionReadPort` | **Legacy tolerated** | Passes | Policy decision: move or exempt |
+| Reporting Infrastructure → Audit Application adapters | **[SUPERSEDED]** | N/A — moved | Bridges under `app/Integrations/Reporting/`; bind via `IntegrationServiceProvider`. |
+| `IdentityServiceProvider` binds `AuditPermissionReadPort` | **[SUPERSEDED]** | N/A — moved | `AuditPermissionReadPort` binds in `IntegrationServiceProvider` only. |
 | `ApprovedRequestReadBridge` uses `RequestId` VO | **Safe but brittle** | Passes | Optional when `RequestReadContract` accepts string |
 | `DormitoryReadAdapter`, `AllocationPhysicalStateAdapter` | **Dead in prod DI** | N/A — test-only instantiation | Keep until tests refactored |
 | `Request/README.md` references deleted adapter | **Documentation gap** | N/A | Update when docs touched |
@@ -180,4 +180,4 @@ Do **not** update for routine feature PRs.
 
 ## Governance summary
 
-DormSys modular architecture is **enforced in CI** for 12 matrix modules via Pest arch tests. Cross-module wiring for the repaired edges is **centralized** in `IntegrationServiceProvider`. Legacy Lottery/Reporting/Identity edges are **tolerated, not templates** for new work.
+DormSys modular architecture is **enforced in CI** for 12 matrix modules via Pest arch tests. Cross-module wiring for the repaired edges is **centralized** in `IntegrationServiceProvider`. Legacy Lottery adapter edge is **tolerated, not a template** for new work.

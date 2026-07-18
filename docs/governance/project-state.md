@@ -1,12 +1,11 @@
 # DormSys — Project State (Session Snapshot)
 
-> **NON-AUTHORITY.** Session navigation index only. Does NOT grant implementation authorization.
-> Canonical sources override this file on conflict.
+> **NON-AUTHORITY.** Session navigation index only.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3-Sprint-A | Session: AUTH-011 Band 2 scope correction — docs only_
+_Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3-AUTH / F2-Production-Hardening | Session: W2-CLOSE COMPLETE_
 
-**Authority note:** Lead `AUTH-011` Band 2 + scope correction (2026-07-18): **all git commit/merge are Lead-owned**. Cursor: report + doc writes only.
+**Authority note:** Lead W2-CLOSE (1405/04/27). D4 waived; D3 accepted. GAP-GOV-02 deferred post-F3. No git write.
 
 ---
 
@@ -14,75 +13,62 @@ _Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3-Sprint-A | Session: AUTH-011
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| Scope | AUTH-011 Band 2 | Cursor merge/commit → **Lead-owned VCS** | Lead AUTH-011 Band 2 Scope Correction |
-| D2 | Unstaged files | action pending → **report-only R1/R2/R3** | classification table § below |
-| G1 | L9 checklist | confirmed still PASS/WAIVED | refreshed 2026-07-16 |
-| G3 | `bootstrap/app.php` | confirmed CONFLICT (read-only) | `git diff 011-reporting-projections...HEAD` |
-| §7 | Next Step | Cursor merge → **Lead manual commit + conflict resolve + merge** | this session |
+| Phase status | W2 | → **W2-CLOSE COMPLETE** | Lead AUTH W2-CLOSE 1405/04/27 |
+| Current phase | W2 hygiene | → **F3-AUTH / F2-Production-Hardening** | Lead AUTH W2-CLOSE |
+| GAP-GOV-02 | merge before close? | **OPEN — deferred post-F3** (UI-M1 merge) | Lead Q1 = B |
+| D4 waiver | zero doc-lags | **D4 waived; D3 accepted** | Lead Q2 |
+| open-decisions | W2-MEDIUM | **Confirmed: zero new open decisions** | Lead Q3 |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🧑‍⚖️ **Human Decision — Lead VCS** — commit unstaged docs + resolve `bootstrap/app.php` conflict + merge `release/f2-employee-auth-ui-l9` → `011-reporting-projections`.
+🔀 **Lifecycle — F3-AUTH / F2-Production-Hardening** (Sprint A kickoff) — W2-CLOSE COMPLETE; prerequisite met for F3-AUTH.
 
 ---
 
 ## 2. Active Feature Map
 
-| ID | Title | Status | Stage | Blocker | Canonical artifact |
-|----|-------|--------|-------|---------|-------------------|
-| UI-M1 | Manager Dashboard | OBSERVED-L8-COMPLETE | L9-**BLOCKED** | G3 conflict + Lead merge | `l9-merge-checklist-dormitory-admin-ui.md` |
-| UI-M2 | Unit-Manager Dashboard | SCHEDULED-W3 | L3-not-started | W1/W2 gate | — |
-| UI-A1 | Auth layout / dual-guard | OBSERVED-COMPLETE | L8-done | — | W1-A1 waiver active |
+| ID | Title | Status | Stage | Blocker |
+|----|-------|--------|-------|---------|
+| UI-M1 | Manager Dashboard | OBSERVED-L8-COMPLETE | L9 merge deferred post-F3 | GAP-GOV-02 |
+| UI-M2 | Unit-Manager Dashboard | READY-FOR-L3 | W3 scheduled | — |
+| UI-A1 | Auth layout | COMPLETE | L8 done | — |
 
 ---
 
 ## 6. Lifecycle Matrix
 
-| Feature | L0 | L1 | L2 | L3 | L5 | L6 | L7 | L8 | L9 |
-|---------|----|----|----|----|----|----|----|----|-----|
-| UI-M1 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| UI-M2 | ✅ | ✅ | ✅ | — | — | — | — | — | — |
-| UI-A1 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⏳ |
+| Feature | L3 | L8 | L9 |
+|---------|----|----|-----|
+| UI-M1 | ✅ | ✅ | ⏳ deferred post-F3 (GAP-GOV-02) |
+| UI-M2 | — | — | — |
+| UI-A1 | ✅ | ✅ | ⏳ |
 
 ---
 
-## 7. Next Step (rewritten every prompt)
+## 7. Next Step
 
-**Action:** Lead manually (1) commit unstaged W1 docs + R2 config files, (2) resolve `bootstrap/app.php` when merging into `011-reporting-projections`, (3) record merge SHA.  
+**Action:** F3-AUTH Sprint A Kickoff (read-only gap list) → Lead defines Sprint A backlog.  
 **Owner:** Lead  
-**Gate:** G3 clean merge (Lead-owned); Cursor does **not** run git write commands  
-**Target files:** unstaged list below; `bootstrap/app.php`  
-**Done when:** Lead merge SHA recorded; UI-M1 → MERGED/CLOSED  
-**Blocker:** G3 — `CONFLICT (content): bootstrap/app.php` (observed dry-run 2026-07-16; still present on branch tip)
+**Gate:** F3-AUTH Sprint A Kickoff  
+**Done when:** Kickoff gap list accepted; backlog authorized  
+**Blocker:** GAP-GOV-02 deferred post-F3 (not blocking W2-CLOSE)  
 
 **Suggested user prompt:**
-> (Lead) After committing WD and resolving bootstrap/app.php, update project-state with merge SHA → then W2.
+> Lead: review F3-AUTH kickoff gap list; authorize Sprint A backlog items.
 
 ---
 
-## 8. Gap Registry (selected)
+## 8. Gap Registry
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| GAP-DOC-04 | **RESOLVED** | Checklist refreshed 2026-07-16 |
-| GAP-GOV-01 | **RESOLVED** | W1-A1 recorded |
-| GAP-GOV-02 | OPEN | merge blocked — Lead-owned |
-| GAP-GOV-03 | **CLOSED** | BL-01…04 in `risk-register.md` |
-| GAP-MERGE-01 | **OPEN** | `bootstrap/app.php` conflict |
+| GAP-GOV-02 | **OPEN** | UI-M1 merge **deferred post-F3** (Lead W2-CLOSE) |
+| GAP-N11-01 | **OPEN** | CI — not a doc-lag mirror |
+| GAP-HD-07 | **OPEN** | closeout depth — decision-pending (Wave 2 timing) |
+| GAP-W2-MEDIUM | **CLOSED** | #11–#16 applied |
+| Gap 3 / AuditPermission checklist | **OPEN** | out of W2-MEDIUM scope |
+| P-lane / DGAP parked | **PARKED** | pre-existing |
 
-### Unstaged files — D2 classification (report only; no Cursor action)
-
-| File | Rule | Classification note |
-|------|------|---------------------|
-| `composer.json` | **R2** | CI/runtime config — phpstan `--no-progress` |
-| `.github/workflows/tests.yml` | **R2** | CI config — `composer run test` |
-| `docs/governance/open-decisions.md` | **R2** | AUTH-013 + W1-A1 |
-| `docs/governance/project-state.md` | **R2** | session snapshot |
-| `docs/governance/roadmap.md` | **R2** | wave sequencing |
-| `docs/governance/risk-register.md` | **R2** | BL-01…04 tracker |
-| `.specify/docs/spec-catalog.md` | **R2** | AUTH-013 dispositions |
-| `.specify/governance/l9-merge-checklist-dormitory-admin-ui.md` | **R2** | refreshed L9 checklist |
-
-No **R1** (generated/cache/IDE). No **R3** (ambiguous).
+**W2 acceptance:** **W2-CLOSE COMPLETE.** D4 scan **waived**; D3 accepted as sufficient. W2-MEDIUM produced **zero** new open decisions (Lead confirmed).

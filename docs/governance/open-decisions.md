@@ -14,7 +14,7 @@
 |----|-----|---------|---------|----------------|--------------------|--------|-------|
 | DG-01 | مالکیت boundary F2 و زمان باز شدن آن | Scope Ownership | A) F2 در مالکیت همین ماژول باقی بماند B) F2 به یک boundary مستقل منتقل شود C) F2 به backlog defer شود با owner مشخص و reopen trigger صریح | Lead | شروع برنامه‌ریزی Phase F | RESOLVED | F2 deferred. **B1 removal COMPLETE** (Round 2.1); deleted assignment tests → **BL-B1-01** in `docs/governance/risk-register.md`. RESOLVED at F2 kick-off: F2 proceeds as an independent boundary `employee-auth-ui`. B1 removal remains final; removed tests remain tracked under BL-B1-01 (unchanged, still Open/Deferred). |
 | DG-02 | تعریف دقیق Phase F: narrow vs broad | Phase F Definition | A) Phase F فقط employee-records باشد (narrow) B) Phase F شامل UI و Auth مرتبط هم باشد (broad) C) Phase F به دو زیرفاز تقسیم شود | Lead | قبل از L0 Phase F | DECIDED | F1 (employee-records — تکمیل‌شده) و F2 (UI/Auth) — split per Option C. F2 status **PARTIAL** (W-01…W-08 CLOSED — `docs/features/employee-auth-ui/work-breakdown.md:14`; F-W07-04 CARRIED FORWARD — `docs/features/employee-auth-ui/w07-security-review-report.md:19`). Prior “F2 ACTIVE” note superseded. (reconciled 2026-07-15, ref: DGAP-12) |
-| DG-03 | مالکیت Identity Helper: ماژولی vs shared kernel | Identity Helper Ownership | A) Identity Helper در مالکیت dormitory-admin-ui بماند B) به shared kernel منتقل شود C) implementation محلی در هر boundary تا زمان تصمیم shared-kernel مجاز بماند | Lead | قبل از استفاده در boundary دوم | RESOLVED | Reopen trigger met (second consumer = employee-auth-ui). Lead: migrate IdentityRoleGuard to Shared Kernel. **W-06 executed:** `app/Shared/Auth/IdentityRoleGuard.php`. W-07/W-08 subsequently **CLOSED** (`work-breakdown.md:11-12`). (reconciled 2026-07-15, ref: DGAP-12) |
+| DG-03 | مالکیت Identity Helper: ماژولی vs shared kernel | Identity Helper Ownership | A) Identity Helper در مالکیت dormitory-admin-ui بماند B) به shared kernel منتقل شود C) implementation محلی در هر boundary تا زمان تصمیم shared-kernel مجاز بماند | Lead | قبل از استفاده در boundary دوم | **CLOSED** | **Selected Option B** (Lead ruling **AUTH-013**, Resolution Date **2026-07-16**). IdentityRoleGuard → Shared Kernel. **W-06 executed:** `app/Shared/Auth/IdentityRoleGuard.php`. W-07/W-08 **CLOSED**. Evidence: AUTH-013. |
 | DG-04 | مالک ریسک‌های پذیرفته‌شده و cadence بازبینی | Governance | A) Lead مالک تمام accepted risks باشد، بازبینی ۶ ماهه B) هر boundary مالک ریسک‌های خود باشد C) یک Risk Register مرکزی با مالک مشخص per-risk | Lead | قبل از merge PR فاز G | DECIDED | **DELIVERED** `docs/governance/risk-register.md` (1405/04/24). SEC-G-04 + BL-B1-01 seeded. |
 | DG-05 | سیاست استفاده از Student vs Employee در UI و کد | Terminology | A) Student در UI عمومی، Employee در کد داخلی B) یکسان‌سازی کامل روی یک واژه C) glossary رسمی با mapping صریح | Lead | قبل از شروع Phase F UI | DECIDED | **DELIVERED** `docs/governance/glossary.md` (1405/04/24). Student ↔ Employee mapping. |
 | DGAP-07 | F2 W-02: Eloquent/Application relation UserModel↔Employee vs `identity_id` UUID value-reference | Domain Gap / F2 W-02 | A) UUID reference sufficient — close W-02 as-is B) Eloquent relation required — new scoped work item, NOT silent code addition | Lead | F2 W-07/W-08 scoping | DECIDED | **Selected A** (Lead, 2026/07/15): UUID value-reference sufficient — close W-02 as-is. No Eloquent/Application UserModel↔Employee relation required. Source: Domain Gap Audit 2026-07-15. |
@@ -68,10 +68,13 @@
 
 ### DG-03
 
-- **Selected Option:** A
-- **Decided-On:** 1405/04/24
+- **Selected Option:** B
+- **Status:** CLOSED
+- **Decided-On / Resolution Date:** 2026-07-16
+- **Evidence:** AUTH-013
 - **Decision-Owner:** Lead
-- **Decision-Method:** Evidence-grounded Options (طبق governance method پروژه)
+- **Decision-Method:** Lead ruling AUTH-013 (W2-FIX Group D); Shared Kernel migration executed as W-06
+- **Prior metadata note:** Historical 1405/04/24 row recorded Option A; superseded by AUTH-013 Option B (2026-07-16)
 
 ### DG-04
 
@@ -211,9 +214,9 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
   - **UI-M1:** Manager Dashboard — wire data (dep: BL-B1-01).
   - **UI-M2:** Unit-Manager Dashboard — wire data (dep: BL-B1-01).
   - **UI-A1:** Auth layout / identity guard integration (`IdentityRoleGuard`, dual-guard). Assignment schema/UI is **not** UI-A1; propose **UI-A2** separately if needed.
-  - **Artifact:** `docs/governance/roadmap.md` § **F3 — Catalog (Sprint A)** (all three items **PENDING**).
+  - **Artifact:** `docs/governance/roadmap.md` § **F3 — Catalog (Sprint A)** — statuses synced W2 (2026-07-18): UI-M1 L8/L9-pending; UI-M2 READY FOR L3; UI-A1 L8 COMPLETE.
   - **Phase entry:** F3 **ACTIVE — Sprint A**. Docs-only; no PHP/migrations authorized by this closure.
-- **Follow-up (open):** Implement / L3 per UI-M1/M2/A1 under separate Lead authorization. F-W07-04 remains CARRIED FORWARD (target F3 Sprint A or later) under F2 ID.
+- **Follow-up:** UI-M1 L9 merge SHA pending Lead (GAP-GOV-02). UI-M2 L3 → W3. F-W07-04 → **F3 Sprint B** (HD-05A).
 
 ### DGAP-12
 
@@ -294,6 +297,7 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 - **Decided-On:** 1405/04/25 (2026/07/16)
 - **Decision-Owner:** Lead
 - **Rationale:** Docs-only closure per spec03 pattern; execute after merge (W2), not before.
+- **W2 hygiene note (2026-07-18):** Decision remains **DECIDED — A**. Full closeout package (spec03-pattern handoff) **not authored in this hygiene pass** — awaiting Lead confirmation of artifact depth (see W2 D3). Catalog already annotated `DELIVERED-NEEDS-CLOSEOUT` / Frozen Wave 1A.
 
 ### UI-M1 residual test-coverage risk — ACCEPTED (Lead, 2026-07-16)
 
@@ -362,6 +366,8 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| ۱۴۰۵/۰۴/۲۷ (2026-07-18) | **W2-FIX Group D:** DG-03 → **CLOSED**, Selected Option **B**, Resolution Date **2026-07-16**, Evidence **AUTH-013**. Docs-only. | Agent (Lead W2-FIX auth) |
+| ۱۴۰۵/۰۴/۲۷ (2026/07/18) | **W2 Documentation Hygiene (facts sync):** GAP-DOC-01/02/03 + GAP-UI-M1-01 closed in docs; F-W07-04 advisory text → Sprint B (HD-05A already decided). No new decision. HD-07 / N-11 remain for Lead depth choice (D3). | Agent (Lead W2 auth) |
 | ۱۴۰۵/۰۴/۲۵ (2026/07/16) | **AUTH-013 W0:** AUTH-012 disposition CONFIRMED (18 rows); HD-01…HD-07 recorded verbatim; F-W07-04 target → F3 Sprint B; DGAP-08 re-entry trigger set. Docs-only. | Agent (Lead AUTH-013) |
 | ۱۴۰۵/۰۴/۲۵ (2026/07/16) | **UI-M1-COV ACCEPTED:** residual coverage S-2/S-4/S-5 accepted at UI-M1 L8 closeout; dedicated-test-DB hygiene noted; S-6 soft-delete fixture test added. | Agent (Lead AUTHORIZE L8-TEST-ADD + closeout) |
 | ۱۴۰۵/۰۴/۲۵ (2026/07/16) | **DGAP-09 RE-FROZEN** after scoped BL-B1-01 unfreeze+execute (RM-BL-B1). BL-B1-01 → RESOLVED (pending Lead commit). | Agent (Lead AUTHORIZE ALL) |

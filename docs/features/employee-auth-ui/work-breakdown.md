@@ -17,4 +17,4 @@
 
 **Phase status (reconciled 2026-07-15, ref: DGAP-12):** Program F2 is **PARTIAL** — boundary W-items closed above; residual **F-W07-04 CARRIED FORWARD** (`w07-security-review-report.md:19`). Not COMPLETE.
 
-**UI entry:** Not authorized. Next gates = Product authorization for **new** UI slug → Feature Contract → Implementation authorization. Spec04 / DGAP-03/05/06/08 / BL-B1-01 remain parked / deferred as applicable.
+**UI entry:** Not authorized. Next gates = Product authorization for **new** UI slug → Feature Contract → Implementation authorization. Spec04 / DGAP-03/05/06/08 remain parked / deferred as applicable. **BL-B1-01 — RESOLVED** in commit `369a106` — assignment schema + dashboard scoping (RM-BL-B1).
