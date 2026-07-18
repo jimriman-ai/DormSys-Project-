@@ -205,6 +205,16 @@ As an employee, I need to register a **LotteryRegistration** request type so tha
 
 ## Assumptions & Recorded Decisions
 
+### OA-05-00 — Stage vocabulary vs Stage-1 auth role (SB-D2=A, DECIDED)
+
+**Dual-model note (SB-D2 Option A):** Persisted **business-stage** vocabulary remains department-oriented per DGAP-05 A:
+
+- request status `pending_department_manager` (`PendingDepartmentManagerState::$name`)
+- `ApprovalStage::DepartmentManager = 'department_manager'`
+- settings key `request.approval.auto.department_manager`
+
+The Spatie **auth role** for the Stage-1 actor on the identity guard is `dormitory-manager` per DGAP-13. **Stage name ≠ auth role**, by design. Do not rename persisted stage strings under SB-D2=A.
+
 ### OA-05-01 — Request state machine scope (DECIDED)
 
 **Decision:** spec05 implements the full **approval-phase** state machine:

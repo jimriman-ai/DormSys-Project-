@@ -1,0 +1,6 @@
+prompt_id: sprint-b-phase3-sb-d1-d5
+recorded_at: 2026-07-18T18:20:00+00:00
+work_item: sprint-b-phase3
+stage: execution-verification
+tags: [SAFE_PROGRESS, EVIDENCE_GAP]
+summary: "Host-side php artisan test cannot resolve DB_HOST=pgsql (phpunit.xml:31); Sail feature/full suite must run via docker exec dormsysproject-laravel.test-1. Mutation sanity (inverted 403) correctly failed then was reverted."

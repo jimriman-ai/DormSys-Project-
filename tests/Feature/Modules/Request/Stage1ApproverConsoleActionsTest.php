@@ -73,16 +73,19 @@ function createDormitoryManagerApproverForStage1Console(): array
 }
 
 /**
+ * Non-approver identity for Stage-1 gate negative tests (SB-D1=A).
+ * Holds `employee` only — must NOT use ROLE_DEPT_MGR (alias of dormitory-manager).
+ *
  * @return array{model: UserModel, approverId: ApproverReferenceId}
  */
-function createDeptMgrOnlyIdentityForStage1Console(): array
+function createNonApproverIdentityForStage1Console(): array
 {
     $user = createIdentityUserThroughMutation(
-        'Stage1 DeptMgr Only',
-        'stage1.deptmgr.'.uniqid('', true).'@example.com',
+        'Stage1 Non-Approver',
+        'stage1.nonapprover.'.uniqid('', true).'@example.com',
     );
     $model = UserModel::query()->findOrFail($user->requireId()->value);
-    $role = Role::findOrCreate(IdentityRoleSeeder::ROLE_DEPT_MGR, 'identity');
+    $role = Role::findOrCreate(IdentityRoleSeeder::ROLE_EMPLOYEE, 'identity');
     $model->assignRole($role);
     app(PermissionRegistrar::class)->forgetCachedPermissions();
 
@@ -127,16 +130,16 @@ it('blocks stage-1 approve when actor lacks dormitory-manager identity role', fu
     ))->toThrow(HttpException::class);
 });
 
-it('rejects DeptMgr-only identity on stage-1 approve gate (403)', function (): void {
+it('rejects employee-only identity on stage-1 approve gate (403)', function (): void {
     $submitted = createSubmittedStage1PersonalRequest();
-    $deptMgr = createDeptMgrOnlyIdentityForStage1Console();
-    $this->actingAs($deptMgr['model'], 'identity');
+    $nonApprover = createNonApproverIdentityForStage1Console();
+    $this->actingAs($nonApprover['model'], 'identity');
 
     expect(fn () => asRequestMutationPrincipal(
-        $deptMgr['approverId']->value,
+        $nonApprover['approverId']->value,
         fn () => app(ApproveStage1RequestAction::class)->execute(
             $submitted->requireId(),
-            $deptMgr['approverId'],
+            $nonApprover['approverId'],
         ),
     ))->toThrow(HttpException::class);
 });

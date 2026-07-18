@@ -30,7 +30,12 @@ class IdentityRoleSeeder extends Seeder
     /** [PERMIT-ID: IMPL-PERMIT-01] §2.3 / OQ-AUTH-01 B — employee self-service. */
     public const string ROLE_EMPLOYEE = 'employee';
 
-    /** [PERMIT-ID: IMPL-PERMIT-01] §2.3 / OQ-AUTH-01 B — Stage-1 dormitory-manager approver console. */
+    /**
+     * [PERMIT-ID: IMPL-PERMIT-01] §2.3 / OQ-AUTH-01 B — Stage-1 dormitory-manager approver console.
+     *
+     * @deprecated SB-D1=A (Sprint B): deprecated alias of {@see self::ROLE_DORMITORY_MANAGER}.
+     *             String value remains `dormitory-manager` — do not treat as a distinct Spatie role.
+     */
     public const string ROLE_DEPT_MGR = 'dormitory-manager';
 
     public const string PERMISSION_AUDIT_READ = 'audit.read';
