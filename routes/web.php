@@ -6,6 +6,7 @@ use App\Http\Controllers\EmployeeRecordController;
 use App\Http\Controllers\Web\AuthSessionController;
 use App\Modules\Audit\Presentation\Providers\AuditPresentationServiceProvider;
 use App\Modules\Auth\Presentation\Livewire\EmployeeLogin;
+use App\Modules\Dashboard\Presentation\Livewire\DashboardPage;
 use App\Modules\DormitoryAdmin\DormitoryManagerDashboard;
 use App\Modules\DormitoryAdmin\DormitoryUnitManagerDashboard;
 use App\Modules\Employee\Presentation\Providers\EmployeePresentationServiceProvider;
@@ -58,10 +59,13 @@ Route::post('/logout', [AuthSessionController::class, 'destroy'])
     ->middleware('auth:api,identity')
     ->name('logout');
 
+// WP-UI-C-DASH-01 — shared dashboard shell (replaces WP-UI-C-01-HOTFIX-01 redirect stub).
+Route::get('/dashboard', DashboardPage::class)
+    ->middleware(['auth:identity'])
+    ->name('dashboard');
+
 Route::middleware(['auth:api', 'request.mutation.principal', 'audit.principal'])->group(function (): void {
     Route::redirect('/', '/requests')->name('home');
-    // hotfix WP-UI-C-01-HOTFIX-01 — Laravel guest redirect prefers named route `dashboard`
-    Route::redirect('/dashboard', '/requests')->name('dashboard');
 
     Route::prefix('requests')->group(function (): void {
         Route::get('/', RequestListPage::class)->name('requests.index');

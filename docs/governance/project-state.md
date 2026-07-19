@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/28 | 2026-07-19 | Session: DBT-5 CLOSED — NOT-A-GAP; Hard STOP before DASH-01 lifted_
+_Last updated: 1405/04/28 | 2026-07-19 | Session: Lead confirm Q1–Q3 + DASH-01 closeout; parallel DASH-02 ‖ WP-UI-C-01-B_
 
-**Authority note:** Docs ledger only. No infra/phpunit change.
+**Authority note:** DASH-01 CLOSED in ledger. Commit pending / in-progress this turn.
 
 ---
 
@@ -13,15 +13,16 @@ _Last updated: 1405/04/28 | 2026-07-19 | Session: DBT-5 CLOSED — NOT-A-GAP; Ha
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| Close | DBT-5 (DGAP-15) | OPEN → **CLOSED — NOT-A-GAP (config/operational)** | `open-decisions.md` DBT-5 Decision Record |
-| Lift | Hard STOP before DASH-01 | active → **lifted** | Lead mitigation: single-suite / exclusive CI |
-| Note | WP write | open-decisions.md | no phpunit/compose/tests |
+| Confirm | Lead Q1–Q3 | all **APPROVED** | this prompt |
+| Record | DBT-3 HOTFIX drift | stub was `auth:api` pre-DASH-01 | `git show HEAD` vs DASH-01 diff |
+| Close | WP-UI-C-DASH-01 | DONE → **CLOSED** | `open-decisions.md` closeout block |
+| Next | parallel WPs | DASH-02 ‖ WP-UI-C-01-B | Session A / B v1.1 |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🔀 **Lifecycle — Sprint C** — next authorized track step: **DASH-01** (shell), pending separate WP auth
+🔀 **Lifecycle — Sprint C** — parallel ACTIVE: **DASH-02** (Session A) ‖ **WP-UI-C-01-B** (Session B)
 
 ---
 
@@ -29,10 +30,10 @@ _Last updated: 1405/04/28 | 2026-07-19 | Session: DBT-5 CLOSED — NOT-A-GAP; Ha
 
 | ID | Title | Status | Stage | Blocker |
 |----|-------|--------|-------|---------|
-| DGAP-15 / DASH-00 | Dashboard Decision Register | **CLOSED** | ledger | pending Lead commit |
-| DBT-5 / TEST-ISO-01 | Test DB Isolation | **CLOSED — NOT-A-GAP** | disposition | — |
-| DASH-01…05 | Dashboard track | **NOT-STARTED** | planned | DASH-01 WP auth; DBT-1 for DASH-03 |
-| WP-UI-C-01-B / DBT-1 | `listSites()` | **OPEN** | gap | blocks DASH-03 |
+| WP-UI-C-DASH-01 | Dashboard shell | **CLOSED** | historical | — |
+| WP-UI-C-DASH-02 | Role-aware nav | **ACTIVE** | Session A | — |
+| WP-UI-C-01-B | listSites() DBT-1 | **ACTIVE** | Session B (parallel) | — |
+| DASH-03…05 | landings / redirect | **NOT-STARTED** | planned | DBT-1 for DASH-03 |
 
 ---
 
@@ -40,22 +41,23 @@ _Last updated: 1405/04/28 | 2026-07-19 | Session: DBT-5 CLOSED — NOT-A-GAP; Ha
 
 | Feature | L3 | L6 | L8 | L9 | Notes |
 |---------|----|----|----|----|-------|
-| DBT-5 Test DB Isolation | — | — | — | — | CLOSED NOT-A-GAP; concurrent-suite residual accepted |
-| DASH-00 / DGAP-15 | — | — | — | — | CLOSED; sequence unblocked for DASH-01 |
+| DASH-01 Shell | ✅ | — | ✅ | — | CLOSED; Feature 739 green |
+| DASH-02 Nav | ⏳ | — | — | — | ACTIVE Session A |
+| WP-UI-C-01-B | ⏳ | — | — | — | ACTIVE Session B |
 
 ---
 
 ## 7. Next Step
 
-**Action:** Lead authorize / issue DASH-01 (dashboard shell `components.layouts.dashboard`).  
-**Owner:** Lead → Cursor  
-**Gate:** none from DBT-5 (lifted); DASH-01 needs its own WP  
-**Target files:** layout + route smoke (per DASH-01 WP)  
-**Done when:** DASH-01 WP issued and executed  
-**Blocker:** none for starting DASH-01 auth  
+**Action:** Run Session A (DASH-02) and Session B (WP-UI-C-01-B) in separate chats; do not cross-touch files.  
+**Owner:** Cursor (per session)  
+**Gate:** none between them (nav is role-only; listSites is contract — collision only if A reaches for listSites → STOP)  
+**Target files:** A: layout/composer/nav; B: DormitoryReadContract + bridge + form select  
+**Done when:** each WP green in its session  
+**Blocker:** none  
 
 **Suggested user prompt:**
-> Issue WP-UI-C-DASH-01 — Dashboard Shell (layouts.dashboard).
+> Paste Session A or Session B v1.1 prompt into a dedicated chat.
 
 ---
 
@@ -63,11 +65,9 @@ _Last updated: 1405/04/28 | 2026-07-19 | Session: DBT-5 CLOSED — NOT-A-GAP; Ha
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| DASH-00 ledger | **CLOSED** | DGAP-15 |
-| DBT-5 Test DB Isolation | **CLOSED — NOT-A-GAP** | concurrent suites on `testing`; mitigation operational |
-| WP-UI-C-01-B / DBT-1 listSites | **OPEN** | blocks DASH-03 |
-| DBT-2 Role-aware redirect | **OPEN** | DASH-05 |
-| DBT-3 Mixed auth:api / identity | **OPEN** | Hard STOP debt |
-| DBT-4 Admin on web | **OPEN** | debt |
-| DBT-6 transitional route | **OPEN** | cleanup |
-| DBT-7 RequestCreatePage docs | **OPEN** | DOC-SYNC |
+| DASH-01 | **CLOSED** | Q1–Q3 confirmed |
+| DBT-5 | **CLOSED — NOT-A-GAP** | — |
+| DBT-3 | **OPEN** | HOTFIX narrative drift noted; migrate Hard STOP |
+| DBT-1 listSites | **OPEN** | Session B ACTIVE |
+| DBT-2 role redirect | **OPEN** | DASH-05 |
+| DBT-4 / DBT-6 / DBT-7 | **OPEN** | debt |
