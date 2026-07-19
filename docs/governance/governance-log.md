@@ -18,3 +18,6 @@
 | 2026-07-19 | SB-D6 | ACCEPTED (A) | UI-M2 L3 ACCEPTED; L6+ pending PA-03 (WP-01 rev-4) |
 | 2026-07-19 | SB-D7 | ISSUED | UI-M2 L6+ Authorization ISSUED; auth_gate=`dormitory-unit-manager` (identity); Implementation Lock `docs/features/ui-m2/implementation-lock.md` | Lead |
 | 2026-07-19 | WP-UI-M2-01 | COMPLETED (WT) | Implementation Lock execute: verify/align-to-L3 PASS; no net-new surface; SHA UNVERIFIED until Lead commit |
+| 2026-07-19 | SB-D9 | ISSUED | F-W07-04 Wave 2 authorized: Stage-1 list/filter UX + tests; auth_gate=`dormitory-manager` unchanged | Lead |
+| 2026-07-19 | SB-D10 | ISSUED | Exempt registry classification for `ListPendingStage1RequestsAction` (read-only / MPEP discovery compatibility; no functional behavior change). Authority: Lead decision issued in-session during WP-RQ-W2-01 review; documentation recorded retroactively (WP-DOC-SYNC-01) | Lead |
+| 2026-07-19 | WP-RQ-W2-01 | COMPLETED (WT) | Wave 2 list/filter polish + FilterTest; Action signature unchanged; SHA UNVERIFIED until Lead commit |

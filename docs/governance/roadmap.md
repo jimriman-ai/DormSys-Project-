@@ -51,7 +51,7 @@
 | 1 | **RESIDUAL-01** | بررسی شناسه runtime: `ROLE_DEPT_MGR` (`IdentityRoleSeeder`) | OPEN — Sprint B |
 | 2 | **RESIDUAL-02** | بررسی نام کلاس دامنه: `PendingDepartmentManagerState` | OPEN — Sprint B |
 | 3 | **UI-M2** | Unit Manager Dashboard | **L6+ AUTHORIZED (SB-D7) — Lock COMPLETED (WP-UI-M2-01)** |
-| 4 | **F-W07-04** | Stage-1 approver console (`stage1-approver-console`) — Wave 1 list/filter | **Wave 1 ✅ COMPLETED** (**F-W07-04-D3**; FC ACCEPTED **D2**; slug **D1**) |
+| 4 | **F-W07-04** | Stage-1 approver console (`stage1-approver-console`) — Wave 1+2 list/filter | **Wave 1 ✅ D3**; **Wave 2 ✅ COMPLETED (WT)** (**SB-D9** / WP-RQ-W2-01; pending Lead commit) |
 
 > Sprint B backlog is sequencing guidance only. Implementation of each ID requires separate Lead authorization.
 
@@ -72,7 +72,7 @@
 
 **W2 acceptance criterion:** After W2, `project-state.md` §8 contains only decision-pending rows with explicit triggers — **zero open doc-lag rows**.
 
-**Current wave:** **Sprint B ACTIVE** (Lead CONFIRM 1405/04/27 \| 2026-07-18). Sprint A **CLOSED**. UI-M2 Lock **COMPLETED** (SB-D7 / WP-UI-M2-01; pending Lead commit). Backlog residual: Stage-1 Wave 2 UX tests (deferred per D3). F-W07-04 Wave 1 **COMPLETED** (D3). RESIDUAL-01/02 addressed under SB-D1/D2. GAP-GOV-02 tip SHA pending Lead commit.
+**Current wave:** **Sprint B ACTIVE** (Lead CONFIRM 1405/04/27 \| 2026-07-18). Sprint A **CLOSED**. UI-M2 Lock **COMPLETED** (SB-D7 / WP-UI-M2-01; pending Lead commit). F-W07-04 Wave 1 **COMPLETED** (D3). RESIDUAL-01/02 addressed under SB-D1/D2. GAP-GOV-02 tip SHA pending Lead commit.
 
 ---
 

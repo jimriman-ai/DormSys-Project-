@@ -56,6 +56,8 @@
 | OQ-AUTH-05 | Spec04 Auth Packet DRAFT → acceptance | Spec04 Auth / Governance | A) Accept after recorded/validated decisions (impl unauthorized) B) Keep DRAFT until named external deps resolved | Lead | Spec04 Auth packet | **DECIDED** | **Selected A** (Lead, 1405/04/27 \| 2026-07-18): governance-accepted artifact. No L5/L6/impl auth. DGAP-03/SGAP-05 unchanged. |
 | SB-D6 | UI-M2 L3 Spec ACCEPTED (PASS-with-fixes) | F3 / UI-M2 | A) Accept L3 (PASS-with-fixes) B) Reject C) Hold | Lead | WP-01 rev-4 | **DECIDED (A)** | L3 spec accepted; hygiene fixes C-1/C-2/G-3 authorized; L6+ implementation NOT authorized; Implementation Lock required |
 | SB-D7 | UI-M2 L6+ Authorization / Implementation Lock | F3 / UI-M2 | A) Issue L6+ + Lock B) Hold C) Reject | Lead | PA-03 PASS; WP-UI-M2-01 | **DECIDED (A) — ISSUED** | L6+ authorized under Lock; auth_gate=`dormitory-unit-manager` (identity); Lock=`docs/features/ui-m2/implementation-lock.md` |
+| SB-D9 | F-W07-04 Wave 2 (Stage-1 list/filter UX + tests) | F3 / stage1-approver-console | A) Authorize Wave 2 B) Hold C) Reject | Lead | F-W07-04-D3; WP-RQ-W2-01 | **DECIDED (A) — ISSUED** | Wave 2 list/filter UX + tests; auth_gate=`dormitory-manager` unchanged; no schema/role-split |
+| SB-D10 | Exempt registry classification — `ListPendingStage1RequestsAction` | F3 / stage1-approver-console / MPEP | A) Issue read-only exempt classification B) Hold C) Reject | Lead | WP-RQ-W2-01 review session | **DECIDED (A) — ISSUED** | Read-only registry classification for MPEP discovery compatibility; no functional behavior change. Authority: Lead in-session during WP-RQ-W2-01; recording: retroactive (WP-DOC-SYNC-01) |
 
 ---
 
@@ -513,6 +515,8 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| ۱۴۰۵/۰۴/۲۸ (2026-07-19) | **SB-D10 DECIDED (A) — ISSUED (retroactive record):** Exempt registry classification for `ListPendingStage1RequestsAction` (MPEP discovery compatibility; no functional behavior change). Authority: Lead in-session during WP-RQ-W2-01 review; documentation recorded retroactively (WP-DOC-SYNC-01). | Agent (Lead WP-DOC-SYNC-01) |
+| ۱۴۰۵/۰۴/۲۸ (2026-07-19) | **SB-D9 DECIDED (A) — ISSUED:** F-W07-04 Wave 2 (Stage-1 list/filter UX + tests). auth_gate=`dormitory-manager` unchanged. WP-RQ-W2-01. | Agent (Lead WP-RQ-W2-01) |
 | ۱۴۰۵/۰۴/۲۸ (2026-07-19) | **SB-D7 DECIDED (A) — ISSUED:** UI-M2 L6+ Authorization + Implementation Lock. auth_gate=`dormitory-unit-manager`. Lock=`docs/features/ui-m2/implementation-lock.md`. WP-UI-M2-01 verify/align-to-L3. | Agent (Lead WP-UI-M2-01) |
 | ۱۴۰۵/۰۴/۲۸ (2026-07-19) | **SB-D6 DECIDED (A):** UI-M2 L3 Spec ACCEPTED (PASS-with-fixes). Hygiene C-1/C-2/G-3 authorized. L6+ NOT authorized; Implementation Lock required. WP-01 rev-4. SB-D1…D5 unmodified. | Agent (Lead WP-01 rev-4) |
 | ۱۴۰۵/۰۴/۲۸ (2026-07-19) | **PA-01 DOC sync:** F-W07-04 § → Wave 1 COMPLETED (**D3**); F2 notes → **PASS** (**D2**). **DGAP-14** verified already **DECIDED** with inventory dispositions — status unchanged (not reopened). Trailing orphan diff fragment removed. No new decision. | Agent (PA-01) |

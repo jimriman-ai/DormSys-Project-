@@ -18,6 +18,7 @@ use App\Modules\Reporting\Application\Services\QueryEntityAuditTimelineAction;
 use App\Modules\Reporting\Application\Services\QuerySecurityActorActivityAction;
 use App\Modules\Request\Application\Services\ApproveStage1RequestAction;
 use App\Modules\Request\Application\Services\AssignStage1ApproverSnapshotAction;
+use App\Modules\Request\Application\Services\ListPendingStage1RequestsAction;
 use App\Modules\Request\Application\Services\RejectStage1RequestAction;
 
 final class ExemptMutationActionRegistry
@@ -30,6 +31,7 @@ final class ExemptMutationActionRegistry
     private const EXEMPT = [
         ApproveStage1RequestAction::class,
         AssignStage1ApproverSnapshotAction::class,
+        ListPendingStage1RequestsAction::class,
         RejectStage1RequestAction::class,
         RecordAuditAction::class,
         QueryAuditHistoryAction::class,

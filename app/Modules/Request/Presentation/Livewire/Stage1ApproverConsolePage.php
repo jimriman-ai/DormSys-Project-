@@ -15,23 +15,30 @@ use App\Support\Presentation\Concerns\HandlesUiMutationFeedback;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 
 /**
  * [PERMIT-ID: IMPL-PERMIT-03] Stage-1 Approver Console — approve/reject via Application Actions.
  * Gate role: dormitory-manager (DGAP-13 / Lead DGAP-09 scoped).
- * F-W07-04 implementation lock: list/filter/polish under /approvals/stage1.
+ * F-W07-04 Wave 2: list/filter/polish UX under /approvals/stage1 (SB-D9).
  */
 #[Layout('components.layouts.app')]
 final class Stage1ApproverConsolePage extends Component
 {
     use HandlesUiMutationFeedback;
 
+    private const int PER_PAGE = 10;
+
     public ?string $requestId = null;
 
     public string $rejectionReason = '';
 
+    #[Url(as: 'q', except: '')]
     public string $search = '';
+
+    #[Url(as: 'page', except: 1)]
+    public int $page = 1;
 
     /**
      * Presentation rows for the pending Stage-1 queue (Livewire-serializable).
@@ -53,7 +60,25 @@ final class Stage1ApproverConsolePage extends Component
 
     public function updatedSearch(): void
     {
+        $this->page = 1;
         $this->loadRequests();
+    }
+
+    public function updatedPage(): void
+    {
+        $this->page = max(1, $this->page);
+    }
+
+    public function clearSearch(): void
+    {
+        $this->search = '';
+        $this->page = 1;
+        $this->loadRequests();
+    }
+
+    public function goToPage(int $page): void
+    {
+        $this->page = max(1, $page);
     }
 
     public function loadRequests(): void
@@ -134,8 +159,22 @@ final class Stage1ApproverConsolePage extends Component
     {
         IdentityRoleGuard::assertDormitoryManager();
 
+        $needle = trim($this->search);
+        $total = $this->pendingRequests->count();
+        $lastPage = max(1, (int) ceil($total / self::PER_PAGE));
+        $page = min(max(1, $this->page), $lastPage);
+        $visibleRequests = $this->pendingRequests
+            ->forPage($page, self::PER_PAGE)
+            ->values();
+
         return view('livewire.request.stage1-approver-console-page', [
             'requestId' => $this->requestId,
+            'visibleRequests' => $visibleRequests,
+            'listTotal' => $total,
+            'listPage' => $page,
+            'listLastPage' => $lastPage,
+            'isQueueEmpty' => $needle === '' && $total === 0,
+            'isFilterEmpty' => $needle !== '' && $total === 0,
         ]);
     }
 

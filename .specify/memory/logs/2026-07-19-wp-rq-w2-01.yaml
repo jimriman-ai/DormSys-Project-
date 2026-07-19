@@ -1,0 +1,6 @@
+prompt_id: WP-RQ-W2-01
+recorded_at: 2026-07-19T14:30:00+03:30
+work_item: F-W07-04-Wave2
+stage: L6-Implementation
+tags: [EVIDENCE_GAP, CHANGES_REQUIRED, SAFE_PROGRESS]
+summary: "Wave 2 list/filter UX tests completed under SB-D9; full suite exposed ListPendingStage1RequestsAction as unaccounted *Action requiring ExemptMutationActionRegistry (read-only) outside L1 allow-list — registered as verify companion."

@@ -1,24 +1,58 @@
-{{-- [PERMIT-ID: IMPL-PERMIT-03] Stage-1 Approver Console — approve/reject + F-W07-04 list/filter --}}
+{{-- [PERMIT-ID: IMPL-PERMIT-03] Stage-1 Approver Console — approve/reject + F-W07-04 Wave 2 list/filter --}}
 <div class="mx-auto max-w-4xl px-4 py-8" dir="rtl">
-    <h1 class="text-xl font-semibold text-slate-900">کنسول تأیید مرحله یک (مدیر واحد)</h1>
+    <h1 class="text-xl font-semibold text-slate-900">کنسول تأیید مرحله یک</h1>
     <p class="mt-2 text-sm text-slate-600">
-        تأیید یا رد درخواست‌های در انتظار مدیر واحد.
+        تأیید یا رد درخواست‌های صف مرحله یک.
+        <span class="block mt-1 text-xs text-slate-500" data-testid="stage1-stage-label">
+            {{-- Display mapping only (SB-D2): business stage pending_department_manager → Persian label; auth role remains dormitory-manager. --}}
+            وضعیت صف: در انتظار مدیر واحد · نقش دسترسی: مدیر خوابگاه
+        </span>
     </p>
 
     @if (! $requestId)
-        <div class="mt-6">
-            <label for="stage1-search" class="block text-sm font-medium text-slate-700">جستجو</label>
-            <input
-                id="stage1-search"
-                type="search"
-                wire:model.live="search"
-                placeholder="شناسه درخواست، کد، یا شناسه کارمند"
-                class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
-            />
+        <div class="mt-6 space-y-3">
+            <div class="flex flex-wrap items-end gap-3">
+                <div class="min-w-[16rem] flex-1">
+                    <label for="stage1-search" class="block text-sm font-medium text-slate-700">جستجو</label>
+                    <input
+                        id="stage1-search"
+                        type="search"
+                        wire:model.live.debounce.300ms="search"
+                        placeholder="شناسه درخواست، کد، یا شناسه کارمند"
+                        class="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+                        data-testid="stage1-search-input"
+                    />
+                </div>
+                @if (trim($search) !== '')
+                    <button
+                        type="button"
+                        wire:click="clearSearch"
+                        class="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                        data-testid="stage1-search-clear"
+                    >
+                        پاک کردن
+                    </button>
+                @endif
+            </div>
+
+            <div
+                wire:loading
+                wire:target="search,clearSearch,loadRequests,goToPage,page"
+                class="text-xs text-slate-500"
+                data-testid="stage1-pending-loading"
+            >
+                در حال به‌روزرسانی فهرست…
+            </div>
+
+            @if ($listTotal > 0)
+                <p class="text-xs text-slate-500" data-testid="stage1-pending-count">
+                    {{ $listTotal }} درخواست · صفحه {{ $listPage }} از {{ $listLastPage }}
+                </p>
+            @endif
         </div>
 
         <ul class="mt-6 space-y-3" data-testid="stage1-pending-list">
-            @forelse ($pendingRequests as $req)
+            @forelse ($visibleRequests as $req)
                 <li
                     class="rounded-lg border border-slate-200 bg-white p-4"
                     data-testid="stage1-pending-row"
@@ -40,11 +74,40 @@
                     </a>
                 </li>
             @empty
-                <li class="text-sm text-slate-600" data-testid="stage1-pending-empty">
-                    هیچ درخواست در انتظاری وجود ندارد
-                </li>
+                @if ($isFilterEmpty)
+                    <li class="text-sm text-slate-600" data-testid="stage1-pending-filter-empty">
+                        نتیجه‌ای برای این جستجو یافت نشد.
+                    </li>
+                @else
+                    <li class="text-sm text-slate-600" data-testid="stage1-pending-empty">
+                        هیچ درخواست در انتظاری وجود ندارد
+                    </li>
+                @endif
             @endforelse
         </ul>
+
+        @if ($listLastPage > 1)
+            <nav class="mt-4 flex items-center justify-center gap-3" aria-label="صفحه‌بندی صف مرحله یک" data-testid="stage1-pending-pagination">
+                <button
+                    type="button"
+                    wire:click="goToPage({{ max(1, $listPage - 1) }})"
+                    @disabled($listPage <= 1)
+                    class="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 disabled:opacity-40"
+                    data-testid="stage1-page-prev"
+                >
+                    قبلی
+                </button>
+                <button
+                    type="button"
+                    wire:click="goToPage({{ min($listLastPage, $listPage + 1) }})"
+                    @disabled($listPage >= $listLastPage)
+                    class="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 disabled:opacity-40"
+                    data-testid="stage1-page-next"
+                >
+                    بعدی
+                </button>
+            </nav>
+        @endif
     @endif
 
     @if ($requestId)

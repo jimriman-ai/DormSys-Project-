@@ -35,6 +35,23 @@ afterEach(function (): void {
     Carbon::setTestNow();
 });
 
+function uniqueNationalCodeForStage1ConsoleTest(): NationalCode
+{
+    for ($attempt = 0; $attempt < 100; $attempt++) {
+        $nine = str_pad((string) random_int(100000000, 999999999), 9, '0', STR_PAD_LEFT);
+
+        for ($check = 0; $check <= 9; $check++) {
+            $candidate = $nine.(string) $check;
+
+            if (NationalCode::isValid($candidate)) {
+                return NationalCode::fromString($candidate);
+            }
+        }
+    }
+
+    throw new RuntimeException('Could not generate a valid national code for Stage-1 console test.');
+}
+
 function createEmployeeForStage1ConsoleTest(): Employee
 {
     $user = createIdentityUserThroughMutation(
@@ -47,7 +64,7 @@ function createEmployeeForStage1ConsoleTest(): Employee
         employeeCode: 'EMP-S1-'.substr(uniqid('', true), -6),
         firstName: 'Stage1',
         lastName: 'Employee',
-        nationalCode: NationalCode::fromString('0499370899'),
+        nationalCode: uniqueNationalCodeForStage1ConsoleTest(),
         hireDate: new DateTimeImmutable('2024-01-01'),
     );
 }
