@@ -1,6 +1,6 @@
 # L3 Spec — employee-auth-ui
 
-**Lifecycle status:** **L9-pending (L8-COMPLETE)** — W-01…W-08 CLOSED (`work-breakdown.md`); residual F-W07-04 CARRIED FORWARD does not reopen L6/L7/L8 for closed boundary items.
+**Lifecycle status:** **L9-pending (L8-COMPLETE)** — W-01…W-08 CLOSED (`work-breakdown.md`); F-W07-04 Wave 1 **COMPLETED** (**F-W07-04-D3**) does not reopen L6/L7/L8 for closed boundary items.
 
 ## §1 Scope
 

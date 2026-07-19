@@ -48,7 +48,10 @@ it('forbids web-guard dormitory-manager role from the manager dashboard (SEC-G-0
     $user->assignRole($webRole);
     app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-    expect($user->roles()->where('guard_name', 'identity')->exists())->toBeFalse();
+    expect($user->roles->contains(
+        static fn (\Illuminate\Database\Eloquent\Model $role): bool => $role instanceof Role
+            && $role->guard_name === 'identity',
+    ))->toBeFalse();
 
     $this->actingAs($user, 'identity')
         ->get('/dormitory-admin')
@@ -61,7 +64,10 @@ it('forbids web-guard dormitory-unit-manager role from the unit dashboard (SEC-G
     $user->assignRole($webRole);
     app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-    expect($user->roles()->where('guard_name', 'identity')->exists())->toBeFalse();
+    expect($user->roles->contains(
+        static fn (\Illuminate\Database\Eloquent\Model $role): bool => $role instanceof Role
+            && $role->guard_name === 'identity',
+    ))->toBeFalse();
 
     $this->actingAs($user, 'identity')
         ->get('/dormitory-admin/unit')

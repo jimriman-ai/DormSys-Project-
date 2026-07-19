@@ -1,0 +1,6 @@
+prompt_id: GOV-PP-01-phpstan-production
+recorded_at: 2026-07-18T19:45:00Z
+work_item: phpstan-production-remediation
+stage: EDIT
+tags: [EVIDENCE_CONFLICT, SAFE_PROGRESS]
+summary: "PHPStan reported nullsafe.neverNull on Request::$id?->value ?? '' then property.nonObject on id->value; explicit null ternary preserved semantics and cleared analysis. Role Eloquent where(table.column) failed Larastan; getQuery() after unqualified name/guard_name wheres kept Role usage and passed."

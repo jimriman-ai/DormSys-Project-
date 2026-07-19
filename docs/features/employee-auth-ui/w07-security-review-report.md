@@ -16,7 +16,7 @@
 | F-W07-01 | **CLOSED** — Fixed and verified | `RateLimiter` in `EmployeeLogin::login`; `EmployeeLoginRateLimitTest` + W08-D |
 | F-W07-02 | **CLOSED** — Risk acceptance verified | W08-C-01 / W08-C-02 PASS; no logout code change |
 | F-W07-03 | **NOTE** — intentional dual principal | `web` + `api`/`identity` after success |
-| F-W07-04 | **CARRIED FORWARD** — product authorization gate; **target: F3 Sprint B** (Lead **HD-05 → A**, AUTH-013; see `docs/governance/open-decisions.md` § F-W07-04). Canonical ID retained — no W-09 renumber. Prior “Sprint A or later” advisory superseded. | Post-login surface catalog for next UI slug |
+| F-W07-04 | **Wave 1 ✅ COMPLETED** — slug `stage1-approver-console` (**F-W07-04-D1**); FC ACCEPTED / F2 **PASS** (**D2**); Wave 1 impl closure (**D3**). Prior CARRIED FORWARD → F3 Sprint B superseded for Wave 1. Canonical ID retained. See `governance-log.md:15–17`; `open-decisions.md` § F-W07-04. | Stage-1 approver console Wave 1 (list/filter); UX tests deferred |
 | F-W07-05 | **NOTE** — canonical guards only | No `employee` guard |
 | F-W07-06 | **CLOSED** — password broker negative check | W-03 NO ACTION; no reset routes/UI |
 | F-W07-07 | **NOTE** | C-5 / IdentityRoleGuard pin OK |

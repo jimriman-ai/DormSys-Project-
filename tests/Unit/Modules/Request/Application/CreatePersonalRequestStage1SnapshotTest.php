@@ -18,6 +18,7 @@ use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use DateTimeImmutable;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\Support\MockeryTest;
 use Tests\TestCase;
 
 /**
@@ -38,18 +39,16 @@ final class CreatePersonalRequestStage1SnapshotTest extends TestCase
         $approverIdentityId = UuidGenerator::uuid7();
         $dormitoryId = UuidGenerator::uuid7();
 
-        $resolver = Mockery::mock(Stage1ApproverIdentityReadContract::class);
-        $resolver->shouldReceive('resolveActiveDormitoryManagerIdentityId')
-            ->once()
+        $resolver = MockeryTest::mock(Stage1ApproverIdentityReadContract::class);
+        MockeryTest::expectOnce($resolver, 'resolveActiveDormitoryManagerIdentityId')
             ->andReturn($approverIdentityId);
 
-        $codeRepo = Mockery::mock(RequestRepositoryContract::class);
-        $codeRepo->shouldReceive('nextDailySequenceForUtcDate')->once()->andReturn(1);
+        $codeRepo = MockeryTest::mock(RequestRepositoryContract::class);
+        MockeryTest::expectOnce($codeRepo, 'nextDailySequenceForUtcDate')->andReturn(1);
         $codeGenerator = new RequestCodeGenerator($codeRepo);
 
-        $requests = Mockery::mock(RequestRepositoryContract::class);
-        $requests->shouldReceive('save')
-            ->once()
+        $requests = MockeryTest::mock(RequestRepositoryContract::class);
+        MockeryTest::expectOnce($requests, 'save')
             ->with(Mockery::on(function (Request $request) use ($approverIdentityId): bool {
                 return $request->assignedStage1ApproverIdentityId === $approverIdentityId;
             }))
@@ -78,16 +77,15 @@ final class CreatePersonalRequestStage1SnapshotTest extends TestCase
     {
         $employeeId = UuidGenerator::uuid7();
 
-        $resolver = Mockery::mock(Stage1ApproverIdentityReadContract::class);
-        $resolver->shouldReceive('resolveActiveDormitoryManagerIdentityId')
-            ->once()
+        $resolver = MockeryTest::mock(Stage1ApproverIdentityReadContract::class);
+        MockeryTest::expectOnce($resolver, 'resolveActiveDormitoryManagerIdentityId')
             ->andReturn(null);
 
-        $codeRepo = Mockery::mock(RequestRepositoryContract::class);
+        $codeRepo = MockeryTest::mock(RequestRepositoryContract::class);
         $codeRepo->shouldNotReceive('nextDailySequenceForUtcDate');
         $codeGenerator = new RequestCodeGenerator($codeRepo);
 
-        $requests = Mockery::mock(RequestRepositoryContract::class);
+        $requests = MockeryTest::mock(RequestRepositoryContract::class);
         $requests->shouldNotReceive('save');
 
         $action = new CreatePersonalRequestAction(
@@ -96,16 +94,13 @@ final class CreatePersonalRequestStage1SnapshotTest extends TestCase
             assignStage1Approver: new AssignStage1ApproverSnapshotAction($resolver),
         );
 
-        try {
-            $action->execute(
-                employeeId: EmployeeReferenceId::fromString($employeeId),
-                dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
-                checkInDate: new DateTimeImmutable('2026-07-01'),
-                checkOutDate: new DateTimeImmutable('2026-12-31'),
-            );
-            $this->fail('Expected NoStage1ApproverAvailableException to be thrown.');
-        } catch (NoStage1ApproverAvailableException) {
-            $this->assertTrue(true);
-        }
+        $this->expectException(NoStage1ApproverAvailableException::class);
+
+        $action->execute(
+            employeeId: EmployeeReferenceId::fromString($employeeId),
+            dormitoryId: DormitorySiteId::fromString(UuidGenerator::uuid7()),
+            checkInDate: new DateTimeImmutable('2026-07-01'),
+            checkOutDate: new DateTimeImmutable('2026-12-31'),
+        );
     }
 }

@@ -80,8 +80,9 @@ final class IdentityRoleGuard
         $pivot = (string) config('permission.table_names.model_has_roles');
 
         $identityId = Role::query()
-            ->where('roles.name', $role)
-            ->where('roles.guard_name', 'identity')
+            ->where('name', $role)
+            ->where('guard_name', 'identity')
+            ->getQuery()
             ->join($pivot, $pivot.'.role_id', '=', 'roles.id')
             ->join(self::IDENTITY_USERS_TABLE, self::IDENTITY_USERS_TABLE.'.id', '=', $pivot.'.model_id')
             ->where($pivot.'.model_type', self::IDENTITY_USER_MODEL_TYPE)

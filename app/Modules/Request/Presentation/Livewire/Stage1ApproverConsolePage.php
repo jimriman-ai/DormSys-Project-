@@ -66,7 +66,7 @@ final class Stage1ApproverConsolePage extends Component
 
         if ($needle !== '') {
             $pending = $pending->filter(function (Request $request) use ($needle): bool {
-                $id = $request->id?->value ?? '';
+                $id = $request->id !== null ? $request->id->value : '';
                 $code = (string) $request->code;
                 $employeeId = $request->employeeId->value;
 

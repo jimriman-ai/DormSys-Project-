@@ -73,11 +73,14 @@ it('maps PR-N5 domain exceptions to approved API HTTP statuses', function (Throw
     $response = app(ExceptionHandler::class)->render($request, $exception);
 
     expect($response->getStatusCode())->toBe($status)
-        ->and($response->headers->get('content-type'))->toContain('application/json')
-        ->and($response->getData(true))->toMatchArray([
-            'success' => false,
-            'message' => $exception->getMessage(),
-        ]);
+        ->and($response->headers->get('content-type'))->toContain('application/json');
+
+    $payload = json_decode((string) $response->getContent(), true);
+
+    expect($payload)->toMatchArray([
+        'success' => false,
+        'message' => $exception->getMessage(),
+    ]);
 })->with(prN5BoundaryLockExceptionCases());
 
 it('does not apply PR-N5 domain exception JSON mapping outside api prefix', function (): void {

@@ -25,7 +25,7 @@ function bindStage1ApproverIdentityFixtureForTests(): string
 
             public function resolveActiveDormitoryManagerIdentityId(): ?string
             {
-                return $this->identityId;
+                return $this->identityId !== '' ? $this->identityId : null;
             }
         },
     );

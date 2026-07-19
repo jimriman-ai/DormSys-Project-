@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3 Sprint B | Session: Phase 3 Controlled Execution SB-D1..D5 (WT-only; pending Lead commit)_
+_Last updated: 1405/04/28 | 2026-07-19 | Sprint: F3 Sprint B | Session: PA-01 DOC sync (F2 PASS / F-W07-04 Wave 1 COMPLETED)_
 
-**Authority note:** SB-D1..D5 = A (closed). Phase 3 execution complete in working tree — Sprint B **closure** remains Lead action.
+**Authority note:** SB-D1..D5 = A (closed). F-W07-04-D1…D3 recorded. PA-01 = DOC-ONLY sync (no new decision).
 
 ---
 
@@ -13,18 +13,16 @@ _Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3 Sprint B | Session: Phase 3 
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| SB-D1=A | Stage1ApproverConsoleActionsTest + IdentityRoleSeeder | Negative helper → employee-only; ROLE_DEPT_MGR `@deprecated` alias docblock | `tests/.../Stage1ApproverConsoleActionsTest.php:75–145`; `database/seeders/IdentityRoleSeeder.php:33–39` |
-| SB-D2=A | Spec05 | + OA-05-00 dual-model note (stage ≠ auth role) | `specs/005-request-management/spec.md:208–216` |
-| SB-D3=A | UI-M2 L3 | **authored** `docs/features/ui-m2/l3-spec.md` (STOP not hit) | new file; route evidence `routes/web.php:32–34` |
-| SB-D4=A | F-W07-04 | candidate catalog authored | `docs/features/f-w07-04-candidate-catalog.md` |
-| SB-D5=A | (no code) | Shared `dormitory-manager` accepted — verification report only | `governance-log.md` SB-D5 row (Lead); code: `IdentityRoleGuard.php:20`, `routes/web.php:28–30,:43–44` |
-| Tests | Sail full suite | **1895 passed** (5454 assertions) | `docker exec … php artisan test` |
+| DOC sync | `roadmap.md` F2 / F-W07-04 | PARTIAL+CARRIED → **PASS** / Wave 1 **COMPLETED** | **F-W07-04-D2**, **D3** |
+| DOC sync | `open-decisions.md` F-W07-04 § + DG-02 notes | CARRIED/PARTIAL → COMPLETED/PASS; DGAP-14 status **unchanged DECIDED** | PA-01; `governance-log.md:16–17` |
+| DOC sync | `employee-auth-ui` brief + WBD + W07 + L3 | PARTIAL/CARRIED → **PASS** / COMPLETED | **D2** |
+| Hygiene | `open-decisions.md` trailing orphan | corrupt diff fragment → removed | PA-01 |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🧑‍⚖️ **Human Decision — Sprint B Lead closure** (L3 review for `ui-m2/l3-spec.md`; F-W07-04 slug-naming deferred; WT commit)
+📄 **Spec — PA-01 Documentation Sync** (`docs/governance/project-audit-01.md` → PA-01); next proposed: PA-02 UI-M2 L3 accept
 
 ---
 
@@ -32,10 +30,10 @@ _Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3 Sprint B | Session: Phase 3 
 
 | ID | Title | Status | Stage | Blocker |
 |----|-------|--------|-------|---------|
-| RESIDUAL-01 | Runtime id `ROLE_DEPT_MGR` | **DONE** (SB-D1=A WT) | Sprint B Phase 3 | Lead commit |
-| RESIDUAL-02 | Dual-model stage vocab | **DONE** (SB-D2=A docs WT) | Sprint B Phase 3 | Lead commit |
-| UI-M2 | Unit-Manager Dashboard L3 | **L3 authored — awaiting Lead review** | Sprint B Phase 3 | L3 review gate |
-| F-W07-04 | Next UI slug / product gate | **CATALOG ONLY** (SB-D4=A) | Sprint B Phase 3 | Future human slug decision; F2 PARTIAL |
+| F-W07-04 | `stage1-approver-console` Wave 1 | **DONE** (D3) | Sprint B | Wave 2 UX tests deferred |
+| F2 | employee-auth-ui / F-W07-04 gate | **PASS** (D2) | Program | Spec04 Auth still not authorized |
+| UI-M2 | Unit-Manager Dashboard L3 | **L3 authored — awaiting Lead review** | Sprint B | L3 accept (PA-02) |
+| DGAP-14 | Residual DeptMgr refs | **DECIDED** (unchanged) | Parked residuals | Runtime residuals via SB-D1/D2 |
 
 ---
 
@@ -43,22 +41,23 @@ _Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3 Sprint B | Session: Phase 3 
 
 | Feature | L3 | L6 | L8 | L9 | Notes |
 |---------|----|----|----|----|-------|
-| UI-M2 | ⏳ (authored, review pending) | — | — | — | SB-D3=A; L6+ out of scope |
-| UI-M1 | ✅ | ✅ | ✅ | ⏳ | unchanged this prompt |
+| stage1-approver-console | ✅ (FC) | ✅ Wave 1 | ⏳ Wave 2 tests | — | D2–D3; PA-01 docs synced |
+| UI-M2 | ⏳ (authored, review pending) | — | — | — | PA-02 |
+| UI-M1 | ✅ | ✅ | ✅ | ⏳ | unchanged |
 
 ---
 
 ## 7. Next Step
 
-**Action:** Lead Sprint B closure — review `docs/features/ui-m2/l3-spec.md`; decide when to name F-W07-04 slug; commit Phase 3 WT.  
+**Action:** Lead L3 accept for `docs/features/ui-m2/l3-spec.md` (PA-02) and/or commit PA-01 DOC WT.  
 **Owner:** Lead  
-**Gate:** L3 review (UI-M2); product decision (F-W07-04)  
-**Target files:** `docs/features/ui-m2/l3-spec.md`; `docs/features/f-w07-04-candidate-catalog.md`; Phase 3 code/docs listed in §0  
-**Done when:** Lead accepts L3 and/or closes Sprint B explicitly  
-**Blocker:** none for Phase 3 execution (complete)  
+**Gate:** UI-M2 L3 review; optional Stage-1 Wave 2 tests (PA-04)  
+**Target files:** `docs/features/ui-m2/l3-spec.md`; PA-01 synced docs (pending Lead commit)  
+**Done when:** Lead accepts UI-M2 L3 and/or commits PA-01  
+**Blocker:** none for PA-01 (complete)
 
 **Suggested user prompt:**
-> Review `docs/features/ui-m2/l3-spec.md` (L3 gate). Commit Sprint B Phase 3 WT when ready. Name or park F-W07-04 separately.
+> PA-02 — Accept or revise `docs/features/ui-m2/l3-spec.md` (L3 review gate).
 
 ---
 
@@ -66,12 +65,10 @@ _Last updated: 1405/04/27 | 2026-07-18 | Sprint: F3 Sprint B | Session: Phase 3 
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| Sprint A | CLOSED | Lead CONFIRM |
-| Sprint B Phase 3 | **EXECUTED (WT)** | SB-D1..D5=A; closure = Lead |
-| RESIDUAL-01 | RESOLVED (WT) | SB-D1=A |
-| RESIDUAL-02 | RESOLVED (WT docs) | SB-D2=A dual-model |
-| UI-M2 L3 | CLOSING | authored; Lead review |
-| F-W07-04 | OPEN (cataloged) | SB-D4=A; slug NOT named |
-| SB-D5 | ACCEPTED-AS-IS | no execute payload |
+| PA-01 | **DONE** (WT) | DOC sync F2/F-W07-04; pending Lead commit |
+| F-W07-04 | **DONE** Wave 1 | D1–D3; docs synced PA-01 |
+| F2 (program gate) | **PASS** | D2; not Spec04 Auth authorization |
+| UI-M2 L3 | CLOSING | authored; Lead review (PA-02) |
+| DGAP-14 | DECIDED | PA-01: not reopened |
 | GAP-GOV-02 | OPEN | tip SHA pending Lead commit |
-| DGAP-14 | DECIDED | residuals addressed in Sprint B |
+| Stage-1 Wave 2 UX tests | OPEN | deferred per D3 (PA-04) |

@@ -189,7 +189,7 @@ it('allows the snapshotted stage-1 identity to pass the console approve gate (co
 
             public function resolveActiveDormitoryManagerIdentityId(): ?string
             {
-                return $this->identityId;
+                return $this->identityId !== '' ? $this->identityId : null;
             }
         },
     );

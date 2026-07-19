@@ -13,7 +13,7 @@
 | ID | Gap | Cluster | Options | Decision Owner | Trigger / Deadline | Status | Notes |
 |----|-----|---------|---------|----------------|--------------------|--------|-------|
 | DG-01 | مالکیت boundary F2 و زمان باز شدن آن | Scope Ownership | A) F2 در مالکیت همین ماژول باقی بماند B) F2 به یک boundary مستقل منتقل شود C) F2 به backlog defer شود با owner مشخص و reopen trigger صریح | Lead | شروع برنامه‌ریزی Phase F | RESOLVED | F2 deferred. **B1 removal COMPLETE** (Round 2.1); deleted assignment tests → **BL-B1-01** in `docs/governance/risk-register.md`. RESOLVED at F2 kick-off: F2 proceeds as an independent boundary `employee-auth-ui`. B1 removal remains final; removed tests remain tracked under BL-B1-01 (unchanged, still Open/Deferred). |
-| DG-02 | تعریف دقیق Phase F: narrow vs broad | Phase F Definition | A) Phase F فقط employee-records باشد (narrow) B) Phase F شامل UI و Auth مرتبط هم باشد (broad) C) Phase F به دو زیرفاز تقسیم شود | Lead | قبل از L0 Phase F | DECIDED | F1 (employee-records — تکمیل‌شده) و F2 (UI/Auth) — split per Option C. F2 status **PARTIAL** (W-01…W-08 CLOSED — `docs/features/employee-auth-ui/work-breakdown.md:14`; F-W07-04 CARRIED FORWARD — `docs/features/employee-auth-ui/w07-security-review-report.md:19`). Prior “F2 ACTIVE” note superseded. (reconciled 2026-07-15, ref: DGAP-12) |
+| DG-02 | تعریف دقیق Phase F: narrow vs broad | Phase F Definition | A) Phase F فقط employee-records باشد (narrow) B) Phase F شامل UI و Auth مرتبط هم باشد (broad) C) Phase F به دو زیرفاز تقسیم شود | Lead | قبل از L0 Phase F | DECIDED | F1 (employee-records — تکمیل‌شده) و F2 (UI/Auth) — split per Option C. F2 status **PASS** (W-01…W-08 CLOSED — `docs/features/employee-auth-ui/work-breakdown.md:14`; F-W07-04 Wave 1 **COMPLETED** — `governance-log.md` **F-W07-04-D2** / **D3**; prior PARTIAL/CARRIED superseded). (synced PA-01, 2026-07-19) |
 | DG-03 | مالکیت Identity Helper: ماژولی vs shared kernel | Identity Helper Ownership | A) Identity Helper در مالکیت dormitory-admin-ui بماند B) به shared kernel منتقل شود C) implementation محلی در هر boundary تا زمان تصمیم shared-kernel مجاز بماند | Lead | قبل از استفاده در boundary دوم | **CLOSED** | **Selected Option B** (Lead ruling **AUTH-013**, Resolution Date **2026-07-16**). IdentityRoleGuard → Shared Kernel. **W-06 executed:** `app/Shared/Auth/IdentityRoleGuard.php`. W-07/W-08 **CLOSED**. Evidence: AUTH-013. |
 | DG-04 | مالک ریسک‌های پذیرفته‌شده و cadence بازبینی | Governance | A) Lead مالک تمام accepted risks باشد، بازبینی ۶ ماهه B) هر boundary مالک ریسک‌های خود باشد C) یک Risk Register مرکزی با مالک مشخص per-risk | Lead | قبل از merge PR فاز G | DECIDED | **DELIVERED** `docs/governance/risk-register.md` (1405/04/24). SEC-G-04 + BL-B1-01 seeded. |
 | DG-05 | سیاست استفاده از Student vs Employee در UI و کد | Terminology | A) Student در UI عمومی، Employee در کد داخلی B) یکسان‌سازی کامل روی یک واژه C) glossary رسمی با mapping صریح | Lead | قبل از شروع Phase F UI | DECIDED | **DELIVERED** `docs/governance/glossary.md` (1405/04/24). Student ↔ Employee mapping. |
@@ -487,15 +487,15 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 - **Accepted evidence:** `EmployeeLogin` (`app/Modules/Auth/Presentation/Livewire/EmployeeLogin.php`), `IdentityRoleGuard` (`app/Shared/Auth/IdentityRoleGuard.php`), related routes in `routes/web.php` (`employee.login`)
 - **Effect:** W-04 PASS/CLOSED; W-05 and W-06 IMPLEMENTED in `docs/features/employee-auth-ui/work-breakdown.md`. L3 §4 updated accordingly.
 - **Freeze:** No *new* F2/UI/Auth features until further Lead authorization.
-- **Annotation (reconciled 2026-07-15, ref: DGAP-12):** Prior line “W-07/W-08 remain Pending” is **superseded**. W-07 and W-08 are **CLOSED** (`docs/features/employee-auth-ui/work-breakdown.md:11-12`; `w07-security-review-report.md:24`; `w08-scope.md:32`). F2 remains **PARTIAL** solely because F-W07-04 is **CARRIED FORWARD** (`w07-security-review-report.md:19`).
+- **Annotation (reconciled 2026-07-15, ref: DGAP-12; synced PA-01 2026-07-19):** Prior line “W-07/W-08 remain Pending” is **superseded**. W-07 and W-08 are **CLOSED** (`docs/features/employee-auth-ui/work-breakdown.md:11-12`; `w07-security-review-report.md:24`; `w08-scope.md:32`). Prior “F2 PARTIAL solely because F-W07-04 CARRIED FORWARD” is **superseded** by **F-W07-04-D2** (F2 → **PASS**) and **F-W07-04-D3** (Wave 1 **COMPLETED**) — `governance-log.md:16–17`.
 
-### F-W07-04 — Carried-forward (F2 canonical ID retained)
+### F-W07-04 — Wave 1 COMPLETED (F2 canonical ID retained)
 
 - **ID:** F-W07-04 (do **not** re-number as W-09 or other ID — one decision boundary = one canonical record).
-- **Status:** **CARRIED FORWARD** — source: `docs/features/employee-auth-ui/w07-security-review-report.md:19`.
-- **Meaning:** Post-login surface catalog / next UI slug product-authorization gate; keeps program F2 = **PARTIAL**.
-- **Carried-forward → target: F3 Sprint B** (Lead **HD-05 → A**, AUTH-013, 2026-07-16). Prior Sprint A target superseded.
-- **Forbidden:** Closing F2 to COMPLETE while this ID remains open; inventing a parallel work-item ID for the same commitment.
+- **Status:** **Wave 1 ✅ COMPLETED** — `governance-log.md` **F-W07-04-D3** (2026-07-18). Prior CARRIED FORWARD (HD-05A / AUTH-013) superseded for Wave 1 scope.
+- **Slug / FC:** `stage1-approver-console` (**F-W07-04-D1**); Feature Contract ACCEPTED; F2 gate for F-W07-04 **PASS** (**F-W07-04-D2**).
+- **Meaning (historical):** Post-login surface catalog / next UI slug product-authorization gate — resolved for Stage-1 console Wave 1 (list/filter); UX-test expansion deferred per D3.
+- **Forbidden:** Inventing a parallel work-item ID for the same commitment; reopening D1–D3 without Lead.
 
 ---
 
@@ -511,6 +511,7 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| ۱۴۰۵/۰۴/۲۸ (2026-07-19) | **PA-01 DOC sync:** F-W07-04 § → Wave 1 COMPLETED (**D3**); F2 notes → **PASS** (**D2**). **DGAP-14** verified already **DECIDED** with inventory dispositions — status unchanged (not reopened). Trailing orphan diff fragment removed. No new decision. | Agent (PA-01) |
 | ۱۴۰۵/۰۴/۲۷ (2026-07-18) | **W2 hygiene (merge-independent):** Decision Gate Table IMPL-PERMIT-03 commit placeholder synced from § metadata SHA `25104a70…`. Merge SHA **UNVERIFIED**. Report: `docs/governance/w2-hygiene-sync-report.md`. No new decision. | Agent (docs sync) |
 | ۱۴۰۵/۰۴/۲۷ (2026-07-18) | **IMPL-PERMIT-03 CLOSED** (basis DGAP-13; Lead commit `<LEAD-FILLS-IN>`). **DGAP-14 OPEN:** residual DeptMgr references outside Stage-1 auth path — inventory recorded, dispositions PROPOSED only, undecided. DGAP-09/13 unmodified. Ref: PATCH-F3A-SYNC (IMPL-PERMIT-03 close / DGAP-14). | Agent (Lead closeout docs) |
 | ۱۴۰۵/۰۴/۲۷ (2026-07-18) | **DGAP-13 DECIDED** (Lead prompt label DGAP-09; ID collision with FROZEN assignment-schema DGAP-09 → registered as DGAP-13): canonical Stage-1 approver **authorization path** role = `dormitory-manager`. Non-Scope: IMPL-PERMIT-03 only; no Stage-2/3 / RBAC-wide consolidation. IMPL-PERMIT-02 CLOSED untouched. **no downstream decision implied beyond DGAP-09/13 scope.** Ref: PATCH-F3A-SYNC (DGAP-13). | Agent (Lead Decision Record) |
@@ -552,23 +553,3 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 2. هر تصمیم باید با ID، تاریخ، و نام تأییدکننده در Changelog ثبت شود.
 3. شناسه هر gap immutable است. به‌روزرسانی Status / Notes / Decision Owner فقط با ثبت changelog مجاز است.
 4. gap جدید فقط با شناسه‌ی بعدی (`DG-06`, ...) اضافه می‌شود.
-
--**Status:** OPEN
-+**Status:** DECIDED
-+**Decided by:** Lead
-+**Decision date:** [تاریخ]
-+
-+**Decision:**
-+Canonical governance references in documentation and contracts
-+shall use `dormitory-manager`. This applies to governance artifacts,
-+UI contracts, and implementation permits only.
-+
-+**Explicit scope exclusions:**
-+Runtime identifiers, domain class names, and historical specs
-+are out of scope and require separate authorization to change.
-+
-+**Open residuals (not decided here — tracked separately):**
-+- `config/roles.php` string value `'DeptMgr'` — runtime constraint
-+- `PendingDepartmentManagerState` and related class names — domain layer
-+- `RoleSeeder` string values — runtime constraint
-+- `spec04-auth-packet.md` — intentional archival, no change
