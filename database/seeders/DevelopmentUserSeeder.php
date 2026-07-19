@@ -33,6 +33,10 @@ class DevelopmentUserSeeder extends Seeder
 
     public const string ADMIN_PASSWORD = 'dev-admin-password';
 
+    public const string MANAGER_EMAIL = 'dev.manager@dormsys.local';
+
+    public const string MANAGER_PASSWORD = 'dev-manager-password';
+
     public function run(): void
     {
         if (! app()->environment('local', 'testing')) {
@@ -43,6 +47,7 @@ class DevelopmentUserSeeder extends Seeder
 
         $this->call(IdentityRoleSeeder::class);
         $this->ensureOperatorRoleExists();
+        $this->ensureIdentityDashboardRolesExist();
 
         $reports = app(DevelopmentUserProvisioner::class)->provision($this->accounts());
 
@@ -64,6 +69,7 @@ class DevelopmentUserSeeder extends Seeder
      *     email: string,
      *     password: string,
      *     roles: list<string>,
+     *     identity_roles?: list<string>,
      *     employee?: array{
      *         code: string,
      *         first_name: string,
@@ -90,6 +96,7 @@ class DevelopmentUserSeeder extends Seeder
                 'email' => self::EMPLOYEE_EMAIL,
                 'password' => self::EMPLOYEE_PASSWORD,
                 'roles' => [],
+                'identity_roles' => [IdentityRoleSeeder::ROLE_EMPLOYEE],
                 'employee' => [
                     'code' => 'DEV-EMP-001',
                     'first_name' => 'Dev',
@@ -97,6 +104,15 @@ class DevelopmentUserSeeder extends Seeder
                     'national_code' => '0499370899',
                     'hire_date' => '2024-01-01',
                 ],
+            ],
+            [
+                'label' => 'Dormitory Manager (Stage-1 / identity)',
+                'display_name' => 'Dev Manager',
+                'email' => self::MANAGER_EMAIL,
+                'password' => self::MANAGER_PASSWORD,
+                'roles' => [],
+                'identity_roles' => [IdentityRoleSeeder::ROLE_DORMITORY_MANAGER],
+                'employee' => null,
             ],
             [
                 'label' => 'Approver (Administrator role)',
@@ -107,6 +123,18 @@ class DevelopmentUserSeeder extends Seeder
                 'employee' => null,
             ],
         ];
+    }
+
+    /**
+     * Idempotent ensure for identity-guard dashboard roles (WP-UI-C-DASH-SEED).
+     * Canonical slugs: IdentityRoleSeeder / IdentityRoleGuard — create-if-missing only.
+     */
+    private function ensureIdentityDashboardRolesExist(): void
+    {
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+        Role::findOrCreate(IdentityRoleSeeder::ROLE_EMPLOYEE, 'identity');
+        Role::findOrCreate(IdentityRoleSeeder::ROLE_DORMITORY_MANAGER, 'identity');
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 
     private function ensureOperatorRoleExists(): void

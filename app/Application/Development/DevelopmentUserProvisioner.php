@@ -22,6 +22,8 @@ use App\Support\ValueObjects\Identity\NationalCode;
 use Database\Seeders\IdentityRoleSeeder;
 use DateTimeImmutable;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 final class DevelopmentUserProvisioner
 {
@@ -40,6 +42,7 @@ final class DevelopmentUserProvisioner
      *     email: string,
      *     password: string,
      *     roles: list<string>,
+     *     identity_roles?: list<string>,
      *     employee?: array{
      *         code: string,
      *         first_name: string,
@@ -73,6 +76,7 @@ final class DevelopmentUserProvisioner
      *     email: string,
      *     password: string,
      *     roles: list<string>,
+     *     identity_roles?: list<string>,
      *     employee?: array{
      *         code: string,
      *         first_name: string,
@@ -137,6 +141,11 @@ final class DevelopmentUserProvisioner
             $assignedRoles[] = $roleName;
         }
 
+        foreach ($account['identity_roles'] ?? [] as $roleName) {
+            $this->ensureIdentityGuardRoleAssigned($identityId, $roleName);
+            $assignedRoles[] = $roleName;
+        }
+
         return new DevelopmentUserAccountReport(
             label: $account['label'],
             email: $account['email'],
@@ -148,6 +157,32 @@ final class DevelopmentUserProvisioner
             employeeCreated: $employeeCreated,
             roles: $assignedRoles,
         );
+    }
+
+    /**
+     * Local-only identity-guard Spatie assignment (WP-UI-C-DASH-SEED).
+     *
+     * AssignRoleToUserAction / UserRepository resolve roles on guard `web` only
+     * (`UserRepository::findRoleOrFail`). Dashboard roles `employee` and
+     * `dormitory-manager` exist solely on guard `identity` — assign via Spatie
+     * Role model without changing Identity Application Actions.
+     */
+    private function ensureIdentityGuardRoleAssigned(string $identityId, string $roleName): void
+    {
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+
+        $role = Role::findOrCreate($roleName, 'identity');
+        $model = UserModel::query()->find($identityId);
+
+        if ($model === null) {
+            return;
+        }
+
+        if (! $model->hasRole($roleName, 'identity')) {
+            $model->assignRole($role);
+        }
+
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 
     /**
