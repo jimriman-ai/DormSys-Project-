@@ -1,0 +1,28 @@
+# Implementation Lock — UI-M2 (Unit-Manager Dashboard)
+
+- **date:** 2026-07-19
+- **status:** COMPLETED (verify/align-to-L3)
+- **authorization:** SB-D7 (L6+ ISSUED)
+- **catalog:** UI-M2 (F3 Sprint B)
+- **l3_basis:** `docs/features/ui-m2/l3-spec.md` (SB-D6 ACCEPTED, WP-01 rev-4)
+- **work_mode:** Verify/align existing RM-BL-B1 wiring to L3 — **not** greenfield rebuild (PA-03 M-1)
+- **scope:**
+  - Route `GET /dormitory-admin/unit` (`dormitory-admin.unit-manager`)
+  - Livewire `DormitoryUnitManagerDashboard` + Blade occupancy cards
+  - Assignment-scoped read via `dormitory_unit_manager_assignments` only
+  - Auth gate: `dormitory-unit-manager` (identity)
+- **forbidden_changes:**
+  - Schema / migrations (DGAP-09 RE-FROZEN)
+  - `config/auth.php` guard topology
+  - UI-M1 (`dormitory-manager` / `/dormitory-admin`) scope bleed into UI-M2 routes
+  - UI-A2 assignment-management UI
+  - Residents product behavior beyond Stage-3 placeholder
+  - Request / Stage-1 / Allocation mutation flows
+  - Expanding role gate to `dormitory-manager`
+- **auth_gate:** `dormitory-unit-manager` (identity guard) — Shared Kernel `app/Shared/Auth/IdentityRoleGuard.php`
+  - Route: `auth:identity` + `identity.role:dormitory-unit-manager`
+  - Render re-assert: `IdentityRoleGuard::assertIdentityRole(IdentityRoleSeeder::ROLE_DORMITORY_UNIT_MANAGER)` (first statement in `render()`)
+- **ids:** UUID only (`identity_users.id` / assignment FKs)
+- **fk_policy:** `restrictOnDelete()` on assignment `user_id` and `room_id` (precondition migration; no schema edit under this Lock)
+- **approver:** Lead (DormSys Architect)
+- **basis:** SB-D6 (L3 ACCEPT); SB-D7 (L6+ authorization); PA-03 PASS

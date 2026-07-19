@@ -1,9 +1,10 @@
+<!-- STATUS: L3 ACCEPTED — SB-D6 -->
 # L3 Spec — UI-M2 (Unit-Manager Dashboard — wire data)
 
 **Layer:** L3 (Spec) artifact (requirements record).  
-**Lifecycle status:** **READY FOR L3 / L8-MAPPABLE** (implementation baseline already wired; this document records the L3 contract)  
+**Lifecycle status:** **L3 ACCEPTED (SB-D6) — L8-MAPPABLE** (implementation baseline already wired; this document records the L3 contract)  
 **Catalog ID:** UI-M2 (F3 Sprint B)  
-**Authority:** Lead SB-D3=A (Sprint B Phase 3) — L3 authoring authorized; L6+ not authorized by this document  
+**Authority:** Lead **SB-D6** (ACCEPT); L3 authoring was SB-D3=A — L6+ **not** authorized by this document or by SB-D6  
 **Canonical path:** `docs/features/ui-m2/l3-spec.md`  
 **Pattern peer:** `docs/features/ui-m1/l3-spec.md`
 
@@ -26,7 +27,7 @@ All of the following are **preconditions**, not UI-M2 deliverables:
 | Dashboard query wiring landed | Component `app/Modules/DormitoryAdmin/DormitoryUnitManagerDashboard.php` (`:17–27` render; `:43–102` aggregate) |
 | BL-B1-01 resolved (governance) | `docs/governance/risk-register.md:13` — **RESOLVED** |
 | DGAP-09 RE-FROZEN | `docs/governance/open-decisions.md` DGAP-09 — no further assignment-schema work without new unfreeze |
-| Catalog status | `docs/governance/roadmap.md` § F3 Catalog UI-M2 — **UNBLOCKED — READY FOR L3**; Sprint B backlog row UI-M2 |
+| Catalog status | `docs/governance/roadmap.md` § F3 Catalog UI-M2 — **L3 ACCEPTED (SB-D6)**; L6+ NOT authorized — Implementation Lock required |
 | UI-A1 auth/layout shell | Layout `resources/views/components/layouts/dormitory-admin.blade.php`; component `#[Layout('components.layouts.dormitory-admin')]` at `DormitoryUnitManagerDashboard.php:14` |
 
 **Sequencing note:** Roadmap lists UI-M1 and UI-M2 as sibling catalog rows with the same BL-B1-01 dependency. UI-M2 does not require RESIDUAL-01/02 (SB-D1/D2) for L3 authoring.
@@ -40,7 +41,7 @@ All of the following are **preconditions**, not UI-M2 deliverables:
 | **FR-1** | Route `GET /dormitory-admin/unit` is named `dormitory-admin.unit-manager` and served by `DormitoryUnitManagerDashboard` | `routes/web.php:32–34` |
 | **FR-2** | Guest (no identity session) is redirected to login | Feature: redirects guests → `/login` (`DormitoryUnitManagerDashboardTest.php`) |
 | **FR-3** | Authenticated identity user **without** Spatie role `dormitory-unit-manager` (`guard_name = identity`) receives **403** | Feature: forbids non-role / wrong-role identity users |
-| **FR-4** | Authenticated `dormitory-unit-manager` with **zero** rows in `dormitory_unit_manager_assignments` for their UUID sees empty-state copy | AssertSee empty copy (`data-testid="unit-manager-empty"`) — Blade `:8–10` |
+| **FR-4** | Authenticated `dormitory-unit-manager` with **zero** rows in `dormitory_unit_manager_assignments` for their UUID sees empty-state copy «اتاقی به شما اختصاص داده نشده است.» | AssertSee `اتاقی به شما اختصاص داده نشده است.` (`data-testid="unit-manager-empty"`) — Blade `:8–10` |
 | **FR-5** | Authenticated `dormitory-unit-manager` sees **only** rooms joined via `dormitory_unit_manager_assignments.user_id = auth('identity')->id()` | AssertSee assigned room; AssertDontSee unassigned — component join `:46–49` |
 | **FR-6** | For each assigned room card, the view receives: `id`, `room_label`, `floor_label`, `building_name`, `dormitory_name`, `bed_total`, `bed_occupied`, `bed_reserved`, `bed_vacant` | Blade fields + `data-testid` bed-* — Blade `:19–46`; component return shape `:88–98` |
 | **FR-7** | Bed aggregates count non-deleted beds under the assigned room | `leftJoin` beds with `deleted_at` null — `:62–65` |
@@ -117,15 +118,15 @@ All of the following are **preconditions**, not UI-M2 deliverables:
 
 | Note | Detail |
 |------|--------|
-| L3 review gate | Lead review/acceptance of this `l3-spec.md` |
-| L6+ | Not authorized by SB-D3=A |
+| L3 review gate | **CLOSED** — ACCEPTED (**SB-D6**, WP-01 rev-4) |
+| L6+ | **NOT** authorized (SB-D3=A / SB-D6 unchanged on this point); Implementation Lock required |
 
 ---
 
 ## §9 Authorization reference
 
 - Catalog: `docs/governance/roadmap.md` § F3 — UI-M2; Sprint B backlog  
-- Decision: SB-D3=A (Sprint B Phase 3)  
+- Decision: **SB-D6** (L3 ACCEPT); prior authoring **SB-D3=A** (L3-only)  
 - Risk: `docs/governance/risk-register.md` — BL-B1-01, SEC-G-01…04  
 - Role glossary: `docs/governance/glossary.md:16`  
 - Shared guard: `app/Shared/Auth/IdentityRoleGuard.php`  
@@ -137,7 +138,7 @@ All of the following are **preconditions**, not UI-M2 deliverables:
 
 | Field | Value |
 |-------|--------|
-| Status | **L3 authored — awaiting Lead L3 review** |
+| Status | **L3 ACCEPTED (SB-D6) — L8-MAPPABLE** |
 | Implementation baseline | RM-BL-B1 unit-manager wiring (component + route + tests already present) |
-| Next gate | Lead L3 review; then separate IA for L6+ |
-| VCS | No commit by this L3 docs task |
+| Next gate | Implementation Lock (PA-03); L6+ **not** authorized until then |
+| VCS | No commit by this L3 docs task — Lead commits manually |

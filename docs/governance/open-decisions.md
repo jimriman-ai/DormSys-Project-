@@ -54,6 +54,8 @@
 | OQ-AUTH-02 | Spec04 L5 middleware / V1 request bridge | Spec04 Auth / Technical | A) App V1 B) Middleware V1 C) App-only bridge | Lead | Spec04 Auth packet | **DECIDED** | **Selected B** (Lead, 1405/04/27 \| 2026-07-18). No impl auth. |
 | OQ-AUTH-03 | Spec04 Stage-1 dept-manager → identity binding | Spec04 Auth / Technical | A) Live manager_id B) Snapshot at submit C) Alternate HR rule | Lead | Spec04 Auth packet | **DECIDED** | **Selected B** (Lead, 1405/04/27 \| 2026-07-18). No impl auth. |
 | OQ-AUTH-05 | Spec04 Auth Packet DRAFT → acceptance | Spec04 Auth / Governance | A) Accept after recorded/validated decisions (impl unauthorized) B) Keep DRAFT until named external deps resolved | Lead | Spec04 Auth packet | **DECIDED** | **Selected A** (Lead, 1405/04/27 \| 2026-07-18): governance-accepted artifact. No L5/L6/impl auth. DGAP-03/SGAP-05 unchanged. |
+| SB-D6 | UI-M2 L3 Spec ACCEPTED (PASS-with-fixes) | F3 / UI-M2 | A) Accept L3 (PASS-with-fixes) B) Reject C) Hold | Lead | WP-01 rev-4 | **DECIDED (A)** | L3 spec accepted; hygiene fixes C-1/C-2/G-3 authorized; L6+ implementation NOT authorized; Implementation Lock required |
+| SB-D7 | UI-M2 L6+ Authorization / Implementation Lock | F3 / UI-M2 | A) Issue L6+ + Lock B) Hold C) Reject | Lead | PA-03 PASS; WP-UI-M2-01 | **DECIDED (A) — ISSUED** | L6+ authorized under Lock; auth_gate=`dormitory-unit-manager` (identity); Lock=`docs/features/ui-m2/implementation-lock.md` |
 
 ---
 
@@ -511,6 +513,8 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| ۱۴۰۵/۰۴/۲۸ (2026-07-19) | **SB-D7 DECIDED (A) — ISSUED:** UI-M2 L6+ Authorization + Implementation Lock. auth_gate=`dormitory-unit-manager`. Lock=`docs/features/ui-m2/implementation-lock.md`. WP-UI-M2-01 verify/align-to-L3. | Agent (Lead WP-UI-M2-01) |
+| ۱۴۰۵/۰۴/۲۸ (2026-07-19) | **SB-D6 DECIDED (A):** UI-M2 L3 Spec ACCEPTED (PASS-with-fixes). Hygiene C-1/C-2/G-3 authorized. L6+ NOT authorized; Implementation Lock required. WP-01 rev-4. SB-D1…D5 unmodified. | Agent (Lead WP-01 rev-4) |
 | ۱۴۰۵/۰۴/۲۸ (2026-07-19) | **PA-01 DOC sync:** F-W07-04 § → Wave 1 COMPLETED (**D3**); F2 notes → **PASS** (**D2**). **DGAP-14** verified already **DECIDED** with inventory dispositions — status unchanged (not reopened). Trailing orphan diff fragment removed. No new decision. | Agent (PA-01) |
 | ۱۴۰۵/۰۴/۲۷ (2026-07-18) | **W2 hygiene (merge-independent):** Decision Gate Table IMPL-PERMIT-03 commit placeholder synced from § metadata SHA `25104a70…`. Merge SHA **UNVERIFIED**. Report: `docs/governance/w2-hygiene-sync-report.md`. No new decision. | Agent (docs sync) |
 | ۱۴۰۵/۰۴/۲۷ (2026-07-18) | **IMPL-PERMIT-03 CLOSED** (basis DGAP-13; Lead commit `<LEAD-FILLS-IN>`). **DGAP-14 OPEN:** residual DeptMgr references outside Stage-1 auth path — inventory recorded, dispositions PROPOSED only, undecided. DGAP-09/13 unmodified. Ref: PATCH-F3A-SYNC (IMPL-PERMIT-03 close / DGAP-14). | Agent (Lead closeout docs) |

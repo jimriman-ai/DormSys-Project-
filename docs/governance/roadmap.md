@@ -37,7 +37,7 @@
 | ID | Title / Scope | Status | Dependency / Evidence |
 |----|---------------|--------|------------------------|
 | **UI-M1** | Manager Dashboard — wire data (`/dormitory-admin`, manager role) | **OBSERVED-L8-COMPLETE — L9 merge pending Lead** | BL-B1-01 **RESOLVED** (`369a106`). L3: `docs/features/ui-m1/l3-spec.md`; L8: `docs/features/ui-m1/l8-closeout.md`. Suite 1888/0 (`storage/logs/w1-close-test.log`). Shell: `routes/web.php`; `DormitoryManagerDashboard.php`. |
-| **UI-M2** | Unit-Manager Dashboard — wire data (`/dormitory-admin/unit`) | **UNBLOCKED — READY FOR L3** (scheduled W3) | BL-B1-01 **RESOLVED**. Component wired; `l3-spec.md` not yet authored (AUTH-011 Band 4 / W3). |
+| **UI-M2** | Unit Manager Dashboard | **L6+ AUTHORIZED (SB-D7) — Lock COMPLETED (WP-UI-M2-01)** | L3: `docs/features/ui-m2/l3-spec.md` (SB-D6); Lock: `docs/features/ui-m2/implementation-lock.md`; auth_gate=`dormitory-unit-manager` |
 | **UI-A1** | Auth layout / identity guard integration (`IdentityRoleGuard`, dual-guard) | **COMPLETE — L8 closeout delivered** (2026-07-15). Evidence: `docs/features/ui-a1/l7-verification.md` PASS; `docs/features/ui-a1/l8-closeout.md`. | Shell: `resources/views/components/layouts/dormitory-admin.blade.php`; logout: `routes/web.php`; tests: `UiA1AuthLayoutTest.php`. |
 
 **Out of this catalog (do not conflate):** Assignment schema / assignment UI is **not** UI-A1. If required later, propose separately as **UI-A2** (Lead note, 2026-07-15).
@@ -50,7 +50,7 @@
 |----------|-----|---------------|--------|
 | 1 | **RESIDUAL-01** | بررسی شناسه runtime: `ROLE_DEPT_MGR` (`IdentityRoleSeeder`) | OPEN — Sprint B |
 | 2 | **RESIDUAL-02** | بررسی نام کلاس دامنه: `PendingDepartmentManagerState` | OPEN — Sprint B |
-| 3 | **UI-M2** | Unit-Manager Dashboard — L3 / wire (`/dormitory-admin/unit`) | READY FOR L3 (Band 4) |
+| 3 | **UI-M2** | Unit Manager Dashboard | **L6+ AUTHORIZED (SB-D7) — Lock COMPLETED (WP-UI-M2-01)** |
 | 4 | **F-W07-04** | Stage-1 approver console (`stage1-approver-console`) — Wave 1 list/filter | **Wave 1 ✅ COMPLETED** (**F-W07-04-D3**; FC ACCEPTED **D2**; slug **D1**) |
 
 > Sprint B backlog is sequencing guidance only. Implementation of each ID requires separate Lead authorization.
@@ -72,7 +72,7 @@
 
 **W2 acceptance criterion:** After W2, `project-state.md` §8 contains only decision-pending rows with explicit triggers — **zero open doc-lag rows**.
 
-**Current wave:** **Sprint B ACTIVE** (Lead CONFIRM 1405/04/27 \| 2026-07-18). Sprint A **CLOSED**. Backlog residual: UI-M2 (L3 review), Stage-1 Wave 2 UX tests (deferred per D3). F-W07-04 Wave 1 **COMPLETED** (D3). RESIDUAL-01/02 addressed under SB-D1/D2. GAP-GOV-02 tip SHA pending Lead commit.
+**Current wave:** **Sprint B ACTIVE** (Lead CONFIRM 1405/04/27 \| 2026-07-18). Sprint A **CLOSED**. UI-M2 Lock **COMPLETED** (SB-D7 / WP-UI-M2-01; pending Lead commit). Backlog residual: Stage-1 Wave 2 UX tests (deferred per D3). F-W07-04 Wave 1 **COMPLETED** (D3). RESIDUAL-01/02 addressed under SB-D1/D2. GAP-GOV-02 tip SHA pending Lead commit.
 
 ---
 
@@ -95,6 +95,8 @@
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| 1405/04/28 (2026/07/19) | **SB-D7 / WP-UI-M2-01:** UI-M2 L6+ AUTHORIZED; Implementation Lock COMPLETED (verify/align-to-L3). auth_gate=`dormitory-unit-manager`. | Agent (Lead WP-UI-M2-01) |
+| 1405/04/28 (2026/07/19) | **SB-D6:** UI-M2 catalog + Sprint B backlog → **L3 ACCEPTED (SB-D6)**; L6+ NOT authorized. WP-01 rev-4. | Agent (Lead WP-01 rev-4) |
 | 1405/04/28 (2026/07/19) | **PA-01 DOC sync:** F2 → **PASS** (**F-W07-04-D2**); F-W07-04 Sprint B row → Wave 1 **COMPLETED** (**F-W07-04-D3**). No new decision. | Agent (PA-01) |
 | 1405/04/27 (2026/07/18) | **SPRINT-A CLOSE / SPRINT-B ENTRY (Lead CONFIRM):** Sprint A = CLOSED; Sprint B = ACTIVE. Backlog: RESIDUAL-01, RESIDUAL-02, UI-M2, F-W07-04. | Agent (Lead CONFIRM) |
 | 1405/04/27 (2026/07/18) | **Sprint A CLOSED / Sprint B ACTIVE:** DGAP-14 F1–F3 decision block applied (NO-COMMIT). Priorities: UI-M2, F-W07-04, residuals. | Agent (Lead RATIFY F1-F3) |

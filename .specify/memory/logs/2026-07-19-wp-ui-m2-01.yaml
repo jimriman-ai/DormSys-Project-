@@ -1,0 +1,6 @@
+prompt_id: WP-UI-M2-01
+recorded_at: 2026-07-19T10:50:00+03:30
+work_item: UI-M2
+stage: L6-Implementation-Lock
+tags: [AMBIGUITY, OWNER_DECISION_NEEDED, DEFERRED]
+summary: "UI-M2 Lock verify/align found L3 FR/AC already wired; shared dormitory-admin layout still renders both manager and unit nav links to any identity session (wrong-role click 403s). Flagged SB-D8 candidate; not changed under Lock."

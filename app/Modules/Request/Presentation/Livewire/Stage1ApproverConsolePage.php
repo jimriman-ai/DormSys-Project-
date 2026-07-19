@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Request\Presentation\Livewire;
 
-use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
 use App\Modules\Request\Application\Services\ApproveStage1RequestAction;
+use App\Modules\Request\Application\Services\ListPendingStage1RequestsAction;
 use App\Modules\Request\Application\Services\RejectStage1RequestAction;
 use App\Modules\Request\Domain\Entities\Request;
 use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
@@ -58,10 +58,7 @@ final class Stage1ApproverConsolePage extends Component
 
     public function loadRequests(): void
     {
-        /** @var RequestRepositoryContract $repository */
-        $repository = app(RequestRepositoryContract::class);
-
-        $pending = $repository->listPendingStage1();
+        $pending = app(ListPendingStage1RequestsAction::class)->execute();
         $needle = trim($this->search);
 
         if ($needle !== '') {

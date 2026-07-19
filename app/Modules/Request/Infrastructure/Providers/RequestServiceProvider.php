@@ -22,6 +22,7 @@ use App\Modules\Request\Application\Services\CreateFamilyDirectRequestAction;
 use App\Modules\Request\Application\Services\CreateLotteryRegistrationRequestAction;
 use App\Modules\Request\Application\Services\CreateMissionRequestAction;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
+use App\Modules\Request\Application\Services\ListPendingStage1RequestsAction;
 use App\Modules\Request\Application\Services\RejectRequestAction;
 use App\Modules\Request\Application\Services\RejectStage1RequestAction;
 use App\Modules\Request\Application\Services\RequestCodeGenerator;
@@ -71,6 +72,7 @@ class RequestServiceProvider extends ServiceProvider
         $this->app->singleton(RejectRequestAction::class);
         $this->app->singleton(ApproveStage1RequestAction::class);
         $this->app->singleton(RejectStage1RequestAction::class);
+        $this->app->singleton(ListPendingStage1RequestsAction::class);
     }
 
     public function boot(): void
