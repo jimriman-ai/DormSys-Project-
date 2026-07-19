@@ -2,10 +2,6 @@ name: Governance Guard
 
 on:
   push:
-    branches:
-      - main
-      - develop
-      - '001-*'
     paths:
       - '.specify/governance/_meta/authority-model.md'
       - '.specify/governance/execution-policy.md'
