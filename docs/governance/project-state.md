@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/28 | 2026-07-19 | Session: verify Bug1 pint composer script (already fixed)_
+_Last updated: 1405/04/28 | 2026-07-19 | Session: confirm DevelopmentUserSeederTest re-run 8 passed_
 
-**Authority note:** Verify-only; no code change. Pint script already `@php vendor/bin/pint`.
+**Authority note:** WP-UI-C-DASH-SEED verify confirm; DASH-00 still absent from open-decisions.
 
 ---
 
@@ -13,13 +13,13 @@ _Last updated: 1405/04/28 | 2026-07-19 | Session: verify Bug1 pint composer scri
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| Verify | Bug1 `composer.json` scripts.pint | **NOT PRESENT** — already `@php vendor/bin/pint` | `composer.json:74`; `composer run pint -- --test` invokes binary |
+| Confirm | DevelopmentUserSeederTest | first run **40P01** → re-run **8 passed** | terminals 690682 / 690683 |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-📄 **Spec — CI/script hygiene verify** (pint script OK; WP-UI-C-01-LEGACY-CLEANUP-01 DONE)
+📄 **Spec — WP-UI-C-DASH-SEED** (local identity role seeding **DONE**; verify green)
 
 ---
 
@@ -27,9 +27,9 @@ _Last updated: 1405/04/28 | 2026-07-19 | Session: verify Bug1 pint composer scri
 
 | ID | Title | Status | Stage | Blocker |
 |----|-------|--------|-------|---------|
-| WP-UI-C-01-LEGACY-CLEANUP-01 | Legacy wire retirement | **DONE** | — | none |
-| WP-UI-C-01-B | `listSites()` | NOT-STARTED | — | empty select |
-| composer pint script | Bug1 alleged | **CLOSED** (already fixed) | — | none |
+| WP-UI-C-DASH-SEED | Dev identity roles | **DONE** | Verify PASS | DASH-00 ledger gap (docs only) |
+| Host suite triage | ReleaseAllocationTest etc. | OBSERVED | env | `DB_HOST=pgsql` on host |
+| WP-UI-C-01-B | listSites | NOT-STARTED | — | empty select |
 
 ---
 
@@ -37,21 +37,22 @@ _Last updated: 1405/04/28 | 2026-07-19 | Session: verify Bug1 pint composer scri
 
 | Feature | L3 | L6 | L8 | L9 | Notes |
 |---------|----|----|----|----|-------|
-| WP-UI-C-01-LEGACY-CLEANUP-01 | — | ✅ | ✅ | — | unchanged |
+| WP-UI-C-DASH-SEED | — | ✅ | ✅ tests | — | absorbs DASH-06 |
+| Host `php artisan test` Allocation | — | — | ❌ host | — | pgsql hostname; Sail previously green |
 
 ---
 
 ## 7. Next Step
 
-**Action:** Lead authorize next WP (`WP-UI-C-01-B` or dashboard). Optional: run `composer run pint` for unrelated style debt.  
+**Action:** Record DASH-00 in open-decisions **or** authorize next WP (WP-UI-C-01-B listSites / dashboard UI WPs).  
 **Owner:** Lead  
-**Gate:** none  
-**Target files:** n/a  
-**Done when:** next WP authorized  
-**Blocker:** none for pint script  
+**Gate:** DASH-00 ledger + dashboard WP AUTH  
+**Target files:** `docs/governance/open-decisions.md` (Lead); optional listSites contract  
+**Done when:** DASH-00 row exists **or** next WP authorized  
+**Blocker:** DASH-00 absent from open-decisions; dashboard Phase 3 awaiting Lead  
 
 **Suggested user prompt:**
-> Authorize WP-UI-C-01-B listSites().
+> Record DASH-00 in open-decisions, then authorize WP-UI-C-01-B (listSites) or dashboard shell WPs.
 
 ---
 
@@ -59,6 +60,8 @@ _Last updated: 1405/04/28 | 2026-07-19 | Session: verify Bug1 pint composer scri
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| Bug1 pint script | **CLOSED** | already `@php vendor/bin/pint`; `--test` forwarded |
+| DASH-00 ledger | **OPEN** | not in open-decisions.md |
+| Host DB_HOST=pgsql | **OBSERVED** | ReleaseAllocationTest 4 errors — connection, not assertions |
+| AssignRoleToUserAction web-only | **DEBT** | identity roles via Spatie in DevelopmentUserProvisioner |
 | WP-UI-C-01-B listSites | **OPEN** | reserved |
-| Mixed auth:api / auth:identity | **OPEN** (debt) | observed |
+| Mixed auth:api / auth:identity | **OPEN** | observed |
