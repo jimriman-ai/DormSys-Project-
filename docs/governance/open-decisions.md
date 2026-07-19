@@ -58,6 +58,7 @@
 | SB-D7 | UI-M2 L6+ Authorization / Implementation Lock | F3 / UI-M2 | A) Issue L6+ + Lock B) Hold C) Reject | Lead | PA-03 PASS; WP-UI-M2-01 | **DECIDED (A) — ISSUED** | L6+ authorized under Lock; auth_gate=`dormitory-unit-manager` (identity); Lock=`docs/features/ui-m2/implementation-lock.md` |
 | SB-D9 | F-W07-04 Wave 2 (Stage-1 list/filter UX + tests) | F3 / stage1-approver-console | A) Authorize Wave 2 B) Hold C) Reject | Lead | F-W07-04-D3; WP-RQ-W2-01 | **DECIDED (A) — ISSUED**; WP **DONE** | Wave 2 list/filter UX + tests; auth_gate=`dormitory-manager` unchanged; SHA UNVERIFIED (merge-agnostic); Sprint B CLOSED |
 | SB-D10 | Exempt registry classification — `ListPendingStage1RequestsAction` | F3 / stage1-approver-console / MPEP | A) Issue read-only exempt classification B) Hold C) Reject | Lead | WP-RQ-W2-01 review session | **DECIDED (A) — ISSUED**; **Recorded** | Read-only registry classification for MPEP discovery compatibility; no functional behavior change. Authority: Lead in-session during WP-RQ-W2-01; recording: retroactive (WP-DOC-SYNC-01); Sprint B CLOSED |
+| DGAP-15 | Sprint C role-based dashboard track — Decision Register (D1–D5) + debt + WP sequence | Sprint C / Dashboard / DASH-00 | CLOSED — Lead-approved (no re-litigation); record D1–D5 + DBT-1…7 + WP sequence | Lead | WP-UI-C-DASH-00 | **CLOSED** | Tag **DASH-00**. Docs-only ledger. Closes `DASH-00 ledger \| OPEN` gap. Does **not** reopen DGAP-10/13/14. Layout `components.layouts.dashboard` is DASH-01 deliverable (not yet an artifact). See decision block. |
 
 ---
 
@@ -344,6 +345,74 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 - Residuals → Sprint B: `RoleSeeder`, `PendingDepartmentManagerState`.
 - Authority: Lead, 2026-07-18. Logged in governance-log.md.
 
+### DGAP-15 — Sprint C Dashboard Decision Register (DASH-00)
+
+| Field | Value |
+|-------|-------|
+| **ID** | **DGAP-15** |
+| **Tag** | **DASH-00** / WP-UI-C-DASH-00 |
+| **Title** | Sprint C role-based dashboard — formal Decision Register (D1–D5), debt register, WP sequence |
+| **Status** | **CLOSED** (Lead-approved; docs-only registration — no re-litigation) |
+| **Registered** | 1405/04/28 \| 2026-07-19 |
+| **Decision-Owner** | Lead (Human Decision Authority) |
+| **ID verification** | Decision Gate Table scanned: DGAP-01…14 present; **DGAP-15** absent → next free DGAP integer. Not a FROZEN ID. |
+| **Related (cite only; not reopened)** | **DGAP-13** / **DGAP-14** (Stage-1 approver auth path = `dormitory-manager`); **DGAP-10** (dual-guard by design); **UI-M1-COV** (40P01 hygiene note — related to DBT-5) |
+
+**Non-Scope:** no PHP, Blade, route, config, migration, seeder, or test changes under this registration. Does **not** authorize DASH-01+ implementation. Does **not** reopen any OPEN/PARKED gate (DGAP-03, SGAP-05/07, etc.).
+
+#### Closed decisions (D1–D5)
+
+| ID | Decision | Status | Notes / Evidence |
+|----|----------|--------|------------------|
+| **D1** | Shared dashboard shell = `components.layouts.dashboard` (header + optional sidebar). `components.layouts.dormitory-admin` stays separate for now. | **CLOSED** | Layout file **does not exist yet** — DASH-01 deliverable. Existing layouts: `resources/views/components/layouts/{app,guest,dormitory-admin}.blade.php`. |
+| **D2** | Navigation Option A — single nav + View Composer (pattern: `LayoutNavAuditLinkComposer` on `components.layouts.app`). Role SoT: `app/Shared/Auth/IdentityRoleGuard.php` (`guard_name=identity`). No role names hard-coded in Blade. Sprint C nav scope: `employee` + `dormitory-manager` only; `dormitory-unit-manager` deferred; web-guard roles out of scope. | **CLOSED** | Composer evidence: `app/Modules/Audit/Presentation/View/Composers/LayoutNavAuditLinkComposer.php`. Stage-1 role alignment: DGAP-13 / DGAP-14. |
+| **D3** | Target guard = `identity`. Transitional dual-session (`api` + `identity`) at login. Full `auth:api` → `identity` migration = **REGISTERED DEBT (Hard STOP)** — not Sprint C. | **CLOSED** | Dual-session: `app/Http/Controllers/Web/AuthSessionController.php` (`store`) + `app/Modules/Auth/Presentation/Livewire/EmployeeLogin.php` via `EstablishApiSessionFromCredentialLoginAction`. Route split: `routes/web.php`. |
+| **D4** | `SystemAdministrator` remains on `web` guard. Migration to identity role = **REGISTERED DEBT**, out of Sprint C. | **CLOSED** | Aligns with dual-guard posture (DGAP-10 CLOSED — NOT-A-GAP by design). |
+| **D5** | Dashboard code follows Modules convention (`app/Modules/...`), **not** `app/Livewire/Dashboard/`. | **CLOSED** | Matches existing Livewire placement (e.g. Request / Auth / DormitoryAdmin modules). |
+
+#### Debt register (DBT-1…7)
+
+| ID | Title | Priority | Hard STOP / blocker | Status |
+|----|-------|----------|---------------------|--------|
+| **DBT-1** | WP-UI-C-01-B — `DormitoryReadContract::listSites()` missing (`siteExists` only) → empty site `<select>` on canonical form | High | **Yes — blocks DASH-03** | **OPEN** |
+| **DBT-2** | Post-login redirect not role-aware (`requests.index`); named `dashboard` hotfix stub → `/requests` (WP-UI-C-01-HOTFIX-01). Resolved by DASH-05. | Medium | No | **OPEN** |
+| **DBT-3** | Mixed `auth:api` / `auth:identity` route surface | High | **Yes (Hard STOP)** — full migrate out of Sprint C | **OPEN** |
+| **DBT-4** | `SystemAdministrator` on `web` guard | Low | No | **OPEN** |
+| **DBT-5** | Test DB Isolation — PostgreSQL `40P01` on concurrent suites sharing `testing` (not shared with dev). Related hygiene: UI-M1-COV. | — | **Lifted** (was Before DASH-01) | **CLOSED — NOT-A-GAP (config/operational)** |
+| **DBT-6** | Transitional route `dormitory.requests.create` (302 stub in `routes/web.php`) — remove after stray-reference scan | Low | No | **OPEN** |
+| **DBT-7** | Historical docs still referencing `RequestCreatePage` → DOC-SYNC | Low | No | **OPEN** |
+
+**DBT-1 note:** Dormitory module already exposes `listDormitories()` (`app/Modules/Dormitory/Application/Contracts/DormitoryStructureReadContract.php`); gap is the Request-facing contract (`app/Modules/Request/Application/Contracts/DormitoryReadContract.php`), not data availability.
+
+##### DBT-5 — Decision Record (Lead, WP-UI-C-TEST-ISO-01 / DASH-00 close)
+
+| Field | Value |
+|-------|-------|
+| **ID** | **DBT-5** (under DGAP-15 / DASH-00) |
+| **Status** | **CLOSED — NOT-A-GAP (config/operational)** |
+| **Closed** | 1405/04/28 \| 2026-07-19 |
+| **Decision-Owner** | Lead |
+| **Root cause** | `40P01` deadlock from **concurrent suite execution** on the shared **test** DB named `testing` — not from sharing the development database |
+| **Evidence** | Phase 1 probe (D1–D6): `phpunit.xml` → `DB_DATABASE=testing`; `.env` / app boot → `laravel`; Sail init already creates `testing`; Feature suite uses `RefreshDatabase`; no ParaTest in composer; leftover `testing_test_*` DBs observed |
+| **Resolution** | Not a gap — isolation already exists at DB level (`laravel` ≠ `testing`) |
+| **Mitigation** | Run **one suite at a time**; CI must use **exclusive** test execution. No code / phpunit / compose / rename change required |
+| **Residual risk** | Flake if suites run in parallel — **acceptable per Lead** |
+| **Effect** | Hard STOP (DBT-5 before DASH-01) **lifted**. TEST-ISO-01 Phase 2 **not authorized / not needed**. |
+
+#### WP sequence (Sprint C — Dashboard Track)
+
+```
+DASH-00 (DONE) → TEST-ISO-01 / DBT-5 (CLOSED — NOT-A-GAP) → DASH-01 (shell) → DASH-02 (nav)
+  → DASH-03 (employee landing; depends on WP-UI-C-01-B / DBT-1)
+  → DASH-04 (manager landing; DASH-SEED prerequisite DONE — Verify PASS;
+             dev.manager@dormsys.local / identity role dormitory-manager)
+  → DASH-05 (role-aware post-login resolver; replaces dashboard stub)
+```
+
+WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-01/02 and **must land before DASH-03**.
+
+**Effect:** Formal ledger for Sprint C dashboard decisions. DASH-00 ledger recorded; DBT-5 Hard STOP lifted. Implementation of DASH-01+ still requires separate WP authorization.
+
 ### DGAP-11
 
 - **Status:** **CLOSED — RESOLVED** (2026-07-15)
@@ -515,6 +584,8 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| ۱۴۰۵/۰۴/۲۸ (2026-07-19) | **DBT-5 CLOSED — NOT-A-GAP (config/operational)** (Lead): 40P01 = concurrent suites on shared `testing` DB; Phase 1 proved `testing` ≠ `laravel`; mitigation = single-suite / exclusive CI; no infra change; Hard STOP before DASH-01 **lifted**. Ref: WP-UI-C-TEST-ISO-01 / DASH-00 close. | Agent (Lead DBT-5 close) |
+| ۱۴۰۵/۰۴/۲۸ (2026-07-19) | **DGAP-15 CLOSED** (tag **DASH-00** / WP-UI-C-DASH-00): Sprint C dashboard Decision Register — D1–D5 CLOSED (shell/nav/auth/admin/path); debt DBT-1…7 recorded; WP sequence DASH-00→TEST-ISO-01→DASH-01…05 (+ WP-UI-C-01-B ‖ before DASH-03). Docs-only; no re-litigation; DGAP-10/13/14 not reopened. | Agent (WP-UI-C-DASH-00) |
 | ۱۴۰۵/۰۴/۲۸ (2026-07-19) | **Sprint B CLOSED** (Lead Final Closure Record): WP-RQ-W2-01 / WP-UI-M2-01 / WP-DOC-SYNC-01 **DONE**; SB-D10 Recorded; commit SHA **UNVERIFIED** (merge-agnostic); WP-GOV-SHA-01/01b **CANCELLED**. G7 remains DEFERRED (Wave-3). | Agent (Lead Sprint B Closure) |
 | ۱۴۰۵/۰۴/۲۸ (2026-07-19) | **SB-D10 DECIDED (A) — ISSUED (retroactive record):** Exempt registry classification for `ListPendingStage1RequestsAction` (MPEP discovery compatibility; no functional behavior change). Authority: Lead in-session during WP-RQ-W2-01 review; documentation recorded retroactively (WP-DOC-SYNC-01). | Agent (Lead WP-DOC-SYNC-01) |
 | ۱۴۰۵/۰۴/۲۸ (2026-07-19) | **SB-D9 DECIDED (A) — ISSUED:** F-W07-04 Wave 2 (Stage-1 list/filter UX + tests). auth_gate=`dormitory-manager` unchanged. WP-RQ-W2-01. | Agent (Lead WP-RQ-W2-01) |

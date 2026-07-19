@@ -62,7 +62,7 @@
         ],
         "test": [
             "@php artisan config:clear --ansi @no_additional_args",
-            "@php -d memory_limit=512M artisan test"
+            "@php -d memory_limit=512M artisan test @additional_args"
         ],
         "arch:scan": "@php scripts/architecture/forbidden-imports-scan.php",
         "arch:test": "@php -d memory_limit=512M vendor/bin/pest tests/Architecture/ --exclude-group architecture-advisory",
