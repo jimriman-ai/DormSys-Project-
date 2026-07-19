@@ -49,7 +49,7 @@ it('forbids web-guard dormitory-manager role from the manager dashboard (SEC-G-0
     app(PermissionRegistrar::class)->forgetCachedPermissions();
 
     expect($user->roles->contains(
-        static fn (\Illuminate\Database\Eloquent\Model $role): bool => $role instanceof Role
+        static fn (Illuminate\Database\Eloquent\Model $role): bool => $role instanceof Role
             && $role->guard_name === 'identity',
     ))->toBeFalse();
 
@@ -65,7 +65,7 @@ it('forbids web-guard dormitory-unit-manager role from the unit dashboard (SEC-G
     app(PermissionRegistrar::class)->forgetCachedPermissions();
 
     expect($user->roles->contains(
-        static fn (\Illuminate\Database\Eloquent\Model $role): bool => $role instanceof Role
+        static fn (Illuminate\Database\Eloquent\Model $role): bool => $role instanceof Role
             && $role->guard_name === 'identity',
     ))->toBeFalse();
 

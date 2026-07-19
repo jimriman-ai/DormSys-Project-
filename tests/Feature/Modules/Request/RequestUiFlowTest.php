@@ -10,9 +10,9 @@ use App\Modules\Notification\Domain\Enums\NotificationType;
 use App\Modules\Notification\Infrastructure\Adapters\InMemoryEmployeeExistenceReadAdapter;
 use App\Modules\Request\Presentation\Livewire\PersonalRequestFormPage;
 use App\Modules\Request\Presentation\Livewire\RequestListPage;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Livewire;
 
 uses(RefreshDatabase::class);

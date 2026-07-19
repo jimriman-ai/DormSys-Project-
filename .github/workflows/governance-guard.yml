@@ -2,25 +2,29 @@ name: Governance Guard
 
 on:
   push:
+    branches:
+      - main
+      - develop
+      - "001-*"
     paths:
-      - '.specify/governance/_meta/authority-model.md'
-      - '.specify/governance/execution-policy.md'
-      - '.specify/governance/governance-enforcer.md'
-      - '.specify/docs/catalog-decisions.md'
-      - '.specify/governance/tests/governance-consistency-test-spec.md'
-      - '.specify/governance/ci/governance-guard-layer-spec.md'
-      - '.specify/governance/ci/guard/**'
-      - '.github/workflows/governance-guard.yml'
+      - ".specify/governance/_meta/authority-model.md"
+      - ".specify/governance/execution-policy.md"
+      - ".specify/governance/governance-enforcer.md"
+      - ".specify/docs/catalog-decisions.md"
+      - ".specify/governance/tests/governance-consistency-test-spec.md"
+      - ".specify/governance/ci/governance-guard-layer-spec.md"
+      - ".specify/governance/ci/guard/**"
+      - ".github/workflows/governance-guard.yml"
   pull_request:
     paths:
-      - '.specify/governance/_meta/authority-model.md'
-      - '.specify/governance/execution-policy.md'
-      - '.specify/governance/governance-enforcer.md'
-      - '.specify/docs/catalog-decisions.md'
-      - '.specify/governance/tests/governance-consistency-test-spec.md'
-      - '.specify/governance/ci/governance-guard-layer-spec.md'
-      - '.specify/governance/ci/guard/**'
-      - '.github/workflows/governance-guard.yml'
+      - ".specify/governance/_meta/authority-model.md"
+      - ".specify/governance/execution-policy.md"
+      - ".specify/governance/governance-enforcer.md"
+      - ".specify/docs/catalog-decisions.md"
+      - ".specify/governance/tests/governance-consistency-test-spec.md"
+      - ".specify/governance/ci/governance-guard-layer-spec.md"
+      - ".specify/governance/ci/guard/**"
+      - ".github/workflows/governance-guard.yml"
 
 jobs:
   governance-guard:
@@ -28,8 +32,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      HARD_GUARD_MODE: 'true'
-      GOVERNANCE_GUARD_STRICT_LITERALS: 'true'
+      HARD_GUARD_MODE: "true"
+      GOVERNANCE_GUARD_STRICT_LITERALS: "true"
 
     steps:
       - name: Checkout
@@ -38,7 +42,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Run governance guard
         run: |

@@ -60,6 +60,8 @@ Route::post('/logout', [AuthSessionController::class, 'destroy'])
 
 Route::middleware(['auth:api', 'request.mutation.principal', 'audit.principal'])->group(function (): void {
     Route::redirect('/', '/requests')->name('home');
+    // hotfix WP-UI-C-01-HOTFIX-01 — Laravel guest redirect prefers named route `dashboard`
+    Route::redirect('/dashboard', '/requests')->name('dashboard');
 
     Route::prefix('requests')->group(function (): void {
         Route::get('/', RequestListPage::class)->name('requests.index');

@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/28 | 2026-07-19 | Session: fix CI triggers — all push/PR; pending Lead commit + push_
+_Last updated: 1405/04/28 | 2026-07-19 | Session: confirm hotfix verify (dashboard + ReportingApiTest)_
 
-**Authority note:** OBSERVED process fix — workflow `on:` expanded for solo push-on-any-branch.
+**Authority note:** WP-UI-C-01-HOTFIX-01 verify confirm; no new AUTH.
 
 ---
 
@@ -13,15 +13,15 @@ _Last updated: 1405/04/28 | 2026-07-19 | Session: fix CI triggers — all push/P
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| Fix | `.github/workflows/tests.yml` | branch allowlist → **all push/PR** + dispatch | file |
-| Fix | `.github/workflows/code-quality.yml` | branch allowlist → **all push/PR** + dispatch | file |
-| Fix | `.github/workflows/governance-guard.yml` | branch filter removed; **paths kept** | file |
+| Confirm | `route:list --name=dashboard` | resolves | Sail clear + list |
+| Confirm | ReportingApiTest alone | **10 passed** (prior suite flake) | terminal 690691 |
+| Confirm | `route('dashboard')` | `http://localhost/dashboard` | tinker |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🔀 **Lifecycle — CI trigger fix** (workflow `on:` only)
+📄 **Spec — WP-UI-C-01-HOTFIX-01** (`dashboard` named route **DONE**; verify green)
 
 ---
 
@@ -29,9 +29,17 @@ _Last updated: 1405/04/28 | 2026-07-19 | Session: fix CI triggers — all push/P
 
 | ID | Title | Status | Stage | Blocker |
 |----|-------|--------|-------|---------|
-| CI push filters | Actions on any branch | **IN-PROGRESS** | push YAML | pending Lead commit/push |
+| WP-UI-C-01-HOTFIX-01 | Named route `dashboard` | **DONE** | Verify | pending Lead commit |
 | WP-UI-C-DASH-SEED | Dev identity roles | **DONE** | Verify PASS | DASH-00 ledger gap |
 | WP-UI-C-01-B | listSites | NOT-STARTED | — | empty select |
+
+---
+
+## 5. Open Decisions (mirror)
+
+| ID | Summary | Status |
+|----|---------|--------|
+| DASH-00 | Role-based dashboard (ledger gap) | **OPEN** — absent from open-decisions.md |
 
 ---
 
@@ -39,22 +47,22 @@ _Last updated: 1405/04/28 | 2026-07-19 | Session: fix CI triggers — all push/P
 
 | Feature | L3 | L6 | L8 | L9 | Notes |
 |---------|----|----|----|----|-------|
-| CI any-branch push | — | — | — | — | Tests + Code Quality unrestricted push |
-| Governance Guard | — | — | — | — | path-filtered only |
+| WP-UI-C-01-HOTFIX-01 | — | ✅ | ⏳ suite 2 unrelated FAIL | — | route only |
+| WP-UI-C-DASH-SEED | — | ✅ | ✅ | — | absorbs DASH-06 |
 
 ---
 
 ## 7. Next Step
 
-**Action:** Commit + push workflow YAML so next push runs Actions on `release/*`.  
-**Owner:** Cursor (push) / Lead if commit deferred  
-**Gate:** none for CI yaml process fix (user asked solve)  
-**Target files:** `.github/workflows/{tests,code-quality,governance-guard}.yml`  
-**Done when:** Actions run visible for this branch after push  
-**Blocker:** none if push succeeds  
+**Action:** Lead commit hotfix `routes/web.php`; next WP as authorized.  
+**Owner:** Lead  
+**Gate:** commit; DASH-00 still absent from open-decisions  
+**Target files:** `routes/web.php`  
+**Done when:** hotfix committed  
+**Blocker:** none for hotfix verify  
 
 **Suggested user prompt:**
-> Confirm Actions tab shows Tests + Code Quality on latest push.
+> Commit WP-UI-C-01-HOTFIX-01, then authorize WP-UI-C-01-B or record DASH-00.
 
 ---
 
@@ -62,8 +70,8 @@ _Last updated: 1405/04/28 | 2026-07-19 | Session: fix CI triggers — all push/P
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| CI push filter vs release/* | **CLOSING** | allowlist removed |
-| PR #12 closed unmerged | **OBSERVED** | push path now sufficient without PR |
-| Default branch `spec02-baseline` | **OBSERVED** | not `main` |
 | DASH-00 ledger | **OPEN** | not in open-decisions.md |
-| WP-UI-C-01-B listSites | **OPEN** | reserved |
+| ReportingApiTest permissions | **OBSERVED** | `relation "permissions" does not exist` mid-suite — not dashboard |
+| welcome `/dashboard` via url() | **OBSERVED** | now served by named redirect |
+| WP-UI-C-01-B listSites | **OPEN** | empty select |
+| Mixed auth:api / auth:identity | **OPEN** | Hard STOP — untouched |
