@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/28 | 2026-07-19 | Sprint: F3 Sprint B | Session: Stage1 re-verify PASS (tests + PHPStan)_
+_Last updated: 1405/04/28 | 2026-07-19 | Session: verify Bug1 pint composer script (already fixed)_
 
-**Authority note:** WP-RQ-W2-01 Lead-accepted DONE (closure report). SHA **UNVERIFIED** until Lead commit.
+**Authority note:** Verify-only; no code change. Pint script already `@php vendor/bin/pint`.
 
 ---
 
@@ -13,15 +13,13 @@ _Last updated: 1405/04/28 | 2026-07-19 | Sprint: F3 Sprint B | Session: Stage1 r
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| Verify | `--filter=Stage1` | **15 passed** (42 assertions) | Sail `EXIT:0` |
-| Verify | PHPStan Stage1 surfaces | **0 errors** | `php vendor/bin/phpstan analyse --no-progress` `EXIT:0` |
-| Code | — | **unchanged** | notification-only |
+| Verify | Bug1 `composer.json` scripts.pint | **NOT PRESENT** — already `@php vendor/bin/pint` | `composer.json:74`; `composer run pint -- --test` invokes binary |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-📄 **Spec — `docs/features/stage1-approver-console/`** (Wave 2 DONE per Lead; pending Lead commit)
+📄 **Spec — CI/script hygiene verify** (pint script OK; WP-UI-C-01-LEGACY-CLEANUP-01 DONE)
 
 ---
 
@@ -29,8 +27,9 @@ _Last updated: 1405/04/28 | 2026-07-19 | Sprint: F3 Sprint B | Session: Stage1 r
 
 | ID | Title | Status | Stage | Blocker |
 |----|-------|--------|-------|---------|
-| F-W07-04 | stage1-approver-console | Wave 1+2 **DONE** (Lead ACCEPTED WP-RQ-W2-01) | Sprint B | Lead commit |
-| UI-M2 | Unit Manager Dashboard | Lock COMPLETED (SB-D7) | Sprint B | Lead commit |
+| WP-UI-C-01-LEGACY-CLEANUP-01 | Legacy wire retirement | **DONE** | — | none |
+| WP-UI-C-01-B | `listSites()` | NOT-STARTED | — | empty select |
+| composer pint script | Bug1 alleged | **CLOSED** (already fixed) | — | none |
 
 ---
 
@@ -38,22 +37,21 @@ _Last updated: 1405/04/28 | 2026-07-19 | Sprint: F3 Sprint B | Session: Stage1 r
 
 | Feature | L3 | L6 | L8 | L9 | Notes |
 |---------|----|----|----|----|-------|
-| stage1-approver-console | ✅ | ✅ Wave 1+2 | ⏳ | — | re-verify green |
-| UI-M2 | ✅ SB-D6 | ✅ Lock | — | — | unchanged |
+| WP-UI-C-01-LEGACY-CLEANUP-01 | — | ✅ | ✅ | — | unchanged |
 
 ---
 
 ## 7. Next Step
 
-**Action:** Lead commit WP-RQ-W2-01 (+ related WT). Record SB-D10 in governance if Lead wants ID for exempt entry (code already present; ID absent in docs — closure STOP).  
+**Action:** Lead authorize next WP (`WP-UI-C-01-B` or dashboard). Optional: run `composer run pint` for unrelated style debt.  
 **Owner:** Lead  
-**Gate:** Manual commit  
-**Target files:** Stage1 Wave 2 surfaces + ExemptMutationActionRegistry  
-**Done when:** SHA recorded  
-**Blocker:** none for verify  
+**Gate:** none  
+**Target files:** n/a  
+**Done when:** next WP authorized  
+**Blocker:** none for pint script  
 
 **Suggested user prompt:**
-> Commit WP-RQ-W2-01. Optionally record SB-D10 for ListPending exempt registry entry.
+> Authorize WP-UI-C-01-B listSites().
 
 ---
 
@@ -61,7 +59,6 @@ _Last updated: 1405/04/28 | 2026-07-19 | Sprint: F3 Sprint B | Session: Stage1 r
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| WP-RQ-W2-01 | **DONE** (Lead) | SHA UNVERIFIED |
-| SB-D9 | ISSUED | Wave 2 auth |
-| SB-D10 | CONTEXT ISSUED / **docs ABSENT** | closure STOP discrepancy |
-| G7 | DEFERRED | requester-name filter |
+| Bug1 pint script | **CLOSED** | already `@php vendor/bin/pint`; `--test` forwarded |
+| WP-UI-C-01-B listSites | **OPEN** | reserved |
+| Mixed auth:api / auth:identity | **OPEN** (debt) | observed |

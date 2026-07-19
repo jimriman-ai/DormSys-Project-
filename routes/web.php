@@ -10,6 +10,9 @@ use App\Modules\DormitoryAdmin\DormitoryManagerDashboard;
 use App\Modules\DormitoryAdmin\DormitoryUnitManagerDashboard;
 use App\Modules\Employee\Presentation\Providers\EmployeePresentationServiceProvider;
 use App\Modules\Notification\Presentation\Providers\NotificationPresentationServiceProvider;
+use App\Modules\Request\Presentation\Livewire\PersonalRequestFormPage;
+use App\Modules\Request\Presentation\Livewire\RequestListPage;
+use App\Modules\Request\Presentation\Livewire\RequestShowPage;
 use App\Modules\Request\Presentation\Providers\RequestPresentationServiceProvider;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +37,11 @@ Route::prefix('dormitory-admin')
             ->name('unit-manager');
     });
 
+// transitional — remove in cleanup WP
+Route::match(['get', 'post'], '/dormitory/requests/create', static fn () => redirect()->route('requests.create'))
+    ->middleware(['auth:identity'])
+    ->name('dormitory.requests.create');
+
 // [PERMIT-ID: IMPL-PERMIT-01] §2.2 — Spec04 dual URL boundaries (IMP-Q-01 A).
 Route::prefix('employee/requests')
     ->middleware(['auth:identity', 'identity.role:employee'])
@@ -53,8 +61,13 @@ Route::post('/logout', [AuthSessionController::class, 'destroy'])
 Route::middleware(['auth:api', 'request.mutation.principal', 'audit.principal'])->group(function (): void {
     Route::redirect('/', '/requests')->name('home');
 
-    Route::prefix('requests')
-        ->group(RequestPresentationServiceProvider::requestWebRoutePath());
+    Route::prefix('requests')->group(function (): void {
+        Route::get('/', RequestListPage::class)->name('requests.index');
+        Route::get('/create', PersonalRequestFormPage::class)->name('requests.create');
+        Route::get('/{requestId}', RequestShowPage::class)
+            ->whereUuid('requestId')
+            ->name('requests.show');
+    });
 
     Route::prefix('notifications')
         ->group(NotificationPresentationServiceProvider::notificationWebRoutePath());

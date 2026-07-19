@@ -8,9 +8,9 @@ use App\Modules\Employee\Application\Contracts\EmployeeRepositoryContract;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Modules\Request\Infrastructure\Persistence\Models\RequestModel;
 use App\Modules\Request\Presentation\Http\Middleware\EnforceSessionMutationPrincipalMiddleware;
-use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Database\Seeders\DevelopmentUserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 use Livewire\Drawer\Utils;
 use Livewire\Livewire;
@@ -18,6 +18,7 @@ use Livewire\Livewire;
 uses(RefreshDatabase::class);
 
 beforeEach(function (): void {
+    Carbon::setTestNow('2026-06-23 12:00:00');
     app(MutationPrincipalContextHolder::class)->clear();
     request()->attributes->remove('audit_principal_user_id');
 
@@ -43,6 +44,10 @@ beforeEach(function (): void {
     }
 });
 
+afterEach(function (): void {
+    Carbon::setTestNow();
+});
+
 it('registers session mutation principal middleware as livewire persistent middleware', function (): void {
     expect(Livewire::getPersistentMiddleware())->toContain(
         EnforceSessionMutationPrincipalMiddleware::class,
@@ -57,6 +62,11 @@ it('creates a personal request through the create page livewire flow after sessi
         'identifier' => DevelopmentUserSeeder::EMPLOYEE_EMAIL,
         'password' => DevelopmentUserSeeder::EMPLOYEE_PASSWORD,
     ])->assertRedirect(route('requests.index'));
+
+    $identity = UserModel::query()
+        ->where('email', DevelopmentUserSeeder::EMPLOYEE_EMAIL)
+        ->firstOrFail();
+    grantDormitoryStructureViewPermission($identity->id);
 
     app(MutationPrincipalContextHolder::class)->clear();
     request()->attributes->remove('audit_principal_user_id');
@@ -76,15 +86,15 @@ it('creates a personal request through the create page livewire flow after sessi
                 'snapshot' => json_encode($snapshot, JSON_THROW_ON_ERROR),
                 'calls' => [
                     [
-                        'method' => 'save',
+                        'method' => 'submit',
                         'params' => [],
                         'path' => '',
                     ],
                 ],
                 'updates' => [
-                    'dormitoryId' => $dormitoryId,
-                    'checkInDate' => '2026-07-01',
-                    'checkOutDate' => '2026-12-31',
+                    'dormitory_site_id' => $dormitoryId,
+                    'check_in_date' => '2026-07-01',
+                    'check_out_date' => '2026-12-31',
                 ],
             ],
         ],
@@ -97,7 +107,7 @@ it('creates a personal request through the create page livewire flow after sessi
     $effects = $updateResponse->json('components.0.effects');
     expect($effects)->toBeArray()
         ->and($effects['redirect'] ?? null)->toBeString()
-        ->and($effects['redirect'])->toContain('/requests/');
+        ->and($effects['redirect'])->toContain('/employee/requests');
 });
 
 it('does not resolve a mutation principal for guests on request create livewire actions', function (): void {
@@ -107,7 +117,7 @@ it('does not resolve a mutation principal for guests on request create livewire 
     $createPage->assertRedirect('/login');
 });
 
-it('persists a request owned by the authenticated identity employee after livewire save', function (): void {
+it('persists a request owned by the authenticated identity employee after livewire submit', function (): void {
     Artisan::call('db:seed', ['--class' => DevelopmentUserSeeder::class]);
 
     $this->post('/login', [
@@ -122,11 +132,15 @@ it('persists a request owned by the authenticated identity employee after livewi
         ->where('email', DevelopmentUserSeeder::EMPLOYEE_EMAIL)
         ->firstOrFail();
 
+    grantDormitoryStructureViewPermission($identity->id);
+
     $employeeId = app(EmployeeRepositoryContract::class)->findEmployeeIdByIdentityUserId($identity->id);
     expect($employeeId)->toBeString();
 
     $createPage = $this->get('/requests/create');
     $snapshot = Utils::extractAttributeDataFromHtml($createPage->getContent(), 'wire:snapshot');
+
+    $dormitoryId = createDormitorySiteForRequestTests();
 
     $this->post('/livewire/update', [
         'components' => [
@@ -134,15 +148,15 @@ it('persists a request owned by the authenticated identity employee after livewi
                 'snapshot' => json_encode($snapshot, JSON_THROW_ON_ERROR),
                 'calls' => [
                     [
-                        'method' => 'save',
+                        'method' => 'submit',
                         'params' => [],
                         'path' => '',
                     ],
                 ],
                 'updates' => [
-                    'dormitoryId' => UuidGenerator::uuid7(),
-                    'checkInDate' => '2026-07-01',
-                    'checkOutDate' => '2026-12-31',
+                    'dormitory_site_id' => $dormitoryId,
+                    'check_in_date' => '2026-07-01',
+                    'check_out_date' => '2026-12-31',
                 ],
             ],
         ],

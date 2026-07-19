@@ -8,8 +8,9 @@ use App\Modules\Notification\Application\Contracts\NotificationDeliveryContract;
 use App\Modules\Notification\Application\DTOs\NotificationIntentDto;
 use App\Modules\Notification\Domain\Enums\NotificationType;
 use App\Modules\Notification\Infrastructure\Adapters\InMemoryEmployeeExistenceReadAdapter;
-use App\Modules\Request\Presentation\Livewire\RequestCreatePage;
+use App\Modules\Request\Presentation\Livewire\PersonalRequestFormPage;
 use App\Modules\Request\Presentation\Livewire\RequestListPage;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Livewire\Livewire;
@@ -21,6 +22,7 @@ require_once __DIR__.'/support/http-mutation.php';
 function authenticateRequestUiUser(App\Modules\Identity\Infrastructure\Persistence\Models\UserModel $identity): void
 {
     authenticateRequestHttpMutationUser($identity);
+    Auth::guard('identity')->login($identity);
     app(MutationPrincipalContextHolder::class)->set($identity->id);
 }
 
@@ -134,13 +136,13 @@ describe('request ui flows', function (): void {
         $dormitoryId = createDormitorySiteForRequestTests();
 
         Livewire::actingAs($actor['identity'], 'api')
-            ->test(RequestCreatePage::class)
-            ->set('dormitoryId', $dormitoryId)
-            ->set('checkInDate', '2026-07-01')
-            ->set('checkOutDate', '2026-12-31')
-            ->call('save')
+            ->test(PersonalRequestFormPage::class)
+            ->set('dormitory_site_id', $dormitoryId)
+            ->set('check_in_date', '2026-07-01')
+            ->set('check_out_date', '2026-12-31')
+            ->call('submit')
             ->assertHasNoErrors()
-            ->assertRedirect();
+            ->assertRedirect(route('employee.requests.index'));
 
         $this->get('/requests')
             ->assertOk();
@@ -157,12 +159,12 @@ describe('request ui flows', function (): void {
         authenticateRequestUiUser($actor['identity']);
 
         Livewire::actingAs($actor['identity'], 'api')
-            ->test(RequestCreatePage::class)
-            ->set('dormitoryId', 'not-a-uuid')
-            ->set('checkInDate', '2026-07-01')
-            ->set('checkOutDate', '2026-12-31')
-            ->call('save')
-            ->assertHasErrors(['dormitoryId']);
+            ->test(PersonalRequestFormPage::class)
+            ->set('dormitory_site_id', 'not-a-uuid')
+            ->set('check_in_date', '2026-07-01')
+            ->set('check_out_date', '2026-12-31')
+            ->call('submit')
+            ->assertHasErrors(['dormitory_site_id']);
     });
 });
 

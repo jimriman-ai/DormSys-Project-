@@ -17,7 +17,7 @@
 ## Wave 2 status (SB-D9 / WP-RQ-W2-01) — status record only
 
 - **authorized:** SB-D9 ISSUED (2026-07-19)
-- **wave_status:** COMPLETED (WT) — UX tests + list/filter polish; SHA UNVERIFIED until Lead commit
+- **wave_status:** DONE — UX tests + list/filter polish; SHA UNVERIFIED (merge-agnostic policy); Sprint B CLOSED
 - **auth_gate:** unchanged — `dormitory-manager` (identity)
 - **application_signature:** `ListPendingStage1RequestsAction::execute()` — **unchanged** (presentation-side filter/pagination)
 - **verify_companion (out-of-L1):** `ExemptMutationActionRegistry` — register `ListPendingStage1RequestsAction` as read-only query exempt (MPEP boundary; peer to Query* / Stage-1 actions) — **SB-D10**

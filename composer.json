@@ -71,7 +71,7 @@
             "@arch:scan",
             "@arch:test"
         ],
-        "pint": "pint",
+        "pint": "@php vendor/bin/pint",
         "phpstan": "@php vendor/bin/phpstan analyse --memory-limit=1G --ansi --no-progress",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
