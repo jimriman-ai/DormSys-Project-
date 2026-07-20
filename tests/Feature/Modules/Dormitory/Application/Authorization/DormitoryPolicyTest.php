@@ -2,22 +2,15 @@
 
 declare(strict_types=1);
 
+use App\Modules\Dormitory\Domain\Enums\ResourceStatus;
+use App\Modules\Dormitory\Infrastructure\Persistence\Models\DormitoryAssignment;
 use App\Modules\Dormitory\Infrastructure\Persistence\Models\DormitoryModel;
 use App\Modules\Identity\Domain\Enums\UserStatus;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
-use App\Shared\Auth\IdentityRoleGuard;
-use Database\Seeders\IdentityRoleSeeder;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Ramsey\Uuid\Uuid;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\PermissionRegistrar;
-
-beforeEach(function (): void {
-    Artisan::call('db:seed', ['--class' => IdentityRoleSeeder::class]);
-    app(PermissionRegistrar::class)->forgetCachedPermissions();
-});
 
 function createDormitoryPolicyIdentityUser(string $displayName = 'Dormitory Policy User'): UserModel
 {
@@ -35,29 +28,69 @@ function createDormitoryPolicyIdentityUser(string $displayName = 'Dormitory Poli
     return UserModel::query()->findOrFail($id);
 }
 
-function assignDormitoryPolicyIdentityRole(UserModel $user, string $roleName): void
+function createDormitoryPolicySite(string $code): DormitoryModel
 {
-    $role = Role::findOrCreate($roleName, 'identity');
-    $user->assignRole($role);
-    app(PermissionRegistrar::class)->forgetCachedPermissions();
+    return DormitoryModel::query()->create([
+        'code' => $code,
+        'name' => 'Policy Site '.$code,
+        'status' => ResourceStatus::Available,
+    ]);
 }
 
-it('allows viewAny for employee role', function (): void {
-    $user = createDormitoryPolicyIdentityUser('Policy Employee');
-    assignDormitoryPolicyIdentityRole($user, IdentityRoleGuard::ROLE_EMPLOYEE);
+function createDormitoryPolicyAssignment(
+    UserModel $user,
+    DormitoryModel $dormitory,
+    ?Carbon $revokedAt = null,
+): DormitoryAssignment {
+    return DormitoryAssignment::query()->create([
+        'user_id' => $user->getId(),
+        'dormitory_id' => $dormitory->getId(),
+        'assigned_at' => now(),
+        'revoked_at' => $revokedAt,
+    ]);
+}
 
-    expect(Gate::forUser($user)->allows('viewAny', DormitoryModel::class))->toBeTrue();
+it('allows viewAny and view when identity user has an active assignment', function (): void {
+    $user = createDormitoryPolicyIdentityUser('Assigned Employee');
+    $dormitory = createDormitoryPolicySite('POL-A');
+    createDormitoryPolicyAssignment($user, $dormitory);
+
+    $this->actingAs($user, 'identity');
+
+    expect(Gate::forUser($user)->allows('viewAny', DormitoryModel::class))->toBeTrue()
+        ->and(Gate::forUser($user)->allows('view', $dormitory))->toBeTrue();
 });
 
-it('denies viewAny for dormitory-manager role', function (): void {
-    $user = createDormitoryPolicyIdentityUser('Policy Manager');
-    assignDormitoryPolicyIdentityRole($user, IdentityRoleGuard::ROLE_DORMITORY_MANAGER);
+it('denies viewAny and view when identity user has no assignment', function (): void {
+    $user = createDormitoryPolicyIdentityUser('Unassigned Employee');
+    $dormitory = createDormitoryPolicySite('POL-NONE');
 
-    expect(Gate::forUser($user)->denies('viewAny', DormitoryModel::class))->toBeTrue();
+    $this->actingAs($user, 'identity');
+
+    expect(Gate::forUser($user)->denies('viewAny', DormitoryModel::class))->toBeTrue()
+        ->and(Gate::forUser($user)->denies('view', $dormitory))->toBeTrue();
 });
 
-it('denies viewAny for identity user with no Sprint C role', function (): void {
-    $user = createDormitoryPolicyIdentityUser('Policy No Role');
+it('denies viewAny and view when assignment is revoked', function (): void {
+    $user = createDormitoryPolicyIdentityUser('Revoked Employee');
+    $dormitory = createDormitoryPolicySite('POL-REV');
+    createDormitoryPolicyAssignment($user, $dormitory, now());
 
-    expect(Gate::forUser($user)->denies('viewAny', DormitoryModel::class))->toBeTrue();
+    $this->actingAs($user, 'identity');
+
+    expect(Gate::forUser($user)->denies('viewAny', DormitoryModel::class))->toBeTrue()
+        ->and(Gate::forUser($user)->denies('view', $dormitory))->toBeTrue();
+});
+
+it('denies view for a dormitory that is not the actively assigned one', function (): void {
+    $user = createDormitoryPolicyIdentityUser('Cross-Site Employee');
+    $dormA = createDormitoryPolicySite('POL-XA');
+    $dormB = createDormitoryPolicySite('POL-XB');
+    createDormitoryPolicyAssignment($user, $dormA);
+
+    $this->actingAs($user, 'identity');
+
+    expect(Gate::forUser($user)->allows('viewAny', DormitoryModel::class))->toBeTrue()
+        ->and(Gate::forUser($user)->allows('view', $dormA))->toBeTrue()
+        ->and(Gate::forUser($user)->denies('view', $dormB))->toBeTrue();
 });

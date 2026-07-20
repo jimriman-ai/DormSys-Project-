@@ -648,3 +648,22 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 2. هر تصمیم باید با ID، تاریخ، و نام تأییدکننده در Changelog ثبت شود.
 3. شناسه هر gap immutable است. به‌روزرسانی Status / Notes / Decision Owner فقط با ثبت changelog مجاز است.
 4. gap جدید فقط با شناسه‌ی بعدی (`DG-06`, ...) اضافه می‌شود.
+
+## Q-EMP-DORM — RESOLVED
+
+| Field | Value |
+|---|---|
+| **Decision date** | 1405/04/29 (2026-07-20) |
+| **Decision** | Option B — Assignment-based |
+| **Statement** | Employee access to Dormitories is restricted to explicit assignments. Relationship: `Employee 1—* DormitoryAssignment *—1 Dormitory`. An employee can only see Dormitories for which an active assignment record exists for that employee. Global (all-dormitories) access for the Employee role is rejected. |
+| **Evidence** | ER sketch (`Employee 1—* Dormitory`) + DBT-1 residual |
+| **Impact on G02** | Quarantined WP-DASH-G02 artifacts (DormitoryPolicy + tests) must be rewritten against the assignment model. Supersedes the hard-coded global-access assumption. |
+| **Approved by** | Lead — 1405/04/29 |
+| **Previous status** | Q-DBT-1-AUTH: decision approved, implementation deferred |
+| **New status** | Q-EMP-DORM: RESOLVED → Option B |
+
+### Addendum — WP-DASH-G02-R1 implementation constraints (Lead-approved, 1405/04/29)
+
+1. **FK target:** `dormitory_assignments.user_id` references `identity_users.id` (NOT `users.id`), consistent with `dormitory_manager_assignments`, `dormitory_unit_manager_assignments`, and the `auth:identity` guard.
+2. **Table independence:** `dormitory_assignments` is a new, standalone employee↔dormitory table. It does not extend, replace, or interact with `dormitory_manager_assignments` or `dormitory_unit_manager_assignments`.
+3. **Lifecycle:** `dormitory_assignments` uses `revoked_at` for soft revocation. The two manager-assignment tables intentionally do not have `revoked_at`; this asymmetry is accepted and documented.

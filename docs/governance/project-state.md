@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/29 | 2026-07-20 | Session: FULL_AUDIT Phase 1 DONE — STOP-2 awaiting Lead WP approval_
+_Last updated: 1405/04/29 | 2026-07-20 | Session: WP-DASH-G02-R1 review — PASS vs Q-EMP-DORM (checklist naming drift noted)_
 
-**Authority note:** Phase 1 complete per Lead priority. No implementation. open-decisions Read-only.
+**Authority note:** Review SoT = Q-EMP-DORM + Addendum in `docs/governance/open-decisions.md`, not checklist column aliases.
 
 ---
 
@@ -13,14 +13,14 @@ _Last updated: 1405/04/29 | 2026-07-20 | Session: FULL_AUDIT Phase 1 DONE — ST
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| Gate | STOP-1 → **STOP-2** | Phase 1 Gap Decomposition delivered | Lead: Proceed Phase 1 |
-| Priority | Domains | Dashboard → Requests → Lottery → Reporting → rest | Lead message |
+| Review | WP-DASH-G02-R1 | DELIVERED → **REVIEW PASS** (vs Ledger/WP) | Checklist `identity_user_id` / `update`/`delete` = naming drift |
+| Commit gate | Lead | ready for Lead commit | No code change this prompt |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🧑‍⚖️ **Human Decision** — Lead approve/reject/reorder STOP-2 WP list before any Phase 2
+🧑‍⚖️ **Human Decision** — Lead accept review + commit WP-DASH-G02-R1
 
 ---
 
@@ -28,20 +28,27 @@ _Last updated: 1405/04/29 | 2026-07-20 | Session: FULL_AUDIT Phase 1 DONE — ST
 
 | ID | Title | Status | Notes |
 |----|-------|--------|-------|
-| FULL_AUDIT | Phase 1 | **STOP-2** | awaiting Lead WP approval |
-| Sprint C | DASH track | gaps catalogued | DBT-1 drift; landings missing |
+| WP-DASH-G02-R1 | Assignment-based DormitoryPolicy | **REVIEW PASS** (pending Lead commit) | |
+
+---
+
+## 6. Lifecycle Matrix
+
+| Feature | L3 | L6 | L8 | Notes |
+|---------|----|----|----|-------|
+| WP-DASH-G02-R1 | — | ✅ | ✅ | Review PASS; pending Lead commit |
 
 ---
 
 ## 7. Next Step
 
-**Action:** Lead approve subset of STOP-2 WPs (or hold).  
+**Action:** Lead commit WP-DASH-G02-R1 (or request rename if Lead wants column `identity_user_id` — would diverge from Addendum/`manager_assignments` pattern).  
 **Owner:** Lead  
-**Gate:** STOP-2  
-**Done when:** Explicit “Approve WP-… for Phase 2” (or equivalent)  
-**Blocker:** none for plan — Phase 2 forbidden until approval  
+**Gate:** Lead commit  
+**Done when:** Commit landed  
+**Blocker:** none for Ledger-aligned implementation  
 **Suggested user prompt:**
-> Approve for Phase 2 (docs/governance only first): WP-DASH-G01, WP-LOT-01. Hold all code WPs until Q-DBT-1-AUTH + Q-DASH-3-ROLE-SOURCE recorded.
+> Accept G02-R1 review. Commit. Authorize next WP if any.
 
 ---
 
@@ -49,8 +56,4 @@ _Last updated: 1405/04/29 | 2026-07-20 | Session: FULL_AUDIT Phase 1 DONE — ST
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| OQ-DASH-01…07 | OPEN | Phase 1 |
-| OQ-REQ-01…03 | OPEN | Phase 1 |
-| OQ-LOT-01…03 | OPEN | Phase 1 |
-| OQ-REP-01…03 | OPEN | Phase 1 |
-| Q-DBT-1-AUTH / Q-DASH-3-ROLE-SOURCE | DECISION_REQUIRED | still not in ledger |
+| Q-EMP-DORM | RESOLVED | Review confirms Option B + Addendum §1–3 implemented |
