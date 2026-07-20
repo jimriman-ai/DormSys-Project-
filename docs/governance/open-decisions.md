@@ -687,27 +687,6 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 - DashboardIdentityRoles.php deprecated → verified zero references → deleted (G09-B).
 - Evidence: DashboardNavTest 3/3 pass; Pint/PHPStan clean; pre-deletion grep = 1 hit (stub only).
 
-## Q-EMP-DORM — RESOLVED
-
-| Field | Value |
-|---|---|
-| **Decision date** | 1405/04/29 (2026-07-20) |
-| **Decision** | Option B — Assignment-based |
-| **Statement** | Employee access to Dormitories is restricted to explicit assignments. Relationship: `Employee 1—* DormitoryAssignment *—1 Dormitory`. An employee can only see Dormitories for which an active assignment record exists for that employee. Global (all-dormitories) access for the Employee role is rejected. |
-| **Evidence** | ER sketch (`Employee 1—* Dormitory`) + DBT-1 residual |
-| **Impact on G02** | Quarantined WP-DASH-G02 artifacts (DormitoryPolicy + tests) must be rewritten against the assignment model. Supersedes the hard-coded global-access assumption. |
-| **Approved by** | Lead — 1405/04/29 |
-| **Previous status** | Q-DBT-1-AUTH: decision approved, implementation deferred |
-| **New status** | Q-EMP-DORM: RESOLVED → Option B |
-
-### Addendum — WP-DASH-G02-R1 implementation constraints (Lead-approved, 1405/04/29)
-
-1. **FK target:** `dormitory_assignments.user_id` references `identity_users.id` (NOT `users.id`), consistent with `dormitory_manager_assignments`, `dormitory_unit_manager_assignments`, and the `auth:identity` guard.
-2. **Table independence:** `dormitory_assignments` is a new, standalone employee↔dormitory table. It does not extend, replace, or interact with `dormitory_manager_assignments` or `dormitory_unit_manager_assignments`.
-3. **Lifecycle:** `dormitory_assignments` uses `revoked_at` for soft revocation. The two manager-assignment tables intentionally do not have `revoked_at`; this asymmetry is accepted and documented.
-
----
-
 ## Q-G03-SCOPE — سطح هدف WP-DASH-G03
 
 - **Status:** RESOLVED
@@ -762,3 +741,167 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 - **Resolution path:** نیازمند WP مستقل با مجوز تغییر Contract در لایه
   Domain (پیشنهاد: WP-DASH-G04). تا آن زمان هیچ WP دیگری مجاز به تغییر
   این دو آرتیفکت نیست.
+
+## Phase 1 — Gap Decomposition: Final Dispositions
+
+**Closed:** 1405/04/29 | Criterion: Best path to complete primary phases
+
+---
+
+### Identity FK Exception Cluster
+
+**OQ-REQ-02** | Option B — ACCEPTED AS TEMPORARY GOVERNANCE EXCEPTION
+
+- Spec05 remains unchanged (no FK to identity_users in canonical spec)
+- Current implementation FK retained as documented exception, not spec-backed behavior
+- Non-blocking for Reconciliation
+- Requires future normalization WP (sunset: before Phase 3 allocation impl)
+
+**OQ-DORM-04** | Option B — ACCEPTED AS TEMPORARY GOVERNANCE EXCEPTION
+
+- Exception is outside Spec04 core; Spec04 remains authoritative
+- Normalization/removal deferred to same WP as OQ-REQ-02
+- Non-blocking for Reconciliation
+
+---
+
+### Resolved — No Further Action Required
+
+**OQ-REQ-03** | Option B — RESOLVED
+
+- `listSites` scoped; new contract `listAssignedSites*` defined
+- Unblocks G03
+
+**OQ-REQ-05** | Option B — RESOLVED (doc-only)
+
+- Naming alignment with Assignment-based model; no implementation change
+
+**OQ-EMP-01** | Option A — RESOLVED
+
+- `ActiveAllocationReadPort` bridged to `AllocationReadContract`
+- Eligibility chain restored
+
+**OQ-EMP-04** | Option A — RESOLVED
+
+- `Employee` designated as source for `DependentSnapshotSourceContract`
+- Domain ownership clarified
+
+**OQ-ALLOC-01** | Option B — RESOLVED
+
+- Unused ports deprecated; no active callers
+
+**OQ-ALLOC-04** | Option A — RESOLVED
+
+- `ProposedAllocation` payload: `bed_uuid` + stay dates confirmed
+
+---
+
+### Accepted — Pending Reconciliation or Future Action
+
+**OQ-REQ-06** | Option A — ACCEPTED, PENDING RECONCILIATION
+
+- Filter by assignee/snapshot confirmed as direction
+- Operational behavior impact requires reconciliation analysis before closing
+
+**OQ-DORM-03** | Option A — ACCEPTED
+
+- Dual pattern retained; boundary documentation MANDATORY in Reconciliation Package
+- Boundary must be defined in this phase, not deferred
+
+**OQ-ALLOC-02** | Option C — ACCEPTED AS DEBT
+
+- Dual naming retained temporarily; non-blocking
+- Remediation note: normalize naming before Phase 3
+
+---
+
+## Phase 1 — Final Decisions (Gap Decomposition)
+
+### OQ-REQ-02 + OQ-DORM-04 — Identity FK Exception Cluster
+
+**Status:** ACCEPTED — Temporary Governance Exception
+**Decision:** FK (`identity_id`) در جداول requests/dormitories به عنوان Temporary Exception پذیرفته می‌شود.
+**Spec:** حفظ می‌شود (تغییر نمی‌کند).
+**Constraint:** WP مجزا برای normalization در آینده الزامی است.
+**Phase 2 block:** خیر.
+
+---
+
+### OQ-REQ-03
+
+**Status:** RESOLVED
+**Decision:** Option B — قرارداد جدید `listAssignedSites*` تعریف می‌شود.
+
+---
+
+### OQ-REQ-05
+
+**Status:** RESOLVED
+**Decision:** Option B — doc-only.
+
+---
+
+### OQ-REQ-06
+
+**Status:** PENDING RECONCILIATION
+**Decision:** Option A — فیلتر روی `assigned_stage1_approver_identity_id`.
+**Action:** WP اجرای فیلتر در Repository.
+
+---
+
+### OQ-DORM-03
+
+**Status:** RESOLVED
+**Decision:** Option A — dual pattern با boundary مستند در Spec04.
+**Action:** annotation به Spec04 اضافه شود.
+
+---
+
+### OQ-EMP-01
+
+**Status:** RESOLVED
+**Decision:** Option A — bridge به `AllocationReadContract`.
+
+---
+
+### OQ-EMP-04
+
+**Status:** RESOLVED
+**Decision:** Option A — Employee منبع `DependentSnapshotSourceContract`.
+
+---
+
+### OQ-ALLOC-01
+
+**Status:** RESOLVED
+**Decision:** Option B — Deprecate unused port.
+
+---
+
+### OQ-ALLOC-02
+
+**Status:** DEBT — Accepted
+**Decision:** Option C — dual naming موقتاً پذیرفته.
+**Debt log:** نام‌گذاری دوگانه باید در WP آینده یکسان‌سازی شود.
+
+---
+
+### OQ-ALLOC-04
+
+**Status:** RESOLVED
+**Decision:** Option A — `bed_uuid` + stay dates.
+
+---
+
+## Deferred / Tracked
+
+| ID | Title | Notes | Date |
+|----|-------|-------|------|
+| OQ-ALLOC-02 | Domain Models/ vs Entities/ naming debt | Option C accepted as debt; track-only; rename deferred to post-Phase 2 / before Phase 3 | 1405/04/29 \| 2026-07-20 |
+
+## Temporary Governance Exceptions (append-only record)
+
+| ID | Title | Notes | Date |
+|----|-------|-------|------|
+| OQ-REQ-02 | Stage-1 `assigned_stage1_approver_identity_id` FK → `identity_users` | ACCEPTED temporary exception; Spec05 R-03 unchanged; normalization WP before Phase 3 allocation impl | 1405/04/29 \| 2026-07-20 |
+| OQ-DORM-04 | Dormitory assignment tables `user_id` FK → `identity_users` | ACCEPTED temporary exception outside Spec04 core; same future normalization WP as OQ-REQ-02 | 1405/04/29 \| 2026-07-20 |

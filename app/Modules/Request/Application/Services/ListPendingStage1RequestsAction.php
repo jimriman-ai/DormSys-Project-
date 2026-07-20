@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Request\Application\Services;
 
+use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
 use App\Modules\Request\Domain\Entities\Request;
 use App\Shared\Auth\IdentityRoleGuard;
@@ -27,6 +28,9 @@ final class ListPendingStage1RequestsAction
     {
         IdentityRoleGuard::assertDormitoryManager();
 
-        return $this->requests->listPendingStage1();
+        $user = auth('identity')->user();
+        assert($user instanceof UserModel);
+
+        return $this->requests->listPendingStage1($user->getId());
     }
 }

@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/29 | 2026-07-20 | Session: Final Freeze v1.0 loaded — awaiting Mode + ACTIVE_WP + BEGIN AUDIT_
+_Last updated: 1405/04/29 | 2026-07-20 | Session: Fixed CI `composer run arch -- --ansi` separator_
 
-**Authority note:** Operational Overlay = Final Freeze v1.0; Roadmap protocol upstream on conflict. Ledger Read-only.
+**Authority note:** Bug fix only — workflow arg forwarding. No ledger writes.
 
 ---
 
@@ -13,37 +13,24 @@ _Last updated: 1405/04/29 | 2026-07-20 | Session: Final Freeze v1.0 loaded — a
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| Protocol | Agent mode | idle → **armed / waiting activation** | Final Freeze v1.0 pasted by Lead |
-| Activation | BEGIN AUDIT | not received | no Mode / ACTIVE_WP declared |
+| CI arch step | `.github/workflows/tests.yml` | `composer run arch --ansi` → `composer run arch -- --ansi` | Match `composer run test -- --ansi` pattern |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🧑‍⚖️ **Human Decision** — Lead announce Mode (`WP_EXECUTION` \| `FULL_AUDIT`), ACTIVE_WP (if WP_EXECUTION), then `BEGIN AUDIT`
-
----
-
-## 2. Active Feature Map
-
-| ID | Title | Status | Notes |
-|----|-------|--------|-------|
-| WP-DASH-G03-R1 | Employee dormitory index/show | DELIVERED (prior session) | pending Lead commit unless already done |
-| Agent session | Final Freeze v1.0 | **WAITING ACTIVATION** | no audit/impl yet |
+📄 **Spec / CI** — workflow argument-separator hygiene for `arch` script
 
 ---
 
 ## 7. Next Step
 
-**Action:** Lead activate session per Final Freeze Activation Protocol.  
+**Action:** Lead review/commit CI one-liner if desired.  
 **Owner:** Lead  
-**Gate:** Explicit `BEGIN AUDIT`  
-**Done when:** Mode + (ACTIVE_WP \| FULL_AUDIT domains) + BEGIN AUDIT received  
-**Blocker:** Agent must not act before BEGIN AUDIT  
+**Gate:** Manual commit  
+**Done when:** Workflow uses `--` before script args for arch  
 **Suggested user prompt:**
-> Mode: WP_EXECUTION  
-> ACTIVE_WP: \<id from roadmap-execution-protocol.md §2\>  
-> BEGIN AUDIT
+> Commit the tests.yml arch `--` fix.
 
 ---
 
@@ -51,4 +38,4 @@ _Last updated: 1405/04/29 | 2026-07-20 | Session: Final Freeze v1.0 loaded — a
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| (session) | — | No new gaps; activation pending |
+| CI arch `--ansi` forwarding | CLOSED | separator added |

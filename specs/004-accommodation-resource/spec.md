@@ -279,3 +279,14 @@ Successor Spec / Wave ids are **not** assigned by this alignment; nomination rem
 - ❌ Dormitory deciding or storing authoritative person-to-bed assignment
 - ❌ FK from Dormitory tables to `allocation_*`, `employee_*`, or `identity_*`
 - ❌ Cross-module Eloquent queries (Allocation reading `BedModel` directly)
+
+## Dual-Pattern Boundary (OQ-DORM-03)
+Per Ledger decision OQ-DORM-03 (Option A — RESOLVED), the dual access
+pattern in the Dormitory context is retained with the following boundary:
+- Aggregate-traversal path: used exclusively for write operations and
+  invariant enforcement within the Dormitory aggregate.
+- Direct-repository path: used exclusively for read-only queries and
+  cross-context lookups; MUST NOT mutate state.
+Any operation crossing this boundary requires a new Ledger entry before
+implementation. This section documents the mandatory boundary required
+by Phase 1 Gap Decomposition; it does not alter existing behavior.

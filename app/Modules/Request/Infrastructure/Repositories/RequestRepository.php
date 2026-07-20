@@ -97,10 +97,11 @@ class RequestRepository implements RequestRepositoryContract
     /**
      * @return Collection<int, Request>
      */
-    public function listPendingStage1(): Collection
+    public function listPendingStage1(string $approverIdentityId): Collection
     {
         return RequestModel::query()
             ->where('status', PendingDepartmentManagerState::$name)
+            ->where('assigned_stage1_approver_identity_id', $approverIdentityId)
             ->orderByDesc('created_at')
             ->get()
             ->map(fn (RequestModel $model): Request => $this->toDomain($model))

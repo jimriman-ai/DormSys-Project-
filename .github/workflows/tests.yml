@@ -90,7 +90,7 @@ jobs:
         run: php artisan migrate --force --ansi
 
       - name: Run architecture decay prevention checks
-        run: composer run arch --ansi
+        run: composer run arch -- --ansi
 
       - name: Run test suite
         run: composer run test -- --ansi

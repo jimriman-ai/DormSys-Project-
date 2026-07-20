@@ -20,9 +20,11 @@ interface RequestRepositoryContract
     public function nextDailySequenceForUtcDate(string $datePart): int;
 
     /**
-     * Stage-1 pending queue (status pending_department_manager).
+     * Stage-1 pending queue for the assigned approver (OQ-REQ-06 Option A).
+     *
+     * Status pending_department_manager AND assigned_stage1_approver_identity_id match.
      *
      * @return Collection<int, Request>
      */
-    public function listPendingStage1(): Collection;
+    public function listPendingStage1(string $approverIdentityId): Collection;
 }
