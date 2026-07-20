@@ -17,6 +17,8 @@ use App\Modules\Dormitory\Application\Services\AllocationPhysicalStateApplicatio
 use App\Modules\Dormitory\Application\Services\DormitoryStructureAuthorizationGate;
 use App\Modules\Dormitory\Application\Services\DormitoryStructureMutationService;
 use App\Modules\Dormitory\Application\Services\DormitoryStructureReadService;
+use App\Modules\Dormitory\Domain\Contracts\DormitoryAssignmentReader;
+use App\Modules\Dormitory\Infrastructure\Persistence\EloquentDormitoryAssignmentReader;
 use App\Modules\Dormitory\Infrastructure\Persistence\Models\DormitoryModel;
 use App\Modules\Dormitory\Infrastructure\Repositories\AllocationBedPhysicalStateRepository;
 use App\Modules\Dormitory\Infrastructure\Repositories\DormitoryStructureReadRepository;
@@ -28,6 +30,7 @@ class DormitoryServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->app->singleton(DormitoryAssignmentReader::class, EloquentDormitoryAssignmentReader::class);
         $this->app->singleton(DormitoryStructureReadRepositoryContract::class, DormitoryStructureReadRepository::class);
         $this->app->singleton(DormitoryStructureAuthorizationGate::class);
         $this->app->singleton(DormitoryStructureReadContract::class, DormitoryStructureReadService::class);

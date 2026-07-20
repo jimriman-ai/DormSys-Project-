@@ -153,6 +153,31 @@ use App\Modules\Identity\Application\Contracts\IdentityUserReadContract;
 use App\Modules\Identity\Domain\ValueObjects\UserId; // in another module's Application layer
 ```
 
+### Laravel Policies (framework adapters) — DEC-ARCH-POLICY-01
+
+**POLICY / ENFORCED by ForbiddenImportsScan + LayerDependency when misplaced:**
+
+- Laravel Policy classes are **framework adapters** (Gate injects Eloquent models + Auth contracts).
+- They **MUST** live under `app/Modules/<Module>/Infrastructure/Policies/`.
+- Importing the module's **own** Infrastructure Eloquent models for Gate type-hints is **legal** in that namespace.
+- Application-layer Policies that import Infrastructure models are **forbidden**.
+- Domain/read authorization logic **MUST** remain behind Domain ports (e.g. `DormitoryAssignmentReader`); Policies must not reintroduce Eloquent assignment queries.
+
+**Good:**
+
+```php
+// app/Modules/Dormitory/Infrastructure/Policies/DormitoryPolicy.php
+use App\Modules\Dormitory\Domain\Contracts\DormitoryAssignmentReader;
+use App\Modules\Dormitory\Infrastructure\Persistence\Models\DormitoryModel;
+```
+
+**Bad:**
+
+```php
+// app/Modules/Dormitory/Application/Policies/DormitoryPolicy.php
+use App\Modules\Dormitory\Infrastructure\Persistence\Models\DormitoryModel; // Application → Infrastructure
+```
+
 ### Infrastructure
 
 **ENFORCED (matrix modules):** no foreign module imports.

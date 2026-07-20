@@ -56,6 +56,11 @@
 | OQ-AUTH-05 | Spec04 Auth Packet DRAFT → acceptance | Spec04 Auth / Governance | A) Accept after recorded/validated decisions (impl unauthorized) B) Keep DRAFT until named external deps resolved | Lead | Spec04 Auth packet | **DECIDED** | **Selected A** (Lead, 1405/04/27 \| 2026-07-18): governance-accepted artifact. No L5/L6/impl auth. DGAP-03/SGAP-05 unchanged. |
 | SB-D6 | UI-M2 L3 Spec ACCEPTED (PASS-with-fixes) | F3 / UI-M2 | A) Accept L3 (PASS-with-fixes) B) Reject C) Hold | Lead | WP-01 rev-4 | **DECIDED (A)** | L3 spec accepted; hygiene fixes C-1/C-2/G-3 authorized; L6+ implementation NOT authorized; Implementation Lock required |
 | SB-D7 | UI-M2 L6+ Authorization / Implementation Lock | F3 / UI-M2 | A) Issue L6+ + Lock B) Hold C) Reject | Lead | PA-03 PASS; WP-UI-M2-01 | **DECIDED (A) — ISSUED** | L6+ authorized under Lock; auth_gate=`dormitory-unit-manager` (identity); Lock=`docs/features/ui-m2/implementation-lock.md` |
+| DG-ARCH-01 | DormitoryPolicy reads Infrastructure model directly (no Port) | DDD Boundary | Option B (DECIDED): DormitoryAssignmentReader Port in Domain/Contracts | Lead | Freeze v1.0 | DECIDED | Evidence: DEBT-DISCOVERY-01 T1 |
+| DG-REQ-01 | ListPendingStage1RequestsAction depends on Identity UserModel | Identity Boundary | Option A (DECIDED, amended): execute(string $approverIdentityId) | Lead | Freeze v1.0 | DECIDED | Resolution moves to HTTP boundary (ref: DGAP-07) |
+| DG-DORM-01 | Manager assignment tables: join vs lifecycle vs entity | Domain Gap | Option A (DECIDED): pure join table | Lead | Freeze v1.0 | DECIDED | WP-DEBT-02 → CLOSED — NO-ACTION |
+| DG-SETTINGS-01 | settings table ownership + missing production migration | Cross-cutting | System module ownership (DECIDED) | Lead | Freeze v1.0 | DECIDED | ⚠ No create migration exists — WP-DEBT-04 = CREATE |
+| DEC-ARCH-POLICY-01 | Framework Policy placement (Laravel Gate / Eloquent) | DDD Boundary / Adapter | Option A (DECIDED): `Infrastructure/Policies/` | Lead | Freeze v1.0 / WP-DEBT-05 | DECIDED | Pre-authorizes DormitoryPolicy relocation; amend `docs/architecture/boundary-rules.md` |
 | SB-D9 | F-W07-04 Wave 2 (Stage-1 list/filter UX + tests) | F3 / stage1-approver-console | A) Authorize Wave 2 B) Hold C) Reject | Lead | F-W07-04-D3; WP-RQ-W2-01 | **DECIDED (A) — ISSUED**; WP **DONE** | Wave 2 list/filter UX + tests; auth_gate=`dormitory-manager` unchanged; SHA UNVERIFIED (merge-agnostic); Sprint B CLOSED |
 | SB-D10 | Exempt registry classification — `ListPendingStage1RequestsAction` | F3 / stage1-approver-console / MPEP | A) Issue read-only exempt classification B) Hold C) Reject | Lead | WP-RQ-W2-01 review session | **DECIDED (A) — ISSUED**; **Recorded** | Read-only registry classification for MPEP discovery compatibility; no functional behavior change. Authority: Lead in-session during WP-RQ-W2-01; recording: retroactive (WP-DOC-SYNC-01); Sprint B CLOSED |
 | DGAP-15 | Sprint C role-based dashboard track — Decision Register (D1–D5) + debt + WP sequence | Sprint C / Dashboard / DASH-00 | CLOSED — Lead-approved (no re-litigation); record D1–D5 + DBT-1…7 + WP sequence | Lead | WP-UI-C-DASH-00 | **CLOSED** | Tag **DASH-00**. **DASH-01 CLOSED** (2026-07-19). Layout delivered under `App\Modules\Dashboard`. Does **not** reopen DGAP-10/13/14. See decision block. |
@@ -565,6 +570,70 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 - **Status:** PARKED pending product disposition.
 - **Forbidden:** Do not reopen Spec04 Auth packet or DGAP-08 via this item.
 
+### DG-ARCH-01 (DormitoryPolicy → Infrastructure coupling)
+
+- **Selected Option:** Option B
+- **Decided-On:** 2026-07-20
+- **Decision-Owner:** Lead
+- **Rationale:**
+  - Policy در لایه Application مستقیماً Infrastructure model می‌خواند؛ نقض وارونگی وابستگی.
+  - مسیر `app/Modules/Dormitory/Domain/Contracts/` وجود ندارد — Port باید تازه تعریف شود.
+- **Evidence:** DEBT-DISCOVERY-01 T1 — `app/Modules/Dormitory/Application/Policies/DormitoryPolicy.php` L7, L24–27, L35–39
+- **Effect:** WP-DEBT-01 مجاز به اجرا: تعریف `DormitoryAssignmentReader` + binding در ServiceProvider.
+- **Constraint:** Port فقط read متدهای مصرف‌شده در Policy را expose کند (minimal interface).
+- **Notes:** (ref: WP-DEBT-01)
+
+### DG-REQ-01 (ListPendingStage1RequestsAction identity coupling)
+
+- **Selected Option:** Option A (amended)
+- **Decided-On:** 2026-07-20
+- **Decision-Owner:** Lead
+- **Rationale:**
+  - Discovery نشان داد `approverIdentityId` در context موجود نیست؛ فرض اولیه اصلاح شد.
+  - تغییر signature به `execute(string $approverIdentityId)` وابستگی به `UserModel` را از Application حذف می‌کند.
+- **Evidence:** DEBT-DISCOVERY-01 T2 — `app/Modules/Request/Application/Services/ListPendingStage1RequestsAction.php` L7, L27, L32
+- **Effect:** WP-DEBT-03 مجاز به اجرا؛ resolve کردن identity به HTTP/Livewire boundary منتقل می‌شود.
+- **Constraint:** هیچ import از `App\Modules\Identity\*` در لایه Application باقی نماند.
+- **Notes:** (ref: DGAP-07)
+
+### DG-DORM-01 (Manager assignment tables nature)
+
+- **Selected Option:** Option A
+- **Decided-On:** 2026-07-20
+- **Decision-Owner:** Lead
+- **Rationale:**
+  - هر دو جدول assignment فاقد ستون lifecycle (`revoked_at` و مشابه) و فاقد Eloquent Model هستند.
+  - ماهیت فعلی join table ساده است؛ ارتقاء بدون نیاز اثبات‌شده = over-engineering.
+- **Evidence:** DEBT-DISCOVERY-01 T3 — `database/migrations/modules/dormitory/2026_07_16_000001_*` و `2026_07_16_000002_*`
+- **Effect:** WP-DEBT-02 → CLOSED — NO-ACTION. در صورت نیاز آتی به lifecycle، DG جدید ثبت شود.
+- **Constraint:** هیچ Model یا ستونی اضافه نشود.
+- **Notes:** —
+
+### DG-SETTINGS-01 (settings table ownership + missing migration)
+
+- **Selected Option:** System module ownership
+- **Decided-On:** 2026-07-20
+- **Decision-Owner:** Lead
+- **Rationale:**
+  - هیچ create migration برای `settings` در Production وجود ندارد — جدول صرفاً test-only است.
+  - چهار مصرف‌کننده (Request, Lottery, Notification, Audit) read-only با fallback هستند.
+  - مصرف cross-module ⇒ مالک واحد و خنثی: System.
+- **Evidence:** DEBT-DISCOVERY-01 T4 — `tests/Feature/Modules/Lottery/LotteryFeatureSupport.php` L28–32
+- **Effect:** WP-DEBT-04 بازتعریف: ایجاد migration اصلی (`id` uuid PK, `key` string unique, `value` json, timestamps) ذیل System.
+- **Constraint:** Schema باید دقیقاً با Blueprint تست‌ها منطبق باشد (جلوگیری از test drift).
+- **Notes:** (ref: WP-DEBT-04)
+
+### DEC-ARCH-POLICY-01 — Framework Policy Placement
+
+- **Status:** DECIDED (1405/04/29 \| 2026-07-20)
+- **Selected Option:** Option A — `app/Modules/<Module>/Infrastructure/Policies/`
+- **Decision-Owner:** Lead
+- **Context:** Laravel Policies receive Eloquent models via Gate and depend on framework Auth contracts; they cannot satisfy the Application-layer forbidden-imports rule. `docs/architecture/boundary-rules.md` was previously silent on Policy placement.
+- **Decision:** Laravel Policy classes are framework adapters and **MUST** live under `app/Modules/<Module>/Infrastructure/Policies/`. Importing the module's own Infrastructure models there is legal. Domain/read logic **MUST** remain behind Domain ports (e.g. `DormitoryAssignmentReader`).
+- **Rejected:** Option B (keep in Application — impossible without ForbiddenImportsScan failure on Gate-injected Eloquent type-hints). Option C (Application authorization service + thin Infra Policy — deferred backlog; requires new interface; out of Freeze WP-DEBT-05 scope).
+- **Consequence:** `docs/architecture/boundary-rules.md` amended; `DormitoryPolicy` relocation in WP-DEBT-05 is **pre-authorized**.
+- **Implementation status:** DECIDED — awaiting WP-DEBT-05 execution after clean porcelain baseline.
+
 ---
 
 ## F2 Process Re-sync (Option B)
@@ -599,6 +668,8 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| 2026-07-20 | **DEC-ARCH-POLICY-01 DECIDED — A:** Laravel Policies → `Infrastructure/Policies/`; own-module Eloquent type-hints legal; Domain reads via ports. Pre-authorizes WP-DEBT-05. Amend `docs/architecture/boundary-rules.md`. | Lead |
+| 2026-07-20 | DG-ARCH-01(B), DG-REQ-01(A-amended), DG-DORM-01(A), DG-SETTINGS-01(System) — DECIDED per DEBT-DISCOVERY-01 | Lead |
 | ۱۴۰۵/۰۴/۲۸ (2026-07-19) | **WP-UI-C-DASH-01 CLOSED:** shell layout + `DashboardPage` + `dashboard` route on `auth:identity`. Lead Q1–Q3 confirmed (guard move / DashboardRouteTest / `App\Modules\Dashboard`). **DBT-3 note:** HOTFIX-01 stub was committed under `auth:api` (not identity) — narrative drift recorded; full migrate remains Hard STOP. | Agent (Lead DASH-01 closeout) |
 | ۱۴۰۵/۰۴/۲۸ (2026-07-19) | **DBT-5 CLOSED — NOT-A-GAP (config/operational)** (Lead): 40P01 = concurrent suites on shared `testing` DB; Phase 1 proved `testing` ≠ `laravel`; mitigation = single-suite / exclusive CI; no infra change; Hard STOP before DASH-01 **lifted**. Ref: WP-UI-C-TEST-ISO-01 / DASH-00 close. | Agent (Lead DBT-5 close) |
 | ۱۴۰۵/۰۴/۲۸ (2026-07-19) | **DGAP-15 CLOSED** (tag **DASH-00** / WP-UI-C-DASH-00): Sprint C dashboard Decision Register — D1–D5 CLOSED (shell/nav/auth/admin/path); debt DBT-1…7 recorded; WP sequence DASH-00→TEST-ISO-01→DASH-01…05 (+ WP-UI-C-01-B ‖ before DASH-03). Docs-only; no re-litigation; DGAP-10/13/14 not reopened. | Agent (WP-UI-C-DASH-00) |

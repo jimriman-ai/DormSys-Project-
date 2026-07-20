@@ -83,7 +83,9 @@ final class Stage1ApproverConsolePage extends Component
 
     public function loadRequests(): void
     {
-        $pending = app(ListPendingStage1RequestsAction::class)->execute();
+        $pending = app(ListPendingStage1RequestsAction::class)->execute(
+            $this->resolvedApproverIdentityId(),
+        );
         $needle = trim($this->search);
 
         if ($needle !== '') {
@@ -180,12 +182,20 @@ final class Stage1ApproverConsolePage extends Component
 
     private function approverReferenceId(): ApproverReferenceId
     {
+        return ApproverReferenceId::fromString($this->resolvedApproverIdentityId());
+    }
+
+    /**
+     * Boundary-only identity id resolution (DG-REQ-01 / WP-DEBT-03). Role gate: {@see IdentityRoleGuard}.
+     */
+    private function resolvedApproverIdentityId(): string
+    {
         $identityId = auth('identity')->id();
 
         if (! is_string($identityId) || $identityId === '') {
             abort(403);
         }
 
-        return ApproverReferenceId::fromString($identityId);
+        return $identityId;
     }
 }

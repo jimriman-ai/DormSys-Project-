@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace App\Modules\Request\Application\Services;
 
-use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
 use App\Modules\Request\Domain\Entities\Request;
-use App\Shared\Auth\IdentityRoleGuard;
 use Illuminate\Support\Collection;
 
 /**
- * [PERMIT-ID: IMPL-PERMIT-03] Stage-1 pending queue read — IdentityRoleGuard first, then repository list.
+ * [PERMIT-ID: IMPL-PERMIT-03] Stage-1 pending queue read.
  *
- * Role: dormitory-manager (identity). Keeps Presentation off RequestRepositoryContract.
+ * Identity resolution and role gate live at the HTTP/Livewire boundary (DG-REQ-01 Option A amended / WP-DEBT-03).
+ * Keeps Presentation off RequestRepositoryContract.
  */
 final class ListPendingStage1RequestsAction
 {
@@ -24,13 +23,8 @@ final class ListPendingStage1RequestsAction
     /**
      * @return Collection<int, Request>
      */
-    public function execute(): Collection
+    public function execute(string $approverIdentityId): Collection
     {
-        IdentityRoleGuard::assertDormitoryManager();
-
-        $user = auth('identity')->user();
-        assert($user instanceof UserModel);
-
-        return $this->requests->listPendingStage1($user->getId());
+        return $this->requests->listPendingStage1($approverIdentityId);
     }
 }

@@ -22,6 +22,7 @@ use App\Modules\Reporting\Infrastructure\Providers\ReportingServiceProvider;
 use App\Modules\Reporting\Presentation\Providers\ReportingPresentationServiceProvider;
 use App\Modules\Request\Infrastructure\Providers\RequestServiceProvider;
 use App\Modules\Request\Presentation\Providers\RequestPresentationServiceProvider;
+use App\Modules\System\SystemServiceProvider;
 use App\Modules\Voucher\Infrastructure\Providers\VoucherServiceProvider;
 use App\Modules\Workflow\Infrastructure\Providers\WorkflowServiceProvider;
 use App\Providers\AppServiceProvider;
@@ -59,6 +60,7 @@ $providers = [
     AuditPresentationServiceProvider::class,
     ReportingServiceProvider::class,
     ReportingPresentationServiceProvider::class,
+    SystemServiceProvider::class,
     IntegrationServiceProvider::class,
 ];
 

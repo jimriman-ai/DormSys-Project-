@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Dormitory\Application\Policies;
 
-use App\Modules\Dormitory\Infrastructure\Persistence\Models\DormitoryAssignment;
+use App\Modules\Dormitory\Domain\Contracts\DormitoryAssignmentReader;
 use App\Modules\Dormitory\Infrastructure\Persistence\Models\DormitoryModel;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 
@@ -13,18 +13,21 @@ use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
  *
  * No role-based bypass. Access requires an active dormitory_assignments row
  * (revoked_at IS NULL) for the identity user.
+ *
+ * Assignment reads go through {@see DormitoryAssignmentReader} (DG-ARCH-01 Option B).
  */
 final class DormitoryPolicy
 {
+    public function __construct(
+        private readonly DormitoryAssignmentReader $assignments,
+    ) {}
+
     /**
      * Whether the identity user may list dormitories (has ≥1 active assignment).
      */
     public function viewAny(UserModel $user): bool
     {
-        return DormitoryAssignment::query()
-            ->active()
-            ->where('user_id', $user->getId())
-            ->exists();
+        return $this->assignments->hasActiveAssignment($user->getId());
     }
 
     /**
@@ -32,10 +35,9 @@ final class DormitoryPolicy
      */
     public function view(UserModel $user, DormitoryModel $dormitory): bool
     {
-        return DormitoryAssignment::query()
-            ->active()
-            ->where('user_id', $user->getId())
-            ->where('dormitory_id', $dormitory->getId())
-            ->exists();
+        return $this->assignments->hasActiveAssignmentForDormitory(
+            $user->getId(),
+            $dormitory->getId(),
+        );
     }
 }
