@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/29 | 2026-07-20 | Session: WP-DEBT-05 T-PATCH-01 HALT STOP-1.1 dirty tree_
+_Last updated: 1405/04/29 | 2026-07-20 | Session: REQUESTS kickoff HALT STOP-0.1 dirty tree_
 
-**Authority note:** T-PATCH-01 not applied — porcelain non-empty (prior WP-DEBT-05 work uncommitted).
+**Authority note:** ANALYSIS session blocked at Phase 0. Freeze SIGNED-OFF verified. No code/analysis Phase 1 executed.
 
 ---
 
@@ -13,25 +13,25 @@ _Last updated: 1405/04/29 | 2026-07-20 | Session: WP-DEBT-05 T-PATCH-01 HALT STO
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| T-PATCH-01 | execution | blocked → **HALT STOP-1.1** | `git status --porcelain` non-empty |
-| STOP-1.2 / 1.3 | would PASS | DEC-ARCH-POLICY-01 + boundary-rules present | Grep |
+| SESSION KICKOFF Requests | Phase 0 | → **STOP-0.1** | porcelain non-empty |
+| STOP-0.2 Freeze | project-state | PASS — SIGNED-OFF | Gap Registry L44 |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🧑‍⚖️ **Human Decision / Ops** — Lead commit WP-DEBT-05 partial work → clean porcelain → re-issue T-PATCH-01 + T7
+🧑‍⚖️ **Human Decision / Ops** — Lead commit pending governance + T-PATCH-01 → clean porcelain → re-issue Requests L0 kickoff
 
 ---
 
 ## 7. Next Step
 
-**Action:** Lead commit pending WP-DEBT-05 files; re-issue T-PATCH-01 + T7.  
+**Action:** Lead commit dirty files; re-issue SESSION KICKOFF — REQUESTS DOMAIN.  
 **Owner:** Lead  
-**Gate:** empty porcelain  
-**Blocker:** Dirty tree (Policy move, Presentation, Assignment, project-state uncommitted)  
+**Gate:** `git status --porcelain` empty  
+**Blocker:** STOP-0.1 dirty tree  
 **Suggested user prompt:**
-> After clean porcelain: execute WP-DEBT-05 T-PATCH-01 + T7.
+> After clean porcelain: re-issue SESSION KICKOFF — REQUESTS DOMAIN (L0 GATE + L1 PROGRAM).
 
 ---
 
@@ -39,5 +39,6 @@ _Last updated: 1405/04/29 | 2026-07-20 | Session: WP-DEBT-05 T-PATCH-01 HALT STO
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| WP-DEBT-05 | HALT STOP-1.1 | T-PATCH-01 pending clean tree |
-| ModuleBoundary Identity | OPEN | Policy still imports UserModel until T-PATCH-01 |
+| Freeze v1.0 | SIGNED-OFF | STOP-0.2 PASS |
+| Requests L0 | BLOCKED STOP-0.1 | await clean tree |
+| Dirty pending commit | OPEN | DormitoryPolicy T-PATCH-01; open-decisions; project-state |

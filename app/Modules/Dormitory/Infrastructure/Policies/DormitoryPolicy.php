@@ -6,7 +6,7 @@ namespace App\Modules\Dormitory\Infrastructure\Policies;
 
 use App\Modules\Dormitory\Domain\Contracts\DormitoryAssignmentReader;
 use App\Modules\Dormitory\Infrastructure\Persistence\Models\DormitoryModel;
-use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 /**
  * Q-EMP-DORM Option B / WP-DASH-G02-R1 — assignment-based dormitory access.
@@ -25,18 +25,18 @@ final class DormitoryPolicy
     /**
      * Whether the identity user may list dormitories (has ≥1 active assignment).
      */
-    public function viewAny(UserModel $user): bool
+    public function viewAny(Authenticatable $user): bool
     {
-        return $this->assignments->hasActiveAssignment($user->getId());
+        return $this->assignments->hasActiveAssignment($user->getAuthIdentifier());
     }
 
     /**
      * Whether the identity user may view this dormitory (active assignment for it).
      */
-    public function view(UserModel $user, DormitoryModel $dormitory): bool
+    public function view(Authenticatable $user, DormitoryModel $dormitory): bool
     {
         return $this->assignments->hasActiveAssignmentForDormitory(
-            $user->getId(),
+            $user->getAuthIdentifier(),
             $dormitory->getId(),
         );
     }

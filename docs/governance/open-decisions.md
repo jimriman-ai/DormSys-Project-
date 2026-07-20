@@ -60,7 +60,7 @@
 | DG-REQ-01 | ListPendingStage1RequestsAction depends on Identity UserModel | Identity Boundary | Option A (DECIDED, amended): execute(string $approverIdentityId) | Lead | Freeze v1.0 | DECIDED | Resolution moves to HTTP boundary (ref: DGAP-07) |
 | DG-DORM-01 | Manager assignment tables: join vs lifecycle vs entity | Domain Gap | Option A (DECIDED): pure join table | Lead | Freeze v1.0 | DECIDED | WP-DEBT-02 → CLOSED — NO-ACTION |
 | DG-SETTINGS-01 | settings table ownership + missing production migration | Cross-cutting | System module ownership (DECIDED) | Lead | Freeze v1.0 | DECIDED | ⚠ No create migration exists — WP-DEBT-04 = CREATE |
-| DEC-ARCH-POLICY-01 | Framework Policy placement (Laravel Gate / Eloquent) | DDD Boundary / Adapter | Option A (DECIDED): `Infrastructure/Policies/` | Lead | Freeze v1.0 / WP-DEBT-05 | DECIDED | Pre-authorizes DormitoryPolicy relocation; amend `docs/architecture/boundary-rules.md` |
+| DEC-ARCH-POLICY-01 | Framework Policy placement (Laravel Gate / Eloquent) | DDD Boundary / Adapter | Option A (DECIDED): `Infrastructure/Policies/` | Lead | Freeze v1.0 / WP-DEBT-05 | IMPLEMENTED | Evidence: WP-DEBT-05 DELIVERY CONFIRMATION; Validation: 1928 passed (5568 assertions) |
 | SB-D9 | F-W07-04 Wave 2 (Stage-1 list/filter UX + tests) | F3 / stage1-approver-console | A) Authorize Wave 2 B) Hold C) Reject | Lead | F-W07-04-D3; WP-RQ-W2-01 | **DECIDED (A) — ISSUED**; WP **DONE** | Wave 2 list/filter UX + tests; auth_gate=`dormitory-manager` unchanged; SHA UNVERIFIED (merge-agnostic); Sprint B CLOSED |
 | SB-D10 | Exempt registry classification — `ListPendingStage1RequestsAction` | F3 / stage1-approver-console / MPEP | A) Issue read-only exempt classification B) Hold C) Reject | Lead | WP-RQ-W2-01 review session | **DECIDED (A) — ISSUED**; **Recorded** | Read-only registry classification for MPEP discovery compatibility; no functional behavior change. Authority: Lead in-session during WP-RQ-W2-01; recording: retroactive (WP-DOC-SYNC-01); Sprint B CLOSED |
 | DGAP-15 | Sprint C role-based dashboard track — Decision Register (D1–D5) + debt + WP sequence | Sprint C / Dashboard / DASH-00 | CLOSED — Lead-approved (no re-litigation); record D1–D5 + DBT-1…7 + WP sequence | Lead | WP-UI-C-DASH-00 | **CLOSED** | Tag **DASH-00**. **DASH-01 CLOSED** (2026-07-19). Layout delivered under `App\Modules\Dashboard`. Does **not** reopen DGAP-10/13/14. See decision block. |
@@ -625,14 +625,14 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 
 ### DEC-ARCH-POLICY-01 — Framework Policy Placement
 
-- **Status:** DECIDED (1405/04/29 \| 2026-07-20)
+- **Status:** IMPLEMENTED (1405/04/29 \| 2026-07-20)
 - **Selected Option:** Option A — `app/Modules/<Module>/Infrastructure/Policies/`
 - **Decision-Owner:** Lead
 - **Context:** Laravel Policies receive Eloquent models via Gate and depend on framework Auth contracts; they cannot satisfy the Application-layer forbidden-imports rule. `docs/architecture/boundary-rules.md` was previously silent on Policy placement.
 - **Decision:** Laravel Policy classes are framework adapters and **MUST** live under `app/Modules/<Module>/Infrastructure/Policies/`. Importing the module's own Infrastructure models there is legal. Domain/read logic **MUST** remain behind Domain ports (e.g. `DormitoryAssignmentReader`).
 - **Rejected:** Option B (keep in Application — impossible without ForbiddenImportsScan failure on Gate-injected Eloquent type-hints). Option C (Application authorization service + thin Infra Policy — deferred backlog; requires new interface; out of Freeze WP-DEBT-05 scope).
 - **Consequence:** `docs/architecture/boundary-rules.md` amended; `DormitoryPolicy` relocation in WP-DEBT-05 is **pre-authorized**.
-- **Implementation status:** DECIDED — awaiting WP-DEBT-05 execution after clean porcelain baseline.
+- **Implementation status:** IMPLEMENTED — Evidence: WP-DEBT-05 DELIVERY CONFIRMATION; Validation: 1928 passed (5568 assertions).
 
 ---
 
@@ -668,6 +668,7 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| 2026-07-20 | **DEC-ARCH-POLICY-01 IMPLEMENTED:** WP-DEBT-05 CLOSED / ACCEPTED; Evidence: WP-DEBT-05 DELIVERY CONFIRMATION; Validation: 1928 passed (5568 assertions). Freeze v1.0 SIGNED-OFF (project-state). | Lead |
 | 2026-07-20 | **DEC-ARCH-POLICY-01 DECIDED — A:** Laravel Policies → `Infrastructure/Policies/`; own-module Eloquent type-hints legal; Domain reads via ports. Pre-authorizes WP-DEBT-05. Amend `docs/architecture/boundary-rules.md`. | Lead |
 | 2026-07-20 | DG-ARCH-01(B), DG-REQ-01(A-amended), DG-DORM-01(A), DG-SETTINGS-01(System) — DECIDED per DEBT-DISCOVERY-01 | Lead |
 | ۱۴۰۵/۰۴/۲۸ (2026-07-19) | **WP-UI-C-DASH-01 CLOSED:** shell layout + `DashboardPage` + `dashboard` route on `auth:identity`. Lead Q1–Q3 confirmed (guard move / DashboardRouteTest / `App\Modules\Dashboard`). **DBT-3 note:** HOTFIX-01 stub was committed under `auth:api` (not identity) — narrative drift recorded; full migrate remains Hard STOP. | Agent (Lead DASH-01 closeout) |
