@@ -1027,3 +1027,12 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 |----|-------|-------|------|
 | OQ-REQ-02 | Stage-1 `assigned_stage1_approver_identity_id` FK → `identity_users` | **CLOSED** \| Option A (Normalized) — FK removed, Request model standalone. Signed-off. OQ-REQ-02-SYNC lifted. WP-REQ-01 = execution vehicle for schema. | 1405/04/29 \| 2026-07-20 |
 | OQ-DORM-04 | Dormitory assignment tables `user_id` FK → `identity_users` | ACCEPTED temporary exception outside Spec04 core; **Sequencing:** SEQUENTIAL after WP-REQ-01 CLOSED; **Designated WP:** WP-DORM-04; independent rollback / per-module tests | 1405/04/29 \| 2026-07-20 |
+
+### WP-REQ-01 — CLOSED (1405/04/29)
+
+- Option A: FK `requests_assigned_stage1_approver_identity_id_foreign` DROPPED.
+- Column + index retained. Suite: 1928 passed / 0 failed. Review: ACCEPT.
+
+### GAP-PREUI-12 — RESOLVED-BY-DELIVERY
+
+- Audit note "FK Constrained" was stale. FK dropped, column retained (Option A) — WP-REQ-01 DELIVERED.
