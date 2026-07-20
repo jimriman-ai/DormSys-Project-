@@ -7,6 +7,8 @@ use App\Http\Controllers\Web\AuthSessionController;
 use App\Modules\Audit\Presentation\Providers\AuditPresentationServiceProvider;
 use App\Modules\Auth\Presentation\Livewire\EmployeeLogin;
 use App\Modules\Dashboard\Presentation\Livewire\DashboardPage;
+use App\Modules\Dormitory\Presentation\Livewire\DormitoryIndexPage;
+use App\Modules\Dormitory\Presentation\Livewire\DormitoryShowPage;
 use App\Modules\DormitoryAdmin\DormitoryManagerDashboard;
 use App\Modules\DormitoryAdmin\DormitoryUnitManagerDashboard;
 use App\Modules\Employee\Presentation\Providers\EmployeePresentationServiceProvider;
@@ -15,6 +17,7 @@ use App\Modules\Request\Presentation\Livewire\PersonalRequestFormPage;
 use App\Modules\Request\Presentation\Livewire\RequestListPage;
 use App\Modules\Request\Presentation\Livewire\RequestShowPage;
 use App\Modules\Request\Presentation\Providers\RequestPresentationServiceProvider;
+use App\Shared\Auth\IdentityRoleGuard;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest:api')->group(function (): void {
@@ -50,7 +53,7 @@ Route::prefix('employee/requests')
     ->group(RequestPresentationServiceProvider::employeeRequestWebRoutePath());
 
 Route::prefix('approvals/stage1')
-    ->middleware(['auth:identity', 'identity.role:'.App\Shared\Auth\IdentityRoleGuard::ROLE_DORMITORY_MANAGER])
+    ->middleware(['auth:identity', 'identity.role:'.IdentityRoleGuard::ROLE_DORMITORY_MANAGER])
     ->name('approvals.stage1.')
     ->group(RequestPresentationServiceProvider::stage1ApprovalWebRoutePath());
 
@@ -63,6 +66,17 @@ Route::post('/logout', [AuthSessionController::class, 'destroy'])
 Route::get('/dashboard', DashboardPage::class)
     ->middleware(['auth:identity'])
     ->name('dashboard');
+
+// WP-DASH-G03-R1 / Q-G03-SCOPE — employee-only dormitory index/show (assignment-based).
+Route::prefix('dormitories')
+    ->middleware(['auth:identity', 'identity.role:'.IdentityRoleGuard::ROLE_EMPLOYEE])
+    ->name('dormitories.')
+    ->group(function (): void {
+        Route::get('/', DormitoryIndexPage::class)->name('index');
+        Route::get('/{dormitory}', DormitoryShowPage::class)
+            ->whereUuid('dormitory')
+            ->name('show');
+    });
 
 Route::middleware(['auth:api', 'request.mutation.principal', 'audit.principal'])->group(function (): void {
     Route::redirect('/', '/requests')->name('home');

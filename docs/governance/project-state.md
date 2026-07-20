@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/29 | 2026-07-20 | Session: WP-DASH-G02-R1 review — PASS vs Q-EMP-DORM (checklist naming drift noted)_
+_Last updated: 1405/04/29 | 2026-07-20 | Session: Final Freeze v1.0 loaded — awaiting Mode + ACTIVE_WP + BEGIN AUDIT_
 
-**Authority note:** Review SoT = Q-EMP-DORM + Addendum in `docs/governance/open-decisions.md`, not checklist column aliases.
+**Authority note:** Operational Overlay = Final Freeze v1.0; Roadmap protocol upstream on conflict. Ledger Read-only.
 
 ---
 
@@ -13,14 +13,14 @@ _Last updated: 1405/04/29 | 2026-07-20 | Session: WP-DASH-G02-R1 review — PASS
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| Review | WP-DASH-G02-R1 | DELIVERED → **REVIEW PASS** (vs Ledger/WP) | Checklist `identity_user_id` / `update`/`delete` = naming drift |
-| Commit gate | Lead | ready for Lead commit | No code change this prompt |
+| Protocol | Agent mode | idle → **armed / waiting activation** | Final Freeze v1.0 pasted by Lead |
+| Activation | BEGIN AUDIT | not received | no Mode / ACTIVE_WP declared |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🧑‍⚖️ **Human Decision** — Lead accept review + commit WP-DASH-G02-R1
+🧑‍⚖️ **Human Decision** — Lead announce Mode (`WP_EXECUTION` \| `FULL_AUDIT`), ACTIVE_WP (if WP_EXECUTION), then `BEGIN AUDIT`
 
 ---
 
@@ -28,27 +28,22 @@ _Last updated: 1405/04/29 | 2026-07-20 | Session: WP-DASH-G02-R1 review — PASS
 
 | ID | Title | Status | Notes |
 |----|-------|--------|-------|
-| WP-DASH-G02-R1 | Assignment-based DormitoryPolicy | **REVIEW PASS** (pending Lead commit) | |
-
----
-
-## 6. Lifecycle Matrix
-
-| Feature | L3 | L6 | L8 | Notes |
-|---------|----|----|----|-------|
-| WP-DASH-G02-R1 | — | ✅ | ✅ | Review PASS; pending Lead commit |
+| WP-DASH-G03-R1 | Employee dormitory index/show | DELIVERED (prior session) | pending Lead commit unless already done |
+| Agent session | Final Freeze v1.0 | **WAITING ACTIVATION** | no audit/impl yet |
 
 ---
 
 ## 7. Next Step
 
-**Action:** Lead commit WP-DASH-G02-R1 (or request rename if Lead wants column `identity_user_id` — would diverge from Addendum/`manager_assignments` pattern).  
+**Action:** Lead activate session per Final Freeze Activation Protocol.  
 **Owner:** Lead  
-**Gate:** Lead commit  
-**Done when:** Commit landed  
-**Blocker:** none for Ledger-aligned implementation  
+**Gate:** Explicit `BEGIN AUDIT`  
+**Done when:** Mode + (ACTIVE_WP \| FULL_AUDIT domains) + BEGIN AUDIT received  
+**Blocker:** Agent must not act before BEGIN AUDIT  
 **Suggested user prompt:**
-> Accept G02-R1 review. Commit. Authorize next WP if any.
+> Mode: WP_EXECUTION  
+> ACTIVE_WP: \<id from roadmap-execution-protocol.md §2\>  
+> BEGIN AUDIT
 
 ---
 
@@ -56,4 +51,4 @@ _Last updated: 1405/04/29 | 2026-07-20 | Session: WP-DASH-G02-R1 review — PASS
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| Q-EMP-DORM | RESOLVED | Review confirms Option B + Addendum §1–3 implemented |
+| (session) | — | No new gaps; activation pending |

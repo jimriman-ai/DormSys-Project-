@@ -339,6 +339,7 @@ Corrected finding: early assumption “`User.php` uses HasUuids” is **false** 
 **Effect:** DECIDED (Option A, 2026-07-18 / 1405-04-27, Lead). `dormitory-manager` is the canonical role. Documentation/contract dispositions below are APPLIED per R5.1 (22 points). Runtime identifiers are RESIDUAL — accepted out-of-scope, tracked for Sprint B. See governance-log.md.
 
 **Decision (DECIDED — Option A):**
+
 - Canonical role: `dormitory-manager` (supersedes `DeptMgr`).
 - Applied: R5.1 replacement across 22 documented points (docs/contracts).
 - Exclusions: runtime code identifiers (classes, seeders, state names) — intentionally untouched.
@@ -667,3 +668,97 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 1. **FK target:** `dormitory_assignments.user_id` references `identity_users.id` (NOT `users.id`), consistent with `dormitory_manager_assignments`, `dormitory_unit_manager_assignments`, and the `auth:identity` guard.
 2. **Table independence:** `dormitory_assignments` is a new, standalone employee↔dormitory table. It does not extend, replace, or interact with `dormitory_manager_assignments` or `dormitory_unit_manager_assignments`.
 3. **Lifecycle:** `dormitory_assignments` uses `revoked_at` for soft revocation. The two manager-assignment tables intentionally do not have `revoked_at`; this asymmetry is accepted and documented.
+
+## Decision Record — 2026-07-20 (Lead)
+
+- **Q-DBT-1-AUTH** → RESOLVED — Option B (Policy-based authorization).
+- **Q-DASH-3-ROLE-SOURCE** → RESOLVED — Option A: add `ROLE_EMPLOYEE` constant to
+  `app/Shared/Auth/IdentityRoleGuard.php`. Shared guard remains the single role SoT.
+- **01-B** → REVIEWED (human gate passed).
+- **DBT-1 (ledger sync)** → `listSites()` is DELIVERED; residual scope = UI wiring + authorization only.
+- **OQ-DASH-04** → DASH-02 declared CLOSED / VERIFIED by Lead (satisfies WP-DASH-G04).
+- **Roadmap protocol** → No new `roadmap-execution-protocol.md` will be created.
+  DGAP-15 remains the sole Sprint C sequencing SoT. Its absence MUST NOT be re-raised
+  as DECISION_REQUIRED.
+
+## WP-DASH-G09 — CLOSED (2026-07-20)
+
+- Employee role SoT unified into IdentityRoleGuard::ROLE_EMPLOYEE.
+- DashboardIdentityRoles.php deprecated → verified zero references → deleted (G09-B).
+- Evidence: DashboardNavTest 3/3 pass; Pint/PHPStan clean; pre-deletion grep = 1 hit (stub only).
+
+## Q-EMP-DORM — RESOLVED
+
+| Field | Value |
+|---|---|
+| **Decision date** | 1405/04/29 (2026-07-20) |
+| **Decision** | Option B — Assignment-based |
+| **Statement** | Employee access to Dormitories is restricted to explicit assignments. Relationship: `Employee 1—* DormitoryAssignment *—1 Dormitory`. An employee can only see Dormitories for which an active assignment record exists for that employee. Global (all-dormitories) access for the Employee role is rejected. |
+| **Evidence** | ER sketch (`Employee 1—* Dormitory`) + DBT-1 residual |
+| **Impact on G02** | Quarantined WP-DASH-G02 artifacts (DormitoryPolicy + tests) must be rewritten against the assignment model. Supersedes the hard-coded global-access assumption. |
+| **Approved by** | Lead — 1405/04/29 |
+| **Previous status** | Q-DBT-1-AUTH: decision approved, implementation deferred |
+| **New status** | Q-EMP-DORM: RESOLVED → Option B |
+
+### Addendum — WP-DASH-G02-R1 implementation constraints (Lead-approved, 1405/04/29)
+
+1. **FK target:** `dormitory_assignments.user_id` references `identity_users.id` (NOT `users.id`), consistent with `dormitory_manager_assignments`, `dormitory_unit_manager_assignments`, and the `auth:identity` guard.
+2. **Table independence:** `dormitory_assignments` is a new, standalone employee↔dormitory table. It does not extend, replace, or interact with `dormitory_manager_assignments` or `dormitory_unit_manager_assignments`.
+3. **Lifecycle:** `dormitory_assignments` uses `revoked_at` for soft revocation. The two manager-assignment tables intentionally do not have `revoked_at`; this asymmetry is accepted and documented.
+
+---
+
+## Q-G03-SCOPE — سطح هدف WP-DASH-G03
+
+- **Status:** RESOLVED
+- **Date:** 2026-07-20 (1405/04/29)
+- **Context:** گزارش STOP در WP-DASH-G03 نشان داد لایه Presentation ماژول
+  Dormitory خالی است (فقط .gitkeep) و هیچ route کارمندی برای index/show
+  وجود ندارد. فرض «wire-up سطح موجود» در تعریف WP نادرست بود.
+- **Decision:** هدف G03-R1 ساخت دو صفحه‌ی جدید Livewire مختص نقش employee
+  است: DormitoryIndexPage و DormitoryShowPage در
+  `app/Modules/Dormitory/Presentation/Livewire/`.
+  اتصال فرم PersonalRequestFormPage خارج از scope است (ر.ک. D-G03-FORM).
+- **Constraints:** فیلترینگ صرفاً در سطح Query بر اساس
+  `DormitoryAssignment::active()`؛ authorize در mount کامپوننت Show؛
+  Empty-state الزامی؛ URL غیرمنتسب → 403.
+
+## Q-G03-MGR-PATH — جداسازی مسیر manager از مسیر کارمندی
+
+- **Status:** RESOLVED
+- **Date:** 2026-07-20 (1405/04/29)
+- **Context:** ابهام Agent درباره‌ی دسترسی نقش dormitory-manager به
+  صفحات جدید خوابگاه.
+- **Decision:** جداسازی کامل. مسیرهای `/dormitories` و
+  `/dormitories/{dormitory}` فقط برای نقش employee مجاز است؛ نقش
+  dormitory-manager از این مسیرها 403 دریافت می‌کند و همچنان صرفاً از
+  DormitoryManagerDashboard موجود استفاده می‌کند. هیچ query یا کامپوننت
+  مشترکی بین دو نقش ساخته نمی‌شود.
+- **Basis:** Addendum §2 (استقلال dormitory_manager_assignments از جدول
+  کارمندان) و Q-EMP-DORM گزینه B.
+- **Enforcement:** تست Feature الزامی — دسترسی manager به /dormitories
+  باید 403 برگرداند.
+
+## Q-G03-SEED — سیاست داده‌ی آزمایشی در G03-R1
+
+- **Status:** RESOLVED
+- **Date:** 2026-07-20 (1405/04/29)
+- **Decision:** داده‌ی انتساب صرفاً به صورت fixture داخل تست‌های Feature
+  ساخته می‌شود. DevelopmentUserSeeder در این WP تغییر نمی‌کند. دموی
+  local در صورت نیاز از طریق Tinker دستی یا WP جداگانه انجام می‌شود.
+
+---
+
+## D-G03-FORM — بدهی حاکمیتی: تناقض PersonalRequestFormPage با مدل انتساب‌محور
+
+- **Status:** OPEN (Debt)
+- **Date:** 2026-07-20 (1405/04/29)
+- **Context:** فرم «ثبت درخواست شخصی» (`/requests/personal/create`)
+  فهرست خوابگاه‌ها را از `DormitoryReadContract::listSites()` می‌گیرد که
+  با تصمیم Q-EMP-DORM (دسترسی صرفاً بر اساس انتساب فعال) در تناقض است.
+  در وضعیت فعلی select خالی رندر می‌شود (`"sites": []`).
+- **Blocked artifact:** PersonalRequestFormPage و
+  DormitoryReadContract::listSites()
+- **Resolution path:** نیازمند WP مستقل با مجوز تغییر Contract در لایه
+  Domain (پیشنهاد: WP-DASH-G04). تا آن زمان هیچ WP دیگری مجاز به تغییر
+  این دو آرتیفکت نیست.

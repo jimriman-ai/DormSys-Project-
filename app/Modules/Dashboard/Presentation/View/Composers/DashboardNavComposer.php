@@ -51,6 +51,16 @@ final class DashboardNavComposer
             ],
         ];
 
+        // WP-DASH-G03-R1 / Q-G03-MGR-PATH — employee-only; managers keep dormitory-admin.
+        if ($isEmployee) {
+            $items[] = [
+                'key' => 'dormitories',
+                'label' => 'خوابگاه‌ها',
+                'url' => route('dormitories.index'),
+                'active' => request()->routeIs('dormitories.*'),
+            ];
+        }
+
         if ($isManager) {
             $items[] = [
                 'key' => 'approvals-stage1',

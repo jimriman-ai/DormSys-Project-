@@ -18,8 +18,10 @@
 - **Q-DASH-3-ROLE-SOURCE** → RESOLVED — Option A: add `ROLE_EMPLOYEE` constant to
   `app/Shared/Auth/IdentityRoleGuard.php`. Shared guard remains the single role SoT.
 - **01-B** → REVIEWED (human gate passed).
-- **DBT-1 (ledger sync)** → `listSites()` is DELIVERED; residual scope = UI wiring + authorization only.
+- **DBT-1 (ledger sync)** → `listSites()` is VERIFIED; residual scope = UI wiring + authorization only.
 - **OQ-DASH-04** → DASH-02 declared CLOSED / VERIFIED by Lead (satisfies WP-DASH-G04).
+- **DASH-03** → UNBLOCKED.
+- **WP-DASH-G02-R1** → VERIFIED.
 - **Roadmap protocol** → No new `roadmap-execution-protocol.md` will be created.
   DGAP-15 remains the sole Sprint C sequencing SoT. Its absence MUST NOT be re-raised
   as DECISION_REQUIRED.
@@ -48,3 +50,4 @@
 1. **FK target:** `dormitory_assignments.user_id` references `identity_users.id` (NOT `users.id`), consistent with `dormitory_manager_assignments`, `dormitory_unit_manager_assignments`, and the `auth:identity` guard.
 2. **Table independence:** `dormitory_assignments` is a new, standalone employee↔dormitory table. It does not extend, replace, or interact with `dormitory_manager_assignments` or `dormitory_unit_manager_assignments`.
 3. **Lifecycle:** `dormitory_assignments` uses `revoked_at` for soft revocation. The two manager-assignment tables intentionally do not have `revoked_at`; this asymmetry is accepted and documented.
+4. **Column naming is fixed:** the FK column name remains `user_id` per this Addendum §1. Any rename requires a new L0 decision and is out of scope for implementation-level adjustment.

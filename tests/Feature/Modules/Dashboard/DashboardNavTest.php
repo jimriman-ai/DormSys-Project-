@@ -40,7 +40,7 @@ function assignDashboardNavIdentityRole(UserModel $user, string $roleName): void
     app(PermissionRegistrar::class)->forgetCachedPermissions();
 }
 
-it('shows employee nav items and hides Approvals Stage 1', function (): void {
+it('shows employee nav items including dormitories and hides Approvals Stage 1', function (): void {
     $user = createDashboardNavIdentityUser('Dev Employee Nav');
     assignDashboardNavIdentityRole($user, IdentityRoleGuard::ROLE_EMPLOYEE);
 
@@ -50,10 +50,11 @@ it('shows employee nav items and hides Approvals Stage 1', function (): void {
         ->assertSee('data-testid="dashboard-nav"', false)
         ->assertSee('data-testid="dashboard-nav-dashboard"', false)
         ->assertSee('data-testid="dashboard-nav-requests"', false)
+        ->assertSee('data-testid="dashboard-nav-dormitories"', false)
         ->assertDontSee('data-testid="dashboard-nav-approvals-stage1"', false);
 });
 
-it('shows dormitory-manager nav including Approvals Stage 1', function (): void {
+it('shows dormitory-manager nav including Approvals Stage 1 without dormitories', function (): void {
     $user = createDashboardNavIdentityUser('Dev Manager Nav');
     assignDashboardNavIdentityRole($user, IdentityRoleGuard::ROLE_DORMITORY_MANAGER);
 
@@ -62,7 +63,8 @@ it('shows dormitory-manager nav including Approvals Stage 1', function (): void 
         ->assertOk()
         ->assertSee('data-testid="dashboard-nav-dashboard"', false)
         ->assertSee('data-testid="dashboard-nav-requests"', false)
-        ->assertSee('data-testid="dashboard-nav-approvals-stage1"', false);
+        ->assertSee('data-testid="dashboard-nav-approvals-stage1"', false)
+        ->assertDontSee('data-testid="dashboard-nav-dormitories"', false);
 });
 
 it('redirects guests from /dashboard without rendering nav', function (): void {
