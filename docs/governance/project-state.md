@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/28 | 2026-07-19 | Session: Lead confirm Q1–Q3 + DASH-01 closeout; parallel DASH-02 ‖ WP-UI-C-01-B_
+_Last updated: 1405/04/29 | 2026-07-20 | Session: Full Project Protocol v2.0 loaded — awaiting BEGIN AUDIT_
 
-**Authority note:** DASH-01 CLOSED in ledger. Commit pending / in-progress this turn.
+**Authority note:** Agent idle. Protocol v2.0 armed. No audit/implementation until Lead: Mode + Scope + `BEGIN AUDIT`.
 
 ---
 
@@ -13,51 +13,38 @@ _Last updated: 1405/04/28 | 2026-07-19 | Session: Lead confirm Q1–Q3 + DASH-01
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| Confirm | Lead Q1–Q3 | all **APPROVED** | this prompt |
-| Record | DBT-3 HOTFIX drift | stub was `auth:api` pre-DASH-01 | `git show HEAD` vs DASH-01 diff |
-| Close | WP-UI-C-DASH-01 | DONE → **CLOSED** | `open-decisions.md` closeout block |
-| Next | parallel WPs | DASH-02 ‖ WP-UI-C-01-B | Session A / B v1.1 |
+| Overlay | Completion Audit Agent | Final Freeze v1.0 → **Full Project Protocol v2.0** | activation still pending |
+| Gate | Agent | **IDLE** | missing Mode + Scope + `BEGIN AUDIT` |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🔀 **Lifecycle — Sprint C** — parallel ACTIVE: **DASH-02** (Session A) ‖ **WP-UI-C-01-B** (Session B)
+🧑‍⚖️ **Human Decision** — Lead activation: Mode (`FULL_AUDIT` \| `WP_EXECUTION`) + Scope (domains or ACTIVE_WP) + `BEGIN AUDIT`
 
 ---
 
 ## 2. Active Feature Map
 
-| ID | Title | Status | Stage | Blocker |
-|----|-------|--------|-------|---------|
-| WP-UI-C-DASH-01 | Dashboard shell | **CLOSED** | historical | — |
-| WP-UI-C-DASH-02 | Role-aware nav | **ACTIVE** | Session A | — |
-| WP-UI-C-01-B | listSites() DBT-1 | **ACTIVE** | Session B (parallel) | — |
-| DASH-03…05 | landings / redirect | **NOT-STARTED** | planned | DBT-1 for DASH-03 |
-
----
-
-## 6. Lifecycle Matrix (affected)
-
-| Feature | L3 | L6 | L8 | L9 | Notes |
-|---------|----|----|----|----|-------|
-| DASH-01 Shell | ✅ | — | ✅ | — | CLOSED; Feature 739 green |
-| DASH-02 Nav | ⏳ | — | — | — | ACTIVE Session A |
-| WP-UI-C-01-B | ⏳ | — | — | — | ACTIVE Session B |
+| ID | Title | Status | Notes |
+|----|-------|--------|-------|
+| Protocol | Full Project Protocol v2.0 | **LOADED / IDLE** | Roadmap protocol still missing from repo |
+| ACTIVE_WP | — | **UNDECLARED** | Lead must name it for WP_EXECUTION |
+| Sprint C sequence | DASH-00…05 + 01-B | ledger-quoted only | see prior inventory |
 
 ---
 
 ## 7. Next Step
 
-**Action:** Run Session A (DASH-02) and Session B (WP-UI-C-01-B) in separate chats; do not cross-touch files.  
-**Owner:** Cursor (per session)  
-**Gate:** none between them (nav is role-only; listSites is contract — collision only if A reaches for listSites → STOP)  
-**Target files:** A: layout/composer/nav; B: DormitoryReadContract + bridge + form select  
-**Done when:** each WP green in its session  
-**Blocker:** none  
-
+**Action:** Lead activates session.  
+**Owner:** Lead  
+**Gate:** Mode + Scope + `BEGIN AUDIT`  
+**Blocker:** Activation Protocol §7 incomplete  
 **Suggested user prompt:**
-> Paste Session A or Session B v1.1 prompt into a dedicated chat.
+> Mode: FULL_AUDIT  
+> BEGIN AUDIT  
+> Scope: Entire DormSys repository (all domains, all modules)  
+> Goal: Produce repository-wide completion audit, gap catalog, and WP recommendations.
 
 ---
 
@@ -65,9 +52,7 @@ _Last updated: 1405/04/28 | 2026-07-19 | Session: Lead confirm Q1–Q3 + DASH-01
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| DASH-01 | **CLOSED** | Q1–Q3 confirmed |
-| DBT-5 | **CLOSED — NOT-A-GAP** | — |
-| DBT-3 | **OPEN** | HOTFIX narrative drift noted; migrate Hard STOP |
-| DBT-1 listSites | **OPEN** | Session B ACTIVE |
-| DBT-2 role redirect | **OPEN** | DASH-05 |
-| DBT-4 / DBT-6 / DBT-7 | **OPEN** | debt |
+| roadmap-execution-protocol.md | **MISSING** | precedence target absent |
+| Q-DASH-3-ROLE-SOURCE | **OPEN** | report as DECISION_REQUIRED in FULL_AUDIT |
+| Q-DBT-1-AUTH | **OPEN** | report as DECISION_REQUIRED in FULL_AUDIT |
+| DBT-1 | **OPEN** (ledger) | — |
