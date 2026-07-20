@@ -61,6 +61,7 @@
 | DG-DORM-01 | Manager assignment tables: join vs lifecycle vs entity | Domain Gap | Option A (DECIDED): pure join table | Lead | Freeze v1.0 | DECIDED | WP-DEBT-02 → CLOSED — NO-ACTION |
 | DG-SETTINGS-01 | settings table ownership + missing production migration | Cross-cutting | System module ownership (DECIDED) | Lead | Freeze v1.0 | DECIDED | ⚠ No create migration exists — WP-DEBT-04 = CREATE |
 | DEC-ARCH-POLICY-01 | Framework Policy placement (Laravel Gate / Eloquent) | DDD Boundary / Adapter | Option A (DECIDED): `Infrastructure/Policies/` | Lead | Freeze v1.0 / WP-DEBT-05 | IMPLEMENTED | Evidence: WP-DEBT-05 DELIVERY CONFIRMATION; Validation: 1928 passed (5568 assertions) |
+| OQ-REQ-02 | Request Identity FK / model normalization (OQ-REQ-02-SYNC) | Requests / Spec05 R-03 | Option A (Normalized) | Lead | WP-REQ-01 | **CLOSED** | Option A (Normalized) — FK removed, Request model standalone. Signed-off. OQ-REQ-02-SYNC lifted. Physical drop executed under WP-REQ-01 L3 per scope. |
 | SB-D9 | F-W07-04 Wave 2 (Stage-1 list/filter UX + tests) | F3 / stage1-approver-console | A) Authorize Wave 2 B) Hold C) Reject | Lead | F-W07-04-D3; WP-RQ-W2-01 | **DECIDED (A) — ISSUED**; WP **DONE** | Wave 2 list/filter UX + tests; auth_gate=`dormitory-manager` unchanged; SHA UNVERIFIED (merge-agnostic); Sprint B CLOSED |
 | SB-D10 | Exempt registry classification — `ListPendingStage1RequestsAction` | F3 / stage1-approver-console / MPEP | A) Issue read-only exempt classification B) Hold C) Reject | Lead | WP-RQ-W2-01 review session | **DECIDED (A) — ISSUED**; **Recorded** | Read-only registry classification for MPEP discovery compatibility; no functional behavior change. Authority: Lead in-session during WP-RQ-W2-01; recording: retroactive (WP-DOC-SYNC-01); Sprint B CLOSED |
 | DGAP-15 | Sprint C role-based dashboard track — Decision Register (D1–D5) + debt + WP sequence | Sprint C / Dashboard / DASH-00 | CLOSED — Lead-approved (no re-litigation); record D1–D5 + DBT-1…7 + WP sequence | Lead | WP-UI-C-DASH-00 | **CLOSED** | Tag **DASH-00**. **DASH-01 CLOSED** (2026-07-19). Layout delivered under `App\Modules\Dashboard`. Does **not** reopen DGAP-10/13/14. See decision block. |
@@ -668,6 +669,8 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| 2026-07-20 | **OQ-REQ-02 CLOSED:** Option A (Normalized) — FK removed, Request model standalone. Signed-off. OQ-REQ-02-SYNC lifted; Requests module WPs unblocked for Domain-First Phase 2. WP-REQ-01 remains execution vehicle for schema. | Lead |
+| 2026-07-20 | **OQ-REQ-02-SYNC:** OQ-REQ-02 → Option A ACCEPTED (DECIDED → IMPLEMENTATION AUTHORIZED); Spec05 R-03 normalize (drop FK, retain UUID); sunset REMOVED; WP-REQ-01 AUTHORIZED TO OPEN. OQ-DORM-04 → SEQUENTIAL WP-DORM-04 after WP-REQ-01 CLOSED. Registered OPEN: OQ-REQ-11, OQ-REQ-12, D-G03-FORM→WP-REQ-04. | Lead |
 | 2026-07-20 | **DEC-ARCH-POLICY-01 IMPLEMENTED:** WP-DEBT-05 CLOSED / ACCEPTED; Evidence: WP-DEBT-05 DELIVERY CONFIRMATION; Validation: 1928 passed (5568 assertions). Freeze v1.0 SIGNED-OFF (project-state). | Lead |
 | 2026-07-20 | **DEC-ARCH-POLICY-01 DECIDED — A:** Laravel Policies → `Infrastructure/Policies/`; own-module Eloquent type-hints legal; Domain reads via ports. Pre-authorizes WP-DEBT-05. Amend `docs/architecture/boundary-rules.md`. | Lead |
 | 2026-07-20 | DG-ARCH-01(B), DG-REQ-01(A-amended), DG-DORM-01(A), DG-SETTINGS-01(System) — DECIDED per DEBT-DISCOVERY-01 | Lead |
@@ -802,17 +805,18 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 
 ## D-G03-FORM — بدهی حاکمیتی: تناقض PersonalRequestFormPage با مدل انتساب‌محور
 
-- **Status:** OPEN (Debt)
+- **Status:** OPEN
+- **Topic:** assigned-sites form incomplete state
 - **Date:** 2026-07-20 (1405/04/29)
+- **Dependency:** WP-REQ-04
+- **Block:** none until WP-REQ-04 (no other WP may change PersonalRequestFormPage / DormitoryReadContract list surface except WP-REQ-04)
 - **Context:** فرم «ثبت درخواست شخصی» (`/requests/personal/create`)
   فهرست خوابگاه‌ها را از `DormitoryReadContract::listSites()` می‌گیرد که
   با تصمیم Q-EMP-DORM (دسترسی صرفاً بر اساس انتساب فعال) در تناقض است.
   در وضعیت فعلی select خالی رندر می‌شود (`"sites": []`).
 - **Blocked artifact:** PersonalRequestFormPage و
   DormitoryReadContract::listSites()
-- **Resolution path:** نیازمند WP مستقل با مجوز تغییر Contract در لایه
-  Domain (پیشنهاد: WP-DASH-G04). تا آن زمان هیچ WP دیگری مجاز به تغییر
-  این دو آرتیفکت نیست.
+- **Resolution path:** WP-REQ-04 (assigned-sites / OQ-REQ-03 contract). Prior suggestion WP-DASH-G04 superseded for sequencing by Requests L1 plan.
 
 ## Phase 1 — Gap Decomposition: Final Dispositions
 
@@ -822,18 +826,25 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 
 ### Identity FK Exception Cluster
 
-**OQ-REQ-02** | Option B — ACCEPTED AS TEMPORARY GOVERNANCE EXCEPTION
+**OQ-REQ-02** | CLOSED | Option A (Normalized) — FK removed, Request model standalone. Signed-off.
 
-- Spec05 remains unchanged (no FK to identity_users in canonical spec)
-- Current implementation FK retained as documented exception, not spec-backed behavior
-- Non-blocking for Reconciliation
-- Requires future normalization WP (sunset: before Phase 3 allocation impl)
+- **Status:** **CLOSED**
+- **Decision:** Option A (Normalized) — FK removed, Request model standalone. Signed-off.
+- **Rationale:** Normalize Request module per Spec05 R-03. Remove direct FK coupling to `identity_users`. Retain UUID reference only. Identity resolution remains outside Request ownership boundary.
+- **Authorized by:** Lead (L0)
+- **Effective / Closed:** 1405/04/29 \| 2026-07-20
+- **Sunset clause:** REMOVED (normalization is the canonical path)
+- **OQ-REQ-02-SYNC:** LIFTED — Option A vs B conflict closed
+- **Execution WP:** WP-REQ-01 (schema drop FK; UUID retained) — Requests module WPs unblocked for Domain-First Phase 2 sequencing
 
-**OQ-DORM-04** | Option B — ACCEPTED AS TEMPORARY GOVERNANCE EXCEPTION
+**OQ-DORM-04** | Option B retained as temporary exception until sequential WP
 
 - Exception is outside Spec04 core; Spec04 remains authoritative
-- Normalization/removal deferred to same WP as OQ-REQ-02
-- Non-blocking for Reconciliation
+- **Sequencing:** SEQUENTIAL — separate WP after WP-REQ-01 closes
+- **Designated WP:** WP-DORM-04
+- **Dependency:** WP-REQ-01 CLOSED is prerequisite gate
+- **Rationale:** Module boundary isolation; independent rollback; clean per-module test suite
+- Non-blocking for Requests WP-REQ-01
 
 ---
 
@@ -891,11 +902,24 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 
 ### OQ-REQ-02 + OQ-DORM-04 — Identity FK Exception Cluster
 
-**Status:** ACCEPTED — Temporary Governance Exception
-**Decision:** FK (`identity_id`) در جداول requests/dormitories به عنوان Temporary Exception پذیرفته می‌شود.
-**Spec:** حفظ می‌شود (تغییر نمی‌کند).
-**Constraint:** WP مجزا برای normalization در آینده الزامی است.
-**Phase 2 block:** خیر.
+#### OQ-REQ-02
+
+- **Status:** **CLOSED**
+- **Decision:** Option A (Normalized) — FK removed, Request model standalone. Signed-off.
+- **OQ-REQ-02-SYNC:** LIFTED
+- **Rationale:** Normalize Request module per Spec05 R-03. Remove direct FK coupling to `identity_users`. Retain UUID reference only. Identity resolution remains outside Request ownership boundary.
+- **Authorized by:** Lead (L0)
+- **Closed:** 1405/04/29 \| 2026-07-20
+- **Sunset clause:** REMOVED (normalization is the canonical path)
+- **WP:** WP-REQ-01 executes physical FK drop (UUID retained); Requests Phase 2 WPs unblocked for sequencing
+
+#### OQ-DORM-04
+
+- **Status:** ACCEPTED — Temporary Governance Exception (pending sequential WP)
+- **Sequencing:** SEQUENTIAL — separate WP after WP-REQ-01 closes
+- **Designated WP:** WP-DORM-04
+- **Dependency:** WP-REQ-01 CLOSED is prerequisite gate
+- **Rationale:** Module boundary isolation; independent rollback; clean per-module test suite
 
 ---
 
@@ -965,15 +989,41 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 
 ---
 
+## OPEN — Requests L1 (no implementation block)
+
+### OQ-REQ-11
+
+- **Topic:** Stage-1 snapshot scope (Personal create only vs. broader)
+- **Status:** OPEN — domain decision pending
+- **Block:** none
+
+### OQ-REQ-12
+
+- **Topic:** Auth middleware standardization (`auth:api` vs `auth:identity`)
+- **Status:** OPEN — DEFERRED to WP-REQ-07
+- **Block:** none until route consolidation
+
+### D-G03-FORM
+
+- **Topic:** assigned-sites form incomplete state
+- **Status:** OPEN
+- **Dependency:** WP-REQ-04
+- **Block:** none (resolution owned by WP-REQ-04)
+
+---
+
 ## Deferred / Tracked
 
 | ID | Title | Notes | Date |
 |----|-------|-------|------|
 | OQ-ALLOC-02 | Domain Models/ vs Entities/ naming debt | Option C accepted as debt; track-only; rename deferred to post-Phase 2 / before Phase 3 | 1405/04/29 \| 2026-07-20 |
+| OQ-REQ-11 | Stage-1 snapshot scope | OPEN — domain decision pending; Block: none | 1405/04/29 \| 2026-07-20 |
+| OQ-REQ-12 | Auth middleware standardization | OPEN — DEFERRED to WP-REQ-07; Block: none until route consolidation | 1405/04/29 \| 2026-07-20 |
+| D-G03-FORM | assigned-sites form incomplete | OPEN; Dependency: WP-REQ-04 | 1405/04/29 \| 2026-07-20 |
 
 ## Temporary Governance Exceptions (append-only record)
 
 | ID | Title | Notes | Date |
 |----|-------|-------|------|
-| OQ-REQ-02 | Stage-1 `assigned_stage1_approver_identity_id` FK → `identity_users` | ACCEPTED temporary exception; Spec05 R-03 unchanged; normalization WP before Phase 3 allocation impl | 1405/04/29 \| 2026-07-20 |
-| OQ-DORM-04 | Dormitory assignment tables `user_id` FK → `identity_users` | ACCEPTED temporary exception outside Spec04 core; same future normalization WP as OQ-REQ-02 | 1405/04/29 \| 2026-07-20 |
+| OQ-REQ-02 | Stage-1 `assigned_stage1_approver_identity_id` FK → `identity_users` | **CLOSED** \| Option A (Normalized) — FK removed, Request model standalone. Signed-off. OQ-REQ-02-SYNC lifted. WP-REQ-01 = execution vehicle for schema. | 1405/04/29 \| 2026-07-20 |
+| OQ-DORM-04 | Dormitory assignment tables `user_id` FK → `identity_users` | ACCEPTED temporary exception outside Spec04 core; **Sequencing:** SEQUENTIAL after WP-REQ-01 CLOSED; **Designated WP:** WP-DORM-04; independent rollback / per-module tests | 1405/04/29 \| 2026-07-20 |

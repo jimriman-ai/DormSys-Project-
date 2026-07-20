@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/29 | 2026-07-20 | Session: REQUESTS kickoff HALT STOP-0.1 dirty tree_
+_Last updated: 1405/04/29 | 2026-07-20 | Session: Completion overlay — WP-REQ-01 verified; STOP Activation (no BEGIN AUDIT)_
 
-**Authority note:** ANALYSIS session blocked at Phase 0. Freeze SIGNED-OFF verified. No code/analysis Phase 1 executed.
+**Authority note:** Overlay applied. `roadmap-execution-protocol.md` **MISSING** (precedence N/A). Ledger READ-ONLY. No Wave A code started.
 
 ---
 
@@ -13,25 +13,25 @@ _Last updated: 1405/04/29 | 2026-07-20 | Session: REQUESTS kickoff HALT STOP-0.1
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| SESSION KICKOFF Requests | Phase 0 | → **STOP-0.1** | porcelain non-empty |
-| STOP-0.2 Freeze | project-state | PASS — SIGNED-OFF | Gap Registry L44 |
+| WP-REQ-01 | GAP-PREUI-12 pretreat | audit stale → **FK dropped, column+index retained** | migration + `pg_constraint` 0 rows |
+| Activation | Mode / BEGIN AUDIT | not declared → **STOP** | overlay § Activation |
+| Wave queue | A→D | armed, not started | Lead templates 4.1–4.9 |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🧑‍⚖️ **Human Decision / Ops** — Lead commit pending governance + T-PATCH-01 → clean porcelain → re-issue Requests L0 kickoff
+🧑‍⚖️ **Human Decision** — declare Mode + `BEGIN AUDIT` + ACTIVE_WP (recommend `WP-EMP-REL-01`)
 
 ---
 
 ## 7. Next Step
 
-**Action:** Lead commit dirty files; re-issue SESSION KICKOFF — REQUESTS DOMAIN.  
+**Action:** Lead: Mode=`WP_EXECUTION`, ACTIVE_WP=`WP-EMP-REL-01`, command `BEGIN AUDIT` (or paste Session Context + §4.1). Also Lead-commit WP-REQ-01 migration; register GAP-PREUI-12 note.  
 **Owner:** Lead  
-**Gate:** `git status --porcelain` empty  
-**Blocker:** STOP-0.1 dirty tree  
+**Gate:** Activation Protocol  
 **Suggested user prompt:**
-> After clean porcelain: re-issue SESSION KICKOFF — REQUESTS DOMAIN (L0 GATE + L1 PROGRAM).
+> Mode: WP_EXECUTION | ACTIVE_WP: WP-EMP-REL-01 | BEGIN AUDIT
 
 ---
 
@@ -39,6 +39,6 @@ _Last updated: 1405/04/29 | 2026-07-20 | Session: REQUESTS kickoff HALT STOP-0.1
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| Freeze v1.0 | SIGNED-OFF | STOP-0.2 PASS |
-| Requests L0 | BLOCKED STOP-0.1 | await clean tree |
-| Dirty pending commit | OPEN | DormitoryPolicy T-PATCH-01; open-decisions; project-state |
+| WP-REQ-01 | DELIVERED (ACCEPT review) | pending Lead commit + ledger WP CLOSED if desired |
+| GAP-PREUI-12 | OBSERVED SUPERSEDED | no new WP; register sync by Lead |
+| roadmap-execution-protocol.md | MISSING | overlay precedence target absent |
