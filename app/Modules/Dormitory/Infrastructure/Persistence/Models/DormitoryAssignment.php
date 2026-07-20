@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Dormitory\Infrastructure\Persistence\Models;
 
-use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Support\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -58,14 +57,6 @@ class DormitoryAssignment extends Model
     public function scopeActive(Builder $query): Builder
     {
         return $query->whereNull('revoked_at');
-    }
-
-    /**
-     * @return BelongsTo<UserModel, $this>
-     */
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(UserModel::class, 'user_id');
     }
 
     /**

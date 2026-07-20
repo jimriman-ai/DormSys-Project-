@@ -6,7 +6,7 @@ namespace App\Modules\Dormitory\Presentation\Livewire;
 
 use App\Modules\Dormitory\Infrastructure\Persistence\Models\DormitoryAssignment;
 use App\Modules\Dormitory\Infrastructure\Persistence\Models\DormitoryModel;
-use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Attributes\Layout;
@@ -23,7 +23,7 @@ final class DormitoryIndexPage extends Component
     public function render(): View
     {
         $user = auth('identity')->user();
-        assert($user instanceof UserModel);
+        assert($user instanceof Authenticatable);
 
         /** @var Collection<int, DormitoryModel> $dormitories */
         $dormitories = DormitoryModel::query()

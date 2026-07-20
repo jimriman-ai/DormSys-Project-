@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/29 | 2026-07-20 | Session: WP-DEBT-05 v2.2 HALT STOP-1.1 — dirty tree_
+_Last updated: 1405/04/29 | 2026-07-20 | Session: WP-DEBT-05 T-PATCH-01 HALT STOP-1.1 dirty tree_
 
-**Authority note:** DEC-ARCH-POLICY-01 DECIDED; boundary-rules amended. WP-DEBT-05 code NOT started (porcelain dirty).
+**Authority note:** T-PATCH-01 not applied — porcelain non-empty (prior WP-DEBT-05 work uncommitted).
 
 ---
 
@@ -13,27 +13,25 @@ _Last updated: 1405/04/29 | 2026-07-20 | Session: WP-DEBT-05 v2.2 HALT STOP-1.1 
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| WP-DEBT-05 v2.2 | STOP-1.1 | re-issue → **HALT** | `git status --porcelain` non-empty |
-| STOP-1.2 | DEC-ARCH-POLICY-01 | would PASS (present) | `open-decisions.md` |
-| STOP-1.3 | Policy rule | would PASS at `docs/architecture/boundary-rules.md` (prompt path `docs/governance/boundary-rules.md` does not exist) | Grep |
+| T-PATCH-01 | execution | blocked → **HALT STOP-1.1** | `git status --porcelain` non-empty |
+| STOP-1.2 / 1.3 | would PASS | DEC-ARCH-POLICY-01 + boundary-rules present | Grep |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🧑‍⚖️ **Human Decision / Ops** — Lead Manual Commit (groups 1–4) → clean porcelain → re-issue WP-DEBT-05 v2.2
+🧑‍⚖️ **Human Decision / Ops** — Lead commit WP-DEBT-05 partial work → clean porcelain → re-issue T-PATCH-01 + T7
 
 ---
 
 ## 7. Next Step
 
-**Action:** Lead commit pending debt/governance/CI; then re-issue WP-DEBT-05 v2.2 from STOP-1.  
+**Action:** Lead commit pending WP-DEBT-05 files; re-issue T-PATCH-01 + T7.  
 **Owner:** Lead  
-**Gate:** `git status --porcelain` empty  
-**Done when:** STOP-1.1–1.3 all PASS  
-**Blocker:** Dirty working tree (WP-DEBT-01/03/04 + CI + governance uncommitted)  
+**Gate:** empty porcelain  
+**Blocker:** Dirty tree (Policy move, Presentation, Assignment, project-state uncommitted)  
 **Suggested user prompt:**
-> After clean porcelain: execute WP-DEBT-05 v2.2 from STOP-1.
+> After clean porcelain: execute WP-DEBT-05 T-PATCH-01 + T7.
 
 ---
 
@@ -41,5 +39,5 @@ _Last updated: 1405/04/29 | 2026-07-20 | Session: WP-DEBT-05 v2.2 HALT STOP-1.1 
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| WP-DEBT-05 | BLOCKED H-1.1 | await clean tree |
-| DEC-ARCH-POLICY-01 | DECIDED | Option A; not yet IMPLEMENTED (code pending WP-05) |
+| WP-DEBT-05 | HALT STOP-1.1 | T-PATCH-01 pending clean tree |
+| ModuleBoundary Identity | OPEN | Policy still imports UserModel until T-PATCH-01 |

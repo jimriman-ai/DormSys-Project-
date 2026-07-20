@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Dormitory\Application\Policies;
+namespace App\Modules\Dormitory\Infrastructure\Policies;
 
 use App\Modules\Dormitory\Domain\Contracts\DormitoryAssignmentReader;
 use App\Modules\Dormitory\Infrastructure\Persistence\Models\DormitoryModel;
