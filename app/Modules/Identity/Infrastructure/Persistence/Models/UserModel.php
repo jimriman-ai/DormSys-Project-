@@ -8,15 +8,18 @@ use App\Modules\Identity\Domain\Enums\UserStatus;
 use App\Modules\Identity\Domain\PlatformRoles;
 use App\Support\Models\BaseModel;
 use Illuminate\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Foundation\Auth\Access\Authorizable;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
  * Persistence adapter for Identity users (spec02).
  *
- * Implements {@see AuthenticatableContract} only so Spatie RBAC and feature tests
- * can resolve an authenticated principal via the `api` guard (`actingAs`).
+ * Implements {@see AuthenticatableContract} and {@see AuthorizableContract} so Spatie RBAC,
+ * Laravel Gate/Policy (Q-DBT-1-AUTH Option B), and feature tests can resolve an authenticated
+ * principal via `api` / `identity` guards (`actingAs`).
  * Password-based login is explicitly out of scope (OA-02-01); credentials
  * belong to {@see \App\Models\User} on the default `web` guard.
  *
@@ -25,9 +28,10 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $display_name
  * @property string|null $email
  */
-class UserModel extends BaseModel implements AuthenticatableContract
+class UserModel extends BaseModel implements AuthenticatableContract, AuthorizableContract
 {
     use Authenticatable;
+    use Authorizable;
     use HasRoles;
 
     protected $table = 'identity_users';

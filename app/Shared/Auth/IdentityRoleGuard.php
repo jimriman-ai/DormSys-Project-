@@ -15,6 +15,12 @@ use Spatie\Permission\Models\Role;
 final class IdentityRoleGuard
 {
     /**
+     * Canonical identity-guard role for employee actors (Q-DASH-3-ROLE-SOURCE Option A / WP-DASH-G09).
+     * Value must match IdentityRoleSeeder::ROLE_EMPLOYEE (`employee`).
+     */
+    public const string ROLE_EMPLOYEE = 'employee';
+
+    /**
      * Canonical identity-guard role for Stage-1 approver authorization path (DGAP-13 / Lead DGAP-09 scoped).
      */
     public const string ROLE_DORMITORY_MANAGER = 'dormitory-manager';

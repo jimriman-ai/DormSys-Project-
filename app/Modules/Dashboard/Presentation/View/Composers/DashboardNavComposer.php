@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\Dashboard\Presentation\View\Composers;
 
-use App\Modules\Dashboard\Domain\DashboardIdentityRoles;
 use App\Shared\Auth\IdentityRoleGuard;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\View\View;
@@ -30,7 +29,7 @@ final class DashboardNavComposer
             return [];
         }
 
-        $isEmployee = IdentityRoleGuard::userHasIdentityRole($user, DashboardIdentityRoles::EMPLOYEE);
+        $isEmployee = IdentityRoleGuard::userHasIdentityRole($user, IdentityRoleGuard::ROLE_EMPLOYEE);
         $isManager = IdentityRoleGuard::userHasIdentityRole($user, IdentityRoleGuard::ROLE_DORMITORY_MANAGER);
 
         if (! $isEmployee && ! $isManager) {

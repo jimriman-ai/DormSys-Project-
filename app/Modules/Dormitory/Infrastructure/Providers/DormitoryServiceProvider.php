@@ -11,14 +11,17 @@ use App\Modules\Dormitory\Application\Contracts\DormitoryStructureMutationContra
 use App\Modules\Dormitory\Application\Contracts\DormitoryStructureReadContract;
 use App\Modules\Dormitory\Application\Contracts\DormitoryStructureReadRepositoryContract;
 use App\Modules\Dormitory\Application\Contracts\DormitoryStructureWriteRepositoryContract;
+use App\Modules\Dormitory\Application\Policies\DormitoryPolicy;
 use App\Modules\Dormitory\Application\Services\AllocationAssignabilityService;
 use App\Modules\Dormitory\Application\Services\AllocationPhysicalStateApplicationService;
 use App\Modules\Dormitory\Application\Services\DormitoryStructureAuthorizationGate;
 use App\Modules\Dormitory\Application\Services\DormitoryStructureMutationService;
 use App\Modules\Dormitory\Application\Services\DormitoryStructureReadService;
+use App\Modules\Dormitory\Infrastructure\Persistence\Models\DormitoryModel;
 use App\Modules\Dormitory\Infrastructure\Repositories\AllocationBedPhysicalStateRepository;
 use App\Modules\Dormitory\Infrastructure\Repositories\DormitoryStructureReadRepository;
 use App\Modules\Dormitory\Infrastructure\Repositories\DormitoryStructureWriteRepository;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class DormitoryServiceProvider extends ServiceProvider
@@ -38,5 +41,7 @@ class DormitoryServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->loadMigrationsFrom(database_path('migrations/modules/dormitory'));
+
+        Gate::policy(DormitoryModel::class, DormitoryPolicy::class);
     }
 }

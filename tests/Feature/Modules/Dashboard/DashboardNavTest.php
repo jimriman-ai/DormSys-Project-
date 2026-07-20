@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Modules\Dashboard\Domain\DashboardIdentityRoles;
 use App\Modules\Identity\Domain\Enums\UserStatus;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Shared\Auth\IdentityRoleGuard;
@@ -43,7 +42,7 @@ function assignDashboardNavIdentityRole(UserModel $user, string $roleName): void
 
 it('shows employee nav items and hides Approvals Stage 1', function (): void {
     $user = createDashboardNavIdentityUser('Dev Employee Nav');
-    assignDashboardNavIdentityRole($user, DashboardIdentityRoles::EMPLOYEE);
+    assignDashboardNavIdentityRole($user, IdentityRoleGuard::ROLE_EMPLOYEE);
 
     $this->actingAs($user, 'identity')
         ->get(route('dashboard'))
