@@ -6,6 +6,7 @@ namespace App\Modules\Employee\Infrastructure\Persistence\Models;
 
 use App\Modules\Employee\Domain\Enums\DepartmentStatus;
 use App\Support\Models\BaseModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -42,6 +43,30 @@ class DepartmentModel extends BaseModel
             'status' => DepartmentStatus::class,
             'lottery_priority' => 'integer',
         ]);
+    }
+
+    /**
+     * @return BelongsTo<DepartmentModel, $this>
+     */
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    /**
+     * @return HasMany<DepartmentModel, $this>
+     */
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id');
+    }
+
+    /**
+     * @return BelongsTo<EmployeeModel, $this>
+     */
+    public function manager(): BelongsTo
+    {
+        return $this->belongsTo(EmployeeModel::class, 'manager_id');
     }
 
     /**
