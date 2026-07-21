@@ -78,6 +78,7 @@ describe('request list detail navigation ui flow', function (): void {
         $draft = createDraftPersonalRequestForHttp($actor['employee']);
         $requestId = $draft->requireId()->value;
 
+        // @allowed-api-guard: DBT-3
         Livewire::actingAs($actor['identity'], 'api')
             ->test(RequestListPage::class)
             ->call('refreshList')

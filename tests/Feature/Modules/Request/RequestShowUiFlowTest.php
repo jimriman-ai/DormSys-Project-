@@ -83,6 +83,7 @@ describe('request show ui flow', function (): void {
             ->assertOk()
             ->assertSee($draft->code->value);
 
+        // @allowed-api-guard: DBT-3
         Livewire::actingAs($actor['identity'], 'api')
             ->test(RequestShowPage::class, ['requestId' => $requestId])
             ->assertSet('summary.request_code', $draft->code->value)

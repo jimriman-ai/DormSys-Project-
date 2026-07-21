@@ -109,6 +109,7 @@ describe('request ui access', function (): void {
         $actor = createRequestHttpMutationEmployee();
         authenticateRequestUiUser($actor['identity']);
 
+        // @allowed-api-guard: DBT-3
         Livewire::actingAs($actor['identity'], 'api')
             ->test(RequestListPage::class)
             ->call('refreshList')

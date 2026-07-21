@@ -70,6 +70,7 @@ describe('request list filtering sorting pagination ui flow', function (): void 
         authenticateRequestListP4User($actor['identity']);
         createDraftPersonalRequestForHttp($actor['employee']);
 
+        // @allowed-api-guard: DBT-3
         $component = Livewire::actingAs($actor['identity'], 'api')
             ->test(RequestListPage::class)
             ->call('refreshList')

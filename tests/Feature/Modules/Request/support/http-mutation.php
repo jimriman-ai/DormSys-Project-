@@ -51,6 +51,7 @@ function createRequestHttpMutationEmployee(
 function authenticateRequestHttpMutationUser(UserModel $identity): void
 {
     grantDormitoryStructureViewPermission($identity->id);
+    // @allowed-api-guard: DBT-3
     test()->actingAs($identity, 'api');
     request()->attributes->set('audit_principal_user_id', $identity->id);
 }

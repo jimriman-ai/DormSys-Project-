@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only. Not a decision ledger. Does not supersede `docs/governance/open-decisions.md`.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/30 | 2026-07-21 | Session: T3 G-REQ-01 delivered — 22 passed, uncommitted_
+_Last updated: 1405/04/30 | 2026-07-21 | Session: T3 G-REQ-02 VERIFIED — Architecture 3 passed; Request suite 1 HD-02 fail_
 
-**Authority note:** OBSERVED. G-REQ-01 `RequestTransitionGuardTest` added (test-only). **22 passed**. Awaiting Lead for commit / next guardrail (G-REQ-02).
+**Authority note:** OBSERVED. G-REQ-02 guard green. Markers added to 5 DBT-3 whitelist files. Request Feature regression: **161 passed, 1 failed** (`LotteryRegistrationRequestTest` — HD-02 / Stage-1 snapshot). Uncommitted.
 
 ---
 
@@ -13,14 +13,15 @@ _Last updated: 1405/04/30 | 2026-07-21 | Session: T3 G-REQ-01 delivered — 22 p
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| G-REQ-01 | `RequestTransitionGuardTest.php` | created — illegal OA-05-03 matrix | tests/ only |
-| Verify | G-REQ-01 | **22 passed** (44 assertions) | compose exec |
+| Markers | 5 Request api-guard files | `@allowed-api-guard: DBT-3` | tests/ |
+| G-REQ-02 | `RequestTestApiGuardTest.php` | created — **3 passed** | Architecture |
+| Regression | Request Feature | 161 passed / 1 fail LotteryRegistration | HD-02 |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🔀 **Lifecycle** — T3 Guardrails: **G-REQ-01 done**; next **G-REQ-02** on Lead order
+🔀 **Lifecycle** — T3 G-REQ-02 done; Lead: commit + decide LotteryRegistration fail (out of scope)
 
 ---
 
@@ -28,7 +29,8 @@ _Last updated: 1405/04/30 | 2026-07-21 | Session: T3 G-REQ-01 delivered — 22 p
 
 | ID | Summary |
 |----|---------|
-| T3 next | G-REQ-02 / commit G-REQ-01 |
+| Commit G-REQ-02 | Lead order |
+| LotteryRegistrationRequestTest | HD-02 — not fixed in T3 |
 | HD-02/HD-03/DBT-3 | Frozen |
 
 Canonical: `docs/governance/open-decisions.md`
@@ -39,21 +41,20 @@ Canonical: `docs/governance/open-decisions.md`
 
 | Item | Status |
 |------|--------|
-| T2 | ✅ COMPLETE |
-| T3 G-REQ-01 | ✅ VERIFIED (uncommitted) |
-| T3 remaining | G-REQ-02… G-MUT-01 pending |
+| G-REQ-01 | ✅ DONE |
+| G-REQ-02 | ✅ VERIFIED (uncommitted) |
 
 ---
 
 ## 7. Next Step
 
-**Action:** Lead commit G-REQ-01 or proceed G-REQ-02.  
-**Owner:** Lead → Agent  
-**Gate:** Lead order  
-**Done when:** G-REQ-01 committed / G-REQ-02 scoped  
-**Blocker:** none  
+**Action:** Lead commit G-REQ-02 (+ markers); next T3 candidate or accept LotteryRegistration as known HD-02 fail.  
+**Owner:** Lead  
+**Gate:** Lead  
+**Done when:** committed  
+**Blocker:** none for G-REQ-02  
 **Suggested user prompt:**
-> Commit G-REQ-01 then implement G-REQ-02
+> Commit G-REQ-02 then proceed G-REQ-03
 
 ---
 
@@ -61,4 +62,5 @@ Canonical: `docs/governance/open-decisions.md`
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| G-REQ-01 | VERIFIED | 22 illegal edges → InvalidRequestTransitionException |
+| G-REQ-02 | VERIFIED | guard + markers |
+| LotteryRegistrationRequestTest | FROZEN HD-02 | Stage-1 snapshot missing |
