@@ -8,12 +8,14 @@ use App\Application\Mutation\Registry\MutationCapabilityCatalog;
 use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
 use App\Modules\CheckIn\Application\Contracts\AllocationAssignmentReadPort;
 use App\Modules\CheckIn\Application\Contracts\CheckInRecordRepositoryContract;
+use App\Modules\CheckIn\Application\Contracts\RequestStayLifecycleCommandPort;
 use App\Modules\CheckIn\Domain\Events\CheckedIn;
 use App\Modules\CheckIn\Domain\Exceptions\AllocationNotActiveException;
 use App\Modules\CheckIn\Domain\Exceptions\OpenCheckInRecordExistsException;
 use App\Modules\CheckIn\Domain\Models\CheckInRecord;
 use DateTimeImmutable;
 use DateTimeZone;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 
 final class CheckInAction
@@ -21,6 +23,7 @@ final class CheckInAction
     public function __construct(
         private readonly AllocationAssignmentReadPort $allocations,
         private readonly CheckInRecordRepositoryContract $records,
+        private readonly RequestStayLifecycleCommandPort $requestStayLifecycle,
         private readonly OperatorRoleGate $operatorGate,
         private readonly MutationPolicyEnforcementPoint $mutationPolicy,
         private readonly CheckInMutationAuthorizationGate $checkInMutationAuth,
@@ -48,16 +51,21 @@ final class CheckInAction
             throw new OpenCheckInRecordExistsException('An open check-in record already exists for this allocation.');
         }
 
-        $record = CheckInRecord::open(
-            allocationId: $allocationId,
-            operatorId: $operatorId,
-            checkedInAt: new DateTimeImmutable('now', new DateTimeZone('UTC')),
-        );
+        return DB::transaction(function () use ($allocationId, $operatorId): CheckInRecord {
+            $record = CheckInRecord::open(
+                allocationId: $allocationId,
+                operatorId: $operatorId,
+                checkedInAt: new DateTimeImmutable('now', new DateTimeZone('UTC')),
+            );
 
-        $persisted = $this->records->save($record);
+            $persisted = $this->records->save($record);
 
-        Event::dispatch(CheckedIn::forRecord($persisted));
+            // OA-05-03 / DEBT-W3-01: advance Request status when allocation is request-sourced.
+            $this->requestStayLifecycle->markCheckedInForAllocation($allocationId);
 
-        return $persisted;
+            Event::dispatch(CheckedIn::forRecord($persisted));
+
+            return $persisted;
+        });
     }
 }

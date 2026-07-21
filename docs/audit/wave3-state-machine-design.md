@@ -71,5 +71,5 @@ See `docs/audit/wave3-wp-wf-04-known-risk.md`.
 
 | ID | Item |
 |----|------|
-| DEBT-W3-01 | CheckIn module → Request `markCheckedIn` / `markCheckedOut` wiring |
+| DEBT-W3-01 | **CLOSED** — CheckIn→Request stay lifecycle wired (`RequestStayLifecycleCommandPort`) |
 | Spatie `transitionTo` enforcement | Optional hardening; GAP-PREUI-17 remains REGISTER-ONLY |
