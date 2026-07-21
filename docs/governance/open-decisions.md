@@ -60,7 +60,12 @@
 | DG-REQ-01 | ListPendingStage1RequestsAction depends on Identity UserModel | Identity Boundary | Option A (DECIDED, amended): execute(string $approverIdentityId) | Lead | Freeze v1.0 | DECIDED | Resolution moves to HTTP boundary (ref: DGAP-07) |
 | DG-DORM-01 | Manager assignment tables: join vs lifecycle vs entity | Domain Gap | Option A (DECIDED): pure join table | Lead | Freeze v1.0 | DECIDED | WP-DEBT-02 → CLOSED — NO-ACTION |
 | DG-SETTINGS-01 | settings table ownership + missing production migration | Cross-cutting | System module ownership (DECIDED) | Lead | Freeze v1.0 | DECIDED | WP-DEBT-04 CREATE = DELIVERED (`modules/system/2026_07_20_000001_create_settings_table.php`). Remaining seam = SettingsReadContract → **WP-SYS-01** (D-SETTINGS-CONTRACT Option B SIGNED-OFF). GAP-PREUI-14 CLOSED. |
-| DEC-ARCH-POLICY-01 | Framework Policy placement (Laravel Gate / Eloquent) | DDD Boundary / Adapter | Option A (DECIDED): `Infrastructure/Policies/` | Lead | Freeze v1.0 / WP-DEBT-05 | IMPLEMENTED | Evidence: WP-DEBT-05 DELIVERY CONFIRMATION; Validation: 1928 passed (5568 assertions) |
+| DEC-ARCH-POLICY-01 | Framework Policy placement (Laravel Gate / Eloquent) | DDD Boundary / Adapter | Option A (DECIDED): `Infrastructure/Policies/` | Lead | Freeze v1.0 / WP-DEBT-05 | IMPLEMENTED | WP-DEBT-05 CLOSED/ACCEPTED. GAP-PREUI-15 CLOSED (docs). Evidence: DELIVERY CONFIRMATION; 1928 passed. |
+| D-SETTINGS-CONTRACT | System settings Application read seam | Cross-cutting / System | A) Eloquent model B) QB/DB contract C) keep per-module readers | Lead | Pre-UI Decision Sweep | **DECIDED — B** | SIGNED-OFF 1405/04/29. WP-SYS-01: SettingsReadContract + QB impl; migrate Request/Audit/Notification. No Settings Eloquent model. |
+| D-SETTINGS-LOTTERY-X | LotteryScoringConfigReader direct DB::table under HD-02 freeze | Lottery / Settings | Accept temporary exception until HD-02 unfreeze | Lead | Pre-UI Decision Sweep | **ACCEPTED EXCEPTION** | R2 SIGNED-OFF. Not in WP-SYS-01 scope. |
+| D-G03-FORM | PersonalRequestFormPage vs assignment-based access | Requests / Authz | A) assignment-scoped B) free-site exception C) defer+temp note | Lead | Pre-UI Decision Sweep | **DECIDED — A** | SIGNED-OFF 1405/04/29. Owner = WP-REQ-04 only. No WP-FORM-01. Free-site rejected. |
+| D-ENTRYPOINT-RULE | Presentation may inject repository contracts? | Architecture / Presentation | Actions/Services only (vs thin repo injection) | Lead | Pre-UI Decision Sweep | **DECIDED** | R4 SIGNED-OFF. Presentation → Application Actions/Services only. WP-CHECKIN-01 **CLOSED** (Action wire delivered). |
+| D-POLICY-AUTH-BOUNDARY | Gate Policy Identity Eloquent / UserModel typing | DDD / Auth | Blocker vs advisory vs accepted tension | Lead | Pre-UI Decision Sweep | **ACCEPTED TENSION** | R5 SIGNED-OFF. Authenticatable + Domain port OK. No code WP. Reopen on proven harm. |
 | OQ-REQ-02 | Request Identity FK / model normalization (OQ-REQ-02-SYNC) | Requests / Spec05 R-03 | Option A (Normalized) | Lead | WP-REQ-01 | **CLOSED** | Option A (Normalized) — FK removed, Request model standalone. Signed-off. OQ-REQ-02-SYNC lifted. Physical drop executed under WP-REQ-01 L3 per scope. |
 | SB-D9 | F-W07-04 Wave 2 (Stage-1 list/filter UX + tests) | F3 / stage1-approver-console | A) Authorize Wave 2 B) Hold C) Reject | Lead | F-W07-04-D3; WP-RQ-W2-01 | **DECIDED (A) — ISSUED**; WP **DONE** | Wave 2 list/filter UX + tests; auth_gate=`dormitory-manager` unchanged; SHA UNVERIFIED (merge-agnostic); Sprint B CLOSED |
 | SB-D10 | Exempt registry classification — `ListPendingStage1RequestsAction` | F3 / stage1-approver-console / MPEP | A) Issue read-only exempt classification B) Hold C) Reject | Lead | WP-RQ-W2-01 review session | **DECIDED (A) — ISSUED**; **Recorded** | Read-only registry classification for MPEP discovery compatibility; no functional behavior change. Authority: Lead in-session during WP-RQ-W2-01; recording: retroactive (WP-DOC-SYNC-01); Sprint B CLOSED |
@@ -635,6 +640,7 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 - **Rejected:** Option B (keep in Application — impossible without ForbiddenImportsScan failure on Gate-injected Eloquent type-hints). Option C (Application authorization service + thin Infra Policy — deferred backlog; requires new interface; out of Freeze WP-DEBT-05 scope).
 - **Consequence:** `docs/architecture/boundary-rules.md` amended; `DormitoryPolicy` relocation in WP-DEBT-05 is **pre-authorized**.
 - **Implementation status:** IMPLEMENTED — Evidence: WP-DEBT-05 DELIVERY CONFIRMATION; Validation: 1928 passed (5568 assertions).
+- **Register sync (R6b / GAP-PREUI-15):** WP-DEBT-05-STATUS-SYNC = CLOSED (docs-only). No re-implementation. Any residual “awaiting WP-DEBT-05” language is stale.
 
 ---
 
@@ -670,7 +676,10 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| 2026-07-20 | **Lead Ruling Pack SIGNED-OFF (R1–R6):** D-SETTINGS-CONTRACT=B; Lottery settings exception (HD-02); D-G03-FORM=A (WP-REQ-04 only, no WP-FORM-01); ENTRYPOINT-RULE + WP-CHECKIN-01 mandatory; POLICY-AUTH-BOUNDARY=Accepted Tension; R6 register sync — GAP-PREUI-14/15 CLOSED. | Lead |
+| 2026-07-20 | **WP-CHECKIN-01 CLOSED:** CheckInFlowController routes via GetOpenCheckInByAllocationAction; Presentation no longer injects repository contract. Suite: 1930 passed / 0 failed. | Agent (Mandate CHAIN-2) |
 | 2026-07-20 | **DG-SETTINGS-01-REGISTER-SYNC:** Gate/metadata note corrected — settings create migration EXISTS (`modules/system/2026_07_20_000001_…`); WP-DEBT-04 migration DELIVERED; contract seam → WP-SYS-01 (Option B). GAP-PREUI-14 CLOSED. | Agent (Lead R6a) |
+| 2026-07-20 | **WP-DEBT-05-STATUS-SYNC:** Confirmed CLOSED / ACCEPTED — DormitoryPolicy under Infrastructure/Policies; DEC-ARCH-POLICY-01 IMPLEMENTED; GAP-PREUI-15 CLOSED (docs). Suite evidence previously recorded (1928 passed). | Agent (Lead R6b) |
 | 2026-07-20 | **OQ-REQ-02 CLOSED:** Option A (Normalized) — FK removed, Request model standalone. Signed-off. OQ-REQ-02-SYNC lifted; Requests module WPs unblocked for Domain-First Phase 2. WP-REQ-01 remains execution vehicle for schema. | Lead |
 | 2026-07-20 | **OQ-REQ-02-SYNC:** OQ-REQ-02 → Option A ACCEPTED (DECIDED → IMPLEMENTATION AUTHORIZED); Spec05 R-03 normalize (drop FK, retain UUID); sunset REMOVED; WP-REQ-01 AUTHORIZED TO OPEN. OQ-DORM-04 → SEQUENTIAL WP-DORM-04 after WP-REQ-01 CLOSED. Registered OPEN: OQ-REQ-11, OQ-REQ-12, D-G03-FORM→WP-REQ-04. | Lead |
 | 2026-07-20 | **DEC-ARCH-POLICY-01 IMPLEMENTED:** WP-DEBT-05 CLOSED / ACCEPTED; Evidence: WP-DEBT-05 DELIVERY CONFIRMATION; Validation: 1928 passed (5568 assertions). Freeze v1.0 SIGNED-OFF (project-state). | Lead |
@@ -807,11 +816,13 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 
 ## D-G03-FORM — بدهی حاکمیتی: تناقض PersonalRequestFormPage با مدل انتساب‌محور
 
-- **Status:** OPEN
+- **Status:** **DECIDED — A** (rule); implementation OPEN under WP-REQ-04
+- **Selected Option:** A — assignment-scoped sites via `listAssignedSites*` (OQ-REQ-03 / Q-EMP-DORM Option B)
+- **Signed-Off:** 1405/04/29 \| 2026-07-20 — Lead Ruling Pack R3
 - **Topic:** assigned-sites form incomplete state
-- **Date:** 2026-07-20 (1405/04/29)
-- **Dependency:** WP-REQ-04
-- **Block:** none until WP-REQ-04 (no other WP may change PersonalRequestFormPage / DormitoryReadContract list surface except WP-REQ-04)
+- **Dependency:** WP-REQ-04 (sole owner)
+- **Forbidden:** No WP-FORM-01. Free-site listing rejected. No WP other than WP-REQ-04 may change PersonalRequestFormPage / `DormitoryReadContract` list surface.
+- **Block:** none until WP-REQ-04 (implementation)
 - **Context:** فرم «ثبت درخواست شخصی» (`/requests/personal/create`)
   فهرست خوابگاه‌ها را از `DormitoryReadContract::listSites()` می‌گیرد که
   با تصمیم Q-EMP-DORM (دسترسی صرفاً بر اساس انتساب فعال) در تناقض است.
@@ -819,6 +830,7 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 - **Blocked artifact:** PersonalRequestFormPage و
   DormitoryReadContract::listSites()
 - **Resolution path:** WP-REQ-04 (assigned-sites / OQ-REQ-03 contract). Prior suggestion WP-DASH-G04 superseded for sequencing by Requests L1 plan.
+- **WP-DORM-UI-READ:** independent — may proceed without waiting on form remediation.
 
 ## Phase 1 — Gap Decomposition: Final Dispositions
 
@@ -1008,8 +1020,9 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 ### D-G03-FORM
 
 - **Topic:** assigned-sites form incomplete state
-- **Status:** OPEN
-- **Dependency:** WP-REQ-04
+- **Status:** **DECIDED — A** (rule); implementation OPEN under WP-REQ-04
+- **Signed-Off:** 1405/04/29 \| Lead Ruling Pack R3
+- **Dependency:** WP-REQ-04 (sole owner; no WP-FORM-01)
 - **Block:** none (resolution owned by WP-REQ-04)
 
 ---
@@ -1021,7 +1034,7 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 | OQ-ALLOC-02 | Domain Models/ vs Entities/ naming debt | Option C accepted as debt; track-only; rename deferred to post-Phase 2 / before Phase 3 | 1405/04/29 \| 2026-07-20 |
 | OQ-REQ-11 | Stage-1 snapshot scope | OPEN — domain decision pending; Block: none | 1405/04/29 \| 2026-07-20 |
 | OQ-REQ-12 | Auth middleware standardization | OPEN — DEFERRED to WP-REQ-07; Block: none until route consolidation | 1405/04/29 \| 2026-07-20 |
-| D-G03-FORM | assigned-sites form incomplete | OPEN; Dependency: WP-REQ-04 | 1405/04/29 \| 2026-07-20 |
+| D-G03-FORM | assigned-sites form incomplete | **DECIDED — A**; impl OPEN under WP-REQ-04 only; no WP-FORM-01 | 1405/04/29 \| 2026-07-20 |
 
 ## Temporary Governance Exceptions (append-only record)
 
@@ -1029,6 +1042,7 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 |----|-------|-------|------|
 | OQ-REQ-02 | Stage-1 `assigned_stage1_approver_identity_id` FK → `identity_users` | **CLOSED** \| Option A (Normalized) — FK removed, Request model standalone. Signed-off. OQ-REQ-02-SYNC lifted. WP-REQ-01 = execution vehicle for schema. | 1405/04/29 \| 2026-07-20 |
 | OQ-DORM-04 | Dormitory assignment tables `user_id` FK → `identity_users` | ACCEPTED temporary exception outside Spec04 core; **Sequencing:** SEQUENTIAL after WP-REQ-01 CLOSED; **Designated WP:** WP-DORM-04; independent rollback / per-module tests | 1405/04/29 \| 2026-07-20 |
+| D-SETTINGS-LOTTERY-X | LotteryScoringConfigReader → `DB::table('settings')` | ACCEPTED temporary exception under HD-02 Lottery freeze; **not** in WP-SYS-01; sunset = HD-02 unfreeze | 1405/04/29 \| 2026-07-20 |
 
 ### WP-REQ-01 — CLOSED (1405/04/29)
 
@@ -1039,8 +1053,74 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 
 - Audit note "FK Constrained" was stale. FK dropped, column retained (Option A) — WP-REQ-01 DELIVERED.
 
+### WP-DEBT-05 — CLOSED / ACCEPTED (status sync 1405/04/29)
+
+- DormitoryPolicy resides at `app/Modules/Dormitory/Infrastructure/Policies/DormitoryPolicy.php`.
+- DEC-ARCH-POLICY-01 Status/Implementation = IMPLEMENTED (evidence: DELIVERY CONFIRMATION; 1928 passed).
+- Residue: none for Policy relocation scope.
+- **GAP-PREUI-15 / WP-DEBT-05-STATUS-SYNC:** CLOSED (docs-only; Lead Ruling Pack R6b).
+
 ### GAP-PREUI-14 — CLOSED (stale-register lag)
 
 - DG-SETTINGS-01 notes corrected: WP-DEBT-04 CREATE migration DELIVERED.
 - Remaining work = SettingsReadContract under WP-SYS-01 (D-SETTINGS-CONTRACT Option B).
 - Authority: Lead Ruling Pack R6a — SIGNED-OFF 1405/04/29.
+
+### GAP-PREUI-15 — CLOSED (docs-only)
+
+- DEC-ARCH-POLICY-01 / WP-DEBT-05 = IMPLEMENTED. No re-implementation.
+- Authority: Lead Ruling Pack R6b — SIGNED-OFF 1405/04/29.
+
+---
+
+## Lead Ruling Pack — Pre-UI Decision Sweep (SIGNED-OFF)
+
+| Field | Value |
+|-------|-------|
+| **Status** | **SIGNED-OFF** |
+| **Date** | 1405/04/29 \| 2026-07-20 |
+| **Authority** | DormSys Architect / Lead |
+| **Source** | Pre-UI Decision Sweep |
+
+### R1 — D-SETTINGS-CONTRACT → Option B ✅
+
+System owns a read-only `SettingsReadContract` (port). Implementation uses query builder / `DB::table` under System Infrastructure. No Settings Eloquent model. **WP-SYS-01** delivers the contract, binding in `SystemServiceProvider`, and migrates Request, Audit, Notification readers onto it.
+
+### R2 — Lottery Settings Exception (HD-02) ✅
+
+`LotteryScoringConfigReader` remains untouched under Lottery freeze. Direct `DB::table('settings')` there is an accepted temporary exception until HD-02 unfreeze. **Not** in WP-SYS-01 scope.
+
+### R3 — D-G03-FORM → Option A ✅
+
+Employee personal-request dormitory selection is assignment-scoped via `listAssignedSites*` (OQ-REQ-03 / Q-EMP-DORM Option B). Free-site listing rejected. Implementation owner = **WP-REQ-04** only. **No WP-FORM-01** shall be created.
+
+### R4 — ENTRYPOINT-RULE + WP-CHECKIN-01 ✅
+
+HTTP/Livewire Presentation must inject Application Actions/Services. Injecting repository contracts directly into Presentation is prohibited. **WP-CHECKIN-01** was mandatory until `CheckInFlowController` routed through an Application Action. **CLOSED (1405/04/29 \| 2026-07-20):** Presentation injects `GetOpenCheckInByAllocationAction` only; suite 1930 passed / 0 failed.
+
+### R5 — POLICY-AUTH-BOUNDARY → Accepted Tension ✅
+
+Cross-module Identity Eloquent typing in Gate Policies is advisory / accepted tension. Current `Authenticatable` + Domain port pattern satisfies the architecture decision. No code WP. Reopen only on proven harm (ForbiddenImportsScan failure or runtime Gate failure).
+
+### R6 — Register Sync (Docs-only) ✅
+
+- **(a)** DG-SETTINGS-01: WP-DEBT-04 CREATE = DELIVERED. Remaining = SettingsReadContract / WP-SYS-01. GAP-PREUI-14 = CLOSED.
+- **(b)** DEC-ARCH-POLICY-01 / WP-DEBT-05 = IMPLEMENTED. GAP-PREUI-15 / WP-DEBT-05-STATUS-SYNC = docs-only close. No re-implementation.
+
+### Post-ruling execution sequence
+
+1. DG-SETTINGS-01-REGISTER-SYNC + WP-DEBT-05-STATUS-SYNC — Docs (**this recording**)
+2. WP-CHECKIN-01 — Code
+3. WP-SYS-01 — Code
+4. WP-DORM-UI-READ — Code
+5. WP-REQ-04 (form sites) — Code
+
+### Hard-Stop Conditions (Active)
+
+1. HD-02 Lottery unfreeze requested inside WP-SYS-01 → STOP
+2. Any WP other than WP-REQ-04 touches PersonalRequestFormPage / listSites → STOP
+3. Schema change on settings or assignment tables without new unfreeze → STOP
+4. New Settings Eloquent model contrary to R1 → STOP
+5. Proven Gate/ForbiddenImports failure on Policy principal → REOPEN R5
+6. WP-CHECKIN-01 expands beyond Action extraction → STOP
+
