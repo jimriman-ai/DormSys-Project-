@@ -1,6 +1,6 @@
 # Auth Accessor Allowlist (Wave 1 / HD-W1-Q1 Option B)
 
-**Status:** ACTIVE for Wave 1 · **T3 Guardrail:** PARKED until Lead opens T3  
+**Status:** ACTIVE (Wave 1 complete) · **T3 Guardrail:** DONE (`NoBareAuthCallRule`)  
 **Marker:** `WAVE1-AUTH-ALLOWLIST`
 
 ## Rule (HD-W1-Q1)
