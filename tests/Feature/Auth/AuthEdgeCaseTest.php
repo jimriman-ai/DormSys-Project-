@@ -9,12 +9,12 @@ use App\Domain\Auth\Data\AuthCredentialsData;
 use App\Models\User;
 
 it('keeps guest state when logout is invoked while already guest', function (): void {
-    expect(auth()->check())->toBeFalse()
+    expect(auth('web')->check())->toBeFalse()
         ->and(app(GetCurrentAuthUserAction::class)->execute())->toBeNull();
 
     app(LogoutUserAction::class)->execute();
 
-    expect(auth()->check())->toBeFalse()
+    expect(auth('web')->check())->toBeFalse()
         ->and(app(GetCurrentAuthUserAction::class)->execute())->toBeNull();
 });
 
@@ -25,7 +25,7 @@ it('remains deterministic after repeated logout while guest', function (): void 
     $logout->execute();
     $logout->execute();
 
-    expect(auth()->check())->toBeFalse()
+    expect(auth('web')->check())->toBeFalse()
         ->and(app(GetCurrentAuthUserAction::class)->execute())->toBeNull();
 });
 
@@ -45,7 +45,7 @@ it('remains deterministic after repeated logout following login', function (): v
     $logout->execute();
     $logout->execute();
 
-    expect(auth()->check())->toBeFalse()
+    expect(auth('web')->check())->toBeFalse()
         ->and(app(GetCurrentAuthUserAction::class)->execute())->toBeNull();
 });
 
@@ -67,7 +67,7 @@ it('preserves guest state across repeated failed login attempts', function (): v
         expect($result->success)->toBeFalse()
             ->and($result->failureReason)->toBe('invalid_credentials')
             ->and($result->user)->toBeNull()
-            ->and(auth()->check())->toBeFalse()
+            ->and(auth('web')->check())->toBeFalse()
             ->and($currentUser->execute())->toBeNull();
     }
 });
@@ -78,7 +78,7 @@ it('completes guest to authenticated to guest transition deterministically', fun
         'password' => 'secret-password',
     ]);
 
-    expect(auth()->check())->toBeFalse()
+    expect(auth('web')->check())->toBeFalse()
         ->and(app(GetCurrentAuthUserAction::class)->execute())->toBeNull();
 
     $loginResult = app(LoginUserAction::class)->execute(new AuthCredentialsData(
@@ -87,7 +87,7 @@ it('completes guest to authenticated to guest transition deterministically', fun
     ));
 
     expect($loginResult->success)->toBeTrue()
-        ->and(auth()->check())->toBeTrue();
+        ->and(auth('web')->check())->toBeTrue();
 
     $current = app(GetCurrentAuthUserAction::class)->execute();
 
@@ -97,7 +97,7 @@ it('completes guest to authenticated to guest transition deterministically', fun
 
     app(LogoutUserAction::class)->execute();
 
-    expect(auth()->check())->toBeFalse()
+    expect(auth('web')->check())->toBeFalse()
         ->and(app(GetCurrentAuthUserAction::class)->execute())->toBeNull();
 });
 
@@ -163,6 +163,6 @@ it('does not leak stale identity across repeated auth transitions', function ():
 
     $logout->execute();
 
-    expect(auth()->check())->toBeFalse()
+    expect(auth('web')->check())->toBeFalse()
         ->and($currentUser->execute())->toBeNull();
 });

@@ -28,7 +28,7 @@ it('authenticates a user with valid credentials', function (): void {
         ->and($result->user)->not->toBeNull()
         ->and($result->user?->id)->toBe($user->id)
         ->and($result->user?->identifier)->toBe('auth-test@example.com')
-        ->and(auth()->check())->toBeTrue();
+        ->and(auth('web')->check())->toBeTrue();
 });
 
 it('fails login with invalid credentials', function (): void {
@@ -58,6 +58,6 @@ it('does not authenticate the user when login fails', function (): void {
         password: 'wrong-password',
     ));
 
-    expect(auth()->check())->toBeFalse()
+    expect(auth('web')->check())->toBeFalse()
         ->and(app(GetCurrentAuthUserAction::class)->execute())->toBeNull();
 });

@@ -28,7 +28,7 @@ it('establishes session auth and resolvable current user after successful login'
 
     expect($result->success)->toBeTrue()
         ->and($result->failureReason)->toBeNull()
-        ->and(auth()->check())->toBeTrue()
+        ->and(auth('web')->check())->toBeTrue()
         ->and($current)->not->toBeNull()
         ->and($current?->id)->toBe($user->id)
         ->and($current?->identifier)->toBe('regression-login@example.com');
@@ -48,7 +48,7 @@ it('keeps guest state and returns invalid credential failure reason after failed
     expect($result->success)->toBeFalse()
         ->and($result->failureReason)->toBe('invalid_credentials')
         ->and($result->user)->toBeNull()
-        ->and(auth()->check())->toBeFalse()
+        ->and(auth('web')->check())->toBeFalse()
         ->and(app(GetCurrentAuthUserAction::class)->execute())->toBeNull();
 });
 
@@ -65,6 +65,6 @@ it('clears auth state and current user resolution after logout following login',
 
     app(LogoutUserAction::class)->execute();
 
-    expect(auth()->check())->toBeFalse()
+    expect(auth('web')->check())->toBeFalse()
         ->and(app(GetCurrentAuthUserAction::class)->execute())->toBeNull();
 });

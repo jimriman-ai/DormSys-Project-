@@ -19,7 +19,7 @@ it('clears current auth state', function (): void {
 
     app(LogoutUserAction::class)->execute();
 
-    expect(auth()->check())->toBeFalse()
+    expect(auth('web')->check())->toBeFalse()
         ->and(app(GetCurrentAuthUserAction::class)->execute())->toBeNull();
 });
 
@@ -36,7 +36,7 @@ it('clears auth state after login without removing the user record', function ()
 
     app(LogoutUserAction::class)->execute();
 
-    expect(auth()->check())->toBeFalse()
+    expect(auth('web')->check())->toBeFalse()
         ->and(app(GetCurrentAuthUserAction::class)->execute())->toBeNull()
         ->and(User::query()->find($user->id))->not->toBeNull();
 });

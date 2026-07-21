@@ -45,7 +45,7 @@ function evaluateAuthReleaseGate(): string
         || $loginResult->user === null
         || $loginResult->user->id !== $user->id
         || $loginResult->user->identifier !== 'release-gate@example.com'
-        || ! auth()->check()) {
+        || ! auth('web')->check()) {
         return 'UNSTABLE';
     }
 
@@ -79,7 +79,7 @@ function verifyLogoutClearsAuthenticatedSession(): bool
 {
     app(LogoutUserAction::class)->execute();
 
-    if (auth()->check()) {
+    if (auth('web')->check()) {
         return false;
     }
 

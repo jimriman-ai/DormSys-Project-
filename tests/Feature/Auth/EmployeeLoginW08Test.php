@@ -159,7 +159,7 @@ it('W08-C-02 Establish fail clears default web auth and does not redirect to suc
         ->assertNoRedirect()
         ->assertSet('password', '');
 
-    expect(auth()->check())->toBeFalse()
+    expect(auth('web')->check())->toBeFalse()
         ->and(auth('api')->check())->toBeFalse()
         ->and(auth('identity')->check())->toBeFalse();
 });
@@ -175,5 +175,5 @@ it('W08-C-03 LoginUserAction failure never binds api or identity (C-5 adjacency)
 
     expect(auth('api')->check())->toBeFalse()
         ->and(auth('identity')->check())->toBeFalse()
-        ->and(auth()->check())->toBeFalse();
+        ->and(auth('web')->check())->toBeFalse();
 });

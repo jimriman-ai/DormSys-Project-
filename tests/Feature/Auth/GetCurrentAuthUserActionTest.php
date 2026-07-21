@@ -23,5 +23,5 @@ it('returns auth user data when authenticated', function (): void {
 
 it('returns null for guest', function (): void {
     expect(app(GetCurrentAuthUserAction::class)->execute())->toBeNull()
-        ->and(auth()->check())->toBeFalse();
+        ->and(auth('web')->check())->toBeFalse();
 });
