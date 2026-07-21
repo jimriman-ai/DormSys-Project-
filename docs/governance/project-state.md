@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only. Not a decision ledger. Does not supersede `docs/governance/open-decisions.md`.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/30 | 2026-07-21 | Session: B2a RequestReadContractTest VERIFIED 6 passed — uncommitted_
+_Last updated: 1405/04/30 | 2026-07-21 | Session: T3 G-REQ-01 delivered — 22 passed, uncommitted_
 
-**Authority note:** OBSERVED. Cluster B2a test-only Stage-1 bind applied; **6 passed**. Awaiting Lead commit order.
+**Authority note:** OBSERVED. G-REQ-01 `RequestTransitionGuardTest` added (test-only). **22 passed**. Awaiting Lead for commit / next guardrail (G-REQ-02).
 
 ---
 
@@ -13,14 +13,14 @@ _Last updated: 1405/04/30 | 2026-07-21 | Session: B2a RequestReadContractTest VE
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| Fix | `RequestReadContractTest.php` | Stage-1 bind + forgetInstance Assign/Create | tests/ only |
-| Verify | RequestReadContractTest | **6 passed** (was FAIL in snapshot) | compose exec |
+| G-REQ-01 | `RequestTransitionGuardTest.php` | created — illegal OA-05-03 matrix | tests/ only |
+| Verify | G-REQ-01 | **22 passed** (44 assertions) | compose exec |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🔀 **Lifecycle** — B2a **VERIFIED**; pending Lead commit then next triage cluster
+🔀 **Lifecycle** — T3 Guardrails: **G-REQ-01 done**; next **G-REQ-02** on Lead order
 
 ---
 
@@ -28,7 +28,7 @@ _Last updated: 1405/04/30 | 2026-07-21 | Session: B2a RequestReadContractTest VE
 
 | ID | Summary |
 |----|---------|
-| Commit B2a | Lead order for commit message |
+| T3 next | G-REQ-02 / commit G-REQ-01 |
 | HD-02/HD-03/DBT-3 | Frozen |
 
 Canonical: `docs/governance/open-decisions.md`
@@ -39,20 +39,21 @@ Canonical: `docs/governance/open-decisions.md`
 
 | Item | Status |
 |------|--------|
-| T2-4 FilterTest | ✅ COMPLETED (`f8cec6b`) |
-| B2a RequestReadContractTest | ✅ **VERIFIED** (uncommitted) |
+| T2 | ✅ COMPLETE |
+| T3 G-REQ-01 | ✅ VERIFIED (uncommitted) |
+| T3 remaining | G-REQ-02… G-MUT-01 pending |
 
 ---
 
 ## 7. Next Step
 
-**Action:** Lead commit B2a; then next non-frozen triage cluster.  
+**Action:** Lead commit G-REQ-01 or proceed G-REQ-02.  
 **Owner:** Lead → Agent  
-**Gate:** Lead commit approval  
-**Done when:** committed  
+**Gate:** Lead order  
+**Done when:** G-REQ-01 committed / G-REQ-02 scoped  
 **Blocker:** none  
 **Suggested user prompt:**
-> Commit B2a RequestReadContractTest then continue T2 triage
+> Commit G-REQ-01 then implement G-REQ-02
 
 ---
 
@@ -60,4 +61,4 @@ Canonical: `docs/governance/open-decisions.md`
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| B2a RequestReadContract Stage-1 | VERIFIED | bind + forgetInstance; 6 passed |
+| G-REQ-01 | VERIFIED | 22 illegal edges → InvalidRequestTransitionException |
