@@ -3,6 +3,9 @@ includes:
     - vendor/pestphp/pest/phpstan-pest-extension.neon
     - vendor/mrpunyapal/peststan/extension.neon
 
+rules:
+    - App\Rules\PHPStan\NoBareAuthCallRule
+
 parameters:
     paths:
         - app

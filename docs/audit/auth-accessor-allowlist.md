@@ -27,7 +27,7 @@ Forbidden everywhere else: `Auth::user()`, `Auth::guard(...)`, bare `auth()`, `$
 ## T2 / T3 dependency
 
 - **T2:** DONE — bare `auth()` in `tests/Feature/Auth/**` replaced with `auth('web')` (Auth Foundation session; matches T1 allowlist guard).
-- **T3:** Arch/static guardrail must load this allowlist (or the `WAVE1-AUTH-ALLOWLIST` comments) before failing on matches.
+- **T3:** DONE — PHPStan rule `App\Rules\PHPStan\NoBareAuthCallRule` registered in `phpstan.neon`. Allowlist = SessionAuthenticator + SessionAuthUserResolver only.
 
 ## Sunset
 
