@@ -21,7 +21,7 @@ use Livewire\Component;
 #[Title('جزئیات خوابگاه')]
 final class DormitoryShowPage extends Component
 {
-    public DormitoryDetailData $dormitory;
+    private DormitoryDetailData $detail;
 
     public function mount(
         string $dormitory,
@@ -36,11 +36,13 @@ final class DormitoryShowPage extends Component
             abort(403);
         }
 
-        $this->dormitory = $detail;
+        $this->detail = $detail;
     }
 
     public function render(): View
     {
-        return view('livewire.dormitory.dormitory-show-page');
+        return view('livewire.dormitory.dormitory-show-page', [
+            'dormitory' => $this->detail,
+        ]);
     }
 }
