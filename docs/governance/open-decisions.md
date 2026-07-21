@@ -63,7 +63,7 @@
 | DEC-ARCH-POLICY-01 | Framework Policy placement (Laravel Gate / Eloquent) | DDD Boundary / Adapter | Option A (DECIDED): `Infrastructure/Policies/` | Lead | Freeze v1.0 / WP-DEBT-05 | IMPLEMENTED | WP-DEBT-05 CLOSED/ACCEPTED. GAP-PREUI-15 CLOSED (docs). Evidence: DELIVERY CONFIRMATION; 1928 passed. |
 | D-SETTINGS-CONTRACT | System settings Application read seam | Cross-cutting / System | A) Eloquent model B) QB/DB contract C) keep per-module readers | Lead | Pre-UI Decision Sweep | **IMPLEMENTED** | SIGNED-OFF Option B. WP-SYS-01 DELIVERED: SettingsReadContract + QueryBuilderSettingsReader; Request/Audit/Notification migrated. Lottery exception unchanged (R2). Suite: 1932 passed. |
 | D-SETTINGS-LOTTERY-X | LotteryScoringConfigReader direct DB::table under HD-02 freeze | Lottery / Settings | Accept temporary exception until HD-02 unfreeze | Lead | Pre-UI Decision Sweep | **ACCEPTED EXCEPTION** | R2 SIGNED-OFF. Not in WP-SYS-01 scope. |
-| D-G03-FORM | PersonalRequestFormPage vs assignment-based access | Requests / Authz | A) assignment-scoped B) free-site exception C) defer+temp note | Lead | Pre-UI Decision Sweep | **DECIDED — A** | SIGNED-OFF 1405/04/29. Owner = WP-REQ-04 only. No WP-FORM-01. Free-site rejected. |
+| D-G03-FORM / GAP-PREUI-03 | PersonalRequestFormPage vs assignment-based access | Requests / Authz | A) assignment-scoped B) free-site exception C) defer+temp note | Lead | Pre-UI Decision Sweep | **CLOSED** | Rule DECIDED—A retained. **WP-REQ-04 CLOSED** 1405/04/30 \| 2026-07-21: `listAssignedSitesForUser` + form select assignment-scoped. Commit `730c057`. No WP-FORM-01. |
 | D-ENTRYPOINT-RULE | Presentation may inject repository contracts? | Architecture / Presentation | Actions/Services only (vs thin repo injection) | Lead | Pre-UI Decision Sweep | **DECIDED** | R4 SIGNED-OFF. Presentation → Application Actions/Services only. WP-CHECKIN-01 **CLOSED** (Action wire delivered). |
 | D-POLICY-AUTH-BOUNDARY | Gate Policy Identity Eloquent / UserModel typing | DDD / Auth | Blocker vs advisory vs accepted tension | Lead | Pre-UI Decision Sweep | **ACCEPTED TENSION** | R5 SIGNED-OFF. Authenticatable + Domain port OK. No code WP. Reopen on proven harm. |
 | GAP-PREUI-06 | Intra-module Eloquent relations (repo-driven modules) | Architecture / Mapping | A) mandate ORM relations B) accept repo-driven absence | Lead | Residual Gap Phase 1 | **ACCEPTED TENSION** | Soft policy: absent Eloquent relations on intra-module FKs OK when repository-owned. Not an active code defect. |
@@ -679,6 +679,7 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| 2026-07-21 | **WP-REQ-04 CLOSED / GAP-PREUI-03 CLOSED:** Assignment-scoped personal-request dormitory select delivered (`listAssignedSitesForUser` + PersonalRequestFormPage mount). Evidence commit `730c057`. Rule D-G03-FORM Option A retained. No WP-FORM-01. Ledger sync this recording. | Agent (Lead closeout) |
 | 2026-07-21 | **Residual Gap Phase 1 (REGISTER-ONLY):** Named durable entries GAP-PREUI-06 (ACCEPTED TENSION), GAP-PREUI-07 (ACCEPTED TENSION — soft UUID), GAP-PREUI-17 (REGISTER-ONLY). Snapshot: PREUI-03→WP-REQ-04 single blocker; OQ-DORM-04→WP-DORM-04 not authorized; Lottery-X frozen. Overcount: contract/UI under PREUI-03 not separate roots. Docs-only; no code. | Agent (Lead Phase 1 auth) |
 | 2026-07-20 | **Lead Ruling Pack SIGNED-OFF (R1–R6):** D-SETTINGS-CONTRACT=B; Lottery settings exception (HD-02); D-G03-FORM=A (WP-REQ-04 only, no WP-FORM-01); ENTRYPOINT-RULE + WP-CHECKIN-01 mandatory; POLICY-AUTH-BOUNDARY=Accepted Tension; R6 register sync — GAP-PREUI-14/15 CLOSED. | Lead |
 | 2026-07-20 | **WP-SYS-01 CLOSED:** SettingsReadContract + QueryBuilderSettingsReader bound in SystemServiceProvider; Request/Audit/Notification readers migrated; Lottery untouched. Suite: 1932 passed / 0 failed. PHPStan scoped paths: OK. | Agent (Mandate CHAIN-5) |
@@ -819,23 +820,24 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 
 ---
 
-## D-G03-FORM — بدهی حاکمیتی: تناقض PersonalRequestFormPage با مدل انتساب‌محور
+## D-G03-FORM / GAP-PREUI-03 — بدهی حاکمیتی: تناقض PersonalRequestFormPage با مدل انتساب‌محور
 
-- **Status:** **DECIDED — A** (rule); implementation OPEN under WP-REQ-04
-- **Selected Option:** A — assignment-scoped sites via `listAssignedSites*` (OQ-REQ-03 / Q-EMP-DORM Option B)
-- **Signed-Off:** 1405/04/29 \| 2026-07-20 — Lead Ruling Pack R3
-- **Topic:** assigned-sites form incomplete state
-- **Dependency:** WP-REQ-04 (sole owner)
-- **Forbidden:** No WP-FORM-01. Free-site listing rejected. No WP other than WP-REQ-04 may change PersonalRequestFormPage / `DormitoryReadContract` list surface.
-- **Block:** none until WP-REQ-04 (implementation)
-- **Context:** فرم «ثبت درخواست شخصی» (`/requests/personal/create`)
-  فهرست خوابگاه‌ها را از `DormitoryReadContract::listSites()` می‌گیرد که
-  با تصمیم Q-EMP-DORM (دسترسی صرفاً بر اساس انتساب فعال) در تناقض است.
-  در وضعیت فعلی select خالی رندر می‌شود (`"sites": []`).
-- **Blocked artifact:** PersonalRequestFormPage و
-  DormitoryReadContract::listSites()
-- **Resolution path:** WP-REQ-04 (assigned-sites / OQ-REQ-03 contract). Prior suggestion WP-DASH-G04 superseded for sequencing by Requests L1 plan.
-- **WP-DORM-UI-READ:** independent — may proceed without waiting on form remediation.
+- **Status:** **CLOSED** (1405/04/30 \| 2026-07-21) — rule remains **DECIDED — A**; implementation **DELIVERED** under WP-REQ-04
+- **Selected Option:** A — assignment-scoped sites via `listAssignedSitesForUser` (OQ-REQ-03 / Q-EMP-DORM Option B)
+- **Signed-Off (rule):** 1405/04/29 \| 2026-07-20 — Lead Ruling Pack R3
+- **Closed (implementation):** 1405/04/30 \| 2026-07-21 — Lead closeout after WP-REQ-04 ACCEPTED
+- **Topic:** assigned-sites form incomplete state → **resolved**
+- **Dependency:** WP-REQ-04 (sole owner) → **CLOSED**
+- **Forbidden (retained):** No WP-FORM-01. Free-site listing for employee personal form remains rejected.
+- **Block:** none
+- **Delivery evidence:**
+  - `DormitoryReadContract::listAssignedSitesForUser(string $identityUserId): list<DormitorySiteSummaryDTO>`
+  - `DormitoryReadBridge` → `ListEmployeeAssignedDormitoriesAction`
+  - `PersonalRequestFormPage` mounts options via contract + `auth('identity')->user()->getAuthIdentifier()`
+  - Tests: `tests/Feature/Modules/Request/DormitoryReadIntegrationTest.php` (assigned / revoked / unassigned + listSites/siteExists regression)
+  - Code commit: `730c057` (`WP-REQ-04`)
+- **Resolution path:** COMPLETE — WP-REQ-04
+- **WP-DORM-UI-READ:** independent (unaffected)
 
 ## Phase 1 — Gap Decomposition: Final Dispositions
 
@@ -1022,13 +1024,14 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 - **Status:** OPEN — DEFERRED to WP-REQ-07
 - **Block:** none until route consolidation
 
-### D-G03-FORM
+### D-G03-FORM / GAP-PREUI-03
 
 - **Topic:** assigned-sites form incomplete state
-- **Status:** **DECIDED — A** (rule); implementation OPEN under WP-REQ-04
-- **Signed-Off:** 1405/04/29 \| Lead Ruling Pack R3
-- **Dependency:** WP-REQ-04 (sole owner; no WP-FORM-01)
-- **Block:** none (resolution owned by WP-REQ-04)
+- **Status:** **CLOSED** — rule DECIDED—A; impl DELIVERED under WP-REQ-04 (1405/04/30 \| 2026-07-21)
+- **Signed-Off (rule):** 1405/04/29 \| Lead Ruling Pack R3
+- **Dependency:** WP-REQ-04 → **CLOSED**
+- **Block:** none
+- **Evidence:** commit `730c057`; `listAssignedSitesForUser` + PersonalRequestFormPage
 
 ---
 
@@ -1039,7 +1042,7 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 | OQ-ALLOC-02 | Domain Models/ vs Entities/ naming debt | Option C accepted as debt; track-only; rename deferred to post-Phase 2 / before Phase 3 | 1405/04/29 \| 2026-07-20 |
 | OQ-REQ-11 | Stage-1 snapshot scope | OPEN — domain decision pending; Block: none | 1405/04/29 \| 2026-07-20 |
 | OQ-REQ-12 | Auth middleware standardization | OPEN — DEFERRED to WP-REQ-07; Block: none until route consolidation | 1405/04/29 \| 2026-07-20 |
-| D-G03-FORM | assigned-sites form incomplete | **DECIDED — A**; impl OPEN under WP-REQ-04 only; no WP-FORM-01; **GAP-PREUI-03** root (contract/UI symptoms not separate) | 1405/04/29 \| 2026-07-20 |
+| D-G03-FORM / GAP-PREUI-03 | assigned-sites form | **CLOSED** — WP-REQ-04 DELIVERED (`730c057`); rule A retained | 1405/04/30 \| 2026-07-21 |
 | GAP-PREUI-06 | Intra-module Eloquent relations | **ACCEPTED TENSION** — repo-driven absence OK; see named entry | 1405/04/30 \| 2026-07-21 |
 | GAP-PREUI-07 | Voucher soft UUID (no intra FK) | **ACCEPTED TENSION** — soft UUID by design; see named entry | 1405/04/30 \| 2026-07-21 |
 | GAP-PREUI-17 | Spatie phpstan Domain→Model | **REGISTER-ONLY** — analysis debt; see named entry | 1405/04/30 \| 2026-07-21 |
@@ -1078,6 +1081,25 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 
 - DEC-ARCH-POLICY-01 / WP-DEBT-05 = IMPLEMENTED. No re-implementation.
 - Authority: Lead Ruling Pack R6b — SIGNED-OFF 1405/04/29.
+
+### WP-REQ-04 — CLOSED (1405/04/30 \| 2026-07-21)
+
+- **Scope:** GAP-PREUI-03 / D-G03-FORM Option A — assignment-scoped dormitory sites on employee personal request form.
+- **Delivered:**
+  - Additive `DormitoryReadContract::listAssignedSitesForUser`
+  - `DormitoryReadBridge` → `ListEmployeeAssignedDormitoriesAction` (maps `DormitorySummaryData` → `DormitorySiteSummaryDTO`)
+  - `NullDormitoryReadAdapter` returns `[]`
+  - `PersonalRequestFormPage` populates select via contract + `auth('identity')->user()->getAuthIdentifier()`
+- **Preserved:** `listSites()` / `siteExists()` semantics unchanged; no schema/migration; no provider binding change.
+- **Validation (session):** Sail `DormitoryReadIntegration` 7 passed; `RequestUiFlow` 8 passed; scoped PHPStan 0 errors.
+- **Evidence commit:** `730c057` (`WP-REQ-04`).
+- **GAP-PREUI-03:** CLOSED (this closeout).
+
+### GAP-PREUI-03 — CLOSED (1405/04/30 \| 2026-07-21)
+
+- Root Pre-UI product blocker for assignment-scoped personal-request dormitory select.
+- Closed by **WP-REQ-04** delivery. Rule D-G03-FORM Option A remains the governing decision.
+- Do not resurrect as active execution defect unless Lead overturns Option A or a regression is proven.
 
 ### GAP-PREUI-06 — ACCEPTED TENSION (registered 1405/04/30 \| 2026-07-21)
 
@@ -1121,7 +1143,7 @@ Confirmed Lead classifications (no code this phase):
 
 | ID | Classification | Notes |
 |----|----------------|-------|
-| GAP-PREUI-03 / D-G03-FORM | EXECUTION-ONLY | **Single active form blocker**; owner **WP-REQ-04**. Contract missing `listAssignedSites*` and empty `<select>` are **derived symptoms — not separate register roots**. |
+| GAP-PREUI-03 / D-G03-FORM | **CLOSED** (was EXECUTION-ONLY) | **WP-REQ-04 CLOSED** — `listAssignedSitesForUser` + form select delivered (`730c057`). Symptoms not separate roots. |
 | OQ-DORM-04 | EXECUTION-ONLY | **WP-DORM-04** sequential; **not authorized now** (migration later; STOP-3 when authorized). |
 | D-SETTINGS-LOTTERY-X | FROZEN / DEFERRED | Under **HD-02**; already registered above. |
 | GAP-PREUI-06 | ACCEPTED TENSION | Named entry above. |
@@ -1151,6 +1173,8 @@ System owns a read-only `SettingsReadContract` (port). Implementation uses query
 
 Employee personal-request dormitory selection is assignment-scoped via `listAssignedSites*` (OQ-REQ-03 / Q-EMP-DORM Option B). Free-site listing rejected. Implementation owner = **WP-REQ-04** only. **No WP-FORM-01** shall be created.
 
+**Implementation status (1405/04/30 \| 2026-07-21):** **WP-REQ-04 CLOSED** / **GAP-PREUI-03 CLOSED** — evidence commit `730c057`.
+
 ### R4 — ENTRYPOINT-RULE + WP-CHECKIN-01 ✅
 
 HTTP/Livewire Presentation must inject Application Actions/Services. Injecting repository contracts directly into Presentation is prohibited. **WP-CHECKIN-01** was mandatory until `CheckInFlowController` routed through an Application Action. **CLOSED (1405/04/29 \| 2026-07-20):** Presentation injects `GetOpenCheckInByAllocationAction` only; suite 1930 passed / 0 failed.
@@ -1170,12 +1194,12 @@ Cross-module Identity Eloquent typing in Gate Policies is advisory / accepted te
 2. WP-CHECKIN-01 — Code — **CLOSED** (Mandate CHAIN-2; suite 1930 passed)
 3. WP-SYS-01 — Code — **CLOSED** (Mandate CHAIN-5; suite 1932 passed)
 4. WP-DORM-UI-READ — Code
-5. WP-REQ-04 (form sites) — Code
+5. WP-REQ-04 (form sites) — Code — **CLOSED** (1405/04/30 \| 2026-07-21; evidence `730c057`; GAP-PREUI-03 CLOSED)
 
 ### Hard-Stop Conditions (Active)
 
 1. HD-02 Lottery unfreeze requested inside WP-SYS-01 → STOP
-2. Any WP other than WP-REQ-04 touches PersonalRequestFormPage / listSites → STOP
+2. ~~Any WP other than WP-REQ-04 touches PersonalRequestFormPage / listSites → STOP~~ **SUPERSEDED** — WP-REQ-04 CLOSED; further PersonalRequestFormPage / assigned-sites surface changes require a **new** authorized WP
 3. Schema change on settings or assignment tables without new unfreeze → STOP
 4. New Settings Eloquent model contrary to R1 → STOP
 5. Proven Gate/ForbiddenImports failure on Policy principal → REOPEN R5
