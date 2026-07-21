@@ -12,6 +12,7 @@ use App\Modules\Request\Domain\States\CancelledState;
 use App\Modules\Request\Domain\States\DraftState;
 use App\Modules\Request\Domain\States\PendingDepartmentManagerState;
 use App\Modules\Request\Domain\States\RejectedState;
+use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Routing\Router;
@@ -23,6 +24,8 @@ beforeEach(function (): void {
     Carbon::setTestNow('2026-06-23 12:00:00');
     app(MutationPrincipalContextHolder::class)->clear();
     request()->attributes->remove('audit_principal_user_id');
+    // Capture Stage-1 fixture identity (Pest binds too but discards return).
+    $this->stage1IdentityId = bindStage1ApproverIdentityFixtureForTests();
 });
 
 afterEach(function (): void {
@@ -207,10 +210,21 @@ describe('replay and duplicate safety', function (): void {
         $request = asRequestOwner($owner['employee'], fn () => app(SubmitRequestAction::class)->execute($draft->requireId()));
 
         for ($index = 0; $index < 4; $index++) {
-            $request = asMutationApprover(fn ($approverId) => app(ApproveRequestStageAction::class)->execute(
-                $request->requireId(),
-                $approverId,
-            ));
+            if ($index === 0) {
+                // Stage-1 must be the fixture identity stored on the workflow instance.
+                $request = asRequestMutationPrincipal(
+                    $this->stage1IdentityId,
+                    fn () => app(ApproveRequestStageAction::class)->execute(
+                        $request->requireId(),
+                        ApproverReferenceId::fromString($this->stage1IdentityId),
+                    ),
+                );
+            } else {
+                $request = asMutationApprover(fn ($approverId) => app(ApproveRequestStageAction::class)->execute(
+                    $request->requireId(),
+                    $approverId,
+                ));
+            }
         }
 
         expect($request->status)->toBe(ApprovedState::$name);
@@ -228,7 +242,6 @@ describe('replay and duplicate safety', function (): void {
 
     it('fails safely on repeated reject after the first valid transition', function (): void {
         $owner = createRequestHttpMutationEmployee();
-        $approver = createMutationApprover();
         $draft = createDraftPersonalRequestForHttp($owner['employee']);
 
         authenticateRequestHttpMutationUser($owner['identity']);
@@ -237,7 +250,7 @@ describe('replay and duplicate safety', function (): void {
             ->json('data');
 
         authenticateRequestHttpMutationUser(
-            UserModel::query()->findOrFail($approver['principalId']),
+            UserModel::query()->findOrFail($this->stage1IdentityId),
         );
 
         $this->postJson(requestHttpMutationUrl($submitted['id'], 'reject'), [

@@ -53,17 +53,18 @@ Command: `--filter="InvalidRequestTransition|RequestHttpMutationHardening|Reques
 | Root cause | Test ctor omitted `startApprovalWorkflow` after WF activation |
 | Fix | Test-only: construct `new StartRequestApprovalWorkflowAction(mock repo)` |
 | Production | **unchanged** |
-| Result | `3 passed` || **T2-2** | Architecture (adapter location) | Move `RequestLifecycleCommandAdapter` → `app/Integrations/…` **or** add path to `architectureLegacyCrossModuleAdapterPaths()` with Lead note that W3-B left it under Allocation | Medium — W3-B fallout; prefer move to Integrations |
-| **T2-3** | Request transition | Triage root cause per failing file; likely WF cutover / dual path — **may collide W3-WP-WF-04-RISK** | High — confirm narrowly |
+| Result | `3 passed` |
 
 ---
 
-## STOP — await Lead
+## T2-4 execution (2026-07-21) — Stage1ApproverConsoleFilterTest
 
-```
-T2 GATE
-First cluster to remediate: <T2-1 | T2-2 | T2-3 | other>
-Confirm scope before any write.
-```
-
-**Recommended:** **T2-1** (Unit Request / `SubmitDateValidationTest`) — smallest blast radius, clear root cause, no frozen scope.
+| Field | Value |
+|-------|--------|
+| Status | **APPLIED-UNVERIFIED** (Lead APPROVE; no commit) |
+| Root cause | Second manager from bare `createSubmitted…()` + Assign/Create singletons stuck on prior contract |
+| Fix | Test-only: pass `$approver`; `forgetInstance` Assign + Create in console bind helper |
+| Production | **unchanged** |
+| Verify | **BLOCKED** — Docker Desktop API 500 |
+| Handoff | `docs/audit/t2-4-stage1-filter-handoff.md` |
+| Next | **SUSPEND** — no further T2 cluster until Lead order |

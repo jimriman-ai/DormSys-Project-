@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only. Not a decision ledger. Does not supersede `docs/governance/open-decisions.md`.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/30 | 2026-07-21 | Session: T2-2 first fix — RequestHttpFlowCompletionTest_
+_Last updated: 1405/04/30 | 2026-07-21 | Session: B2a RequestReadContractTest VERIFIED 6 passed — uncommitted_
 
-**Authority note:** OBSERVED. T2-2 Request Feature: listed 9 fails; fixed first non-Lottery file (Stage-1 actor in HTTP e2e). Test-only.
+**Authority note:** OBSERVED. Cluster B2a test-only Stage-1 bind applied; **6 passed**. Awaiting Lead commit order.
 
 ---
 
@@ -13,16 +13,14 @@ _Last updated: 1405/04/30 | 2026-07-21 | Session: T2-2 first fix — RequestHttp
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| Inventory | `tests/Feature/Modules/Request` | 9 failed / 131 passed | suite run |
-| Skip | `LotteryRegistrationRequestTest` | frozen HD-02 | constraint |
-| First fix | `RequestHttpFlowCompletionTest` | Stage-1 assigned actor for first approve | test-only |
-| Production | — | unchanged | — |
+| Fix | `RequestReadContractTest.php` | Stage-1 bind + forgetInstance Assign/Create | tests/ only |
+| Verify | RequestReadContractTest | **6 passed** (was FAIL in snapshot) | compose exec |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🔀 **Lifecycle** — T2-2 Request Feature · first file done; await Lead for next file
+🔀 **Lifecycle** — B2a **VERIFIED**; pending Lead commit then next triage cluster
 
 ---
 
@@ -30,9 +28,8 @@ _Last updated: 1405/04/30 | 2026-07-21 | Session: T2-2 first fix — RequestHttp
 
 | ID | Summary |
 |----|---------|
-| T2-1 | DONE (uncommitted SubmitDateValidationTest) |
-| T2-2 remaining | RequestHttpMutation*, Hardening, Stage1 console, Lottery skip |
-| HD-02 | LotteryRegistrationRequestTest skipped |
+| Commit B2a | Lead order for commit message |
+| HD-02/HD-03/DBT-3 | Frozen |
 
 Canonical: `docs/governance/open-decisions.md`
 
@@ -42,22 +39,20 @@ Canonical: `docs/governance/open-decisions.md`
 
 | Item | Status |
 |------|--------|
-| T2-1 | ✅ DONE (uncommitted) |
-| T2-2 RequestHttpFlowCompletionTest | ✅ DONE (uncommitted) |
-| T2-2 other Request Feature fails | ⏳ remaining |
+| T2-4 FilterTest | ✅ COMPLETED (`f8cec6b`) |
+| B2a RequestReadContractTest | ✅ **VERIFIED** (uncommitted) |
 
 ---
 
 ## 7. Next Step
 
-**Action:** Lead confirms proceed to next failing file (likely `RequestHttpMutationTest` / Hardening — same Stage-1 pattern).  
-**Owner:** Lead / Agent on continue  
-**Gate:** one-at-a-time  
-**Target files:** next Request Feature fail  
-**Done when:** Lead says continue  
+**Action:** Lead commit B2a; then next non-frozen triage cluster.  
+**Owner:** Lead → Agent  
+**Gate:** Lead commit approval  
+**Done when:** committed  
 **Blocker:** none  
 **Suggested user prompt:**
-> Continue T2-2 — next failing Request Feature test file
+> Commit B2a RequestReadContractTest then continue T2 triage
 
 ---
 
@@ -65,6 +60,4 @@ Canonical: `docs/governance/open-decisions.md`
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| T2-1 | CLOSED pending commit | — |
-| T2-2 FlowCompletion | CLOSED pending commit | Stage-1 auth |
-| Lottery Registration Request test | SKIP | HD-02 |
+| B2a RequestReadContract Stage-1 | VERIFIED | bind + forgetInstance; 6 passed |

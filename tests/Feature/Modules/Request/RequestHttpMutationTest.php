@@ -25,6 +25,8 @@ beforeEach(function (): void {
     Carbon::setTestNow('2026-06-23 12:00:00');
     app(MutationPrincipalContextHolder::class)->clear();
     request()->attributes->remove('audit_principal_user_id');
+    // Capture Stage-1 fixture identity (function returns identity id; Pest also binds but discards return).
+    $this->stage1IdentityId = bindStage1ApproverIdentityFixtureForTests();
 });
 
 afterEach(function (): void {
@@ -156,7 +158,6 @@ describe('happy path', function (): void {
 
     it('allows authenticated valid approver to approve current stage', function (): void {
         $owner = createRequestHttpMutationEmployee();
-        $approver = createMutationApprover();
         $draft = createDraftPersonalRequestForHttp($owner['employee']);
 
         authenticateRequestHttpMutationUser($owner['identity']);
@@ -166,7 +167,7 @@ describe('happy path', function (): void {
             ->json('data');
 
         authenticateRequestHttpMutationUser(
-            UserModel::query()->findOrFail($approver['principalId']),
+            UserModel::query()->findOrFail($this->stage1IdentityId),
         );
 
         $this->postJson(requestHttpMutationUrl($submitted['id'], 'approve'))
@@ -177,7 +178,6 @@ describe('happy path', function (): void {
 
     it('allows authenticated valid approver to reject current stage', function (): void {
         $owner = createRequestHttpMutationEmployee();
-        $approver = createMutationApprover();
         $draft = createDraftPersonalRequestForHttp($owner['employee']);
 
         authenticateRequestHttpMutationUser($owner['identity']);
@@ -187,7 +187,7 @@ describe('happy path', function (): void {
             ->json('data');
 
         authenticateRequestHttpMutationUser(
-            UserModel::query()->findOrFail($approver['principalId']),
+            UserModel::query()->findOrFail($this->stage1IdentityId),
         );
 
         $this->postJson(requestHttpMutationUrl($submitted['id'], 'reject'), [

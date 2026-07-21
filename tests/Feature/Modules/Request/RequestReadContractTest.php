@@ -6,6 +6,7 @@ use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
 use App\Modules\Request\Application\Contracts\RequestReadContract;
 use App\Modules\Request\Application\DTOs\RequestSummaryDTO;
+use App\Modules\Request\Application\Services\AssignStage1ApproverSnapshotAction;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
 use App\Modules\Request\Domain\Entities\Request;
@@ -23,6 +24,10 @@ uses(RefreshDatabase::class);
 
 beforeEach(function (): void {
     Carbon::setTestNow('2026-06-23 12:00:00');
+    // Stage-1 WF snapshot (same as T2-2/T2-3): bind dormitory-manager before create/submit/approve.
+    bindStage1ApproverIdentityFixtureForTests();
+    app()->forgetInstance(AssignStage1ApproverSnapshotAction::class);
+    app()->forgetInstance(CreatePersonalRequestAction::class);
 });
 
 afterEach(function (): void {
