@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Audit\Application\Services;
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
+use App\Modules\System\Application\Contracts\SettingsReadContract;
 
 final class AuditRetentionSettingsReader
 {
@@ -13,16 +12,16 @@ final class AuditRetentionSettingsReader
 
     public const int DEFAULT_RETENTION_MONTHS = 84;
 
+    public function __construct(
+        private readonly SettingsReadContract $settings,
+    ) {}
+
     public function retentionMonths(): int
     {
-        if (Schema::hasTable('settings')) {
-            $value = DB::table('settings')
-                ->where('key', self::SETTINGS_KEY)
-                ->value('value');
+        $value = $this->settings->getValue(self::SETTINGS_KEY);
 
-            if ($value !== null) {
-                return $this->normalizeMonths($value);
-            }
+        if ($value !== null) {
+            return $this->normalizeMonths($value);
         }
 
         return $this->normalizeMonths(config('audit.retention_months', self::DEFAULT_RETENTION_MONTHS));

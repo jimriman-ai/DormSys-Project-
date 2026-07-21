@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Tests\Unit\Modules\Request\Application;
 
 use App\Modules\Request\Application\Services\AutoApprovalSettingsReader;
+use App\Modules\System\Application\Contracts\SettingsReadContract;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use ReflectionMethod;
+use Tests\Support\MockeryTest;
 use Tests\TestCase;
 
 class AutoApprovalSettingsReaderTest extends TestCase
@@ -16,7 +18,8 @@ class AutoApprovalSettingsReaderTest extends TestCase
     #[DataProvider('booleanValueProvider')]
     public function it_normalizes_settings_values_to_boolean(mixed $value, bool $expected): void
     {
-        $reader = new AutoApprovalSettingsReader;
+        $settings = MockeryTest::mock(SettingsReadContract::class);
+        $reader = new AutoApprovalSettingsReader($settings);
         $method = new ReflectionMethod(AutoApprovalSettingsReader::class, 'normalizeBool');
         $method->setAccessible(true);
 

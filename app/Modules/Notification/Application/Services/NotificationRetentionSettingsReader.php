@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Notification\Application\Services;
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
+use App\Modules\System\Application\Contracts\SettingsReadContract;
 
 final class NotificationRetentionSettingsReader
 {
@@ -13,15 +12,13 @@ final class NotificationRetentionSettingsReader
 
     public const int DEFAULT_RETENTION_MONTHS = 24;
 
+    public function __construct(
+        private readonly SettingsReadContract $settings,
+    ) {}
+
     public function retentionMonths(): int
     {
-        if (! Schema::hasTable('settings')) {
-            return self::DEFAULT_RETENTION_MONTHS;
-        }
-
-        $value = DB::table('settings')
-            ->where('key', self::SETTINGS_KEY)
-            ->value('value');
+        $value = $this->settings->getValue(self::SETTINGS_KEY);
 
         if ($value === null) {
             return self::DEFAULT_RETENTION_MONTHS;

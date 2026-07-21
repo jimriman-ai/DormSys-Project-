@@ -5,23 +5,20 @@ declare(strict_types=1);
 namespace App\Modules\Request\Application\Services;
 
 use App\Modules\Request\Domain\Enums\ApprovalStage;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
+use App\Modules\System\Application\Contracts\SettingsReadContract;
 
 /**
- * Reads per-stage auto-approval flags from the settings table (R-09 / AP-08).
+ * Reads per-stage auto-approval flags from System settings (R-09 / AP-08 / WP-SYS-01).
  */
 final class AutoApprovalSettingsReader
 {
+    public function __construct(
+        private readonly SettingsReadContract $settings,
+    ) {}
+
     public function isEnabled(ApprovalStage $stage): bool
     {
-        if (! Schema::hasTable('settings')) {
-            return false;
-        }
-
-        $value = DB::table('settings')
-            ->where('key', $this->keyForStage($stage))
-            ->value('value');
+        $value = $this->settings->getValue($this->keyForStage($stage));
 
         if ($value === null) {
             return false;
