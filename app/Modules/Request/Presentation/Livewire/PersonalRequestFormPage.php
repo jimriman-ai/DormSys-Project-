@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Request\Presentation\Livewire;
 
+use App\Modules\Request\Application\Contracts\DormitoryReadContract;
+use App\Modules\Request\Application\DTOs\DormitorySiteSummaryDTO;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Application\Services\RequestPrincipalEmployeeResolver;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
@@ -28,6 +30,38 @@ final class PersonalRequestFormPage extends Component
     public string $check_out_date = '';
 
     public bool $submitting = false;
+
+    /**
+     * Assignment-scoped dormitory options for the authenticated identity user (WP-REQ-04).
+     *
+     * @var list<array{id: string, code: string, name: string, status: string}>
+     */
+    public array $dormitorySites = [];
+
+    public function mount(DormitoryReadContract $dormitoryRead): void
+    {
+        $user = auth('identity')->user();
+
+        if (! $user instanceof Authenticatable) {
+            abort(401);
+        }
+
+        $identityUserId = (string) $user->getAuthIdentifier();
+
+        if ($identityUserId === '') {
+            abort(401);
+        }
+
+        $this->dormitorySites = array_values(array_map(
+            static fn (DormitorySiteSummaryDTO $site): array => [
+                'id' => $site->id,
+                'code' => $site->code,
+                'name' => $site->name,
+                'status' => $site->status,
+            ],
+            $dormitoryRead->listAssignedSitesForUser($identityUserId),
+        ));
+    }
 
     public function submit(
         CreatePersonalRequestAction $createPersonalRequest,
@@ -82,6 +116,9 @@ final class PersonalRequestFormPage extends Component
                         dir="ltr"
                     >
                         <option value="">انتخاب کنید</option>
+                        @foreach ($dormitorySites as $site)
+                            <option value="{{ $site['id'] }}">{{ $site['code'] }} — {{ $site['name'] }}</option>
+                        @endforeach
                     </select>
                 </x-ui.form-field>
 

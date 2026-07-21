@@ -6,6 +6,7 @@ namespace App\Integrations\Request;
 
 use App\Modules\Dormitory\Application\Contracts\DormitoryStructureReadContract;
 use App\Modules\Dormitory\Application\DTOs\DormitorySummaryData;
+use App\Modules\Dormitory\Application\Services\ListEmployeeAssignedDormitoriesAction;
 use App\Modules\Request\Application\Contracts\DormitoryReadContract;
 use App\Modules\Request\Application\DTOs\DormitorySiteSummaryDTO;
 
@@ -18,6 +19,7 @@ final class DormitoryReadBridge implements DormitoryReadContract
 {
     public function __construct(
         private readonly DormitoryStructureReadContract $dormitories,
+        private readonly ListEmployeeAssignedDormitoriesAction $listAssignedDormitories,
     ) {}
 
     public function siteExists(string $dormitorySiteId): bool
@@ -38,6 +40,22 @@ final class DormitoryReadBridge implements DormitoryReadContract
                 status: $site->status,
             ),
             $this->dormitories->listDormitories(),
+        ));
+    }
+
+    /**
+     * @return list<DormitorySiteSummaryDTO>
+     */
+    public function listAssignedSitesForUser(string $identityUserId): array
+    {
+        return array_values(array_map(
+            static fn (DormitorySummaryData $site): DormitorySiteSummaryDTO => new DormitorySiteSummaryDTO(
+                id: $site->id,
+                code: $site->code,
+                name: $site->name,
+                status: $site->status,
+            ),
+            $this->listAssignedDormitories->execute($identityUserId),
         ));
     }
 }

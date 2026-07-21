@@ -66,6 +66,9 @@
 | D-G03-FORM | PersonalRequestFormPage vs assignment-based access | Requests / Authz | A) assignment-scoped B) free-site exception C) defer+temp note | Lead | Pre-UI Decision Sweep | **DECIDED — A** | SIGNED-OFF 1405/04/29. Owner = WP-REQ-04 only. No WP-FORM-01. Free-site rejected. |
 | D-ENTRYPOINT-RULE | Presentation may inject repository contracts? | Architecture / Presentation | Actions/Services only (vs thin repo injection) | Lead | Pre-UI Decision Sweep | **DECIDED** | R4 SIGNED-OFF. Presentation → Application Actions/Services only. WP-CHECKIN-01 **CLOSED** (Action wire delivered). |
 | D-POLICY-AUTH-BOUNDARY | Gate Policy Identity Eloquent / UserModel typing | DDD / Auth | Blocker vs advisory vs accepted tension | Lead | Pre-UI Decision Sweep | **ACCEPTED TENSION** | R5 SIGNED-OFF. Authenticatable + Domain port OK. No code WP. Reopen on proven harm. |
+| GAP-PREUI-06 | Intra-module Eloquent relations (repo-driven modules) | Architecture / Mapping | A) mandate ORM relations B) accept repo-driven absence | Lead | Residual Gap Phase 1 | **ACCEPTED TENSION** | Soft policy: absent Eloquent relations on intra-module FKs OK when repository-owned. Not an active code defect. |
+| GAP-PREUI-07 | Voucher intra-module UUID columns without DB FK | Schema / Voucher | A) soft UUID by design B) add DB FKs | Lead | Residual Gap Phase 1 | **ACCEPTED TENSION** | Soft UUID by design for Voucher intra-module tables; no DB FK. Revisit if cross-module query patterns emerge. |
+| GAP-PREUI-17 | Spatie Domain `@phpstan-extends State<\…Model>` | Static analysis / Domain purity | Register as analysis debt | Lead | Residual Gap Phase 1 | **REGISTER-ONLY** | Analysis-only Domain→Infrastructure phpstan coupling; not a product blocker. No code WP unless Lead opens debt WP. |
 | OQ-REQ-02 | Request Identity FK / model normalization (OQ-REQ-02-SYNC) | Requests / Spec05 R-03 | Option A (Normalized) | Lead | WP-REQ-01 | **CLOSED** | Option A (Normalized) — FK removed, Request model standalone. Signed-off. OQ-REQ-02-SYNC lifted. Physical drop executed under WP-REQ-01 L3 per scope. |
 | SB-D9 | F-W07-04 Wave 2 (Stage-1 list/filter UX + tests) | F3 / stage1-approver-console | A) Authorize Wave 2 B) Hold C) Reject | Lead | F-W07-04-D3; WP-RQ-W2-01 | **DECIDED (A) — ISSUED**; WP **DONE** | Wave 2 list/filter UX + tests; auth_gate=`dormitory-manager` unchanged; SHA UNVERIFIED (merge-agnostic); Sprint B CLOSED |
 | SB-D10 | Exempt registry classification — `ListPendingStage1RequestsAction` | F3 / stage1-approver-console / MPEP | A) Issue read-only exempt classification B) Hold C) Reject | Lead | WP-RQ-W2-01 review session | **DECIDED (A) — ISSUED**; **Recorded** | Read-only registry classification for MPEP discovery compatibility; no functional behavior change. Authority: Lead in-session during WP-RQ-W2-01; recording: retroactive (WP-DOC-SYNC-01); Sprint B CLOSED |
@@ -676,6 +679,7 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| 2026-07-21 | **Residual Gap Phase 1 (REGISTER-ONLY):** Named durable entries GAP-PREUI-06 (ACCEPTED TENSION), GAP-PREUI-07 (ACCEPTED TENSION — soft UUID), GAP-PREUI-17 (REGISTER-ONLY). Snapshot: PREUI-03→WP-REQ-04 single blocker; OQ-DORM-04→WP-DORM-04 not authorized; Lottery-X frozen. Overcount: contract/UI under PREUI-03 not separate roots. Docs-only; no code. | Agent (Lead Phase 1 auth) |
 | 2026-07-20 | **Lead Ruling Pack SIGNED-OFF (R1–R6):** D-SETTINGS-CONTRACT=B; Lottery settings exception (HD-02); D-G03-FORM=A (WP-REQ-04 only, no WP-FORM-01); ENTRYPOINT-RULE + WP-CHECKIN-01 mandatory; POLICY-AUTH-BOUNDARY=Accepted Tension; R6 register sync — GAP-PREUI-14/15 CLOSED. | Lead |
 | 2026-07-20 | **WP-SYS-01 CLOSED:** SettingsReadContract + QueryBuilderSettingsReader bound in SystemServiceProvider; Request/Audit/Notification readers migrated; Lottery untouched. Suite: 1932 passed / 0 failed. PHPStan scoped paths: OK. | Agent (Mandate CHAIN-5) |
 | 2026-07-20 | **WP-CHECKIN-01 CLOSED:** CheckInFlowController routes via GetOpenCheckInByAllocationAction; Presentation no longer injects repository contract. Suite: 1930 passed / 0 failed. | Agent (Mandate CHAIN-2) |
@@ -1035,14 +1039,17 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 | OQ-ALLOC-02 | Domain Models/ vs Entities/ naming debt | Option C accepted as debt; track-only; rename deferred to post-Phase 2 / before Phase 3 | 1405/04/29 \| 2026-07-20 |
 | OQ-REQ-11 | Stage-1 snapshot scope | OPEN — domain decision pending; Block: none | 1405/04/29 \| 2026-07-20 |
 | OQ-REQ-12 | Auth middleware standardization | OPEN — DEFERRED to WP-REQ-07; Block: none until route consolidation | 1405/04/29 \| 2026-07-20 |
-| D-G03-FORM | assigned-sites form incomplete | **DECIDED — A**; impl OPEN under WP-REQ-04 only; no WP-FORM-01 | 1405/04/29 \| 2026-07-20 |
+| D-G03-FORM | assigned-sites form incomplete | **DECIDED — A**; impl OPEN under WP-REQ-04 only; no WP-FORM-01; **GAP-PREUI-03** root (contract/UI symptoms not separate) | 1405/04/29 \| 2026-07-20 |
+| GAP-PREUI-06 | Intra-module Eloquent relations | **ACCEPTED TENSION** — repo-driven absence OK; see named entry | 1405/04/30 \| 2026-07-21 |
+| GAP-PREUI-07 | Voucher soft UUID (no intra FK) | **ACCEPTED TENSION** — soft UUID by design; see named entry | 1405/04/30 \| 2026-07-21 |
+| GAP-PREUI-17 | Spatie phpstan Domain→Model | **REGISTER-ONLY** — analysis debt; see named entry | 1405/04/30 \| 2026-07-21 |
 
 ## Temporary Governance Exceptions (append-only record)
 
 | ID | Title | Notes | Date |
 |----|-------|-------|------|
 | OQ-REQ-02 | Stage-1 `assigned_stage1_approver_identity_id` FK → `identity_users` | **CLOSED** \| Option A (Normalized) — FK removed, Request model standalone. Signed-off. OQ-REQ-02-SYNC lifted. WP-REQ-01 = execution vehicle for schema. | 1405/04/29 \| 2026-07-20 |
-| OQ-DORM-04 | Dormitory assignment tables `user_id` FK → `identity_users` | ACCEPTED temporary exception outside Spec04 core; **Sequencing:** SEQUENTIAL after WP-REQ-01 CLOSED; **Designated WP:** WP-DORM-04; independent rollback / per-module tests | 1405/04/29 \| 2026-07-20 |
+| OQ-DORM-04 | Dormitory assignment tables `user_id` FK → `identity_users` | ACCEPTED temporary exception outside Spec04 core; **WP-DORM-04** EXECUTION-ONLY sequential after WP-REQ-01 CLOSED; **not authorized now** (Residual Gap Phase 1); independent rollback / per-module tests | 1405/04/29 \| 2026-07-20; sync 2026-07-21 |
 | D-SETTINGS-LOTTERY-X | LotteryScoringConfigReader → `DB::table('settings')` | ACCEPTED temporary exception under HD-02 Lottery freeze; **not** in WP-SYS-01; sunset = HD-02 unfreeze | 1405/04/29 \| 2026-07-20 |
 
 ### WP-REQ-01 — CLOSED (1405/04/29)
@@ -1071,6 +1078,55 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 
 - DEC-ARCH-POLICY-01 / WP-DEBT-05 = IMPLEMENTED. No re-implementation.
 - Authority: Lead Ruling Pack R6b — SIGNED-OFF 1405/04/29.
+
+### GAP-PREUI-06 — ACCEPTED TENSION (registered 1405/04/30 \| 2026-07-21)
+
+| Field | Value |
+|-------|-------|
+| **ID** | GAP-PREUI-06 |
+| **Title** | Intra-module Eloquent relations absent on repo-driven modules |
+| **Classification** | **ACCEPTED TENSION / ADVISORY** |
+| **Rationale** | Request / Lottery / Voucher / CheckIn (and similar) persistence adapters are repository-owned. Constitution UUID-ref / contract-mediated style does not require declaring Eloquent `BelongsTo`/`HasMany` for every intra-module FK column. |
+| **Why not an active defect now** | Absence of ORM relations is an intentional architectural posture, not a product or runtime failure. Does not block WP-REQ-04 or current employee UI. |
+| **Reopen trigger** | Lead mandates ORM relations for named modules before a stated phase gate, or proven integrity/debug harm attributable to missing relations. |
+| **Linked WP / decision** | None required. Related hygiene: OQ-ALLOC-02 (naming debt, separate). Residual Gap Phase 1 registration. |
+
+### GAP-PREUI-07 — ACCEPTED TENSION (registered 1405/04/30 \| 2026-07-21)
+
+| Field | Value |
+|-------|-------|
+| **ID** | GAP-PREUI-07 |
+| **Title** | Voucher intra-module UUID columns without DB foreign-key constraints |
+| **Classification** | **ACCEPTED TENSION / ADVISORY** |
+| **Rationale** | Lead Residual Gap Phase 1: soft UUID by design for Voucher sibling/intra-module tables; **no** DB FK required among those columns. |
+| **Why not an active defect now** | Soft UUID refs are the authorized schema posture for Voucher intra-module integrity at this stage; not a freeze or form blocker. |
+| **Reopen trigger** | Cross-module query patterns emerge that require referential enforcement, or Lead authorizes a Voucher FK hardening WP. |
+| **Linked WP / decision** | None active. Residual Gap Phase 1 Lead classification (soft UUID by design). |
+
+### GAP-PREUI-17 — REGISTER-ONLY (registered 1405/04/30 \| 2026-07-21)
+
+| Field | Value |
+|-------|-------|
+| **ID** | GAP-PREUI-17 |
+| **Title** | Spatie Model States Domain `@phpstan-extends State<\…Infrastructure\…Model>` annotations |
+| **Classification** | **REGISTER-ONLY** |
+| **Rationale** | Spatie `laravel-model-states` typing couples Domain state base classes to Eloquent models via PHPStan generics (e.g. `RequestState`, `LotteryProgramState`). Coupling is static-analysis / package-constraint debt, not a runtime Domain import of Infrastructure. |
+| **Why not an active defect now** | No product behavior gap; no mandatory code WP. Must remain registered so residual sweeps do not reclassify it as an active architecture blocker. |
+| **Reopen trigger** | Lead opens an explicit static-analysis debt WP, or Spatie/package upgrade removes the need for Model generics and a cleanup pass is authorized. |
+| **Linked WP / decision** | None. Track-only until Lead debt WP. Residual Gap Phase 1 registration. |
+
+### Residual Gap Phase 1 — Classification Snapshot (docs-only, 1405/04/30 \| 2026-07-21)
+
+Confirmed Lead classifications (no code this phase):
+
+| ID | Classification | Notes |
+|----|----------------|-------|
+| GAP-PREUI-03 / D-G03-FORM | EXECUTION-ONLY | **Single active form blocker**; owner **WP-REQ-04**. Contract missing `listAssignedSites*` and empty `<select>` are **derived symptoms — not separate register roots**. |
+| OQ-DORM-04 | EXECUTION-ONLY | **WP-DORM-04** sequential; **not authorized now** (migration later; STOP-3 when authorized). |
+| D-SETTINGS-LOTTERY-X | FROZEN / DEFERRED | Under **HD-02**; already registered above. |
+| GAP-PREUI-06 | ACCEPTED TENSION | Named entry above. |
+| GAP-PREUI-07 | ACCEPTED TENSION | Soft UUID by design; named entry above. |
+| GAP-PREUI-17 | REGISTER-ONLY | Named entry above. |
 
 ---
 

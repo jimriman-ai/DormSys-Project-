@@ -14,4 +14,11 @@ interface DormitoryReadContract
      * @return list<DormitorySiteSummaryDTO>
      */
     public function listSites(): array;
+
+    /**
+     * Active-assignment-scoped dormitory sites for an identity user (WP-REQ-04 / D-G03-FORM).
+     *
+     * @return list<DormitorySiteSummaryDTO>
+     */
+    public function listAssignedSitesForUser(string $identityUserId): array;
 }

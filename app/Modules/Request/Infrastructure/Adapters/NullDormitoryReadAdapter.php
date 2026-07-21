@@ -22,4 +22,12 @@ final class NullDormitoryReadAdapter implements DormitoryReadContract
     {
         return [];
     }
+
+    /**
+     * @return list<DormitorySiteSummaryDTO>
+     */
+    public function listAssignedSitesForUser(string $identityUserId): array
+    {
+        return [];
+    }
 }
