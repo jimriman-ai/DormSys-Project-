@@ -41,8 +41,19 @@ Command: `--filter="InvalidRequestTransition|RequestHttpMutationHardening|Reques
 
 | Order | Cluster | Minimal fix (proposed — not executed) | Risk |
 |-------|---------|----------------------------------------|------|
-| **T2-1** | Unit Request | Update `SubmitDateValidationTest::submitAction()` to pass `Mockery` for `StartRequestApprovalWorkflowAction` in correct ctor position | Low — test-only |
-| **T2-2** | Architecture (adapter location) | Move `RequestLifecycleCommandAdapter` → `app/Integrations/…` **or** add path to `architectureLegacyCrossModuleAdapterPaths()` with Lead note that W3-B left it under Allocation | Medium — W3-B fallout; prefer move to Integrations |
+| **T2-1** | Unit Request | Update `SubmitDateValidationTest::submitAction()` to supply `StartRequestApprovalWorkflowAction` (real instance + mocked repo; class is `final`) | Low — test-only |
+
+---
+
+## T2-1 execution (2026-07-21)
+
+| Field | Value |
+|-------|--------|
+| Status | **DONE** (uncommitted) |
+| Root cause | Test ctor omitted `startApprovalWorkflow` after WF activation |
+| Fix | Test-only: construct `new StartRequestApprovalWorkflowAction(mock repo)` |
+| Production | **unchanged** |
+| Result | `3 passed` || **T2-2** | Architecture (adapter location) | Move `RequestLifecycleCommandAdapter` → `app/Integrations/…` **or** add path to `architectureLegacyCrossModuleAdapterPaths()` with Lead note that W3-B left it under Allocation | Medium — W3-B fallout; prefer move to Integrations |
 | **T2-3** | Request transition | Triage root cause per failing file; likely WF cutover / dual path — **may collide W3-WP-WF-04-RISK** | High — confirm narrowly |
 
 ---

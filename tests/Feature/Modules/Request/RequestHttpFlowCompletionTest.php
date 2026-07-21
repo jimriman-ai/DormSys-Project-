@@ -5,12 +5,14 @@ declare(strict_types=1);
 use App\Application\Mutation\Support\MutationPrincipalContextHolder;
 use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Modules\Request\Application\Contracts\RequestApprovalRepositoryContract;
+use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
 use App\Modules\Request\Domain\States\ApprovedState;
 use App\Modules\Request\Domain\States\DraftState;
 use App\Modules\Request\Domain\States\PendingDepartmentManagerState;
 use App\Modules\Request\Domain\States\PendingDormitoryManagerState;
 use App\Modules\Request\Domain\States\PendingDormitoryUnitState;
 use App\Modules\Request\Domain\States\PendingHRState;
+use App\Modules\Request\Domain\ValueObjects\RequestId;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -119,7 +121,13 @@ describe('http end-to-end lifecycle', function (): void {
             ->assertJsonPath('data.status', PendingDepartmentManagerState::$name)
             ->json('data');
 
-        $approvers = [
+        $stage1ApproverId = app(RequestRepositoryContract::class)
+            ->findById(RequestId::fromString($submitted['id']))
+            ?->assignedStage1ApproverIdentityId;
+
+        expect($stage1ApproverId)->not->toBeNull()->not->toBe('');
+
+        $expectedStatuses = [
             PendingHRState::$name,
             PendingDormitoryManagerState::$name,
             PendingDormitoryUnitState::$name,
@@ -128,11 +136,17 @@ describe('http end-to-end lifecycle', function (): void {
 
         $currentId = $submitted['id'];
 
-        foreach ($approvers as $expectedStatus) {
-            $approver = createMutationApprover();
-            authenticateRequestHttpMutationUser(
-                UserModel::query()->findOrFail($approver['principalId']),
-            );
+        foreach ($expectedStatuses as $index => $expectedStatus) {
+            if ($index === 0) {
+                authenticateRequestHttpMutationUser(
+                    UserModel::query()->findOrFail($stage1ApproverId),
+                );
+            } else {
+                $approver = createMutationApprover();
+                authenticateRequestHttpMutationUser(
+                    UserModel::query()->findOrFail($approver['principalId']),
+                );
+            }
 
             $currentId = $this->postJson(requestHttpMutationUrl($currentId, 'approve'))
                 ->assertOk()
@@ -141,7 +155,7 @@ describe('http end-to-end lifecycle', function (): void {
         }
 
         expect(app(RequestApprovalRepositoryContract::class)->countForRequest(
-            App\Modules\Request\Domain\ValueObjects\RequestId::fromString($currentId),
+            RequestId::fromString($currentId),
         ))->toBe(4);
     });
 });

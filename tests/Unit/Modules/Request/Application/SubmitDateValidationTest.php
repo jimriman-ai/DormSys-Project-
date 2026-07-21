@@ -22,6 +22,8 @@ use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
 use App\Modules\Request\Domain\ValueObjects\RequestCode;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
+use App\Modules\Workflow\Application\Contracts\RequestApprovalWorkflowRepositoryContract;
+use App\Modules\Workflow\Application\Services\StartRequestApprovalWorkflowAction;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
 use DateTimeImmutable;
 use DateTimeZone;
@@ -91,6 +93,9 @@ class SubmitDateValidationTest extends TestCase
             requests: MockeryTest::mock(RequestRepositoryContract::class),
             eligibility: MockeryTest::mock(RequestEligibilityGatewayContract::class),
             dormitoryRead: MockeryTest::mock(DormitoryReadContract::class),
+            startApprovalWorkflow: new StartRequestApprovalWorkflowAction(
+                MockeryTest::mock(RequestApprovalWorkflowRepositoryContract::class),
+            ),
             mutationPolicy: new MutationPolicyEnforcementPoint(
                 principalContext: MockeryTest::mock(MutationPrincipalContextPort::class),
                 authorization: MockeryTest::mock(MutationAuthorizationPort::class),
