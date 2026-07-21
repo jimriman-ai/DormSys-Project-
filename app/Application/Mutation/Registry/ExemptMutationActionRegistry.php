@@ -10,6 +10,7 @@ use App\Application\Auth\LoginUserAction;
 use App\Application\Auth\LogoutUserAction;
 use App\Modules\Audit\Application\Services\QueryAuditHistoryAction;
 use App\Modules\Audit\Application\Services\RecordAuditAction;
+use App\Modules\CheckIn\Application\Services\GetOpenCheckInByAllocationAction;
 use App\Modules\Reporting\Application\Services\QueryActorAuditTimelineAction;
 use App\Modules\Reporting\Application\Services\QueryAuditWindowSummaryAction;
 use App\Modules\Reporting\Application\Services\QueryComplianceExportAction;
@@ -33,6 +34,7 @@ final class ExemptMutationActionRegistry
         AssignStage1ApproverSnapshotAction::class,
         ListPendingStage1RequestsAction::class,
         RejectStage1RequestAction::class,
+        GetOpenCheckInByAllocationAction::class,
         RecordAuditAction::class,
         QueryAuditHistoryAction::class,
         QueryEntityAuditTimelineAction::class,
