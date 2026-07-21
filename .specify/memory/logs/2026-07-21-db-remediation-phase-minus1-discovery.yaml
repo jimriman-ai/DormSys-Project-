@@ -1,0 +1,6 @@
+prompt_id: db-remediation-phase-minus1-begin-discovery
+recorded_at: 2026-07-21T22:43:00+03:30
+work_item: database-architecture-map-v1
+stage: phase-minus1-discovery
+tags: [EVIDENCE_GAP, OWNER_DECISION_NEEDED]
+summary: "Phase −1 Map v1 written from migrations/models; live DB not reachable from agent cwd this session so row estimates reused companion Sail audit (50 Ran, empty). Phase 0 blocked until Lead approves Map v1."
