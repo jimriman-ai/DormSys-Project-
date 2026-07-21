@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only. Not a decision ledger. Does not supersede `docs/governance/open-decisions.md`.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/30 | 2026-07-21 | Session: WP-REQ-04 + GAP-PREUI-03 CLOSED in ledger_
+_Last updated: 1405/04/30 | 2026-07-21 | Session: WP-WF-00 CLOSED — HD-WF-01 / CD-010-A1 registered_
 
-**Authority note:** OBSERVED. Lead authorized ledger closeout. Code evidence `730c057`.
+**Authority note:** Lead SIGN-OFF executed. Docs-only WP-WF-00. No domain code.
 
 ---
 
@@ -13,25 +13,26 @@ _Last updated: 1405/04/30 | 2026-07-21 | Session: WP-REQ-04 + GAP-PREUI-03 CLOSE
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| WP-REQ-04 | status | delivered → **CLOSED** (ledger) | `open-decisions.md` |
-| GAP-PREUI-03 / D-G03-FORM | status | OPEN impl → **CLOSED** | Decision Gate + named blocks |
-| Hard-stop #2 | WP-REQ-04 exclusivity | active → **SUPERSEDED** | post-ruling section |
+| HD-WF-01 | Decision Gate | proposed → **DECIDED — B** | open-decisions |
+| CD-010-A1 | activation | deferred → **ACTIVATED** (Request orchestration) | open-decisions + catalog-decisions |
+| HD-04 | posture | DECIDED—A → **SUPERSEDED** | open-decisions |
+| WP-WF-00 | status | ACTIVE → **CLOSED** (docs) | this session |
+| Next WP | sequence | — → **WP-WF-01** (L3 design) | HD-WF-01 |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🔀 **Lifecycle** — post WP-REQ-04 closeout; next sequential debt = WP-DORM-04 (not authorized)
+📄 **Spec** — next: `WP-WF-01` L0–L3 Workflow design (stages/roles/statuses/rules/history/notifications)
 
 ---
 
 ## 7. Next Step
 
-**Action:** Optional: authorize WP-DORM-04 (STOP-3) or leave sequential hold.  
+**Action:** Lead activate WP-WF-01 design.  
 **Owner:** Lead  
 **Suggested user prompt:**
-> Mode: WP_EXECUTION | ACTIVE_WP: WP-DORM-04 | BEGIN AUDIT  
-> — or hold —
+> Mode: WP_EXECUTION | ACTIVE_WP: WP-WF-01 | BEGIN AUDIT
 
 ---
 
@@ -39,6 +40,7 @@ _Last updated: 1405/04/30 | 2026-07-21 | Session: WP-REQ-04 + GAP-PREUI-03 CLOSE
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| WP-REQ-04 | **CLOSED** | code `730c057` + ledger sync |
-| GAP-PREUI-03 | **CLOSED** | do not resurrect |
-| OQ-DORM-04 | OPEN sequential | WP-DORM-04 not authorized |
+| WP-WF-00 | **CLOSED** | docs registration |
+| HD-WF-01 / CD-010-A1 | **DECIDED** | Workflow ACTIVATED |
+| WP-WF-01…05 | OPEN sequence | before WP-DORM-04 |
+| WP-DORM-04 | HOLD | after WP-WF-05 |

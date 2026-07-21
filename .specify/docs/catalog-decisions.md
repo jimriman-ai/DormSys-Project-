@@ -288,7 +288,7 @@ Approval spans Request data and a reusable workflow engine. Source documents spl
 | Context | Owns |
 | ------- | ---- |
 | **Request** | `RequestApproval` entity, approval **state**, history |
-| **Workflow** (deferred module) | Approval **transition rules**, chain definition, routing, orchestration |
+| **Workflow** | Approval **transition rules**, chain definition, routing, orchestration |
 
 Integration pattern:
 
@@ -305,13 +305,35 @@ Integration pattern:
 ### Impact
 
 - `RequestApproval` table remains in Request schema.
-- Workflow module stays **deferred** per spec catalog until activation criteria are met.
-- Boundary applies immediately to modeling; implementation follows module activation.
+- Workflow module is **ACTIVATED** for Request approval orchestration per **CD-010-A1** / **HD-WF-01 Option B** (1405/04/30 \| 2026-07-21). Prior “stays deferred” impact language is **superseded**.
+- Boundary ownership split applies immediately; implementation follows WP-WF-01…05.
+- Canonical product-visible approval history remains `RequestApproval`; Workflow step logs are orchestration audit only.
 
-### What Was NOT Decided
+### What Was NOT Decided (historical CD-010; partially superseded)
 
-- Auto-approval configuration storage location.
-- Workflow module activation timeline.
+- Auto-approval configuration storage location *(settings path already used by Request; Workflow must consume, not reinvent, unless a later WP decides otherwise)*.
+- ~~Workflow module activation timeline~~ → **DECIDED under HD-WF-01 / CD-010-A1**.
+
+### CD-010-A1 — Activation Amendment (1405/04/30 \| 2026-07-21)
+
+| Field | Value |
+| ----- | ----- |
+| **Date** | 2026-07-21 |
+| **Type** | Activation amendment |
+| **Status** | ACCEPTED |
+| **Amends** | CD-010 Impact / activation posture only |
+| **Authority** | Lead SIGN-OFF HD-WF-01 Option B + CD-010-A1 |
+
+**Decision:** Workflow is **ACTIVATED** for **Request approval orchestration**. CD-010 ownership split is **retained**:
+
+| Context | Owns |
+| ------- | ---- |
+| **Request** | `RequestApproval` entity, approval **state**, product-visible **history** |
+| **Workflow** | Transition **rules**, chain definition, routing, orchestration |
+
+**Activation criterion:** Request approval chain = first authorized instance; second instance deferred and non-blocking.
+
+**Sequencing:** WP-WF-00…05 before WP-DORM-04. WP-WF-04 final cutover requires explicit STOP/GO.
 
 ---
 

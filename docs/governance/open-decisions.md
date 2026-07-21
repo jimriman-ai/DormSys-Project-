@@ -24,7 +24,10 @@
 | DGAP-08 | Business Owner designation | Domain Gap / HDAC | — (parked; designation by org authority) | human org authority (HDAC track) | HDAC track (root blocker) | **RESOLVED** | **BO = HR Business Owner** / Human Resources Department (`employee-request-self-service`). Resolved 1405/04/27. Unblocks DGAP-05, DGAP-06, SGAP-05. |
 | DGAP-01 | Organization aggregate | Domain Gap Audit | CLOSE — NOT-A-GAP | Lead | DGAP Decision Gate | **CLOSED — NOT-A-GAP** | Lead (2026/07/15): No product requirement for Organization aggregate. No L6 fill. |
 | DGAP-02 | Unit entity | Domain Gap Audit | CLOSE — NOT-A-GAP | Lead | DGAP Decision Gate | **CLOSED — NOT-A-GAP** | Lead (2026/07/15): Unit only meaningful under assignment schema (frozen). No L6 fill. |
-| DGAP-04 | Workflow module / engine | Domain Gap Audit | CLOSE — NOT-A-GAP | Lead | DGAP Decision Gate | **CLOSED — NOT-A-GAP** | Lead (2026/07/15): Workflow shell intentional per CD-010 deferral. No L6 fill. |
+| DGAP-04 | Workflow module / engine | Domain Gap Audit | CLOSE — NOT-A-GAP | Lead | DGAP Decision Gate | **CLOSED — NOT-A-GAP** (historical) | Shell was intentional while deferred (2026/07/15). **Superseded for activation posture by HD-WF-01 Option B** — Workflow now ACTIVATED track (WP-WF-00…05). Historical NOT-A-GAP not reopened as defect. |
+| HD-04 | Workflow module posture | CD-010 / Workflow | A) Deferred placeholder B) Activate now C) NOT-A-GAP retract | Lead | AUTH-013 | **SUPERSEDED** | Prior **DECIDED — A** (deferred). **Superseded 1405/04/30 \| 2026-07-21 by HD-WF-01 Option B.** |
+| HD-WF-01 | Workflow activation | CD-010 / Workflow | A) Remain deferred B) Activate design+impl C) Design-only | Lead | Workflow activation | **DECIDED — B** | SIGNED-OFF 1405/04/30 \| 2026-07-21. Workflow ACTIVATED; design+impl authorized via WP-WF-00…05. First instance = Request approval chain; second instance deferred (non-blocking). |
+| CD-010-A1 | CD-010 activation amendment | Catalog / Workflow | Activate Request orchestration; retain ownership split | Lead | Workflow activation | **DECIDED** | Workflow ACTIVATED for Request approval orchestration. Ownership split retained (Request = state/history; Workflow = rules/routing). |
 | DGAP-10 | Dual User model (`App\Models\User` vs `UserModel`) | Domain Gap Audit | CLOSE — NOT-A-GAP by design | Lead | DGAP Decision Gate | **CLOSED — NOT-A-GAP by design** | Lead (2026/07/15): Intentional dual-guard architecture. No L6 fill. |
 | DGAP-09 | Manager/unit assignment schema | Domain Gap / BL-B1-01 | NO ACTION this phase | Lead | DGAP Decision Gate | **FROZEN (RE-FROZEN 2026-07-16 after scoped BL-B1-01)** | Temporary unfreeze YES scoped to BL-B1-01 only (Lead); schema+wire executed RM-BL-B1; **RE-FROZEN** — no further schema without new unfreeze. |
 | DGAP-13 | Canonical Stage-1 approver role: DeptMgr vs dormitory-manager | Domain Gap / IMPL-PERMIT-03 | Canonical auth-path role = `dormitory-manager` | Lead | IMPL-PERMIT-03 gate/snapshot conflict | **DECIDED** | Lead 2026-07-18. **ID note:** Lead prompt labeled this gap **DGAP-09**; register ID **DGAP-09** already FROZEN (assignment schema) — recorded as **DGAP-13** (collision STOP). Scoped to IMPL-PERMIT-03 Stage-1 authorization path only. IMPL-PERMIT-02 CLOSED @ 32c677b untouched. |
@@ -46,7 +49,7 @@
 | HD-01 | DGAP-08 Business Owner designation posture | Domain Gap / F3 Sprint A | A) Resolve now B) Remain PARKED C) Defer to HDAC only | Lead | AUTH-013 | **DECIDED — B** | **DGAP-08 stays PARKED.** Sprint A does not require Spec04 Auth. **Re-entry trigger:** `employee-request-self-service` enters scope. (AUTH-013) |
 | HD-02 | spec06 Lottery governance posture | Spec06 / Governance debt | A) Exception accepted; governance debt; new Lottery FROZEN B) Treat as NOT-STARTED C) Full closeout now | Lead | AUTH-013 | **DECIDED — A** | Exception ACCEPTED; governance debt recorded; **new Lottery work FROZEN** pending authority resolution. Treating delivered code as NOT-STARTED is falsification of history. (AUTH-013) |
 | HD-03 | spec11 Reporting governance posture | Spec11 / F3 scope | A) Same exception as spec06 B) Full closeout C) In-scope for F3 | Lead | AUTH-013 | **DECIDED — A (+C posture)** | Same exception pattern as spec06; **Reporting parked OUT-OF-CURRENT-F3.** Re-entry trigger: explicit F-next feature requiring reporting enters scope. **No blocker on L9.** (AUTH-013) |
-| HD-04 | Workflow module posture | CD-010 / Workflow | A) Deferred placeholder per CD-010 B) Activate now C) NOT-A-GAP retract | Lead | AUTH-013 | **DECIDED — A** | Workflow **deferred** per CD-010; activation criterion **≥2 workflow instances**. Placeholder only — **not a work-gap.** (AUTH-013) |
+| HD-04 | Workflow module posture | CD-010 / Workflow | A) Deferred placeholder per CD-010 B) Activate now C) NOT-A-GAP retract | Lead | AUTH-013 | **SUPERSEDED by HD-WF-01** | Historical DECIDED—A (deferred). See HD-WF-01 Option B. |
 | HD-05 | F-W07-04 carry target | F2 / F3 sequencing | A) Carry to F3 Sprint B B) Close now C) Carry to Sprint A | Lead | AUTH-013 | **DECIDED — A** | **F-W07-04 carry to F3 Sprint B.** Consistent with work-breakdown posture. (AUTH-013) |
 | HD-06 | L9 merge scope / checklist freshness | Phase G / L9 | A) Formal A1 waiver after checklist refresh B) Merge with stale checklist C) Refresh checklist first, then waiver | Lead | AUTH-013 | **DECIDED — C then A** | **First:** refresh L9 checklist (resolves GAP-DOC-04). **Then:** Lead issues formal waiver — UI-A1 presence in branch is **intentional and accepted**. Merge with stale checklist = invalid evidence. (AUTH-013) |
 | HD-07 | spec02 + spec05 docs-only closeout timing | Spec closeout / doc-lag | A) Docs-only closure per spec03 pattern in Wave 2 B) Execute now C) Defer indefinitely | Lead | AUTH-013 | **DECIDED — A** | **spec02 + spec05 docs-only closure** following spec03 pattern; execute in **Wave 2 (after merge)**, not now. One write, not two. (AUTH-013) |
@@ -238,10 +241,11 @@
 
 ### DGAP-04
 
-- **Status:** CLOSED — NOT-A-GAP
+- **Status:** CLOSED — NOT-A-GAP (historical shell-while-deferred)
 - **Decided-On:** 1405/04/24 (2026/07/15)
 - **Decision-Owner:** Lead
 - **Decision:** Workflow shell intentional per CD-010 deferral. No L6 fill.
+- **Activation sync (1405/04/30 \| 2026-07-21):** Deferral posture superseded by **HD-WF-01 Option B**. DGAP-04 is **not** reopened as an implementation defect; L6+ proceeds under authorized Workflow WPs only.
 
 ### DGAP-10
 
@@ -512,6 +516,49 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 - **Decided-On:** 1405/04/25 (2026/07/16)
 - **Decision-Owner:** Lead
 - **Rationale:** CD-010 deferral; activation criterion ≥2 workflow instances; not a work-gap.
+- **Status (1405/04/30 \| 2026-07-21):** **SUPERSEDED** by **HD-WF-01 Option B**. Do not use HD-04 deferred posture for new planning.
+
+### HD-WF-01 — Workflow activation (SIGNED-OFF)
+
+| Field | Value |
+|-------|-------|
+| **ID** | HD-WF-01 |
+| **Status** | **DECIDED — B** |
+| **Signed-Off** | 1405/04/30 \| 2026-07-21 |
+| **Decision-Owner** | Lead |
+| **Selected Option** | **B** — Activate now (design + implementation authorized) |
+| **Supersedes** | HD-04 Option A (deferred placeholder) |
+| **Effect** | Workflow is **no longer Deferred**. Design and implementation are authorized under WP-WF-00 → WP-WF-05. |
+| **Activation criterion** | **Request approval chain** is the **first authorized workflow instance**. A second instance is **deferred** and **does not block** implementation of the first. |
+| **History policy** | `RequestApproval` remains **canonical product-visible history**. Workflow step execution log is **orchestration audit only** (non-canonical). |
+| **Migration mode** | **Phased cutover** at WP-WF-04 with **optional dual-run flag**. Final switch requires explicit **STOP/GO**. |
+| **Sequencing** | Execute **WP-WF-00 → WP-WF-05 completely** before **WP-DORM-04**. |
+| **Does NOT authorize** | Lottery unfreeze (HD-02); Reporting (HD-03); WP-DORM-04 until WF sequence complete; PREUI-06/07/17 reopen |
+| **Related** | CD-010-A1; DGAP-04 historical note; Spec05 OA-05-02 migration in later WPs |
+
+### CD-010-A1 — CD-010 activation amendment (SIGNED-OFF)
+
+| Field | Value |
+|-------|-------|
+| **ID** | CD-010-A1 |
+| **Status** | **DECIDED** |
+| **Signed-Off** | 1405/04/30 \| 2026-07-21 |
+| **Parent** | CD-010 (ownership split **retained**) |
+| **Decision** | Workflow module is **ACTIVATED** for **Request approval orchestration**. |
+| **Ownership (unchanged)** | **Request** owns `RequestApproval` entity, approval **state**, and product-visible **history**. **Workflow** owns approval **transition rules**, chain definition, routing, and orchestration. |
+| **Integration** | Request emits approval-related domain events → Workflow advances chain → Workflow signals Request for stage/final outcomes. |
+| **Catalog sync** | `.specify/docs/catalog-decisions.md` CD-010 Impact amended under WP-WF-00. |
+
+### WP-WF sequence (authorized after HD-WF-01)
+
+| WP | Purpose | Code? |
+|----|---------|-------|
+| **WP-WF-00** | Decision / ledger / catalog registration | Docs only — **this recording** |
+| **WP-WF-01** | L0–L3 Workflow design (stages, roles, statuses, rules, history, notifications) | Design docs |
+| **WP-WF-02** | Domain + Application ports/actions | Code |
+| **WP-WF-03** | Infrastructure + persistence (STOP-3 before migrations) | Code |
+| **WP-WF-04** | Request cutover (optional dual-run; final switch STOP/GO) | Code |
+| **WP-WF-05** | Notification wiring + history parity (`RequestApproval` SoT) | Code |
 
 ### HD-05 — F-W07-04 → F3 Sprint B (AUTH-013)
 
@@ -679,6 +726,7 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| 2026-07-21 | **HD-WF-01 Option B SIGNED-OFF / CD-010-A1 SIGNED-OFF / WP-WF-00 CLOSED (docs):** Workflow ACTIVATED for Request approval orchestration; HD-04 SUPERSEDED; ownership split retained; history=`RequestApproval` canonical; migration=phased+optional dual-run STOP/GO at WP-WF-04; sequence WP-WF-00…05 before WP-DORM-04. | Agent (Lead SIGN-OFF) |
 | 2026-07-21 | **WP-REQ-04 CLOSED / GAP-PREUI-03 CLOSED:** Assignment-scoped personal-request dormitory select delivered (`listAssignedSitesForUser` + PersonalRequestFormPage mount). Evidence commit `730c057`. Rule D-G03-FORM Option A retained. No WP-FORM-01. Ledger sync this recording. | Agent (Lead closeout) |
 | 2026-07-21 | **Residual Gap Phase 1 (REGISTER-ONLY):** Named durable entries GAP-PREUI-06 (ACCEPTED TENSION), GAP-PREUI-07 (ACCEPTED TENSION — soft UUID), GAP-PREUI-17 (REGISTER-ONLY). Snapshot: PREUI-03→WP-REQ-04 single blocker; OQ-DORM-04→WP-DORM-04 not authorized; Lottery-X frozen. Overcount: contract/UI under PREUI-03 not separate roots. Docs-only; no code. | Agent (Lead Phase 1 auth) |
 | 2026-07-20 | **Lead Ruling Pack SIGNED-OFF (R1–R6):** D-SETTINGS-CONTRACT=B; Lottery settings exception (HD-02); D-G03-FORM=A (WP-REQ-04 only, no WP-FORM-01); ENTRYPOINT-RULE + WP-CHECKIN-01 mandatory; POLICY-AUTH-BOUNDARY=Accepted Tension; R6 register sync — GAP-PREUI-14/15 CLOSED. | Lead |
