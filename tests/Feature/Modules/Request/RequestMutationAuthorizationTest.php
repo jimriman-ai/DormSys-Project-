@@ -116,7 +116,6 @@ it('denies approve when approver does not match mutation actor', function (): vo
 
 it('allows approve when approver matches mutation actor', function (): void {
     $employee = createEmployeeForRequestMutationTest();
-    $approverIdentityId = UuidGenerator::uuid7();
 
     $draft = app(CreatePersonalRequestAction::class)->execute(
         employeeId: EmployeeReferenceId::fromString($employee->requireId()->value),
@@ -126,6 +125,8 @@ it('allows approve when approver matches mutation actor', function (): void {
     );
 
     $submitted = asRequestOwner($employee, fn () => app(SubmitRequestAction::class)->execute($draft->requireId()));
+    $approverIdentityId = $submitted->assignedStage1ApproverIdentityId;
+    expect($approverIdentityId)->not->toBeNull()->not->toBe('');
 
     $approved = asRequestMutationPrincipal($approverIdentityId, fn () => app(ApproveRequestStageAction::class)->execute(
         $submitted->requireId(),

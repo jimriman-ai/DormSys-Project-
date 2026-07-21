@@ -7,6 +7,7 @@ namespace App\Modules\Notification\Domain\Enums;
 enum NotificationType: string
 {
     case RequestSubmitted = 'request_submitted';
+    case RequestApprovalPending = 'request_approval_pending';
     case RequestApproved = 'request_approved';
     case RequestRejected = 'request_rejected';
     case AllocationSuccessful = 'allocation_successful';

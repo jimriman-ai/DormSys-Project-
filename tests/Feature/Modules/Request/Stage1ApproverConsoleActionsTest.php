@@ -112,8 +112,23 @@ function createNonApproverIdentityForStage1Console(): array
     ];
 }
 
-function createSubmittedStage1PersonalRequest(): App\Modules\Request\Domain\Entities\Request
+function createSubmittedStage1PersonalRequest(?array $stage1Manager = null): App\Modules\Request\Domain\Entities\Request
 {
+    $stage1Manager ??= createDormitoryManagerApproverForStage1Console();
+
+    app()->instance(
+        Stage1ApproverIdentityReadContract::class,
+        new class($stage1Manager['approverId']->value) implements Stage1ApproverIdentityReadContract
+        {
+            public function __construct(private readonly string $identityId) {}
+
+            public function resolveActiveDormitoryManagerIdentityId(): ?string
+            {
+                return $this->identityId !== '' ? $this->identityId : null;
+            }
+        },
+    );
+
     $employee = createEmployeeForStage1ConsoleTest();
 
     $draft = app(CreatePersonalRequestAction::class)->execute(
@@ -125,6 +140,7 @@ function createSubmittedStage1PersonalRequest(): App\Modules\Request\Domain\Enti
 
     $submitted = asRequestOwner($employee, fn () => app(SubmitRequestAction::class)->execute($draft->requireId()));
     expect($submitted->status)->toBe(PendingDepartmentManagerState::$name);
+    expect($submitted->assignedStage1ApproverIdentityId)->toBe($stage1Manager['approverId']->value);
 
     return $submitted;
 }
@@ -162,8 +178,8 @@ it('rejects employee-only identity on stage-1 approve gate (403)', function (): 
 });
 
 it('allows dormitory-manager to approve a stage-1 pending personal request', function (): void {
-    $submitted = createSubmittedStage1PersonalRequest();
     $approver = createDormitoryManagerApproverForStage1Console();
+    $submitted = createSubmittedStage1PersonalRequest($approver);
     $this->actingAs($approver['model'], 'identity');
 
     $approved = asRequestMutationPrincipal(
@@ -178,8 +194,8 @@ it('allows dormitory-manager to approve a stage-1 pending personal request', fun
 });
 
 it('allows dormitory-manager to reject a stage-1 pending personal request', function (): void {
-    $submitted = createSubmittedStage1PersonalRequest();
     $approver = createDormitoryManagerApproverForStage1Console();
+    $submitted = createSubmittedStage1PersonalRequest($approver);
     $this->actingAs($approver['model'], 'identity');
 
     $rejected = asRequestMutationPrincipal(

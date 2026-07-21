@@ -6,28 +6,30 @@ namespace App\Modules\Request\Application\Services;
 
 use App\Application\Mutation\Registry\MutationCapabilityCatalog;
 use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
-use App\Modules\Request\Application\Contracts\RequestApprovalRepositoryContract;
 use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
 use App\Modules\Request\Domain\Entities\Request;
-use App\Modules\Request\Domain\Entities\RequestApproval;
-use App\Modules\Request\Domain\Enums\ApprovalDecision;
-use App\Modules\Request\Domain\Events\RequestApprovalRecorded;
-use App\Modules\Request\Domain\Events\RequestRejected;
 use App\Modules\Request\Domain\Exceptions\InvalidRequestTransitionException;
 use App\Modules\Request\Domain\Exceptions\RequestNotFoundException;
 use App\Modules\Request\Domain\Exceptions\RequestValidationException;
 use App\Modules\Request\Domain\Services\ApprovalStageResolver;
 use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
+use App\Modules\Workflow\Application\DTOs\DecideRequestApprovalStageCommand;
+use App\Modules\Workflow\Application\Services\DecideRequestApprovalStageAction;
+use App\Modules\Workflow\Domain\Exceptions\InvalidWorkflowTransitionException;
+use App\Modules\Workflow\Domain\Exceptions\UnauthorizedWorkflowStageActorException;
+use App\Modules\Workflow\Domain\Exceptions\WorkflowInstanceNotFoundException;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Event;
 
+/**
+ * Rejects the current Request stage via Workflow orchestration (WP-WF-04 cutover).
+ */
 final class RejectRequestAction
 {
     public function __construct(
         private readonly RequestRepositoryContract $requests,
-        private readonly RequestApprovalRepositoryContract $approvals,
         private readonly ApprovalStageResolver $stageResolver,
+        private readonly DecideRequestApprovalStageAction $decideWorkflowStage,
         private readonly MutationPolicyEnforcementPoint $mutationPolicy,
         private readonly RequestMutationAuthorizationGate $requestMutationAuth,
     ) {}
@@ -50,42 +52,29 @@ final class RejectRequestAction
         ]);
         $this->requestMutationAuth->assertReject($request, $approverId);
 
-        return DB::transaction(function () use ($request, $approverId, $reason): Request {
-            $stage = $this->stageResolver->stageForStatus($request->status);
-
-            if ($stage === null) {
-                throw new InvalidRequestTransitionException('Request is not awaiting approval.');
+        return DB::transaction(function () use ($requestId, $approverId, $reason): Request {
+            try {
+                $this->decideWorkflowStage->execute(new DecideRequestApprovalStageCommand(
+                    requestId: $requestId->value,
+                    actorIdentityId: $approverId->value,
+                    decision: 'rejected',
+                    reason: $reason,
+                ));
+            } catch (UnauthorizedWorkflowStageActorException $exception) {
+                throw new InvalidRequestTransitionException($exception->getMessage(), previous: $exception);
+            } catch (WorkflowInstanceNotFoundException $exception) {
+                throw new InvalidRequestTransitionException($exception->getMessage(), previous: $exception);
+            } catch (InvalidWorkflowTransitionException $exception) {
+                throw new RequestValidationException($exception->getMessage(), previous: $exception);
             }
 
-            $decidedAt = now('UTC')->toDateTimeImmutable();
-            $this->approvals->append(new RequestApproval(
-                id: null,
-                requestId: $request->requireId(),
-                stage: $stage,
-                decision: ApprovalDecision::Rejected,
-                approverId: $approverId,
-                reason: $reason,
-                decidedAt: $decidedAt,
-            ));
+            $updated = $this->requests->findById($requestId);
 
-            Event::dispatch(RequestApprovalRecorded::forApproval(
-                requestId: $request->requireId()->value,
-                approvalPayload: [
-                    'stage' => $stage->value,
-                    'decision' => ApprovalDecision::Rejected->value,
-                    'approver_id' => $approverId->value,
-                    'reason' => $reason,
-                ],
-            ));
+            if ($updated === null) {
+                throw new RequestNotFoundException('Request not found.');
+            }
 
-            $rejected = $this->requests->save($request->markRejected($reason));
-
-            Event::dispatch(RequestRejected::forRequest(
-                requestId: $rejected->requireId()->value,
-                reason: $reason,
-            ));
-
-            return $rejected;
+            return $updated;
         });
     }
 

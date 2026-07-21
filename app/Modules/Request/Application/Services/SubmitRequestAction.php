@@ -16,6 +16,8 @@ use App\Modules\Request\Domain\Exceptions\RequestNotEligibleException;
 use App\Modules\Request\Domain\Exceptions\RequestNotFoundException;
 use App\Modules\Request\Domain\Exceptions\RequestValidationException;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
+use App\Modules\Workflow\Application\DTOs\StartRequestApprovalWorkflowCommand;
+use App\Modules\Workflow\Application\Services\StartRequestApprovalWorkflowAction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 
@@ -25,6 +27,7 @@ final class SubmitRequestAction
         private readonly RequestRepositoryContract $requests,
         private readonly RequestEligibilityGatewayContract $eligibility,
         private readonly DormitoryReadContract $dormitoryRead,
+        private readonly StartRequestApprovalWorkflowAction $startApprovalWorkflow,
         private readonly MutationPolicyEnforcementPoint $mutationPolicy,
         private readonly RequestMutationAuthorizationGate $requestMutationAuth,
     ) {}
@@ -69,6 +72,11 @@ final class SubmitRequestAction
 
         return DB::transaction(function () use ($submitted): Request {
             $persisted = $this->requests->save($submitted);
+
+            $this->startApprovalWorkflow->execute(new StartRequestApprovalWorkflowCommand(
+                requestId: $persisted->requireId()->value,
+                stage1ApproverIdentityId: $persisted->assignedStage1ApproverIdentityId,
+            ));
 
             Event::dispatch(RequestSubmitted::forRequest(
                 requestId: $persisted->requireId()->value,

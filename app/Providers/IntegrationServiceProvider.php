@@ -9,12 +9,17 @@ use App\Integrations\Allocation\DormitoryAssignabilityReadBridge;
 use App\Integrations\Allocation\PhysicalStateSignalBridge;
 use App\Integrations\Audit\SpatieAuditPermissionReadBridge;
 use App\Integrations\CheckIn\AllocationAssignmentReadBridge;
+use App\Integrations\Notification\RequestApprovalNotificationDelivery;
+use App\Integrations\Notification\RequestApprovalNotificationSubscriber;
 use App\Integrations\Reporting\AuditHistorySourceReadBridge;
 use App\Integrations\Reporting\ReportingArchiveVisibilityBridge;
 use App\Integrations\Request\DormitoryReadBridge;
 use App\Integrations\Request\EmployeeEligibilityBridge;
 use App\Integrations\Request\PendingRequestReadBridge;
 use App\Integrations\Request\Stage1ApproverIdentityReadBridge;
+use App\Integrations\Workflow\RequestApprovalAutoSettingsBridge;
+use App\Integrations\Workflow\RequestApprovalCommandBridge;
+use App\Integrations\Workflow\StageRoleAuthorizationBridge;
 use App\Modules\Allocation\Application\Contracts\Ports\ApprovedRequestReadPort;
 use App\Modules\Allocation\Application\Contracts\Ports\DormitoryReadPort;
 use App\Modules\Allocation\Application\Contracts\Ports\PhysicalStateSignalPort;
@@ -28,6 +33,16 @@ use App\Modules\Reporting\Application\Contracts\Ports\ReportingArchiveVisibility
 use App\Modules\Request\Application\Contracts\DormitoryReadContract;
 use App\Modules\Request\Application\Contracts\Internal\RequestEligibilityGatewayContract;
 use App\Modules\Request\Application\Contracts\Stage1ApproverIdentityReadContract;
+use App\Modules\Request\Domain\Events\RequestApproved;
+use App\Modules\Request\Domain\Events\RequestRejected;
+use App\Modules\Request\Domain\Events\RequestSubmitted;
+use App\Modules\Workflow\Application\Contracts\RequestApprovalAutoSettingsPort;
+use App\Modules\Workflow\Application\Contracts\RequestApprovalCommandPort;
+use App\Modules\Workflow\Application\Contracts\StageRoleAuthorizationPort;
+use App\Modules\Workflow\Domain\Events\WorkflowInstanceCompleted;
+use App\Modules\Workflow\Domain\Events\WorkflowInstanceRejected;
+use App\Modules\Workflow\Domain\Events\WorkflowStepActivated;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 final class IntegrationServiceProvider extends ServiceProvider
@@ -43,8 +58,24 @@ final class IntegrationServiceProvider extends ServiceProvider
         $this->app->singleton(ProposedAllocationPort::class, ProposedAllocationConsumer::class);
         $this->app->singleton(DormitoryReadContract::class, DormitoryReadBridge::class);
         $this->app->singleton(Stage1ApproverIdentityReadContract::class, Stage1ApproverIdentityReadBridge::class);
+        $this->app->singleton(RequestApprovalCommandPort::class, RequestApprovalCommandBridge::class);
+        $this->app->singleton(RequestApprovalAutoSettingsPort::class, RequestApprovalAutoSettingsBridge::class);
+        $this->app->singleton(StageRoleAuthorizationPort::class, StageRoleAuthorizationBridge::class);
         $this->app->singleton(AuditPermissionReadPort::class, SpatieAuditPermissionReadBridge::class);
         $this->app->singleton(AuditHistorySourceReadPort::class, AuditHistorySourceReadBridge::class);
         $this->app->singleton(ReportingArchiveVisibilityPort::class, ReportingArchiveVisibilityBridge::class);
+        $this->app->singleton(RequestApprovalNotificationDelivery::class);
+        $this->app->singleton(RequestApprovalNotificationSubscriber::class);
+    }
+
+    public function boot(): void
+    {
+        // Deferred class listeners (do not resolve NotificationDeliveryContract at boot).
+        Event::listen(RequestSubmitted::class, [RequestApprovalNotificationSubscriber::class, 'onRequestSubmitted']);
+        Event::listen(WorkflowStepActivated::class, [RequestApprovalNotificationSubscriber::class, 'onWorkflowStepActivated']);
+        Event::listen(RequestApproved::class, [RequestApprovalNotificationSubscriber::class, 'onRequestApproved']);
+        Event::listen(WorkflowInstanceCompleted::class, [RequestApprovalNotificationSubscriber::class, 'onWorkflowInstanceCompleted']);
+        Event::listen(RequestRejected::class, [RequestApprovalNotificationSubscriber::class, 'onRequestRejected']);
+        Event::listen(WorkflowInstanceRejected::class, [RequestApprovalNotificationSubscriber::class, 'onWorkflowInstanceRejected']);
     }
 }

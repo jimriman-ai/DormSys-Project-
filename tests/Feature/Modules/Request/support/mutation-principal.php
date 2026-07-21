@@ -71,6 +71,19 @@ function asMutationApprover(callable $callback, ?array $approver = null): mixed
  */
 function approveRequestStageForTest(Request $request, ?array $approver = null): Request
 {
+    // Stage-1 Workflow snapshot (AS-04): default to assigned Stage-1 identity when present.
+    if (
+        $approver === null
+        && $request->status === \App\Modules\Request\Domain\States\PendingDepartmentManagerState::$name
+        && is_string($request->assignedStage1ApproverIdentityId)
+        && $request->assignedStage1ApproverIdentityId !== ''
+    ) {
+        $approver = [
+            'principalId' => $request->assignedStage1ApproverIdentityId,
+            'approverId' => ApproverReferenceId::fromString($request->assignedStage1ApproverIdentityId),
+        ];
+    }
+
     return asMutationApprover(
         fn (ApproverReferenceId $approverId) => app(ApproveRequestStageAction::class)->execute($request->requireId(), $approverId),
         $approver,

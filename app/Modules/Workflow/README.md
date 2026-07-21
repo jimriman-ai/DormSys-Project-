@@ -1,10 +1,20 @@
 # Workflow Module
 
-**Posture (HD-WF-01 Option B / CD-010-A1 — 1405/04/30 \| 2026-07-21):** **ACTIVATED** for Request approval orchestration.
+**Posture (HD-WF-01 Option B / CD-010-A1):** **ACTIVATED** for Request approval orchestration.
 
-- Ownership split (CD-010 retained): Request owns `RequestApproval` state/history; Workflow owns transition rules, chain, routing.
-- Implementation authorized under **WP-WF-01…05** (after WP-WF-00 docs registration).
-- First instance: Request approval chain. Second instance: deferred, non-blocking.
-- This directory remains a scaffold until WP-WF-02+ deliver domain/application/infrastructure.
+## WP-WF-02 — Domain + Application
+Request Approval Workflow only (OD-1).
 
-See: `docs/governance/open-decisions.md` (HD-WF-01, CD-010-A1); `.specify/docs/catalog-decisions.md` (CD-010 / CD-010-A1).
+## WP-WF-03 — Persistence
+Tables + Eloquent repository; soft UUID `request_id`.
+
+## WP-WF-04 — Request cutover
+Submit/Approve/Reject → Workflow actions; RequestApproval SoT via command port.
+
+## WP-WF-05 — Notifications (delivered)
+Integration listeners → `NotificationDeliveryContract` (Decision Lock A1/B3/C1/D2).  
+Workflow domain/schema unchanged; Notification owns delivery.
+
+**Not in Workflow module:** UI, WP-DORM-04, role fan-out for S2–S4 pending.
+
+See: `docs/features/workflow/l3-design.md`, `docs/features/workflow/wp-wf-05-notification-audit.md`

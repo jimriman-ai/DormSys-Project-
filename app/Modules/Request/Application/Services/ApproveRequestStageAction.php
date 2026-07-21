@@ -6,31 +6,29 @@ namespace App\Modules\Request\Application\Services;
 
 use App\Application\Mutation\Registry\MutationCapabilityCatalog;
 use App\Application\Mutation\Services\MutationPolicyEnforcementPoint;
-use App\Modules\Request\Application\Contracts\RequestApprovalRepositoryContract;
 use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
 use App\Modules\Request\Domain\Entities\Request;
-use App\Modules\Request\Domain\Entities\RequestApproval;
-use App\Modules\Request\Domain\Enums\ApprovalDecision;
-use App\Modules\Request\Domain\Enums\ApprovalStage;
-use App\Modules\Request\Domain\Events\RequestApprovalRecorded;
-use App\Modules\Request\Domain\Events\RequestApproved;
 use App\Modules\Request\Domain\Exceptions\InvalidRequestTransitionException;
 use App\Modules\Request\Domain\Exceptions\RequestNotFoundException;
 use App\Modules\Request\Domain\Services\ApprovalStageResolver;
-use App\Modules\Request\Domain\States\ApprovedState;
 use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
-use App\Shared\ValueObjects\SystemActorId;
+use App\Modules\Workflow\Application\DTOs\DecideRequestApprovalStageCommand;
+use App\Modules\Workflow\Application\Services\DecideRequestApprovalStageAction;
+use App\Modules\Workflow\Domain\Exceptions\UnauthorizedWorkflowStageActorException;
+use App\Modules\Workflow\Domain\Exceptions\WorkflowInstanceNotFoundException;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Event;
 
+/**
+ * Approves the current Request stage via Workflow orchestration (WP-WF-04 cutover).
+ * Canonical history remains RequestApproval (via RequestApprovalCommandPort).
+ */
 final class ApproveRequestStageAction
 {
     public function __construct(
         private readonly RequestRepositoryContract $requests,
-        private readonly RequestApprovalRepositoryContract $approvals,
         private readonly ApprovalStageResolver $stageResolver,
-        private readonly AutoApprovalSettingsReader $autoApproval,
+        private readonly DecideRequestApprovalStageAction $decideWorkflowStage,
         private readonly MutationPolicyEnforcementPoint $mutationPolicy,
         private readonly RequestMutationAuthorizationGate $requestMutationAuth,
     ) {}
@@ -47,10 +45,26 @@ final class ApproveRequestStageAction
         ]);
         $this->requestMutationAuth->assertApprove($request, $approverId);
 
-        return DB::transaction(function () use ($request, $approverId): Request {
-            $request = $this->recordApprovalAndAdvance($request, $approverId);
+        return DB::transaction(function () use ($requestId, $approverId): Request {
+            try {
+                $this->decideWorkflowStage->execute(new DecideRequestApprovalStageCommand(
+                    requestId: $requestId->value,
+                    actorIdentityId: $approverId->value,
+                    decision: 'approved',
+                ));
+            } catch (UnauthorizedWorkflowStageActorException $exception) {
+                throw new InvalidRequestTransitionException($exception->getMessage(), previous: $exception);
+            } catch (WorkflowInstanceNotFoundException $exception) {
+                throw new InvalidRequestTransitionException($exception->getMessage(), previous: $exception);
+            }
 
-            return $this->applyAutoApprovalChain($request);
+            $updated = $this->requests->findById($requestId);
+
+            if ($updated === null) {
+                throw new RequestNotFoundException('Request not found.');
+            }
+
+            return $updated;
         });
     }
 
@@ -67,72 +81,5 @@ final class ApproveRequestStageAction
         }
 
         return $request;
-    }
-
-    private function recordApprovalAndAdvance(Request $request, ApproverReferenceId $approverId): Request
-    {
-        $stage = $this->stageResolver->stageForStatus($request->status);
-
-        if ($stage === null) {
-            throw new InvalidRequestTransitionException('Request is not awaiting approval.');
-        }
-
-        $decidedAt = now('UTC')->toDateTimeImmutable();
-        $this->approvals->append(new RequestApproval(
-            id: null,
-            requestId: $request->requireId(),
-            stage: $stage,
-            decision: ApprovalDecision::Approved,
-            approverId: $approverId,
-            reason: null,
-            decidedAt: $decidedAt,
-        ));
-
-        $this->dispatchApprovalRecorded($request, $stage, ApprovalDecision::Approved, $approverId, null);
-
-        $nextStatus = $this->stageResolver->statusAfterApproval($stage);
-        $advanced = $this->requests->save($request->withStatus($nextStatus));
-
-        if ($nextStatus === ApprovedState::$name) {
-            Event::dispatch(RequestApproved::forRequest($advanced->requireId()->value));
-        }
-
-        return $advanced;
-    }
-
-    private function applyAutoApprovalChain(Request $request): Request
-    {
-        while ($request->isPendingApproval()) {
-            $stage = $this->stageResolver->stageForStatus($request->status);
-
-            if ($stage === null || ! $this->autoApproval->isEnabled($stage)) {
-                break;
-            }
-
-            $request = $this->recordApprovalAndAdvance(
-                $request,
-                ApproverReferenceId::fromString(SystemActorId::VALUE),
-            );
-        }
-
-        return $request;
-    }
-
-    private function dispatchApprovalRecorded(
-        Request $request,
-        ApprovalStage $stage,
-        ApprovalDecision $decision,
-        ApproverReferenceId $approverId,
-        ?string $reason,
-    ): void {
-        Event::dispatch(RequestApprovalRecorded::forApproval(
-            requestId: $request->requireId()->value,
-            approvalPayload: [
-                'stage' => $stage->value,
-                'decision' => $decision->value,
-                'approver_id' => $approverId->value,
-                'reason' => $reason,
-            ],
-        ));
     }
 }
