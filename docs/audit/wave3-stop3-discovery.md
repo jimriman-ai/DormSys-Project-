@@ -208,3 +208,21 @@ Wave 3 **ACTIVE** for discovery only · **SUSPENDED for implementation** until L
 
 **Not created (post-approval only):**  
 `DormitoryStudentRequestStateMachine.php`, Domain Events pack, `wave3-state-machine-design.md` (design), ledger Wave 3 COMPLETE row.
+
+---
+
+# STOP-3 resolution — W3-B EXECUTED (2026-07-21)
+
+| Field | Value |
+|-------|--------|
+| STOP-3A | **APPROVED** — Dormitory SM forbidden |
+| STOP-3B | **APPROVED** — HD-02/HD-03/DBT-3 untouched |
+| Disposition | **W3-B** |
+| States added | `waiting_for_allocation`, `allocated`, `allocation_failed`, `checked_in`, `checked_out` |
+| Adapter | `RequestLifecycleCommandAdapter` wired (no-op removed) |
+| Design doc | `docs/audit/wave3-state-machine-design.md` |
+| Known-risk | `docs/audit/wave3-wp-wf-04-known-risk.md` |
+| Debt | DEBT-W3-01 (CheckIn→Request consumer) |
+| Session Handoff | `docs/audit/wave3-session-handoff.md` |
+
+**Agent status:** Wave 3 W3-B **COMPLETE** (pending Session Handoff commit) · SUSPENDED until next Lead command.
