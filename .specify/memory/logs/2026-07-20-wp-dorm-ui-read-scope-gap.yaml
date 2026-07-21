@@ -1,0 +1,6 @@
+prompt_id: mandate-v1-2026-07-20
+recorded_at: 2026-07-20T22:00:00+03:30
+work_item: WP-DORM-UI-READ
+stage: preflight-chain-5
+tags: [AMBIGUITY, OWNER_DECISION_NEEDED, EVIDENCE_GAP]
+summary: "WP-DORM-UI-READ appears in post-ruling sequence but has no deliverable/non-goal brief in ledger or feature docs; Mandate TIER 3 STOP applied. Separate observation: GetOpenCheckInByAllocationAction was registered in ExemptMutationActionRegistry (Tier-2, FOR-RATIFICATION)."

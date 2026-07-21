@@ -1,0 +1,6 @@
+prompt_id: decision-sweep-pre-execution-2026-07-20
+recorded_at: 2026-07-20T22:18:00+03:30
+work_item: governance-decision-sweep
+stage: pre-execution-governance
+tags: [EVIDENCE_CONFLICT, OWNER_DECISION_NEEDED, EVIDENCE_GAP]
+summary: "DG-SETTINGS-01 gate notes still claim no settings create migration while modules/system/2026_07_20_000001 exists; GAP-PREUI-01..15 live mainly in Pre-UI audit transcript with only GAP-PREUI-12 recorded in open-decisions. Lead ruling pack prepared for SettingsReadContract Option B, D-G03-FORM Option A, Policy advisory, Entrypoint Application-only."

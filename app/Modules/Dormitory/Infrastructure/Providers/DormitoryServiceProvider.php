@@ -17,6 +17,8 @@ use App\Modules\Dormitory\Application\Services\AllocationPhysicalStateApplicatio
 use App\Modules\Dormitory\Application\Services\DormitoryStructureAuthorizationGate;
 use App\Modules\Dormitory\Application\Services\DormitoryStructureMutationService;
 use App\Modules\Dormitory\Application\Services\DormitoryStructureReadService;
+use App\Modules\Dormitory\Application\Services\GetEmployeeAssignedDormitoryAction;
+use App\Modules\Dormitory\Application\Services\ListEmployeeAssignedDormitoriesAction;
 use App\Modules\Dormitory\Domain\Contracts\DormitoryAssignmentReader;
 use App\Modules\Dormitory\Infrastructure\Persistence\EloquentDormitoryAssignmentReader;
 use App\Modules\Dormitory\Infrastructure\Persistence\Models\DormitoryModel;
@@ -39,6 +41,8 @@ class DormitoryServiceProvider extends ServiceProvider
         $this->app->singleton(AllocationBedPhysicalStateRepositoryContract::class, AllocationBedPhysicalStateRepository::class);
         $this->app->singleton(AllocationAssignabilityContract::class, AllocationAssignabilityService::class);
         $this->app->singleton(AllocationPhysicalStateApplicationContract::class, AllocationPhysicalStateApplicationService::class);
+        $this->app->singleton(ListEmployeeAssignedDormitoriesAction::class);
+        $this->app->singleton(GetEmployeeAssignedDormitoryAction::class);
     }
 
     public function boot(): void

@@ -1,4 +1,4 @@
-<div data-testid="dormitory-show-page" data-dormitory-id="{{ $dormitory->getId() }}">
+<div data-testid="dormitory-show-page" data-dormitory-id="{{ $dormitory->id }}">
     <x-ui.page-header
         title="{{ $dormitory->name }}"
         description="مشاهده اطلاعات پایه خوابگاه (فقط خواندنی)."
@@ -20,7 +20,7 @@
         <div>
             <dt class="text-slate-500">وضعیت</dt>
             <dd class="mt-1 font-medium text-slate-900" dir="ltr" data-testid="dormitory-show-status">
-                {{ $dormitory->status->value }}
+                {{ $dormitory->status }}
             </dd>
         </div>
     </dl>

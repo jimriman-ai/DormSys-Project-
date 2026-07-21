@@ -11,6 +11,8 @@ use App\Application\Auth\LogoutUserAction;
 use App\Modules\Audit\Application\Services\QueryAuditHistoryAction;
 use App\Modules\Audit\Application\Services\RecordAuditAction;
 use App\Modules\CheckIn\Application\Services\GetOpenCheckInByAllocationAction;
+use App\Modules\Dormitory\Application\Services\GetEmployeeAssignedDormitoryAction;
+use App\Modules\Dormitory\Application\Services\ListEmployeeAssignedDormitoriesAction;
 use App\Modules\Reporting\Application\Services\QueryActorAuditTimelineAction;
 use App\Modules\Reporting\Application\Services\QueryAuditWindowSummaryAction;
 use App\Modules\Reporting\Application\Services\QueryComplianceExportAction;
@@ -35,6 +37,8 @@ final class ExemptMutationActionRegistry
         ListPendingStage1RequestsAction::class,
         RejectStage1RequestAction::class,
         GetOpenCheckInByAllocationAction::class,
+        ListEmployeeAssignedDormitoriesAction::class,
+        GetEmployeeAssignedDormitoryAction::class,
         RecordAuditAction::class,
         QueryAuditHistoryAction::class,
         QueryEntityAuditTimelineAction::class,

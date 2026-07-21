@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/29 | 2026-07-20 | Session: Completion overlay — WP-REQ-01 verified; STOP Activation (no BEGIN AUDIT)_
+_Last updated: 1405/04/30 | 2026-07-21 | Session: WP-REQ-04 PREFLIGHT STOP — dirty tree + PHPStan baseline fail_
 
-**Authority note:** Overlay applied. `roadmap-execution-protocol.md` **MISSING** (precedence N/A). Ledger READ-ONLY. No Wave A code started.
+**Authority note:** OBSERVED. No WP-REQ-04 code edits. Mandate Section 0 STOP honored.
 
 ---
 
@@ -13,25 +13,25 @@ _Last updated: 1405/04/29 | 2026-07-20 | Session: Completion overlay — WP-REQ-
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| WP-REQ-01 | GAP-PREUI-12 pretreat | audit stale → **FK dropped, column+index retained** | migration + `pg_constraint` 0 rows |
-| Activation | Mode / BEGIN AUDIT | not declared → **STOP** | overlay § Activation |
-| Wave queue | A→D | armed, not started | Lead templates 4.1–4.9 |
+| WP-REQ-04 | Preflight | attempted → **STOP** | dirty working tree; PHPStan 4 errors |
+| Implementation | contract/form/tests | not started | Section 0 hard stop |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🧑‍⚖️ **Human Decision** — declare Mode + `BEGIN AUDIT` + ACTIVE_WP (recommend `WP-EMP-REL-01`)
+🧑‍⚖️ **Human Decision** — clean/commit prior WP-DORM-UI-READ (and related) tree, then re-run WP-REQ-04 Preflight
 
 ---
 
 ## 7. Next Step
 
-**Action:** Lead: Mode=`WP_EXECUTION`, ACTIVE_WP=`WP-EMP-REL-01`, command `BEGIN AUDIT` (or paste Session Context + §4.1). Also Lead-commit WP-REQ-01 migration; register GAP-PREUI-12 note.  
+**Action:** Lead: commit or stash unrelated dirty files; fix or disposition PHPStan baseline errors in listed tests; re-issue WP-REQ-04 with clean tree.  
 **Owner:** Lead  
-**Gate:** Activation Protocol  
+**Gate:** Section 0 Preflight pass  
+**Done when:** `git status` clean (or only WP-REQ-04 files); `php artisan test --parallel` green; `php vendor/bin/phpstan analyse --no-progress` green  
 **Suggested user prompt:**
-> Mode: WP_EXECUTION | ACTIVE_WP: WP-EMP-REL-01 | BEGIN AUDIT
+> After clean tree + green baseline, re-run WP-REQ-04 mandate from Section 0.
 
 ---
 
@@ -39,6 +39,5 @@ _Last updated: 1405/04/29 | 2026-07-20 | Session: Completion overlay — WP-REQ-
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| WP-REQ-01 | DELIVERED (ACCEPT review) | pending Lead commit + ledger WP CLOSED if desired |
-| GAP-PREUI-12 | OBSERVED SUPERSEDED | no new WP; register sync by Lead |
-| roadmap-execution-protocol.md | MISSING | overlay precedence target absent |
+| GAP-PREUI-03 / WP-REQ-04 | BLOCKED (preflight) | dirty tree + PHPStan; no impl |
+| WP-DORM-UI-READ uncommitted | OBSERVED | blocks clean-tree gate |

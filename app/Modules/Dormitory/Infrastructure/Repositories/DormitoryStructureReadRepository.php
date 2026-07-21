@@ -13,6 +13,7 @@ use App\Modules\Dormitory\Application\DTOs\FloorSummaryData;
 use App\Modules\Dormitory\Application\DTOs\RoomSummaryData;
 use App\Modules\Dormitory\Infrastructure\Persistence\Models\BedModel;
 use App\Modules\Dormitory\Infrastructure\Persistence\Models\BuildingModel;
+use App\Modules\Dormitory\Infrastructure\Persistence\Models\DormitoryAssignment;
 use App\Modules\Dormitory\Infrastructure\Persistence\Models\DormitoryModel;
 use App\Modules\Dormitory\Infrastructure\Persistence\Models\FloorModel;
 use App\Modules\Dormitory\Infrastructure\Persistence\Models\RoomModel;
@@ -53,6 +54,45 @@ final class DormitoryStructureReadRepository implements DormitoryStructureReadRe
             name: $model->name,
             status: $model->status->value,
         );
+    }
+
+    /**
+     * @return list<DormitorySummaryData>
+     */
+    public function listAssignedDormitoriesForUser(string $identityUserId): array
+    {
+        return array_values(DormitoryModel::query()
+            ->whereIn(
+                'id',
+                DormitoryAssignment::query()
+                    ->active()
+                    ->where('user_id', $identityUserId)
+                    ->select('dormitory_id'),
+            )
+            ->orderBy('code')
+            ->get()
+            ->map(static fn (DormitoryModel $model): DormitorySummaryData => new DormitorySummaryData(
+                id: $model->getId(),
+                code: $model->code,
+                name: $model->name,
+                status: $model->status->value,
+            ))
+            ->all());
+    }
+
+    public function findAssignedDormitoryDetailForUser(string $identityUserId, string $dormitoryId): ?DormitoryDetailData
+    {
+        $hasActiveAssignment = DormitoryAssignment::query()
+            ->active()
+            ->where('user_id', $identityUserId)
+            ->where('dormitory_id', $dormitoryId)
+            ->exists();
+
+        if (! $hasActiveAssignment) {
+            return null;
+        }
+
+        return $this->findDormitoryDetail($dormitoryId);
     }
 
     /**

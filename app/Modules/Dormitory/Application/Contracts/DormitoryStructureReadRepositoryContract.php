@@ -24,6 +24,18 @@ interface DormitoryStructureReadRepositoryContract
     public function findDormitoryDetail(string $dormitoryId): ?DormitoryDetailData;
 
     /**
+     * Active-assignment-scoped dormitory summaries for an identity user (employee UI).
+     *
+     * @return list<DormitorySummaryData>
+     */
+    public function listAssignedDormitoriesForUser(string $identityUserId): array;
+
+    /**
+     * Dormitory detail when the identity user has an active assignment; otherwise null.
+     */
+    public function findAssignedDormitoryDetailForUser(string $identityUserId, string $dormitoryId): ?DormitoryDetailData;
+
+    /**
      * @return list<BuildingSummaryData>
      */
     public function listBuildingsByDormitoryId(string $dormitoryId): array;

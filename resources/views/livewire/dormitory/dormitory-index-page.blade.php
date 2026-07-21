@@ -4,7 +4,7 @@
         description="خوابگاه‌هایی که به شما اختصاص داده شده‌اند."
     />
 
-    @if ($dormitories->isEmpty())
+    @if (count($dormitories) === 0)
         <x-ui.empty-state
             data-testid="dormitory-index-empty"
             title="خوابگاهی اختصاص داده نشده"
@@ -16,10 +16,10 @@
                 <li
                     class="rounded-xl border border-slate-200 bg-white p-4"
                     data-testid="dormitory-index-item"
-                    data-dormitory-id="{{ $dormitory->getId() }}"
+                    data-dormitory-id="{{ $dormitory->id }}"
                 >
                     <a
-                        href="{{ route('dormitories.show', $dormitory) }}"
+                        href="{{ route('dormitories.show', $dormitory->id) }}"
                         class="block text-base font-semibold text-sky-700 hover:text-sky-800"
                         data-testid="dormitory-index-link"
                     >
