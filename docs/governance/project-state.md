@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only. Not a decision ledger. Does not supersede `docs/governance/open-decisions.md`.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/30 | 2026-07-21 | Session: WP-WF-05 notifications implemented (A1/B3/C1/D2) — pending Lead commit_
+_Last updated: 1405/04/30 | 2026-07-21 | Session: Wave 2 closeout — Option A / W2-SOFT-COUPLING-01_
 
-**Authority note:** OBSERVED. Decision Lock applied; WP-WF-05 code delivered. No WP-DORM-04.
+**Authority note:** OBSERVED. Wave 2 Isolation **COMPLETE** (STOP-2 Option A). Soft coupling accepted as debt. No Livewire/layout code changes.
 
 ---
 
@@ -13,17 +13,17 @@ _Last updated: 1405/04/30 | 2026-07-21 | Session: WP-WF-05 notifications impleme
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| Decision Lock | WP-WF-05 A/B/C/D | locked A1/B3/C1/D2 | Lead GO |
-| NotificationType | enum | +`request_approval_pending` | A1 |
-| Integration | `app/Integrations/Notification/` | subscriber + delivery | B3/C1/D2 |
-| Tests | RequestApprovalWorkflowNotificationTest | 4 passed | Sail |
-| PHPStan | Integration + type | 0 errors | scoped analyse |
+| STOP-2 | Option A approved | awaiting → **RESOLVED** | Lead closeout |
+| Soft coupling | W2-SOFT-COUPLING-01 | registered **ACCEPTED** | `docs/audit/wave2-debt-discovery.md` |
+| Discovery closeout | `wave2-isolation-discovery.md` | STOP-2 resolution appended | same |
+| Ledger | `open-decisions.md` | Wave 2 **COMPLETE** + gate row | Gate + Changelog |
+| Livewire / layout | — | **unchanged** | constraint |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🔀 **Lifecycle** — WP-WF-05 **OBSERVED complete**; WP-WF sequence 00–05 done; WP-DORM-04 still HOLD until Lead GO
+🔀 **Lifecycle** — Completion Wave 2 · **COMPLETE** (Agent SUSPENDED; await Wave 3 / next Lead command)
 
 ---
 
@@ -31,28 +31,37 @@ _Last updated: 1405/04/30 | 2026-07-21 | Session: WP-WF-05 notifications impleme
 
 | ID | Summary |
 |----|---------|
-| WP-WF-05 lock | A1/B3/C1/D2 ACCEPTED |
-| WP-DORM-04 | HOLD (sequence after WP-WF-05) |
+| W2-SOFT-COUPLING-01 | **ACCEPTED** — layout string debt |
+| STOP-F | W1-01 dual-session — no touch without UNFREEZE DBT-3 |
+| DO NOT TOUCH | W1-06 users PK; W1-03 allowlist without new HD |
+| OQ-DORM-04 | WP-DORM-04 HOLD |
+
+Canonical: `docs/governance/open-decisions.md`
 
 ---
 
 ## 6. Lifecycle Matrix (affected)
 
-| WP | Status |
-|----|--------|
-| WP-WF-00…04 | OBSERVED done |
-| WP-WF-05 | **OBSERVED DONE** |
+| Item | Status |
+|------|--------|
+| Wave 1 Auth remediation | ✅ COMPLETE |
+| DEBT-DISCOVERY-01 (W1) | ✅ registered |
+| Wave 2 Isolation | ✅ **COMPLETE** (Option A; `W2-SOFT-COUPLING-01` ACCEPTED) |
+| WP-WF-00…05 | OBSERVED complete (prior) |
 | WP-DORM-04 | HOLD |
 
 ---
 
 ## 7. Next Step
 
-**Action:** Lead review WP-WF-05 STOP/completion; commit; authorize WP-DORM-04 only when ready.  
+**Action:** Lead issues next command (`BEGIN WAVE 3` / handoff / other WP). Agent remains SUSPENDED until then.  
 **Owner:** Lead  
-**Gate:** WP-WF-05 accepted  
+**Gate:** none for Wave 2 (closed)  
+**Target files:** n/a (Wave 2 docs-only closeout done)  
+**Done when:** Lead scopes next wave  
+**Blocker:** none for Wave 2  
 **Suggested user prompt:**
-> ACCEPT WP-WF-05 — commit Workflow sequence; GO WP-DORM-04 when authorized
+> `BEGIN WAVE 3` + scope packet (or `BEGIN HANDOFF` if serial handoff required)
 
 ---
 
@@ -60,6 +69,8 @@ _Last updated: 1405/04/30 | 2026-07-21 | Session: WP-WF-05 notifications impleme
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| WP-WF-05 | **OBSERVED DONE** | pending Lead commit |
-| S2–S4 pending fan-out | DEFERRED | C1 scope |
-| WP-DORM-04 | HOLD | after WP-WF-05 |
+| W2-SOFT-COUPLING-01 | ACCEPTED | layout string; optional B/C later |
+| DEBT-W1-01 | OPEN / FROZEN | dual-session — STOP-F |
+| DEBT-W1-03 | ACCEPTED | allowlist |
+| DEBT-W1-06 | DO NOT TOUCH | users PK |
+| WP-DORM-04 | HOLD | OQ-DORM-04 |

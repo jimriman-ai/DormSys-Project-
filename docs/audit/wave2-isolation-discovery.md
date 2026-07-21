@@ -82,16 +82,27 @@ Binds only Dormitory Application/Domain/Infrastructure contracts and policies (`
 ```
 STOP-2 GATE
 ─────────────────────────────────────
-Files to change     : <none | pending Lead option B/C>
-Shared contracts    : <none | pending Lead option C>
+Files to change     : none (Option A)
+Shared contracts    : none
 PHP Dormitory→Dashboard imports : 0
 Entrypoint violations           : 0
 Provider Dashboard binds        : 0
-Soft layout coupling            : 2 Livewire files (see §B)
+Soft layout coupling            : 2 Livewire files → W2-SOFT-COUPLING-01 ACCEPTED
 DEBT exclusions honored         : W1-01 / W1-03 / W1-06 not touched
 ─────────────────────────────────────
-AWAITING: APPROVE STOP-2
-  + disposition A | B | C
+RESOLVED: APPROVE STOP-2 — Option A
 ```
 
-**Agent status:** Wave 2 **ACTIVE** for discovery only · **SUSPENDED for writes** until `APPROVE STOP-2`.
+---
+
+## STOP-2 resolution (Lead)
+
+| Field | Value |
+|-------|--------|
+| Disposition | **Option A** approved by Lead |
+| Meaning | PHP isolation is sufficient; soft Blade layout coupling accepted as debt |
+| Soft coupling | Registered as **W2-SOFT-COUPLING-01** — see `docs/audit/wave2-debt-discovery.md` |
+| Code changes | **None** (Livewire / layout / frozen scope untouched) |
+| Wave 2 status | **COMPLETE** |
+
+**Agent status:** Wave 2 **COMPLETE** · Agent **SUSPENDED** (await next Lead command).
