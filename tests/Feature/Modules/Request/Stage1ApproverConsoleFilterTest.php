@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Modules\Request\Application\Contracts\Stage1ApproverIdentityReadContract;
+use App\Modules\Request\Application\Services\AssignStage1ApproverSnapshotAction;
+use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Presentation\Livewire\Stage1ApproverConsolePage;
 use Database\Seeders\IdentityRoleSeeder;
 use Illuminate\Support\Carbon;
@@ -43,6 +45,11 @@ afterEach(function (): void {
 
 /**
  * Bind Stage-1 snapshot resolution to the acting dormitory-manager (OQ-REQ-06).
+ *
+ * Forgets cached Create/Assign Stage-1 actions so constructor-injected
+ * Stage1ApproverIdentityReadContract picks up this binding (singletons otherwise stick).
+ *
+ * @param  array{model: \App\Modules\Identity\Infrastructure\Persistence\Models\UserModel, approverId: \App\Modules\Request\Domain\ValueObjects\ApproverReferenceId}  $approver
  */
 function bindStage1ConsoleApproverAsSnapshotSource(array $approver): void
 {
@@ -58,6 +65,9 @@ function bindStage1ConsoleApproverAsSnapshotSource(array $approver): void
             }
         },
     );
+
+    app()->forgetInstance(AssignStage1ApproverSnapshotAction::class);
+    app()->forgetInstance(CreatePersonalRequestAction::class);
 }
 
 it('redirects guests from the stage-1 console list', function (): void {
@@ -85,7 +95,8 @@ it('shows empty-state when dormitory-manager has no pending stage-1 requests', f
 it('lists pending stage-1 requests for dormitory-manager', function (): void {
     $approver = createDormitoryManagerApproverForStage1Console();
     bindStage1ConsoleApproverAsSnapshotSource($approver);
-    $submitted = createSubmittedStage1PersonalRequest();
+    // Must pass $approver — bare createSubmittedStage1PersonalRequest() invents a second manager.
+    $submitted = createSubmittedStage1PersonalRequest($approver);
 
     Livewire::actingAs($approver['model'], 'identity')
         ->test(Stage1ApproverConsolePage::class)
@@ -100,8 +111,8 @@ it('lists pending stage-1 requests for dormitory-manager', function (): void {
 it('filters the pending list by request code search', function (): void {
     $approver = createDormitoryManagerApproverForStage1Console();
     bindStage1ConsoleApproverAsSnapshotSource($approver);
-    $match = createSubmittedStage1PersonalRequest();
-    $other = createSubmittedStage1PersonalRequest();
+    $match = createSubmittedStage1PersonalRequest($approver);
+    $other = createSubmittedStage1PersonalRequest($approver);
 
     Livewire::actingAs($approver['model'], 'identity')
         ->test(Stage1ApproverConsolePage::class)
@@ -114,7 +125,7 @@ it('filters the pending list by request code search', function (): void {
 it('shows filter empty-state when search matches nothing', function (): void {
     $approver = createDormitoryManagerApproverForStage1Console();
     bindStage1ConsoleApproverAsSnapshotSource($approver);
-    createSubmittedStage1PersonalRequest();
+    createSubmittedStage1PersonalRequest($approver);
 
     Livewire::actingAs($approver['model'], 'identity')
         ->test(Stage1ApproverConsolePage::class)
@@ -127,7 +138,7 @@ it('shows filter empty-state when search matches nothing', function (): void {
 it('clears search and restores the full pending list', function (): void {
     $approver = createDormitoryManagerApproverForStage1Console();
     bindStage1ConsoleApproverAsSnapshotSource($approver);
-    $submitted = createSubmittedStage1PersonalRequest();
+    $submitted = createSubmittedStage1PersonalRequest($approver);
 
     Livewire::actingAs($approver['model'], 'identity')
         ->test(Stage1ApproverConsolePage::class)
