@@ -25,13 +25,21 @@ abstract class RequestState extends State
             ->allowTransition(PendingDormitoryManagerState::class, PendingDormitoryUnitState::class)
             ->allowTransition(PendingDormitoryManagerState::class, RejectedState::class)
             ->allowTransition(PendingDormitoryUnitState::class, ApprovedState::class)
-            ->allowTransition(PendingDormitoryUnitState::class, RejectedState::class);
+            ->allowTransition(PendingDormitoryUnitState::class, RejectedState::class)
+            // OA-05-03 post-approval operational lifecycle (W3-B)
+            ->allowTransition(ApprovedState::class, WaitingForAllocationState::class)
+            ->allowTransition(WaitingForAllocationState::class, AllocatedState::class)
+            ->allowTransition(WaitingForAllocationState::class, AllocationFailedState::class)
+            ->allowTransition(AllocatedState::class, CheckedInState::class)
+            ->allowTransition(AllocatedState::class, AllocationFailedState::class)
+            ->allowTransition(CheckedInState::class, CheckedOutState::class);
     }
 
     public function isTerminal(): bool
     {
-        return $this instanceof ApprovedState
-            || $this instanceof RejectedState
-            || $this instanceof CancelledState;
+        return $this instanceof RejectedState
+            || $this instanceof CancelledState
+            || $this instanceof AllocationFailedState
+            || $this instanceof CheckedOutState;
     }
 }

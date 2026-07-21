@@ -6,12 +6,16 @@ use App\Modules\Allocation\Application\Contracts\RequestLifecycleCommandPort;
 use App\Modules\Allocation\Application\Services\CreateAllocationFromRequestAction;
 use App\Modules\Employee\Domain\Entities\Employee;
 use App\Modules\Employee\Domain\ValueObjects\IdentityUserId;
+use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
 use App\Modules\Request\Application\Services\CreatePersonalRequestAction;
 use App\Modules\Request\Application\Services\SubmitRequestAction;
 use App\Modules\Request\Domain\Entities\Request;
+use App\Modules\Request\Domain\States\AllocatedState;
 use App\Modules\Request\Domain\States\ApprovedState;
+use App\Modules\Request\Domain\States\WaitingForAllocationState;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
+use App\Modules\Request\Domain\ValueObjects\RequestId;
 use App\Support\ValueObjects\Identity\NationalCode;
 use Illuminate\Support\Carbon;
 use Tests\Support\MockeryTest;
@@ -63,6 +67,39 @@ function createApprovedRequestForLifecycleHandoffTest(): array
 
     return [$employee, $request, $bedId];
 }
+
+it('wires RequestLifecycleCommandAdapter to persist allocated status from approved', function (): void {
+    [, $request, $bedId] = createApprovedRequestForLifecycleHandoffTest();
+
+    expect($request->status)->toBe(ApprovedState::$name);
+
+    $allocation = runAllocationMutation(fn () => app(CreateAllocationFromRequestAction::class)->execute(
+        requestId: $request->requireId()->value,
+        bedId: $bedId,
+    ));
+
+    $reloaded = app(RequestRepositoryContract::class)->findById(
+        RequestId::fromString($request->requireId()->value),
+    );
+
+    expect($reloaded)->not->toBeNull();
+    expect($reloaded?->status)->toBe(AllocatedState::$name);
+    expect($allocation->sourceRequestId)->toBe($request->requireId()->value);
+});
+
+it('markWaitingForAllocation is idempotent when already waiting', function (): void {
+    [, $request] = createApprovedRequestForLifecycleHandoffTest();
+
+    $lifecycle = app(RequestLifecycleCommandPort::class);
+    $lifecycle->markWaitingForAllocation($request->requireId()->value);
+    $lifecycle->markWaitingForAllocation($request->requireId()->value);
+
+    $reloaded = app(RequestRepositoryContract::class)->findById(
+        RequestId::fromString($request->requireId()->value),
+    );
+
+    expect($reloaded?->status)->toBe(WaitingForAllocationState::$name);
+});
 
 it('invokes RequestLifecycleCommandPort on successful allocation from request source', function (): void {
     [$employee, $request, $bedId] = createApprovedRequestForLifecycleHandoffTest();

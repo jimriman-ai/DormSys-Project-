@@ -6,8 +6,12 @@ namespace Tests\Unit\Modules\Request\Domain;
 
 use App\Modules\Request\Domain\Entities\Request;
 use App\Modules\Request\Domain\Enums\RequestType;
+use App\Modules\Request\Domain\States\AllocatedState;
+use App\Modules\Request\Domain\States\AllocationFailedState;
 use App\Modules\Request\Domain\States\ApprovedState;
 use App\Modules\Request\Domain\States\CancelledState;
+use App\Modules\Request\Domain\States\CheckedInState;
+use App\Modules\Request\Domain\States\CheckedOutState;
 use App\Modules\Request\Domain\States\DraftState;
 use App\Modules\Request\Domain\States\PendingDepartmentManagerState;
 use App\Modules\Request\Domain\States\PendingDormitoryManagerState;
@@ -15,6 +19,7 @@ use App\Modules\Request\Domain\States\PendingDormitoryUnitState;
 use App\Modules\Request\Domain\States\PendingHRState;
 use App\Modules\Request\Domain\States\RejectedState;
 use App\Modules\Request\Domain\States\SubmittedState;
+use App\Modules\Request\Domain\States\WaitingForAllocationState;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
 use App\Modules\Request\Domain\ValueObjects\RequestCode;
@@ -51,7 +56,7 @@ class RequestTransitionMatrixTest extends TestCase
     }
 
     #[Test]
-    public function it_marks_only_approved_rejected_and_cancelled_as_terminal_states(): void
+    public function it_marks_rejected_cancelled_allocation_failed_and_checked_out_as_terminal(): void
     {
         $request = $this->sampleRequest(DraftState::$name);
 
@@ -61,9 +66,18 @@ class RequestTransitionMatrixTest extends TestCase
         $submitted = $this->sampleRequest(SubmittedState::$name);
         expect($submitted->isCancellable())->toBeTrue();
 
+        $approved = $this->sampleRequest(ApprovedState::$name);
+        expect($approved->isTerminal())->toBeFalse();
+
         $rejected = $this->sampleRequest(RejectedState::$name);
         expect($rejected->isTerminal())->toBeTrue();
         expect($rejected->isCancellable())->toBeFalse();
+
+        $failed = $this->sampleRequest(AllocationFailedState::$name);
+        expect($failed->isTerminal())->toBeTrue();
+
+        $checkedOut = $this->sampleRequest(CheckedOutState::$name);
+        expect($checkedOut->isTerminal())->toBeTrue();
     }
 
     /**
@@ -82,6 +96,12 @@ class RequestTransitionMatrixTest extends TestCase
             'pending dormitory manager to pending dormitory unit' => [PendingDormitoryManagerState::$name, PendingDormitoryUnitState::$name],
             'pending dormitory unit to approved' => [PendingDormitoryUnitState::$name, ApprovedState::$name],
             'pending dormitory unit to rejected' => [PendingDormitoryUnitState::$name, RejectedState::$name],
+            'approved to waiting for allocation' => [ApprovedState::$name, WaitingForAllocationState::$name],
+            'waiting to allocated' => [WaitingForAllocationState::$name, AllocatedState::$name],
+            'waiting to allocation failed' => [WaitingForAllocationState::$name, AllocationFailedState::$name],
+            'allocated to checked in' => [AllocatedState::$name, CheckedInState::$name],
+            'allocated to allocation failed' => [AllocatedState::$name, AllocationFailedState::$name],
+            'checked in to checked out' => [CheckedInState::$name, CheckedOutState::$name],
         ];
     }
 
@@ -96,6 +116,8 @@ class RequestTransitionMatrixTest extends TestCase
             'approved to draft' => [ApprovedState::$name, DraftState::$name],
             'rejected to submitted' => [RejectedState::$name, SubmittedState::$name],
             'cancelled to draft' => [CancelledState::$name, DraftState::$name],
+            'approved to allocated' => [ApprovedState::$name, AllocatedState::$name],
+            'checked out to checked in' => [CheckedOutState::$name, CheckedInState::$name],
         ];
     }
 
@@ -127,6 +149,11 @@ class RequestTransitionMatrixTest extends TestCase
             ApprovedState::$name => ApprovedState::class,
             RejectedState::$name => RejectedState::class,
             CancelledState::$name => CancelledState::class,
+            WaitingForAllocationState::$name => WaitingForAllocationState::class,
+            AllocatedState::$name => AllocatedState::class,
+            AllocationFailedState::$name => AllocationFailedState::class,
+            CheckedInState::$name => CheckedInState::class,
+            CheckedOutState::$name => CheckedOutState::class,
             default => throw new \InvalidArgumentException('Unknown state: '.$status),
         };
     }
