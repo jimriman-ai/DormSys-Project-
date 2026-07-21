@@ -61,7 +61,7 @@
 | DG-DORM-01 | Manager assignment tables: join vs lifecycle vs entity | Domain Gap | Option A (DECIDED): pure join table | Lead | Freeze v1.0 | DECIDED | WP-DEBT-02 → CLOSED — NO-ACTION |
 | DG-SETTINGS-01 | settings table ownership + missing production migration | Cross-cutting | System module ownership (DECIDED) | Lead | Freeze v1.0 | DECIDED | WP-DEBT-04 CREATE = DELIVERED (`modules/system/2026_07_20_000001_create_settings_table.php`). Remaining seam = SettingsReadContract → **WP-SYS-01** (D-SETTINGS-CONTRACT Option B SIGNED-OFF). GAP-PREUI-14 CLOSED. |
 | DEC-ARCH-POLICY-01 | Framework Policy placement (Laravel Gate / Eloquent) | DDD Boundary / Adapter | Option A (DECIDED): `Infrastructure/Policies/` | Lead | Freeze v1.0 / WP-DEBT-05 | IMPLEMENTED | WP-DEBT-05 CLOSED/ACCEPTED. GAP-PREUI-15 CLOSED (docs). Evidence: DELIVERY CONFIRMATION; 1928 passed. |
-| D-SETTINGS-CONTRACT | System settings Application read seam | Cross-cutting / System | A) Eloquent model B) QB/DB contract C) keep per-module readers | Lead | Pre-UI Decision Sweep | **DECIDED — B** | SIGNED-OFF 1405/04/29. WP-SYS-01: SettingsReadContract + QB impl; migrate Request/Audit/Notification. No Settings Eloquent model. |
+| D-SETTINGS-CONTRACT | System settings Application read seam | Cross-cutting / System | A) Eloquent model B) QB/DB contract C) keep per-module readers | Lead | Pre-UI Decision Sweep | **IMPLEMENTED** | SIGNED-OFF Option B. WP-SYS-01 DELIVERED: SettingsReadContract + QueryBuilderSettingsReader; Request/Audit/Notification migrated. Lottery exception unchanged (R2). Suite: 1932 passed. |
 | D-SETTINGS-LOTTERY-X | LotteryScoringConfigReader direct DB::table under HD-02 freeze | Lottery / Settings | Accept temporary exception until HD-02 unfreeze | Lead | Pre-UI Decision Sweep | **ACCEPTED EXCEPTION** | R2 SIGNED-OFF. Not in WP-SYS-01 scope. |
 | D-G03-FORM | PersonalRequestFormPage vs assignment-based access | Requests / Authz | A) assignment-scoped B) free-site exception C) defer+temp note | Lead | Pre-UI Decision Sweep | **DECIDED — A** | SIGNED-OFF 1405/04/29. Owner = WP-REQ-04 only. No WP-FORM-01. Free-site rejected. |
 | D-ENTRYPOINT-RULE | Presentation may inject repository contracts? | Architecture / Presentation | Actions/Services only (vs thin repo injection) | Lead | Pre-UI Decision Sweep | **DECIDED** | R4 SIGNED-OFF. Presentation → Application Actions/Services only. WP-CHECKIN-01 **CLOSED** (Action wire delivered). |
@@ -677,6 +677,7 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
 | 2026-07-20 | **Lead Ruling Pack SIGNED-OFF (R1–R6):** D-SETTINGS-CONTRACT=B; Lottery settings exception (HD-02); D-G03-FORM=A (WP-REQ-04 only, no WP-FORM-01); ENTRYPOINT-RULE + WP-CHECKIN-01 mandatory; POLICY-AUTH-BOUNDARY=Accepted Tension; R6 register sync — GAP-PREUI-14/15 CLOSED. | Lead |
+| 2026-07-20 | **WP-SYS-01 CLOSED:** SettingsReadContract + QueryBuilderSettingsReader bound in SystemServiceProvider; Request/Audit/Notification readers migrated; Lottery untouched. Suite: 1932 passed / 0 failed. PHPStan scoped paths: OK. | Agent (Mandate CHAIN-5) |
 | 2026-07-20 | **WP-CHECKIN-01 CLOSED:** CheckInFlowController routes via GetOpenCheckInByAllocationAction; Presentation no longer injects repository contract. Suite: 1930 passed / 0 failed. | Agent (Mandate CHAIN-2) |
 | 2026-07-20 | **DG-SETTINGS-01-REGISTER-SYNC:** Gate/metadata note corrected — settings create migration EXISTS (`modules/system/2026_07_20_000001_…`); WP-DEBT-04 migration DELIVERED; contract seam → WP-SYS-01 (Option B). GAP-PREUI-14 CLOSED. | Agent (Lead R6a) |
 | 2026-07-20 | **WP-DEBT-05-STATUS-SYNC:** Confirmed CLOSED / ACCEPTED — DormitoryPolicy under Infrastructure/Policies; DEC-ARCH-POLICY-01 IMPLEMENTED; GAP-PREUI-15 CLOSED (docs). Suite evidence previously recorded (1928 passed). | Agent (Lead R6b) |
@@ -1110,8 +1111,8 @@ Cross-module Identity Eloquent typing in Gate Policies is advisory / accepted te
 ### Post-ruling execution sequence
 
 1. DG-SETTINGS-01-REGISTER-SYNC + WP-DEBT-05-STATUS-SYNC — Docs (**this recording**)
-2. WP-CHECKIN-01 — Code
-3. WP-SYS-01 — Code
+2. WP-CHECKIN-01 — Code — **CLOSED** (Mandate CHAIN-2; suite 1930 passed)
+3. WP-SYS-01 — Code — **CLOSED** (Mandate CHAIN-5; suite 1932 passed)
 4. WP-DORM-UI-READ — Code
 5. WP-REQ-04 (form sites) — Code
 
