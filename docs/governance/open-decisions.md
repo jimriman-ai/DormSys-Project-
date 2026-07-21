@@ -59,7 +59,7 @@
 | DG-ARCH-01 | DormitoryPolicy reads Infrastructure model directly (no Port) | DDD Boundary | Option B (DECIDED): DormitoryAssignmentReader Port in Domain/Contracts | Lead | Freeze v1.0 | DECIDED | Evidence: DEBT-DISCOVERY-01 T1 |
 | DG-REQ-01 | ListPendingStage1RequestsAction depends on Identity UserModel | Identity Boundary | Option A (DECIDED, amended): execute(string $approverIdentityId) | Lead | Freeze v1.0 | DECIDED | Resolution moves to HTTP boundary (ref: DGAP-07) |
 | DG-DORM-01 | Manager assignment tables: join vs lifecycle vs entity | Domain Gap | Option A (DECIDED): pure join table | Lead | Freeze v1.0 | DECIDED | WP-DEBT-02 → CLOSED — NO-ACTION |
-| DG-SETTINGS-01 | settings table ownership + missing production migration | Cross-cutting | System module ownership (DECIDED) | Lead | Freeze v1.0 | DECIDED | ⚠ No create migration exists — WP-DEBT-04 = CREATE |
+| DG-SETTINGS-01 | settings table ownership + missing production migration | Cross-cutting | System module ownership (DECIDED) | Lead | Freeze v1.0 | DECIDED | WP-DEBT-04 CREATE = DELIVERED (`modules/system/2026_07_20_000001_create_settings_table.php`). Remaining seam = SettingsReadContract → **WP-SYS-01** (D-SETTINGS-CONTRACT Option B SIGNED-OFF). GAP-PREUI-14 CLOSED. |
 | DEC-ARCH-POLICY-01 | Framework Policy placement (Laravel Gate / Eloquent) | DDD Boundary / Adapter | Option A (DECIDED): `Infrastructure/Policies/` | Lead | Freeze v1.0 / WP-DEBT-05 | IMPLEMENTED | Evidence: WP-DEBT-05 DELIVERY CONFIRMATION; Validation: 1928 passed (5568 assertions) |
 | OQ-REQ-02 | Request Identity FK / model normalization (OQ-REQ-02-SYNC) | Requests / Spec05 R-03 | Option A (Normalized) | Lead | WP-REQ-01 | **CLOSED** | Option A (Normalized) — FK removed, Request model standalone. Signed-off. OQ-REQ-02-SYNC lifted. Physical drop executed under WP-REQ-01 L3 per scope. |
 | SB-D9 | F-W07-04 Wave 2 (Stage-1 list/filter UX + tests) | F3 / stage1-approver-console | A) Authorize Wave 2 B) Hold C) Reject | Lead | F-W07-04-D3; WP-RQ-W2-01 | **DECIDED (A) — ISSUED**; WP **DONE** | Wave 2 list/filter UX + tests; auth_gate=`dormitory-manager` unchanged; SHA UNVERIFIED (merge-agnostic); Sprint B CLOSED |
@@ -623,6 +623,7 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 - **Effect:** WP-DEBT-04 بازتعریف: ایجاد migration اصلی (`id` uuid PK, `key` string unique, `value` json, timestamps) ذیل System.
 - **Constraint:** Schema باید دقیقاً با Blueprint تست‌ها منطبق باشد (جلوگیری از test drift).
 - **Notes:** (ref: WP-DEBT-04)
+- **Register sync (1405/04/29 \| 2026-07-20 — DG-SETTINGS-01-REGISTER-SYNC):** Production create migration EXISTS at `database/migrations/modules/system/2026_07_20_000001_create_settings_table.php`. WP-DEBT-04 migration = DELIVERED. GAP-PREUI-14 = CLOSED (stale-register lag). Remaining Application seam = **D-SETTINGS-CONTRACT Option B** → **WP-SYS-01** (Lead Ruling Pack SIGNED-OFF).
 
 ### DEC-ARCH-POLICY-01 — Framework Policy Placement
 
@@ -669,6 +670,7 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 
 | تاریخ | تغییر | توسط |
 |-------|-------|------|
+| 2026-07-20 | **DG-SETTINGS-01-REGISTER-SYNC:** Gate/metadata note corrected — settings create migration EXISTS (`modules/system/2026_07_20_000001_…`); WP-DEBT-04 migration DELIVERED; contract seam → WP-SYS-01 (Option B). GAP-PREUI-14 CLOSED. | Agent (Lead R6a) |
 | 2026-07-20 | **OQ-REQ-02 CLOSED:** Option A (Normalized) — FK removed, Request model standalone. Signed-off. OQ-REQ-02-SYNC lifted; Requests module WPs unblocked for Domain-First Phase 2. WP-REQ-01 remains execution vehicle for schema. | Lead |
 | 2026-07-20 | **OQ-REQ-02-SYNC:** OQ-REQ-02 → Option A ACCEPTED (DECIDED → IMPLEMENTATION AUTHORIZED); Spec05 R-03 normalize (drop FK, retain UUID); sunset REMOVED; WP-REQ-01 AUTHORIZED TO OPEN. OQ-DORM-04 → SEQUENTIAL WP-DORM-04 after WP-REQ-01 CLOSED. Registered OPEN: OQ-REQ-11, OQ-REQ-12, D-G03-FORM→WP-REQ-04. | Lead |
 | 2026-07-20 | **DEC-ARCH-POLICY-01 IMPLEMENTED:** WP-DEBT-05 CLOSED / ACCEPTED; Evidence: WP-DEBT-05 DELIVERY CONFIRMATION; Validation: 1928 passed (5568 assertions). Freeze v1.0 SIGNED-OFF (project-state). | Lead |
@@ -1036,3 +1038,9 @@ WP-UI-C-01-B (DBT-1) runs **in parallel** with DASH-02 and **must land before DA
 ### GAP-PREUI-12 — RESOLVED-BY-DELIVERY
 
 - Audit note "FK Constrained" was stale. FK dropped, column retained (Option A) — WP-REQ-01 DELIVERED.
+
+### GAP-PREUI-14 — CLOSED (stale-register lag)
+
+- DG-SETTINGS-01 notes corrected: WP-DEBT-04 CREATE migration DELIVERED.
+- Remaining work = SettingsReadContract under WP-SYS-01 (D-SETTINGS-CONTRACT Option B).
+- Authority: Lead Ruling Pack R6a — SIGNED-OFF 1405/04/29.
