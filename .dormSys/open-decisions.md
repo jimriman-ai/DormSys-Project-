@@ -21,6 +21,7 @@ scope_note: Ratification asserts registry accuracy only. It does NOT resolve blo
 |----|--------|------|-----------|----------|
 | **D-001** | **CLOSED** | REGISTRY-INIT-01 | Bootstrap `.dormSys` registries from repository evidence only. Agent generates draft; Lead ratifies before any use. | Lead message authorizing REGISTRY-INIT-01; files created under `.dormSys/` |
 | **D-002** | **CLOSED** | REGISTRY-INIT-01 | `database/schema` does not exist and is not expected. `database/migrations` is the schema source of truth. Remove `database/schema` from all future wave scopes. | Lead message; path probe: `database/schema` absent (0 files) during DB-DISCOVERY-01 / this wave |
+| **DR-DB-01** | **ACCEPTED** | MAP-ERRATA-01 | jobs map errata: `attempts`→`unsignedSmallInteger`, `reserved_at` nullable (GAP-DB-01 / GAP-DB-02). | Lead, 2026-07-22; DB-DISCOVERY-01 |
 
 ---
 
