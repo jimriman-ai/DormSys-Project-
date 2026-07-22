@@ -35,3 +35,8 @@ DOM-FIX-03 trait claim superseded by disk state (disk is authoritative).
 [1405/04/31] [DOM-GAP-RESTORE-08-10] - restore 26/26 domain relations from main; A2/A3 skipped.
 [1405/04/31] [DOM-GAP-RESTORE-04-05] - restore 5/5 domain relations from main.
 [1405/04/31] [DOM-PARITY-CYCLE-CLOSE] - all GAP-03/04/05/08/10 relations restored; parity cycle complete.
+[1405/04/31] [MANAGER-ASSIGN-CREATE] - created App\Models\Dormitory\{DormitoryManagerAssignment,DormitoryUnitManagerAssignment}; BaseModel/HasAuditActors skipped (schema SoftDeletes+audit cols absent; trait not on disk); DormitoryAssignment deferred.
+[1405/04/31] [DORM-ASSIGN-DISCOVERY] - dormitory_assignments evidence mapped; model already on release Persistence (parity with main); Decision Gate ready; no code changes.
+[1405/04/31] [DORM-ASSIGN-RATIFY] - Option A (model confirm-no-op) affirmed by discovery; D4 NOT fixed: .dormSys/database-map.md absent on release (exists on main WITH dormitory_assignments already); restore map file requires separate auth.
+[1405/04/31] [DB-MAP-RESTORE] - restored .dormSys/database-map.md from main; dormitory_assignments present; D4 closed; 0 blocking mig incompatibilities (50/50 mig count aligned).
+[1405/04/31] [D4-CLOSE] - D4 CLOSED in open-decisions (append Closed row); resolution=DB-MAP-RESTORE; dormitory_assignments documented in database-map.md.

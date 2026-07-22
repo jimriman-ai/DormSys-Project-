@@ -1,0 +1,6 @@
+prompt_id: FULL-GAP-DISCOVERY-01
+recorded_at: 2026-07-22T22:30:00+03:30
+work_item: full-gap-discovery
+stage: discovery
+tags: [EVIDENCE_CONFLICT, EVIDENCE_GAP, OWNER_DECISION_NEEDED]
+summary: "Disk audit found progress-log COMPLETE claims (MIG-FIX-01/02, DOM-FIX-01) and ratified map citations without matching migrations/models/artifacts on release branch; A2 plus bedId←dormitory_id emit remain decision-blocked."

@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only. Not a decision ledger. Does not supersede `docs/governance/open-decisions.md`.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/31 | 2026-07-22 | AUDIT-MATRIX-INIT: created .dormSys/audit-status-matrix.md from progress-log_
+_Last updated: 1405/04/31 | 2026-07-22 | D4-CLOSE Option A: D4 CLOSED appended to open-decisions_
 
-**Authority note:** OBSERVED. Matrix rows limited to explicit COMPLETE/OPEN/SKIPPED tokens in progress-log. pending Lead commit.
+**Authority note:** Lead D4-CLOSE Option A confirmed. Append-only CLOSED row (D4 was never in DECISION_REQUIRED table). pending Lead commit.
 
 ---
 
@@ -13,14 +13,14 @@ _Last updated: 1405/04/31 | 2026-07-22 | AUDIT-MATRIX-INIT: created .dormSys/aud
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| Create audit matrix | `.dormSys/audit-status-matrix.md` | absent → created | AUDIT-MATRIX-INIT |
-| Rows | COMPLETE×4, OPEN×1, SKIPPED×2 | from progress-log only | matrix |
+| Append D4 CLOSED | `.dormSys/open-decisions.md` | absent → CLOSED (Closed decisions table) | D4-CLOSE Option A |
+| Progress log | `.dormSys/progress-log.md` | +[D4-CLOSE] | progress-log |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-📄 **Spec** — `.dormSys/audit-status-matrix.md` (init complete; A2 still OPEN in matrix)
+🧑‍⚖️ **Human Decision** — D4 CLOSED (ledger append); remaining OPEN: DR-REG-03/04/05, A2
 
 ---
 
@@ -28,7 +28,9 @@ _Last updated: 1405/04/31 | 2026-07-22 | AUDIT-MATRIX-INIT: created .dormSys/aud
 
 | ID | Summary |
 |----|---------|
-| A2 | OPEN (matrix + ledger) |
+| D4 | **CLOSED** (append; resolution DB-MAP-RESTORE) |
+| DR-REG-03 / 04 / 05 | OPEN |
+| A2 | OPEN |
 
 ---
 
@@ -36,22 +38,21 @@ _Last updated: 1405/04/31 | 2026-07-22 | AUDIT-MATRIX-INIT: created .dormSys/aud
 
 | Item | Status |
 |------|--------|
-| AUDIT-MATRIX-INIT | DONE |
-| DOM-PARITY-CYCLE-CLOSE | COMPLETE (in matrix) |
-| A2 | OPEN |
+| DB-MAP-RESTORE | DONE |
+| D4-CLOSE | DONE |
 
 ---
 
 ## 7. Next Step
 
-**Action:** Lead commit matrix + prior restore packs; decide A2 when ready.  
+**Action:** Lead commit D4-CLOSE + prior DB-MAP-RESTORE artifacts.  
 **Owner:** Lead  
 **Gate:** none  
-**Target files:** `.dormSys/audit-status-matrix.md` |
-**Done when:** Lead commits or expands status vocabulary (CLOSED/OMIT/DONE)  
+**Target files:** `.dormSys/open-decisions.md`, `.dormSys/progress-log.md`, `.dormSys/database-map.md`  
+**Done when:** Lead commit  
 **Blocker:** none  
 **Suggested user prompt:**
-> Commit .dormSys audit matrix + parity restore artifacts
+> Commit DB-MAP-RESTORE + D4-CLOSE ledger/progress-log changes
 
 ---
 
@@ -59,5 +60,5 @@ _Last updated: 1405/04/31 | 2026-07-22 | AUDIT-MATRIX-INIT: created .dormSys/aud
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| AUDIT-MATRIX-INIT | DONE | log-evidence only |
+| D4 | CLOSED | append Closed row; DB-MAP-RESTORE |
 | A2 | OPEN | |

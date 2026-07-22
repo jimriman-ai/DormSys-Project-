@@ -26,6 +26,8 @@ scope_note: Ratification asserts registry accuracy only. It does NOT resolve blo
 | **D-002** | **CLOSED** | REGISTRY-INIT-01 | `database/schema` does not exist and is not expected. `database/migrations` is the schema source of truth. Remove `database/schema` from all future wave scopes. | Lead message; path probe: `database/schema` absent (0 files) during DB-DISCOVERY-01 / this wave |
 | **DR-DB-01** | **ACCEPTED** | MAP-ERRATA-01 | jobs map errata: `attempts`→`unsignedSmallInteger`, `reserved_at` nullable (GAP-DB-01 / GAP-DB-02). | Lead, 2026-07-22; DB-DISCOVERY-01 |
 | **DR-REG-07** | **ACCEPTED** | REG-HASH-CONV-01 | snapshot_sha256 = sha256 of file excluding the `snapshot_sha256:` line | Lead, 2026-07-22 |
+| **MANAGER-ASSIGN-CREATE** | **CLOSED** | MANAGER-ASSIGN-CREATE | Manager assignment Eloquent models live under `App\Models\Dormitory` (`DormitoryManagerAssignment`, `DormitoryUnitManagerAssignment`). `DormitoryAssignment` excluded / deferred to a separate wave. | Lead prompt MANAGER-ASSIGN-CREATE, 1405-04-31 / 2026-07-22; migrations `2026_07_16_000001` / `000002` |
+| **D4** | **CLOSED** | D4-CLOSE | `dormitory_assignments` must be documented in `.dormSys/database-map.md`. Gap (map file absent on release) resolved by restoring map from `main`. | Lead Option A (D4-CLOSE), 1405-04-31 / 2026-07-22; wave DB-MAP-RESTORE; `.dormSys/progress-log.md` `[DB-MAP-RESTORE]`; `.dormSys/database-map.md` §`dormitory_assignments` |
 
 ---
 

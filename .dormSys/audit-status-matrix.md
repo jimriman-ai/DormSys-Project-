@@ -1,8 +1,9 @@
 # Audit Status Matrix
 
 > **Source of truth:** `.dormSys/progress-log.md` only.  
-> **Rule:** Rows require an explicit log status of `COMPLETE`, `OPEN`, or `SKIPPED`. No inferred statuses.  
-> **Generated:** 1405/04/31 | 2026-07-22 (wave `AUDIT-MATRIX-INIT`)
+> **Rule:** Rows require an explicit log status of `COMPLETE` | `OPEN` | `SKIPPED` | `CLOSED` | `DONE` | `OMIT`. No inferred statuses.  
+> **Generated:** 1405/04/31 | 2026-07-22 (wave `AUDIT-MATRIX-INIT`)  
+> **Extended:** 1405/04/31 | 2026-07-22 (wave `AUDIT-MATRIX-EXTEND`)
 
 | Task | Status | Note |
 |------|--------|------|
@@ -13,15 +14,15 @@
 | DOM-GAP-10-CLOSE (A2) | OPEN | Log L33: `OPEN DECISION: A2 (LotteryResultModel / registration_id drift…)`. |
 | DOM-GAP-10-IMPL-XMOD (A2, A3) | SKIPPED | Log L32: `2 skipped (A3=OMIT per DOM-GAP-09B, A2=DRIFT)`. |
 | DOM-GAP-RESTORE-08-10 (A2/A3) | SKIPPED | Log L35: `restore 26/26 …; A2/A3 skipped.` |
+| DOM-GAP-02-FIX | DONE | Log L15: `status DONE`. |
+| DOM-GAP-06-AUDIT | CLOSED | Log L20: `CLOSED: UUID-only policy ratified…`. Log L21–23: duplicate `CLOSED` block. |
+| DOM-GAP-09B-CLOSE (A3) | OMIT | Log L30: `Lead decision: OMIT bed() on Allocation header…`. |
 
-## Excluded from this matrix (no COMPLETE / OPEN / SKIPPED token in log)
+## Excluded (no COMPLETE / OPEN / SKIPPED / CLOSED / DONE / OMIT token)
 
-These appear in progress-log but lack an explicit `COMPLETE` / `OPEN` / `SKIPPED` status word — not listed above (no speculation):
-
-- DOM-GAP-01-DECIDE (ratified)
-- DOM-GAP-02-FIX (status DONE)
-- DOM-GAP-06-AUDIT (CLOSED / awaiting)
-- DOM-GAP-07-DISCOVERY (awaiting ratification)
-- DOM-GAP-08-IMPL-VOUCHER (added; no COMPLETE token — covered under DOM-PARITY-CYCLE-CLOSE narrative)
-- DOM-GAP-09* (pending / OMIT — OMIT is not COMPLETE/OPEN/SKIPPED)
-- DOM-GAP-RESTORE / DOM-GAP-RESTORE-08-10 / DOM-GAP-RESTORE-04-05 as whole-task COMPLETE rows (restore counts without COMPLETE token; A2/A3 skip row retained where SKIPPED is explicit)
+- DOM-GAP-01-DECIDE — Log L14: `Lead ratified` (no listed status token)
+- DOM-GAP-07-DISCOVERY — Log L26: `awaiting Lead ratification` (no listed status token)
+- DOM-GAP-08-IMPL-VOUCHER — Log L27: `6 intra-voucher relations added` (no listed status token; narrative covered by DOM-PARITY-CYCLE-CLOSE)
+- DOM-GAP-09-DISCOVER-CROSSMOD — Log L28: `7 decisions pending Lead` (no listed status token)
+- DOM-GAP-09B-VERIFY-A3 — Log L29: `decision-ready` (no listed status token)
+- DOM-GAP-RESTORE / DOM-GAP-RESTORE-04-05 as whole-task COMPLETE — restore counts without COMPLETE token
