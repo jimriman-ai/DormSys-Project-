@@ -16,7 +16,7 @@ use Tests\Feature\Modules\Lottery\LotteryTestFactory;
 uses(RefreshDatabase::class);
 
 require_once __DIR__.'/../Lottery/LotteryFeatureSupport.php';
-require_once __DIR__.'/../Lottery/LotteryRegistrationEnrollmentTest.php';
+require_once __DIR__.'/../Lottery/support/enrollment.php';
 
 beforeEach(function (): void {
     bootstrapLotteryFeatureTests();

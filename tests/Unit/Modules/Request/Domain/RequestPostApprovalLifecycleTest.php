@@ -16,8 +16,6 @@ use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
 use App\Modules\Request\Domain\ValueObjects\RequestCode;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
 use App\Shared\Infrastructure\Uuid\UuidGenerator;
-use DateTimeImmutable;
-use DateTimeZone;
 
 function oa0503SampleRequest(string $status): Request
 {

@@ -44,7 +44,7 @@ function gReq01SampleRequest(string $status): Request
 }
 
 /**
- * @return array{0: string, 1: callable(Request): mixed, 2: string}
+ * @return array<string, array{string, callable(Request): mixed, string}>
  */
 function gReq01IllegalTransitionCases(): array
 {

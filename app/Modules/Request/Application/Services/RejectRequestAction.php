@@ -16,10 +16,8 @@ use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
 use App\Modules\Workflow\Application\DTOs\DecideRequestApprovalStageCommand;
 use App\Modules\Workflow\Application\Services\DecideRequestApprovalStageAction;
-use App\Modules\Workflow\Domain\Exceptions\InvalidWorkflowTransitionException;
-use App\Modules\Workflow\Domain\Exceptions\UnauthorizedWorkflowStageActorException;
-use App\Modules\Workflow\Domain\Exceptions\WorkflowInstanceNotFoundException;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * Rejects the current Request stage via Workflow orchestration (WP-WF-04 cutover).
@@ -60,12 +58,15 @@ final class RejectRequestAction
                     decision: 'rejected',
                     reason: $reason,
                 ));
-            } catch (UnauthorizedWorkflowStageActorException $exception) {
-                throw new InvalidRequestTransitionException($exception->getMessage(), previous: $exception);
-            } catch (WorkflowInstanceNotFoundException $exception) {
-                throw new InvalidRequestTransitionException($exception->getMessage(), previous: $exception);
-            } catch (InvalidWorkflowTransitionException $exception) {
-                throw new RequestValidationException($exception->getMessage(), previous: $exception);
+            } catch (Throwable $exception) {
+                match ($exception::class) {
+                    'App\\Modules\\Workflow\\Domain\\Exceptions\\UnauthorizedWorkflowStageActorException',
+                    'App\\Modules\\Workflow\\Domain\\Exceptions\\WorkflowInstanceNotFoundException'
+                        => throw new InvalidRequestTransitionException($exception->getMessage(), previous: $exception),
+                    'App\\Modules\\Workflow\\Domain\\Exceptions\\InvalidWorkflowTransitionException'
+                        => throw new RequestValidationException($exception->getMessage(), previous: $exception),
+                    default => throw $exception,
+                };
             }
 
             $updated = $this->requests->findById($requestId);

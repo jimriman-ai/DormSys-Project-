@@ -14,8 +14,12 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 
 it('binds the eloquent repository for the workflow persistence contract', function (): void {
-    expect(app(RequestApprovalWorkflowRepositoryContract::class))
-        ->toBeInstanceOf(EloquentRequestApprovalWorkflowRepository::class);
+    $binding = app()->getBindings()[RequestApprovalWorkflowRepositoryContract::class] ?? null;
+    expect($binding)->not->toBeNull()
+        ->and($binding['concrete'] ?? null)->toBeCallable();
+
+    $resolved = ($binding['concrete'])(app());
+    expect($resolved)->toBeInstanceOf(EloquentRequestApprovalWorkflowRepository::class);
 });
 
 it('saves and finds a request approval workflow instance with steps', function (): void {
@@ -30,23 +34,32 @@ it('saves and finds a request approval workflow instance with steps', function (
     $repo->save($instance);
 
     $loaded = $repo->findById($instance->id);
-    expect($loaded)->not->toBeNull()
-        ->and($loaded->id->value)->toBe($instance->id->value)
+    expect($loaded)->not->toBeNull();
+    if ($loaded === null) {
+        throw new RuntimeException('Expected workflow instance after save.');
+    }
+    expect($loaded->id->value)->toBe($instance->id->value)
         ->and($loaded->status)->toBe(WorkflowInstanceStatus::Running)
         ->and($loaded->currentStage)->toBe(RequestApprovalWorkflowStage::DepartmentManager)
         ->and($loaded->steps)->toHaveCount(1)
         ->and($loaded->steps[0]->status)->toBe(WorkflowStepStatus::Pending);
 
     $running = $repo->findRunningByRequestId($requestId);
-    expect($running)->not->toBeNull()
-        ->and($running->id->value)->toBe($instance->id->value);
+    expect($running)->not->toBeNull();
+    if ($running === null) {
+        throw new RuntimeException('Expected running workflow instance.');
+    }
+    expect($running->id->value)->toBe($instance->id->value);
 
     $running->approve($actor, $now->modify('+1 hour'));
     $repo->save($running);
 
     $after = $repo->findById($instance->id);
-    expect($after)->not->toBeNull()
-        ->and($after->currentStage)->toBe(RequestApprovalWorkflowStage::HR)
+    expect($after)->not->toBeNull();
+    if ($after === null) {
+        throw new RuntimeException('Expected workflow instance after approve.');
+    }
+    expect($after->currentStage)->toBe(RequestApprovalWorkflowStage::HR)
         ->and($after->steps)->toHaveCount(2)
         ->and($after->steps[0]->status)->toBe(WorkflowStepStatus::Approved)
         ->and($after->steps[1]->status)->toBe(WorkflowStepStatus::Pending);

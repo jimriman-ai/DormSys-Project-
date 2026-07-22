@@ -3,12 +3,13 @@ ratified: true
 ratified_by: Lead
 ratified_wave: REGISTRY-RATIFY-02
 ratified_at: 2026-07-22T11:31:02Z
-snapshot_sha256: 183cdacedccf7768ffdc0fba7b7df1cb35f34c459d3d86630cdf77e9cb5d8344
+snapshot_sha256: 039984051e47720410e6b3d0f1a10f564e5b169f24c4766fd4462cd07c6dd627
 scope_note: Ratification asserts registry accuracy only. It does NOT resolve blockers recorded inside (HDAC-01/02/03/05, Spec04 BLOCKED, Business Owner UNRESOLVED, DR-REG-03/04/05), and does NOT extend to .specify/** or docs/governance/**.
 ---
-# .dormSys Spec / Governance Document Catalog (DRAFT)
+# .dormSys Spec / Governance Document Catalog (RATIFIED)
 
-> **Authority status:** DRAFT — not authoritative until Lead issues `RATIFY REGISTRIES`.  
+> **Authority status:** RATIFIED (`REGISTRY-RATIFY-02`, Lead, 2026-07-22T11:31:02Z) — registry accuracy only.  
+> **Scope limit:** Ratification does **not** resolve blockers recorded inside (HDAC-01/02/03/05, Spec04 BLOCKED, Business Owner UNRESOLVED, DR-REG-03/04/05), and does **not** extend to `.specify/**` or `docs/governance/**`.  
 > **Bootstrap wave:** `REGISTRY-INIT-01`  
 > **Generated:** 2026-07-22 (1405/04/31)  
 > **Read scope for this inventory:** `docs/governance` only (per wave Scope).

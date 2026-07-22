@@ -51,8 +51,11 @@ it('starts a running workflow instance when a request is submitted', function ()
     $instance = app(RequestApprovalWorkflowRepositoryContract::class)
         ->findRunningByRequestId(RequestReferenceId::fromString($submitted->requireId()->value));
 
-    expect($instance)->not->toBeNull()
-        ->and($instance->status)->toBe(WorkflowInstanceStatus::Running)
+    expect($instance)->not->toBeNull();
+    if ($instance === null) {
+        throw new RuntimeException('Expected running workflow after submit.');
+    }
+    expect($instance->status)->toBe(WorkflowInstanceStatus::Running)
         ->and($instance->currentStage)->toBe(RequestApprovalWorkflowStage::DepartmentManager)
         ->and($instance->stage1ApproverIdentityId?->value)->toBe($submitted->assignedStage1ApproverIdentityId);
 });
@@ -66,8 +69,11 @@ it('records workflow step audit when approving while keeping RequestApproval can
     $instance = app(RequestApprovalWorkflowRepositoryContract::class)
         ->findRunningByRequestId(RequestReferenceId::fromString($approved->requireId()->value));
 
-    expect($instance)->not->toBeNull()
-        ->and($instance->currentStage)->toBe(RequestApprovalWorkflowStage::HR)
+    expect($instance)->not->toBeNull();
+    if ($instance === null) {
+        throw new RuntimeException('Expected running workflow after stage approve.');
+    }
+    expect($instance->currentStage)->toBe(RequestApprovalWorkflowStage::HR)
         ->and($instance->steps)->toHaveCount(2)
         ->and($instance->steps[0]->status)->toBe(WorkflowStepStatus::Approved)
         ->and($instance->steps[1]->status)->toBe(WorkflowStepStatus::Pending);

@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Schema;
 
 uses(RefreshDatabase::class);
 
-require_once __DIR__.'/../Modules/Lottery/LotteryRegistrationEnrollmentTest.php';
+require_once __DIR__.'/../Modules/Lottery/support/enrollment.php';
 require_once __DIR__.'/../Modules/Lottery/support/mutation-principal.php';
 
 beforeEach(function (): void {

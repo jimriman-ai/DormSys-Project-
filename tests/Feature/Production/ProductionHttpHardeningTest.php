@@ -15,7 +15,7 @@ uses(RefreshDatabase::class);
 require_once __DIR__.'/../Modules/Allocation/support/http-mutation.php';
 require_once __DIR__.'/../Modules/CheckIn/support/http-mutation.php';
 require_once __DIR__.'/../Modules/Lottery/LotteryFeatureSupport.php';
-require_once __DIR__.'/../Modules/Lottery/LotteryRegistrationEnrollmentTest.php';
+require_once __DIR__.'/../Modules/Lottery/support/enrollment.php';
 require_once __DIR__.'/../Modules/Lottery/support/http-mutation.php';
 
 beforeEach(function (): void {

@@ -57,6 +57,7 @@ function gReq04EloquentLeakPatterns(): array
 }
 
 /**
+ * @param  list<string>  $roots
  * @return list<string> absolute PHP paths
  */
 function gReq04CollectPhpFiles(array $roots): array
@@ -109,7 +110,7 @@ it('testNoDirectEloquentInHttpLayer', function (): void {
     $roots = gReq04ScanRoots();
 
     if ($roots === []) {
-        expect(true)->toBeTrue();
+        expect($roots)->toHaveCount(0);
 
         return;
     }

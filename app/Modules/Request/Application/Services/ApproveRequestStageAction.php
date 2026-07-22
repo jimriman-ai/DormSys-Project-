@@ -15,9 +15,8 @@ use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
 use App\Modules\Workflow\Application\DTOs\DecideRequestApprovalStageCommand;
 use App\Modules\Workflow\Application\Services\DecideRequestApprovalStageAction;
-use App\Modules\Workflow\Domain\Exceptions\UnauthorizedWorkflowStageActorException;
-use App\Modules\Workflow\Domain\Exceptions\WorkflowInstanceNotFoundException;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * Approves the current Request stage via Workflow orchestration (WP-WF-04 cutover).
@@ -52,10 +51,15 @@ final class ApproveRequestStageAction
                     actorIdentityId: $approverId->value,
                     decision: 'approved',
                 ));
-            } catch (UnauthorizedWorkflowStageActorException $exception) {
-                throw new InvalidRequestTransitionException($exception->getMessage(), previous: $exception);
-            } catch (WorkflowInstanceNotFoundException $exception) {
-                throw new InvalidRequestTransitionException($exception->getMessage(), previous: $exception);
+            } catch (Throwable $exception) {
+                if (in_array($exception::class, [
+                    'App\\Modules\\Workflow\\Domain\\Exceptions\\UnauthorizedWorkflowStageActorException',
+                    'App\\Modules\\Workflow\\Domain\\Exceptions\\WorkflowInstanceNotFoundException',
+                ], true)) {
+                    throw new InvalidRequestTransitionException($exception->getMessage(), previous: $exception);
+                }
+
+                throw $exception;
             }
 
             $updated = $this->requests->findById($requestId);

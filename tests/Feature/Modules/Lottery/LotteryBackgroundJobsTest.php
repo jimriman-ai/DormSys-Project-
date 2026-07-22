@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Schema;
 
 uses(RefreshDatabase::class);
 
-require_once __DIR__.'/LotteryRegistrationEnrollmentTest.php';
+require_once __DIR__.'/support/enrollment.php';
 
 beforeEach(function (): void {
     Carbon::setTestNow('2026-07-15 12:00:00');

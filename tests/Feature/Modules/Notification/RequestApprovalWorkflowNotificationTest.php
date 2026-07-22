@@ -133,7 +133,12 @@ it('delivers request_approved once despite Request and Workflow terminal dual em
         ->get();
 
     expect($approvedRows)->toHaveCount(1);
-    expect($approvedRows->first()->correlation_id)->toBe(
+    $approvedRow = $approvedRows->first();
+    expect($approvedRow)->not->toBeNull();
+    if ($approvedRow === null) {
+        throw new RuntimeException('Expected request_approved notification row.');
+    }
+    expect($approvedRow->correlation_id)->toBe(
         'request:'.$request->requireId()->value.':approved',
     );
 });
@@ -156,7 +161,12 @@ it('delivers request_rejected once despite dual terminal sources', function (): 
         ->get();
 
     expect($rejectedRows)->toHaveCount(1);
-    expect($rejectedRows->first()->correlation_id)->toBe(
+    $rejectedRow = $rejectedRows->first();
+    expect($rejectedRow)->not->toBeNull();
+    if ($rejectedRow === null) {
+        throw new RuntimeException('Expected request_rejected notification row.');
+    }
+    expect($rejectedRow->correlation_id)->toBe(
         'request:'.$rejected->requireId()->value.':rejected',
     );
 });

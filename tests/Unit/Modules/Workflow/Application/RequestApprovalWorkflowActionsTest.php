@@ -29,12 +29,11 @@ final class RequestApprovalWorkflowActionsTest extends TestCase
         Event::fake();
 
         $repo = new InMemoryRequestApprovalWorkflowRepository;
-        $recorded = [];
 
-        $commands = new class($recorded) implements RequestApprovalCommandPort
+        $commands = new class implements RequestApprovalCommandPort
         {
-            /** @param list<array<string, mixed>> $recorded */
-            public function __construct(private array &$recorded) {}
+            /** @var list<array<string, mixed>> */
+            public array $recorded = [];
 
             public function recordStageApproved(
                 string $requestId,
@@ -96,9 +95,9 @@ final class RequestApprovalWorkflowActionsTest extends TestCase
         ));
 
         $this->assertSame(RequestApprovalWorkflowStage::HR->value, $after->currentStage);
-        $this->assertCount(1, $recorded);
-        $this->assertSame('approved', $recorded[0]['decision']);
-        $this->assertSame('department_manager', $recorded[0]['stage']);
+        $this->assertCount(1, $commands->recorded);
+        $this->assertSame('approved', $commands->recorded[0]['decision']);
+        $this->assertSame('department_manager', $commands->recorded[0]['stage']);
     }
 
     #[Test]
@@ -107,12 +106,11 @@ final class RequestApprovalWorkflowActionsTest extends TestCase
         Event::fake();
 
         $repo = new InMemoryRequestApprovalWorkflowRepository;
-        $recorded = [];
 
-        $commands = new class($recorded) implements RequestApprovalCommandPort
+        $commands = new class implements RequestApprovalCommandPort
         {
-            /** @param list<array<string, mixed>> $recorded */
-            public function __construct(private array &$recorded) {}
+            /** @var list<array<string, mixed>> */
+            public array $recorded = [];
 
             public function recordStageApproved(
                 string $requestId,
@@ -169,9 +167,9 @@ final class RequestApprovalWorkflowActionsTest extends TestCase
         ));
 
         $this->assertSame(WorkflowInstanceStatus::Completed->value, $result->status);
-        $this->assertCount(4, $recorded);
-        $this->assertSame('department_manager', $recorded[0]['stage']);
-        $this->assertSame($actorId, $recorded[0]['approver']);
-        $this->assertSame('hr', $recorded[1]['stage']);
+        $this->assertCount(4, $commands->recorded);
+        $this->assertSame('department_manager', $commands->recorded[0]['stage']);
+        $this->assertSame($actorId, $commands->recorded[0]['approver']);
+        $this->assertSame('hr', $commands->recorded[1]['stage']);
     }
 }

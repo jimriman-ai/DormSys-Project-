@@ -127,6 +127,9 @@ it('allows approve when approver matches mutation actor', function (): void {
     $submitted = asRequestOwner($employee, fn () => app(SubmitRequestAction::class)->execute($draft->requireId()));
     $approverIdentityId = $submitted->assignedStage1ApproverIdentityId;
     expect($approverIdentityId)->not->toBeNull()->not->toBe('');
+    if (! is_string($approverIdentityId) || $approverIdentityId === '') {
+        throw new RuntimeException('Expected assigned stage-1 approver identity id.');
+    }
 
     $approved = asRequestMutationPrincipal($approverIdentityId, fn () => app(ApproveRequestStageAction::class)->execute(
         $submitted->requireId(),

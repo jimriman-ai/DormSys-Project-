@@ -57,7 +57,7 @@ it('denies missing principal with UnauthorizedMutationException across in-scope 
 ]);
 
 it('does not allow system actor for user-bound lottery enrollment', function (): void {
-    require_once __DIR__.'/../Modules/Lottery/LotteryRegistrationEnrollmentTest.php';
+    require_once __DIR__.'/../Modules/Lottery/support/enrollment.php';
 
     $employee = createEmployeeForLotteryEnrollmentTest();
     $dormitoryId = createDormitorySiteForRequestTests();

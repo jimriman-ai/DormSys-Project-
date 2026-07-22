@@ -15,7 +15,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 require_once __DIR__.'/LotteryFeatureSupport.php';
-require_once __DIR__.'/LotteryRegistrationEnrollmentTest.php';
+require_once __DIR__.'/support/enrollment.php';
 
 beforeEach(function (): void {
     bootstrapLotteryFeatureTests();
