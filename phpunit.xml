@@ -14,6 +14,31 @@
         <testsuite name="Architecture">
             <directory>tests/Architecture</directory>
         </testsuite>
+        <!-- HD-02 Option B / G-REQ: run serially (GReqGuards then Hd02OptionB). Shared testing DB. -->
+        <testsuite name="GReqGuards">
+            <file>tests/Architecture/RequestTestApiGuardTest.php</file>
+            <file>tests/Architecture/Stage1HelperContractTest.php</file>
+            <file>tests/Architecture/RequestDomainBoundaryTest.php</file>
+            <file>tests/Architecture/PresentationEventDispatchGuardTest.php</file>
+            <file>tests/Architecture/PresentationCommandDispatchGuardTest.php</file>
+            <file>tests/Architecture/PresentationRawQueryGuardTest.php</file>
+            <file>tests/Architecture/PresentationServiceLocatorGuardTest.php</file>
+            <file>tests/Feature/Modules/Request/RequestTransitionGuardTest.php</file>
+        </testsuite>
+        <testsuite name="Hd02OptionB">
+            <file>tests/Feature/Modules/Lottery/LotteryProgramLifecycleTest.php</file>
+            <file>tests/Feature/Modules/Lottery/LotteryFoundationTest.php</file>
+            <file>tests/Unit/Modules/Lottery/Application/LotteryProgramActionsTest.php</file>
+            <file>tests/Unit/Modules/Lottery/Domain/LotteryProgramEntityTest.php</file>
+            <file>tests/Unit/Modules/Lottery/Domain/LotteryProgramStateTest.php</file>
+            <file>tests/Unit/Modules/Lottery/Domain/LotteryProgramTransitionMatrixTest.php</file>
+            <file>tests/Unit/Modules/Lottery/Domain/LotteryProgramLifecycleTest.php</file>
+            <file>tests/Unit/Modules/Lottery/Domain/LotteryValueObjectsTest.php</file>
+            <file>tests/Unit/Modules/Lottery/Domain/LotteryExceptionsTest.php</file>
+            <file>tests/Unit/Modules/Lottery/Domain/LotteryScoringEngineTest.php</file>
+            <file>tests/Unit/Modules/Lottery/Domain/LotteryDrawSelectorTest.php</file>
+            <file>tests/Unit/Modules/Lottery/Domain/LockedLotterySemanticContractTest.php</file>
+        </testsuite>
     </testsuites>
     <source>
         <include>
