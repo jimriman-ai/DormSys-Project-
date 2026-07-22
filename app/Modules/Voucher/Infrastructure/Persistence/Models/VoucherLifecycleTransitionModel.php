@@ -6,6 +6,7 @@ namespace App\Modules\Voucher\Infrastructure\Persistence\Models;
 
 use App\Modules\Voucher\Domain\Enums\VoucherLifecycleState;
 use App\Support\Models\BaseModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Spatie\Activitylog\Support\LogOptions;
 
@@ -45,6 +46,16 @@ class VoucherLifecycleTransitionModel extends BaseModel
             'occurred_at' => 'datetime',
             'payload' => 'array',
         ]);
+    }
+
+    /**
+     * Intra-voucher value-ref: voucher_id → vouchers.id.
+     *
+     * @return BelongsTo<VoucherModel, $this>
+     */
+    public function voucher(): BelongsTo
+    {
+        return $this->belongsTo(VoucherModel::class, 'voucher_id');
     }
 
     public function getActivitylogOptions(): LogOptions

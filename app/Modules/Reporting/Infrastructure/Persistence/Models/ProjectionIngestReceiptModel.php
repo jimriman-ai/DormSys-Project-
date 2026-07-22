@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Reporting\Infrastructure\Persistence\Models;
 
+use App\Modules\Audit\Infrastructure\Persistence\Models\AuditLogModel;
 use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
 use App\Modules\Reporting\Domain\Enums\ProjectionFamily;
 use App\Support\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -45,5 +47,15 @@ class ProjectionIngestReceiptModel extends Model
             'archive_visibility_tier' => ArchiveVisibilityTier::class,
             'ingested_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Value-ref (AP-04): source_audit_log_id → audit_logs.id — Eloquent only, no physical FK.
+     *
+     * @return BelongsTo<AuditLogModel, $this>
+     */
+    public function sourceAuditLog(): BelongsTo
+    {
+        return $this->belongsTo(AuditLogModel::class, 'source_audit_log_id');
     }
 }

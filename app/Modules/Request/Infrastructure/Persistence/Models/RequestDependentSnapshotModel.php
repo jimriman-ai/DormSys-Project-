@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Request\Infrastructure\Persistence\Models;
 
+use App\Modules\Employee\Infrastructure\Persistence\Models\DependentModel;
 use App\Modules\Request\Domain\Enums\DependentRelationship;
 use App\Modules\Request\Domain\Exceptions\AppendOnlyViolationException;
 use App\Support\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -66,5 +68,15 @@ class RequestDependentSnapshotModel extends Model
             'captured_at' => 'datetime',
             'created_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Value-ref (AP-04): source_dependent_id → employee_dependents.id — Eloquent only, no physical FK.
+     *
+     * @return BelongsTo<DependentModel, $this>
+     */
+    public function sourceDependent(): BelongsTo
+    {
+        return $this->belongsTo(DependentModel::class, 'source_dependent_id');
     }
 }

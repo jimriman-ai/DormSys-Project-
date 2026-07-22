@@ -127,6 +127,9 @@ it('allows approve when approver matches mutation actor', function (): void {
     $submitted = asRequestOwner($employee, fn () => app(SubmitRequestAction::class)->execute($draft->requireId()));
     $approverIdentityId = $submitted->assignedStage1ApproverIdentityId;
     expect($approverIdentityId)->not->toBeNull()->not->toBe('');
+    if ($approverIdentityId === null || $approverIdentityId === '') {
+        throw new RuntimeException('Stage-1 approver snapshot is missing.');
+    }
 
     $approved = asRequestMutationPrincipal($approverIdentityId, fn () => app(ApproveRequestStageAction::class)->execute(
         $submitted->requireId(),

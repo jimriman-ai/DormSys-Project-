@@ -37,7 +37,9 @@ function createAssignmentReaderSite(string $code): DormitoryModel
 }
 
 it('binds DormitoryAssignmentReader to the Eloquent adapter', function (): void {
-    expect(app(DormitoryAssignmentReader::class))->toBeInstanceOf(EloquentDormitoryAssignmentReader::class);
+    $bound = app(DormitoryAssignmentReader::class);
+
+    expect($bound::class)->toBe(EloquentDormitoryAssignmentReader::class);
 });
 
 it('reports active assignment presence matching policy semantics', function (): void {

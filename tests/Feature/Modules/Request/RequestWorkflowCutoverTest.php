@@ -30,7 +30,7 @@ it('starts a running workflow instance when a request is submitted', function ()
         'cutover.submit.'.uniqid('', true).'@example.com',
     );
     $employee = createEmployeeThroughMutation(
-        identityId: \App\Modules\Employee\Domain\ValueObjects\IdentityUserId::fromString($user->requireId()->value),
+        identityId: App\Modules\Employee\Domain\ValueObjects\IdentityUserId::fromString($user->requireId()->value),
         employeeCode: 'EMP-CO-'.substr(uniqid('', true), -6),
         firstName: 'Cutover',
         lastName: 'Submit',
@@ -51,8 +51,11 @@ it('starts a running workflow instance when a request is submitted', function ()
     $instance = app(RequestApprovalWorkflowRepositoryContract::class)
         ->findRunningByRequestId(RequestReferenceId::fromString($submitted->requireId()->value));
 
-    expect($instance)->not->toBeNull()
-        ->and($instance->status)->toBe(WorkflowInstanceStatus::Running)
+    if ($instance === null) {
+        throw new RuntimeException('Expected running workflow instance after submit.');
+    }
+
+    expect($instance->status)->toBe(WorkflowInstanceStatus::Running)
         ->and($instance->currentStage)->toBe(RequestApprovalWorkflowStage::DepartmentManager)
         ->and($instance->stage1ApproverIdentityId?->value)->toBe($submitted->assignedStage1ApproverIdentityId);
 });
@@ -66,13 +69,16 @@ it('records workflow step audit when approving while keeping RequestApproval can
     $instance = app(RequestApprovalWorkflowRepositoryContract::class)
         ->findRunningByRequestId(RequestReferenceId::fromString($approved->requireId()->value));
 
-    expect($instance)->not->toBeNull()
-        ->and($instance->currentStage)->toBe(RequestApprovalWorkflowStage::HR)
+    if ($instance === null) {
+        throw new RuntimeException('Expected running workflow instance after stage approve.');
+    }
+
+    expect($instance->currentStage)->toBe(RequestApprovalWorkflowStage::HR)
         ->and($instance->steps)->toHaveCount(2)
         ->and($instance->steps[0]->status)->toBe(WorkflowStepStatus::Approved)
         ->and($instance->steps[1]->status)->toBe(WorkflowStepStatus::Pending);
 
-    expect(app(\App\Modules\Request\Application\Contracts\RequestApprovalRepositoryContract::class)
+    expect(app(App\Modules\Request\Application\Contracts\RequestApprovalRepositoryContract::class)
         ->countForRequest($approved->requireId()))->toBe(1);
 });
 
@@ -81,5 +87,5 @@ it('denies stage-1 approve when actor is not the snapshotted approver', function
     $other = createMutationApprover();
 
     expect(fn () => approveRequestStageForTest($submitted, $other))
-        ->toThrow(\App\Modules\Request\Domain\Exceptions\InvalidRequestTransitionException::class);
+        ->toThrow(App\Modules\Request\Domain\Exceptions\InvalidRequestTransitionException::class);
 });

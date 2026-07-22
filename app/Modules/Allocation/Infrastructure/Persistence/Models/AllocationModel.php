@@ -6,7 +6,10 @@ namespace App\Modules\Allocation\Infrastructure\Persistence\Models;
 
 use App\Modules\Allocation\Domain\Enums\AllocationMethod;
 use App\Modules\Allocation\Domain\Enums\AllocationStatus;
+use App\Modules\Employee\Infrastructure\Persistence\Models\EmployeeModel;
+use App\Modules\Request\Infrastructure\Persistence\Models\RequestModel;
 use App\Support\Models\BaseModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Spatie\Activitylog\Support\LogOptions;
@@ -52,6 +55,26 @@ class AllocationModel extends BaseModel
             'status' => AllocationStatus::class,
             'released_at' => 'datetime',
         ]);
+    }
+
+    /**
+     * Value-ref (AP-04): person_id → employee_employees.id — Eloquent only, no physical FK.
+     *
+     * @return BelongsTo<EmployeeModel, $this>
+     */
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(EmployeeModel::class, 'person_id');
+    }
+
+    /**
+     * Value-ref (AP-04): source_request_id → requests.id — Eloquent only, no physical FK.
+     *
+     * @return BelongsTo<RequestModel, $this>
+     */
+    public function sourceRequest(): BelongsTo
+    {
+        return $this->belongsTo(RequestModel::class, 'source_request_id');
     }
 
     /**

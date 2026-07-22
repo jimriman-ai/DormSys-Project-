@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Modules\Request\Infrastructure\Persistence\Models;
 
+use App\Modules\Employee\Infrastructure\Persistence\Models\EmployeeModel;
 use App\Modules\Request\Domain\Exceptions\AppendOnlyViolationException;
 use App\Support\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -54,5 +56,15 @@ class RequestMemberModel extends Model
         static::deleting(static function (): void {
             throw new AppendOnlyViolationException('Request member records are append-only.');
         });
+    }
+
+    /**
+     * Value-ref (AP-04): employee_id → employee_employees.id — Eloquent only, no physical FK.
+     *
+     * @return BelongsTo<EmployeeModel, $this>
+     */
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(EmployeeModel::class, 'employee_id');
     }
 }

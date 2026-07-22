@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\Lottery\Infrastructure\Persistence\Models;
 
+use App\Modules\Dormitory\Infrastructure\Persistence\Models\DormitoryModel;
 use App\Modules\Lottery\Domain\States\LotteryProgramState;
 use App\Support\Models\BaseModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Spatie\ModelStates\HasStates;
 
@@ -58,5 +60,15 @@ class LotteryProgramModel extends BaseModel
             'locked_at' => 'datetime',
             'drawn_at' => 'datetime',
         ]);
+    }
+
+    /**
+     * Value-ref (AP-04): dormitory_id → dormitories.id — Eloquent only, no physical FK.
+     *
+     * @return BelongsTo<DormitoryModel, $this>
+     */
+    public function dormitory(): BelongsTo
+    {
+        return $this->belongsTo(DormitoryModel::class, 'dormitory_id');
     }
 }

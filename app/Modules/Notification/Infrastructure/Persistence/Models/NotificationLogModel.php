@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Modules\Notification\Infrastructure\Persistence\Models;
 
+use App\Modules\Employee\Infrastructure\Persistence\Models\EmployeeModel;
 use App\Modules\Notification\Domain\Enums\DeliveryPriority;
 use App\Modules\Notification\Domain\Enums\DeliveryStatus;
 use App\Modules\Notification\Domain\Enums\NotificationType;
 use App\Support\Models\BaseModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property NotificationType $notification_type
@@ -50,5 +52,15 @@ class NotificationLogModel extends BaseModel
             'read_at' => 'datetime',
             'archived_at' => 'datetime',
         ]);
+    }
+
+    /**
+     * Value-ref (AP-04): recipient_employee_id → employee_employees.id — Eloquent only, no physical FK.
+     *
+     * @return BelongsTo<EmployeeModel, $this>
+     */
+    public function recipientEmployee(): BelongsTo
+    {
+        return $this->belongsTo(EmployeeModel::class, 'recipient_employee_id');
     }
 }

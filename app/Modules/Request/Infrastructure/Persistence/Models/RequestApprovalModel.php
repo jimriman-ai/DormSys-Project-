@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Request\Infrastructure\Persistence\Models;
 
+use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Modules\Request\Domain\Enums\ApprovalDecision;
 use App\Modules\Request\Domain\Enums\ApprovalStage;
 use App\Modules\Request\Domain\Exceptions\AppendOnlyViolationException;
 use App\Support\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -66,5 +68,15 @@ class RequestApprovalModel extends Model
             'decided_at' => 'datetime',
             'created_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Value-ref (AP-04): approver_id → identity_users.id — Eloquent only, no physical FK.
+     *
+     * @return BelongsTo<UserModel, $this>
+     */
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(UserModel::class, 'approver_id');
     }
 }

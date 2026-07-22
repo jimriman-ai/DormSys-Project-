@@ -70,6 +70,7 @@ function gReq06ForbiddenTokens(): array
 }
 
 /**
+ * @param  list<string>  $roots
  * @return list<string>
  */
 function gReq06CollectPhpFiles(array $roots): array

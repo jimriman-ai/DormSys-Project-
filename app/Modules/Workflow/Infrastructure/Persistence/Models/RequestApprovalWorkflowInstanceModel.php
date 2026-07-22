@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Workflow\Infrastructure\Persistence\Models;
 
+use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
+use App\Modules\Request\Infrastructure\Persistence\Models\RequestModel;
 use App\Modules\Workflow\Domain\Enums\RequestApprovalWorkflowStage;
 use App\Modules\Workflow\Domain\Enums\WorkflowInstanceStatus;
 use App\Support\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
@@ -62,5 +65,25 @@ class RequestApprovalWorkflowInstanceModel extends Model
             RequestApprovalWorkflowStepExecutionModel::class,
             'workflow_instance_id',
         )->orderBy('activated_at')->orderBy('id');
+    }
+
+    /**
+     * Value-ref (AP-04): request_id → requests.id — Eloquent only, no physical FK (WP-WF-03).
+     *
+     * @return BelongsTo<RequestModel, $this>
+     */
+    public function request(): BelongsTo
+    {
+        return $this->belongsTo(RequestModel::class, 'request_id');
+    }
+
+    /**
+     * Value-ref (AP-04): stage1_approver_identity_id → identity_users.id — Eloquent only, no physical FK.
+     *
+     * @return BelongsTo<UserModel, $this>
+     */
+    public function stage1Approver(): BelongsTo
+    {
+        return $this->belongsTo(UserModel::class, 'stage1_approver_identity_id');
     }
 }

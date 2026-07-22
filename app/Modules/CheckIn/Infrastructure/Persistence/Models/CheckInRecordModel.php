@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\CheckIn\Infrastructure\Persistence\Models;
 
+use App\Modules\Allocation\Infrastructure\Persistence\Models\AllocationModel;
+use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Support\Models\BaseModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -37,5 +40,25 @@ class CheckInRecordModel extends BaseModel
             'checked_in_at' => 'datetime',
             'checked_out_at' => 'datetime',
         ]);
+    }
+
+    /**
+     * Value-ref (AP-04): allocation_id → allocations.id — Eloquent only, no physical FK.
+     *
+     * @return BelongsTo<AllocationModel, $this>
+     */
+    public function allocation(): BelongsTo
+    {
+        return $this->belongsTo(AllocationModel::class, 'allocation_id');
+    }
+
+    /**
+     * Value-ref (AP-04): operator_id → identity_users.id — Eloquent only, no physical FK.
+     *
+     * @return BelongsTo<UserModel, $this>
+     */
+    public function operator(): BelongsTo
+    {
+        return $this->belongsTo(UserModel::class, 'operator_id');
     }
 }

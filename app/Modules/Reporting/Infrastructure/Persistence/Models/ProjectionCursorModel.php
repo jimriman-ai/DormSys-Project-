@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Modules\Reporting\Infrastructure\Persistence\Models;
 
+use App\Modules\Audit\Infrastructure\Persistence\Models\AuditLogModel;
 use App\Modules\Reporting\Domain\Enums\ArchiveVisibilityTier;
 use App\Modules\Reporting\Domain\Enums\ProjectionCursorStatus;
 use App\Modules\Reporting\Domain\Enums\ProjectionFamily;
 use App\Modules\Reporting\Domain\Enums\RefreshMode;
 use App\Support\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -62,5 +64,15 @@ class ProjectionCursorModel extends Model
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Value-ref (AP-04): last_source_audit_log_id → audit_logs.id — Eloquent only, no physical FK.
+     *
+     * @return BelongsTo<AuditLogModel, $this>
+     */
+    public function lastSourceAuditLog(): BelongsTo
+    {
+        return $this->belongsTo(AuditLogModel::class, 'last_source_audit_log_id');
     }
 }

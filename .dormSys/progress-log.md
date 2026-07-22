@@ -31,3 +31,7 @@ DOM-FIX-03 trait claim superseded by disk state (disk is authoritative).
 [1405-04-31] DOM-GAP-10-IMPL-XMOD - implemented 19 cross-module Eloquent relations per Lead-ratified pattern; 2 skipped as drift/omit (A2 source_lottery_result_id semantics; A3 OMIT).
 [1405-04-31] DOM-GAP-10-IMPL-XMOD - 19 cross-module Eloquent belongsTo relations implemented; 2 skipped (A3=OMIT per DOM-GAP-09B, A2=DRIFT).
 [1405-04-31] DOM-GAP-10-CLOSE - OPEN DECISION: A2 (LotteryResultModel / registration_id drift in ProposedAllocationConsumer.php:44) requires Lead authorization before sourceLotteryResult() can be implemented.
+[1405-04-31] DOM-GAP-03-RESTORE - restored 7/7 GAP-03 belongsTo relations; AP-04 preserved; prior progress-log COMPLETE line (DOM-GAP-03-RESTORE COMPLETE) superseded (disk was 0/7 on release).
+[1405/04/31] [DOM-GAP-RESTORE-08-10] - restore 26/26 domain relations from main; A2/A3 skipped.
+[1405/04/31] [DOM-GAP-RESTORE-04-05] - restore 5/5 domain relations from main.
+[1405/04/31] [DOM-PARITY-CYCLE-CLOSE] - all GAP-03/04/05/08/10 relations restored; parity cycle complete.

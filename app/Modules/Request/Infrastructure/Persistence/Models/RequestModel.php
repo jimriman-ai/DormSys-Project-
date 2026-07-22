@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\Modules\Request\Infrastructure\Persistence\Models;
 
+use App\Modules\Dormitory\Infrastructure\Persistence\Models\DormitoryModel;
+use App\Modules\Employee\Infrastructure\Persistence\Models\EmployeeModel;
+use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Modules\Request\Domain\Enums\RequestType;
 use App\Modules\Request\Domain\States\RequestState;
 use App\Support\Models\BaseModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Spatie\ModelStates\HasStates;
 
@@ -60,5 +64,35 @@ class RequestModel extends BaseModel
             'submitted_at' => 'datetime',
             'cancelled_at' => 'datetime',
         ]);
+    }
+
+    /**
+     * Value-ref (AP-04): employee_id → employee_employees.id — Eloquent only, no physical FK.
+     *
+     * @return BelongsTo<EmployeeModel, $this>
+     */
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(EmployeeModel::class, 'employee_id');
+    }
+
+    /**
+     * Value-ref (AP-04): dormitory_id → dormitories.id — Eloquent only, no physical FK.
+     *
+     * @return BelongsTo<DormitoryModel, $this>
+     */
+    public function dormitory(): BelongsTo
+    {
+        return $this->belongsTo(DormitoryModel::class, 'dormitory_id');
+    }
+
+    /**
+     * assigned_stage1_approver_identity_id → identity_users.id (physical FK present; Eloquent relation).
+     *
+     * @return BelongsTo<UserModel, $this>
+     */
+    public function assignedStage1Approver(): BelongsTo
+    {
+        return $this->belongsTo(UserModel::class, 'assigned_stage1_approver_identity_id');
     }
 }

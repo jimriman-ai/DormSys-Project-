@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Workflow\Infrastructure\Persistence\Models;
 
+use App\Modules\Identity\Infrastructure\Persistence\Models\UserModel;
 use App\Modules\Workflow\Domain\Enums\RequestApprovalWorkflowStage;
 use App\Modules\Workflow\Domain\Enums\WorkflowStepStatus;
 use App\Support\Traits\HasUuid;
@@ -64,5 +65,15 @@ class RequestApprovalWorkflowStepExecutionModel extends Model
             RequestApprovalWorkflowInstanceModel::class,
             'workflow_instance_id',
         );
+    }
+
+    /**
+     * Value-ref (AP-04): actor_identity_id → identity_users.id — Eloquent only, no physical FK.
+     *
+     * @return BelongsTo<UserModel, $this>
+     */
+    public function actor(): BelongsTo
+    {
+        return $this->belongsTo(UserModel::class, 'actor_identity_id');
     }
 }
