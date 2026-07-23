@@ -41,7 +41,7 @@ final class ProposedAllocationConsumer implements ProposedAllocationPort
                 start: new DateTimeImmutable('now', new DateTimeZone('UTC')),
                 end: new DateTimeImmutable('+1 year', new DateTimeZone('UTC')),
                 method: AllocationMethod::LotterySourced,
-                sourceLotteryResultId: (string) $winner['registration_id'],
+                sourceLotteryResultId: (string) $winner['lottery_result_id'],
             );
         }
     }
@@ -51,7 +51,7 @@ final class ProposedAllocationConsumer implements ProposedAllocationPort
      */
     private function assertFrozenLotteryWinnerPayload(array $winner): void
     {
-        foreach (['program_id', 'registration_id', 'employee_id', 'dormitory_id', 'rank'] as $key) {
+        foreach (['program_id', 'lottery_result_id', 'registration_id', 'employee_id', 'dormitory_id', 'rank'] as $key) {
             if (! array_key_exists($key, $winner) || $winner[$key] === '' || $winner[$key] === null) {
                 throw new ValidationException("Lottery winner payload missing required frozen field [{$key}].");
             }

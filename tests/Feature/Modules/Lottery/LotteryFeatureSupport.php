@@ -66,20 +66,23 @@ function assertLotteryResultReadContractShape(array $payload): void
     expect($payload['ranks'])->toBeArray();
 
     foreach ($payload['winners'] as $row) {
-        expect(array_keys($row))->toEqual(['registration_id', 'rank']);
+        expect(array_keys($row))->toEqual(['lottery_result_id', 'registration_id', 'rank']);
+        expect($row['lottery_result_id'])->toBeString();
         expect($row['registration_id'])->toBeString();
         expect($row['rank'])->toBeInt();
     }
 
     foreach ($payload['reserves'] as $row) {
-        expect(array_keys($row))->toEqual(['registration_id', 'rank']);
+        expect(array_keys($row))->toEqual(['lottery_result_id', 'registration_id', 'rank']);
+        expect($row['lottery_result_id'])->toBeString();
         expect($row['registration_id'])->toBeString();
         expect($row['rank'])->toBeInt();
     }
 
     foreach ($payload['ranks'] as $row) {
-        expect(array_keys($row))->toEqual(['rank', 'registration_id', 'outcome']);
+        expect(array_keys($row))->toEqual(['rank', 'lottery_result_id', 'registration_id', 'outcome']);
         expect($row['rank'])->toBeInt();
+        expect($row['lottery_result_id'])->toBeString();
         expect($row['registration_id'])->toBeString();
         expect($row['outcome'])->toBeIn(['winner', 'reserve']);
     }

@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only. Not a decision ledger. Does not supersede `docs/governance/open-decisions.md`.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/05/01 | 2026-07-23 | WAVE-REL-RESTORE-SWEEP: 8/8 BelongsTo restored_
+_Last updated: 1405/05/01 | 2026-07-23 | ARCH-ADAPTER-PROVIDER-01: C3∥C4 closed; suite 8→5 Arch (C2+C5)_
 
-**Authority note:** Lead WAVE-REL-RESTORE-SWEEP. Restored 8 BelongsTo on 7 Persistence models. PHPStan 0 on touched files. A2 untouched. pending Lead commit.
+**Authority note:** C3 Integrations move + C4 register-only provider applied. Spec07 adapter-path text drifts (reported). Next: C5 then C2 per sequencing. pending Lead commit.
 
 ---
 
@@ -13,14 +13,19 @@ _Last updated: 1405/05/01 | 2026-07-23 | WAVE-REL-RESTORE-SWEEP: 8/8 BelongsTo r
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| Restore BelongsTo ×8 | 7 Lottery/Request Persistence models | methods absent → present | WAVE-REL-RESTORE-SWEEP |
-| Progress log | `.dormSys/progress-log.md` | +WAVE-REL-RESTORE-SWEEP | progress-log |
+| C3 lifecycle bridge | `app/Integrations/Allocation/RequestLifecycleCommandBridge.php` | moved from Allocation Infra adapter | ARCH-ADAPTER-PROVIDER-01 |
+| C3 bind | `IntegrationServiceProvider` + remove from `AllocationServiceProvider` | port at composition root | same |
+| C4 | `IntegrationServiceProvider` | removed `boot()`; `Event::listen` in `register()` | same |
+| Guard list | `architectureIntegrationPortClasses()` | +`RequestLifecycleCommandPort` | architecture.php |
+| Full Pest | Sail | 8 fail → **5** stable Arch (+1 intermittent RequestRead) | terminal 488700 |
+| PHPStan | `php vendor/bin/phpstan analyse --memory-limit=1G --no-progress` | **OK** | terminal 488699 |
+| Progress log | `.dormSys/progress-log.md` | +ARCH-ADAPTER-PROVIDER-01 | progress-log |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🔗 **Relations** — WAVE-REL-RESTORE-SWEEP DONE (8/8); remaining domain decision: A2 OPEN
+🧑‍⚖️ **Human Decision** — Next per sequencing: **C5** then **C2** (C1 + C3∥C4 done)
 
 ---
 
@@ -28,9 +33,10 @@ _Last updated: 1405/05/01 | 2026-07-23 | WAVE-REL-RESTORE-SWEEP: 8/8 BelongsTo r
 
 | ID | Summary |
 |----|---------|
-| A2 | OPEN |
-| DR-REG-03 / 04 / 05 | OPEN |
-| D4 | CLOSED |
+| Arch C1 Persistence Option C | CLOSED |
+| Arch C3 adapter / C4 composition | CLOSED (this wave) |
+| Arch C2 / C5 | OPEN |
+| Spec07 adapter path text vs Integrations | DRIFT (docs only; not rewritten) |
 
 ---
 
@@ -38,22 +44,22 @@ _Last updated: 1405/05/01 | 2026-07-23 | WAVE-REL-RESTORE-SWEEP: 8/8 BelongsTo r
 
 | Item | Status |
 |------|--------|
-| DOMAIN-GAP-SWEEP | DONE |
-| WAVE-REL-RESTORE-SWEEP | DONE |
-| A2 | OPEN |
+| ARCH-ADAPTER-PROVIDER-01 | DONE |
+| Suite baseline | RED **5** Arch (C2+C5) |
+| C5 next | PENDING Lead AUTH |
 
 ---
 
 ## 7. Next Step
 
-**Action:** Lead commit restored BelongsTo + progress-log; optionally re-run DOMAIN-GAP-SWEEP or address A2.  
+**Action:** Lead AUTH ARCH-C5 (mutation registry) then C2 (Request→Workflow Domain exceptions) per sequencing.  
 **Owner:** Lead  
-**Gate:** none for restore  
-**Target files:** 7 Persistence models; `.dormSys/progress-log.md`  
-**Done when:** Lead commit  
-**Blocker:** A2 separate  
+**Gate:** C3∥C4 done; residual C2+C5  
+**Target files:** MutationAuthorization registries / Request↔Workflow boundary  
+**Done when:** Lead chooses C5 Fix wave  
+**Blocker:** C2, C5  
 **Suggested user prompt:**
-> Commit WAVE-REL-RESTORE-SWEEP; decide A2 or re-sweep domain
+> AUTH ARCH-MUTATION-REGISTRY-01 (C5) from arch-triage-01
 
 ---
 
@@ -61,6 +67,9 @@ _Last updated: 1405/05/01 | 2026-07-23 | WAVE-REL-RESTORE-SWEEP: 8/8 BelongsTo r
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| SWEEP-REL-01..07 | DONE | 8/8 BelongsTo |
-| A2 | OPEN | |
-| D4 | CLOSED | |
+| C1 Persistence Option C | CLOSED | |
+| C3 Allocation→Request adapter | CLOSED | Integrations bridge |
+| C4 Integration boot() | CLOSED | register-only |
+| C2 Request→Workflow Domain | OPEN | |
+| C5 Mutation auth registry | OPEN | |
+| Spec07 adapter path doc drift | OPEN | report only |

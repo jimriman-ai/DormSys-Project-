@@ -76,6 +76,7 @@ it('persists lottery-sourced allocations from http draw using frozen snapshot wi
         ->json('data');
 
     $winnerRegistrationId = $results['winners'][0]['registration_id'];
+    $winnerLotteryResultId = $results['winners'][0]['lottery_result_id'];
     $winnerEmployeeId = $winnerRegistrationId === $registrationOne['id']
         ? $employeeOne->requireId()->value
         : $employeeTwo->requireId()->value;
@@ -94,7 +95,7 @@ it('persists lottery-sourced allocations from http draw using frozen snapshot wi
     $allocation = $allocation ?? throw new RuntimeException('Allocation not found');
     expect($allocation->status)->toBe(AllocationStatus::Active);
     expect($allocation->method)->toBe(AllocationMethod::LotterySourced);
-    expect($allocation->sourceLotteryResultId)->toBe($winnerRegistrationId);
+    expect($allocation->sourceLotteryResultId)->toBe($winnerLotteryResultId);
     expect($allocation->bedId)->toBe($dormitoryId);
 
     authenticateAllocationHttpUser($operator['identity']);
@@ -102,5 +103,5 @@ it('persists lottery-sourced allocations from http draw using frozen snapshot wi
     $this->getJson(allocationHttpUrl((string) $allocationId))
         ->assertOk()
         ->assertJsonPath('data.method', AllocationMethod::LotterySourced->value)
-        ->assertJsonPath('data.sourceLotteryResultId', $winnerRegistrationId);
+        ->assertJsonPath('data.sourceLotteryResultId', $winnerLotteryResultId);
 });

@@ -11,19 +11,19 @@ arch('request module does not import employee domain enums (spec03 isolation)')
 
 arch('request module does not import employee infrastructure (BT-R05)')
     ->expect('App\Modules\Request')
-    ->not->toUse('App\Modules\Employee\Infrastructure\*');
+    ->not->toUse('App\Modules\Employee\Infrastructure\*')
+    ->ignoring(architectureOptionCForeignPersistenceModelAllowlist());
 
 arch('request module does not import employee domain entities (BT-R05)')
     ->expect('App\Modules\Request')
     ->not->toUse('App\Modules\Employee\Domain\Entities');
 
-arch('request module does not import employee persistence models (BT-R05)')
-    ->expect('App\Modules\Request')
-    ->not->toUse('App\Modules\Employee\Infrastructure\Persistence');
+// Persistence-model import ban removed: contradicted DP-XMOD Option C allowlist.
 
 arch('request module does not import dormitory infrastructure (BT-R05)')
     ->expect('App\Modules\Request')
-    ->not->toUse('App\Modules\Dormitory\Infrastructure\*');
+    ->not->toUse('App\Modules\Dormitory\Infrastructure\*')
+    ->ignoring(architectureOptionCForeignPersistenceModelAllowlist());
 
 arch('request module does not import allocation infrastructure (BT-R05)')
     ->expect('App\Modules\Request')

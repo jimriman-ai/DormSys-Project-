@@ -23,12 +23,14 @@ final class LotteryResultReadService implements LotteryResultReadContract
 
         foreach ($this->results->findByProgramId($programId) as $result) {
             $winnerOrReserveRow = [
+                'lottery_result_id' => $result->requireId()->value,
                 'registration_id' => $result->registrationId->value,
                 'rank' => $result->rank,
             ];
 
             $ranks[] = [
                 'rank' => $result->rank,
+                'lottery_result_id' => $result->requireId()->value,
                 'registration_id' => $result->registrationId->value,
                 'outcome' => $result->outcome->value,
             ];

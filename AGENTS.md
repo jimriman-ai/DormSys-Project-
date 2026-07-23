@@ -50,7 +50,7 @@ Feature specs are organized under `specs/{###-feature-name}/` with `spec.md`, `p
 ## Architecture Rules
 
 1. **Layer dependency:** Domain ← Application ← Infrastructure/Presentation. Domain must never import from outer layers.
-2. **No cross-module Eloquent queries.** Use Application Services for cross-module reads. Cross-module foreign keys are prohibited — store UUIDs as value references.
+2. **Cross-module Eloquent (DP-XMOD-BELONGS Option C — CLOSED):** Persistence-level **read** `belongsTo` across modules is allowed for soft UUID value-refs (AP-04). Cross-module Eloquent is **forbidden** for **workflow**, **authorization**, and **mutation** (write) paths — those remain Application contracts/ports only. **Allowlist boundary** (from `.dormSys/open-decisions.md` DP-XMOD-BELONGS): permitted = Persistence `belongsTo` used only for read-side navigation of soft UUID refs (e.g. `RequestModel::employee()`, `AllocationItemModel::bed()`); forbidden = using those relations (or new cross-module Eloquent) inside workflow orchestration, authorization/gates, or write/mutation paths. Cross-module foreign keys remain prohibited — store UUIDs as value references.
 3. **Audit log is append-only.** Never `UPDATE` or `DELETE` from `audit_logs`. All state transitions must emit entries via `AuditService`.
 
 ## Testing Guidelines

@@ -62,7 +62,23 @@ These pass CI today but remain tracked debt:
 
 ---
 
-## 5. Patterns intentionally **not** in the exception registry
+## 5. DP-XMOD-BELONGS Option C — Persistence Model allowlist (guard)
+
+**Status:** CLOSED decision encoded in Architecture Guard (ARCH-GUARD-ALLOWLIST-01).
+
+Persistence-level read `belongsTo` across modules is **allowed**. Pest arch rules use
+`architectureOptionCForeignPersistenceModelAllowlist()` via `->ignoring(...)` so foreign
+`…\Infrastructure\Persistence\Models` imports do not fail Infrastructure isolation rules.
+
+**Not allowed by this entry:** using those relations (or other cross-module Eloquent) inside
+workflow / authorization / mutation paths; non-Persistence Infrastructure importing foreign
+Domain/Application (e.g. unregistered adapters — separate cluster).
+
+Function: `architectureOptionCForeignPersistenceModelAllowlist()` in `tests/Architecture/architecture.php`.
+
+---
+
+## 6. Patterns intentionally **not** in the exception registry
 
 CI **will** fail if these appear:
 

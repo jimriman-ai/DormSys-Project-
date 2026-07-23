@@ -10,9 +10,11 @@ foreach (architectureModuleNames() as $module) {
             ->expect("App\\Modules\\{$module}\\Domain")
             ->not->toUse("{$foreignModule}\\*");
 
+        // DP-XMOD-BELONGS Option C: Persistence Models may use foreign Persistence Models (read belongsTo).
         arch("{$module} infrastructure is isolated from {$foreignModule}")
             ->expect("App\\Modules\\{$module}\\Infrastructure")
-            ->not->toUse("{$foreignModule}\\*");
+            ->not->toUse("{$foreignModule}\\*")
+            ->ignoring("{$foreignModule}\\Infrastructure\\Persistence\\Models");
 
         arch("{$module} presentation is isolated from {$foreignModule}")
             ->expect("App\\Modules\\{$module}\\Presentation")

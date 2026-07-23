@@ -1,0 +1,6 @@
+prompt_id: STOP-GATE-TRIAGE-01
+recorded_at: 2026-07-23T12:00:00Z
+work_item: stop-gate-triage
+stage: decision-gate
+tags: [OWNER_DECISION_NEEDED, EVIDENCE_GAP]
+summary: "Triage of 46 Pest failures: 1 Regression (Production/Stage-1 from LOTTERY-STAGE1 WT); 45 Architecture Pre-existing vs session waves with Ambiguous age vs DOM-GAP-RESTORE. No fixes."

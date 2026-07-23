@@ -6,29 +6,25 @@ use App\Modules\Voucher\Application\Contracts\VoucherReadRepositoryContract;
 use App\Modules\Voucher\Application\Contracts\VoucherTriggerIntakeContract;
 use App\Modules\Voucher\Application\Services\VoucherReadService;
 
+// DP-XMOD-BELONGS Option C: foreign Persistence Models allowed for read belongsTo.
+$optionC = architectureOptionCForeignPersistenceModelAllowlist();
+
 arch('voucher module does not import allocation infrastructure')
     ->expect('App\Modules\Voucher')
-    ->not->toUse('App\Modules\Allocation\Infrastructure\*');
+    ->not->toUse('App\Modules\Allocation\Infrastructure\*')
+    ->ignoring($optionC);
 
 arch('voucher module does not import lottery infrastructure')
     ->expect('App\Modules\Voucher')
-    ->not->toUse('App\Modules\Lottery\Infrastructure\*');
+    ->not->toUse('App\Modules\Lottery\Infrastructure\*')
+    ->ignoring($optionC);
 
 arch('voucher module does not import request infrastructure')
     ->expect('App\Modules\Voucher')
-    ->not->toUse('App\Modules\Request\Infrastructure\*');
+    ->not->toUse('App\Modules\Request\Infrastructure\*')
+    ->ignoring($optionC);
 
-arch('voucher module does not import allocation persistence models')
-    ->expect('App\Modules\Voucher')
-    ->not->toUse('App\Modules\Allocation\Infrastructure\Persistence');
-
-arch('voucher module does not import lottery persistence models')
-    ->expect('App\Modules\Voucher')
-    ->not->toUse('App\Modules\Lottery\Infrastructure\Persistence');
-
-arch('voucher module does not import request persistence models (SC-005)')
-    ->expect('App\Modules\Voucher')
-    ->not->toUse('App\Modules\Request\Infrastructure\Persistence');
+// Persistence-model import bans removed: contradicted Option C allowlist.
 
 arch('voucher domain does not import lottery modules (R8)')
     ->expect('App\Modules\Voucher\Domain')

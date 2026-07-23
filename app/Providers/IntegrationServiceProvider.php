@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Integrations\Allocation\ApprovedRequestReadBridge;
 use App\Integrations\Allocation\DormitoryAssignabilityReadBridge;
 use App\Integrations\Allocation\PhysicalStateSignalBridge;
+use App\Integrations\Allocation\RequestLifecycleCommandBridge;
 use App\Integrations\Audit\SpatieAuditPermissionReadBridge;
 use App\Integrations\CheckIn\AllocationAssignmentReadBridge;
 use App\Integrations\CheckIn\RequestStayLifecycleCommandBridge;
@@ -24,6 +25,7 @@ use App\Integrations\Workflow\StageRoleAuthorizationBridge;
 use App\Modules\Allocation\Application\Contracts\Ports\ApprovedRequestReadPort;
 use App\Modules\Allocation\Application\Contracts\Ports\DormitoryReadPort;
 use App\Modules\Allocation\Application\Contracts\Ports\PhysicalStateSignalPort;
+use App\Modules\Allocation\Application\Contracts\RequestLifecycleCommandPort;
 use App\Modules\Allocation\Application\Services\ProposedAllocationConsumer;
 use App\Modules\Audit\Application\Contracts\AuditPermissionReadPort;
 use App\Modules\CheckIn\Application\Contracts\AllocationAssignmentReadPort;
@@ -54,6 +56,7 @@ final class IntegrationServiceProvider extends ServiceProvider
         $this->app->singleton(ApprovedRequestReadPort::class, ApprovedRequestReadBridge::class);
         $this->app->singleton(DormitoryReadPort::class, DormitoryAssignabilityReadBridge::class);
         $this->app->singleton(PhysicalStateSignalPort::class, PhysicalStateSignalBridge::class);
+        $this->app->singleton(RequestLifecycleCommandPort::class, RequestLifecycleCommandBridge::class);
         $this->app->singleton(AllocationAssignmentReadPort::class, AllocationAssignmentReadBridge::class);
         $this->app->singleton(RequestStayLifecycleCommandPort::class, RequestStayLifecycleCommandBridge::class);
         $this->app->singleton(RequestEligibilityGatewayContract::class, EmployeeEligibilityBridge::class);
@@ -69,11 +72,8 @@ final class IntegrationServiceProvider extends ServiceProvider
         $this->app->singleton(ReportingArchiveVisibilityPort::class, ReportingArchiveVisibilityBridge::class);
         $this->app->singleton(RequestApprovalNotificationDelivery::class);
         $this->app->singleton(RequestApprovalNotificationSubscriber::class);
-    }
 
-    public function boot(): void
-    {
-        // Deferred class listeners (do not resolve NotificationDeliveryContract at boot).
+        // Deferred class listeners (do not resolve NotificationDeliveryContract at registration).
         Event::listen(RequestSubmitted::class, [RequestApprovalNotificationSubscriber::class, 'onRequestSubmitted']);
         Event::listen(WorkflowStepActivated::class, [RequestApprovalNotificationSubscriber::class, 'onWorkflowStepActivated']);
         Event::listen(RequestApproved::class, [RequestApprovalNotificationSubscriber::class, 'onRequestApproved']);

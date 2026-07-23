@@ -30,6 +30,7 @@ function gReq03PestStage1BoundPrefixes(): array
     return [
         'tests/Feature/Modules/Request/',
         'tests/Feature/Modules/Allocation/',
+        'tests/Feature/Modules/Lottery/',
         'tests/Feature/Modules/CheckIn/',
         'tests/Feature/Mutation/',
     ];

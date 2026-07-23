@@ -10,12 +10,19 @@ use App\Modules\Request\Domain\Enums\RequestType;
 use App\Modules\Request\Domain\ValueObjects\DormitorySiteId;
 use App\Modules\Request\Domain\ValueObjects\EmployeeReferenceId;
 use DateTimeImmutable;
+use Illuminate\Support\Facades\DB;
 
+/**
+ * Create draft lottery-registration request with Stage-1 approver snapshot.
+ *
+ * Snapshot pattern mirrors {@see CreatePersonalRequestAction} (IMPL-PERMIT-02).
+ */
 final class CreateLotteryRegistrationRequestAction
 {
     public function __construct(
         private readonly RequestCodeGenerator $codeGenerator,
         private readonly RequestRepositoryContract $requests,
+        private readonly AssignStage1ApproverSnapshotAction $assignStage1Approver,
     ) {}
 
     public function execute(
@@ -24,15 +31,20 @@ final class CreateLotteryRegistrationRequestAction
         DateTimeImmutable $checkInDate,
         DateTimeImmutable $checkOutDate,
     ): Request {
-        $request = Request::createDraft(
-            code: $this->codeGenerator->generate(),
-            employeeId: $employeeId,
-            dormitoryId: $dormitoryId,
-            type: RequestType::LotteryRegistration,
-            checkInDate: $checkInDate,
-            checkOutDate: $checkOutDate,
-        );
+        return DB::transaction(function () use ($employeeId, $dormitoryId, $checkInDate, $checkOutDate): Request {
+            $stage1ApproverIdentityId = $this->assignStage1Approver->execute();
 
-        return $this->requests->save($request);
+            $request = Request::createDraft(
+                code: $this->codeGenerator->generate(),
+                employeeId: $employeeId,
+                dormitoryId: $dormitoryId,
+                type: RequestType::LotteryRegistration,
+                checkInDate: $checkInDate,
+                checkOutDate: $checkOutDate,
+                assignedStage1ApproverIdentityId: $stage1ApproverIdentityId,
+            );
+
+            return $this->requests->save($request);
+        });
     }
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Allocation\Infrastructure\Adapters;
+namespace App\Integrations\Allocation;
 
 use App\Modules\Allocation\Application\Contracts\RequestLifecycleCommandPort;
 use App\Modules\Request\Application\Contracts\RequestRepositoryContract;
@@ -18,12 +18,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 
 /**
- * Allocation → Request OA-05-03 lifecycle adapter (W3-B).
+ * Allocation → Request OA-05-03 lifecycle bridge (W3-B).
  *
  * Persists Request status via RequestRepositoryContract (CD-010: Request owns state).
  * Does not use Spatie transitionTo — matches Request Application string+save pattern.
+ * Location: app/Integrations per integration-layer-policy (not module Infrastructure).
  */
-final class RequestLifecycleCommandAdapter implements RequestLifecycleCommandPort
+final class RequestLifecycleCommandBridge implements RequestLifecycleCommandPort
 {
     public function __construct(
         private readonly RequestRepositoryContract $requests,

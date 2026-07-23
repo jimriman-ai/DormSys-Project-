@@ -19,14 +19,14 @@ The supplier returns a single associative array with **exactly** these top-level
 {
   "program_id": "uuid",
   "winners": [
-    { "registration_id": "uuid", "rank": 1 }
+    { "lottery_result_id": "uuid", "registration_id": "uuid", "rank": 1 }
   ],
   "reserves": [
-    { "registration_id": "uuid", "rank": 2 }
+    { "lottery_result_id": "uuid", "registration_id": "uuid", "rank": 2 }
   ],
   "ranks": [
-    { "rank": 1, "registration_id": "uuid", "outcome": "winner" },
-    { "rank": 2, "registration_id": "uuid", "outcome": "reserve" }
+    { "rank": 1, "lottery_result_id": "uuid", "registration_id": "uuid", "outcome": "winner" },
+    { "rank": 2, "lottery_result_id": "uuid", "registration_id": "uuid", "outcome": "reserve" }
   ]
 }
 ```
@@ -44,6 +44,7 @@ The supplier returns a single associative array with **exactly** these top-level
 
 | Field | Type |
 | ----- | ---- |
+| `lottery_result_id` | string (UUID) — `lottery_results.id` (A2 CLOSED Option A) |
 | `registration_id` | string (UUID) |
 | `rank` | int |
 
@@ -52,6 +53,7 @@ The supplier returns a single associative array with **exactly** these top-level
 | Field | Type |
 | ----- | ---- |
 | `rank` | int |
+| `lottery_result_id` | string (UUID) — `lottery_results.id` (A2 CLOSED Option A) |
 | `registration_id` | string (UUID) |
 | `outcome` | string (`winner` \| `reserve`) |
 

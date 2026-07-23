@@ -7,33 +7,30 @@ use App\Modules\Lottery\Application\Contracts\LotteryRequestReadPort;
 use App\Modules\Lottery\Application\Contracts\LotteryResultReadContract;
 use App\Modules\Lottery\Application\Services\LotteryResultReadService;
 
+// DP-XMOD-BELONGS Option C: foreign Persistence Models allowed for read belongsTo.
+$optionC = architectureOptionCForeignPersistenceModelAllowlist();
+
 arch('lottery module does not import request infrastructure (SC-005)')
     ->expect('App\Modules\Lottery')
-    ->not->toUse('App\Modules\Request\Infrastructure\*');
+    ->not->toUse('App\Modules\Request\Infrastructure\*')
+    ->ignoring($optionC);
 
 arch('lottery module does not import employee infrastructure (SC-005)')
     ->expect('App\Modules\Lottery')
-    ->not->toUse('App\Modules\Employee\Infrastructure\*');
+    ->not->toUse('App\Modules\Employee\Infrastructure\*')
+    ->ignoring($optionC);
 
 arch('lottery module does not import dormitory infrastructure (SC-005)')
     ->expect('App\Modules\Lottery')
-    ->not->toUse('App\Modules\Dormitory\Infrastructure\*');
+    ->not->toUse('App\Modules\Dormitory\Infrastructure\*')
+    ->ignoring($optionC);
 
 arch('lottery module does not import allocation infrastructure (SC-005)')
     ->expect('App\Modules\Lottery')
-    ->not->toUse('App\Modules\Allocation\Infrastructure\*');
+    ->not->toUse('App\Modules\Allocation\Infrastructure\*')
+    ->ignoring($optionC);
 
-arch('lottery module does not import request persistence models (SC-005)')
-    ->expect('App\Modules\Lottery')
-    ->not->toUse('App\Modules\Request\Infrastructure\Persistence');
-
-arch('lottery module does not import employee persistence models (SC-005)')
-    ->expect('App\Modules\Lottery')
-    ->not->toUse('App\Modules\Employee\Infrastructure\Persistence');
-
-arch('lottery module does not import dormitory persistence models (SC-005)')
-    ->expect('App\Modules\Lottery')
-    ->not->toUse('App\Modules\Dormitory\Infrastructure\Persistence');
+// Persistence-model import bans removed: contradicted Option C allowlist.
 
 arch('lottery domain does not import request modules (SC-005)')
     ->expect('App\Modules\Lottery\Domain')

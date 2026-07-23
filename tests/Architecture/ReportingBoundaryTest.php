@@ -7,7 +7,8 @@ use App\Modules\Reporting\Application\Services\ReportingReadService;
 
 arch('reporting module does not import audit infrastructure')
     ->expect('App\Modules\Reporting')
-    ->not->toUse('App\Modules\Audit\Infrastructure\*');
+    ->not->toUse('App\Modules\Audit\Infrastructure\*')
+    ->ignoring(architectureOptionCForeignPersistenceModelAllowlist());
 
 test('reporting read contract is bound to the reporting read service', function (): void {
     expect(app()->bound(ReportingReadContract::class))->toBeTrue()

@@ -97,11 +97,12 @@ final class ExecuteDrawAction
                     rank: $selection['rank'],
                     outcome: $selection['outcome'],
                 );
-                $this->results->save($result);
+                $persistedResult = $this->results->save($result);
 
                 if ($selection['outcome'] === LotteryResultOutcome::Winner) {
                     $winnerPayload[] = [
                         'program_id' => $programId->value,
+                        'lottery_result_id' => $persistedResult->requireId()->value,
                         'registration_id' => $selection['registration_id'],
                         'employee_id' => $selection['employee_id'],
                         'dormitory_id' => $program->dormitoryId->value,

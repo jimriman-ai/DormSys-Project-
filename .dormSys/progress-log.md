@@ -50,3 +50,16 @@ DOM-FIX-03 trait claim superseded by disk state (disk is authoritative).
 [1405/05/01] [ALLOC-DOC-ALIGN-01] — COMPLETE: AllocationItemModel::bed() PHPDoc aligned (Eloquent-only; no physical FK per map+mig); DOMAIN-COMPLETENESS-SWEEP COMPLETE (matrix backfill).
 [1405/05/01] [DOMAIN-GAP-DISCOVERY-02] — COMPLETE: found 5 gaps (0 fixable, 5 decision-gated)
 [1405/05/01] [DECISION-PACKAGE-01] — COMPLETE: 5 decisions packaged
+[1405/05/01] [DECISION-CLOSURE-01] — decision material آماده شد برای ۴ تصمیم باز
+[1405/05/01] [DECISION-CLOSE-01] — ۴ تصمیم باز CLOSE شد (XMOD-C, A2-A, BED-FK-A, SIGNAL-A)
+[1405/05/01] [XMOD-ERRATA-01] — سند cross-module با DP-XMOD-BELONGS (Option C) هم‌راستا شد
+[1405/05/01] [A2-DATA-AUDIT-01] — audit داده‌های allocations.source_lottery_result_id انجام شد
+[1405/05/01] [A2-FIX-01] � ����� ���� A2 �� lottery_results.id
+[1405/05/01] [LOTTERY-STAGE1-CREATE-01] � Stage-1 snapshot ��� CreateLotteryRegistrationRequestAction
+[1405/05/01] [VALIDATION-BASELINE-01] � baseline: PHPStan GREEN; Pest 46 fail/1960 pass; arch:scan+arch:test RED; report .dormSys/validation-baseline-01.md
+[1405/05/01] [GIT-TOPOLOGY-AUDIT-01] � READ-ONLY topology audit; report .dormSys/git-topology-audit-01.md; no Git mutation
+[1405/05/01] [STOP-GATE-TRIAGE-01] � READ-ONLY failure triage; report .dormSys/stop-gate-triage-01.md; no product changes
+[1405/05/01] [REGRESSION-FIX-01] � Production Stage-1 Pest bind; suite 46?45 fail (Arch only); no new failures
+[1405/05/01] [ARCH-FAILURE-TRIAGE-01] � Architecture 45 clustered (C1�C5); report .dormSys/arch-triage-01.md; no Fix
+[1405/05/01] [ARCH-GUARD-ALLOWLIST-01] � Option C Persistence Models allowlist in Pest arch; suite 45?8 fail; C1 Persistence closed; residual Allocation?Request Infra = C3 adapter (out of Option C)
+[1405/05/01] [ARCH-ADAPTER-PROVIDER-01] � C3 bridge?Integrations + C4 Event::listen in register(); suite 8?5 stable Arch (C2+C5); UNREGISTERED adapter cleared; PHPStan OK

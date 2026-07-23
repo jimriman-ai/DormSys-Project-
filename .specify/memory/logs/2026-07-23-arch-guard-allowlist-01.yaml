@@ -1,0 +1,6 @@
+prompt_id: ARCH-GUARD-ALLOWLIST-01
+recorded_at: 2026-07-23T13:20:00Z
+work_item: arch-guard-allowlist-c1
+stage: fix-validation
+tags: [SAFE_PROGRESS, CLOSED]
+summary: "Encoded DP-XMOD Option C Persistence Models allowlist in Pest arch; full suite 45→8 failures. Residual Allocation Infra→Request is RequestLifecycleCommandAdapter (C3), outside Option C."

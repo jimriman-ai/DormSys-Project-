@@ -1,0 +1,6 @@
+prompt_id: A2-FIX-01
+recorded_at: 2026-07-23T11:15:00Z
+work_item: a2-source-lottery-result-id
+stage: fix-validation
+tags: [DEAD_END, DEFERRED, OWNER_DECISION_NEEDED]
+summary: "A2 consumer/contract wiring to lottery_results.id landed; A2-core Pest+PHPStan green. Full enrollment/HTTP draw gate blocked by CreateLotteryRegistrationRequestAction omitting Stage-1 snapshot (Request layer; out of A2 scope)."

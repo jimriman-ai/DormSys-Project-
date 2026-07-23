@@ -1,0 +1,6 @@
+prompt_id: ARCH-ADAPTER-PROVIDER-01
+recorded_at: 2026-07-23T16:20:00Z
+work_item: arch-adapter-provider-c3-c4
+stage: fix-validation
+tags: [SAFE_PROGRESS, DRIFT]
+summary: "Moved RequestLifecycleCommand to Integrations bridge; Event::listen into IntegrationServiceProvider::register(). Suite 8→5 stable Arch (C2+C5). Spec07 still names Infrastructure adapter path (docs drift, not rewritten)."

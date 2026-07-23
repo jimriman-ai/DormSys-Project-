@@ -1,0 +1,6 @@
+prompt_id: REGRESSION-FIX-01
+recorded_at: 2026-07-23T12:15:00Z
+work_item: regression-fix-production-stage1
+stage: fix-validation
+tags: [SAFE_PROGRESS, CLOSED]
+summary: "Added Feature/Production to Pest Stage-1 beforeEach bind. Full suite 46→45 failed; Production green; remaining 45 are Architecture only."

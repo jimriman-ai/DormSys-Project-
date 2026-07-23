@@ -1,0 +1,6 @@
+prompt_id: VALIDATION-BASELINE-01
+recorded_at: 2026-07-23T11:41:00Z
+work_item: validation-baseline
+stage: discovery
+tags: [EVIDENCE_GAP, SAFE_PROGRESS]
+summary: "Full Sail baseline: PHPStan 0 errors; Pest 46 failed/1960 passed (45 Architecture + ProductionHttpHardening NoStage1); arch:scan still fails Request↔Workflow and unregistered Allocation adapter. Parallel PHPStan hung; sequential re-run succeeded."

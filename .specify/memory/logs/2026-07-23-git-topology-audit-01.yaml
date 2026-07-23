@@ -1,0 +1,6 @@
+prompt_id: GIT-TOPOLOGY-AUDIT-01
+recorded_at: 2026-07-23T11:50:00Z
+work_item: git-topology-audit
+stage: discovery
+tags: [SAFE_PROGRESS, OWNER_DECISION_NEEDED]
+summary: "Read-only audit: on release ahead 2 with 26 dirty paths; main and release diverged 5/5 from develop@7f43cc9; several remote tips MERGED_SAFE candidates; no Git mutation performed."

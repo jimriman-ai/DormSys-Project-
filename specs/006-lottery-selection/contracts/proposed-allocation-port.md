@@ -22,6 +22,7 @@ Emitted once per draw for **winners only**:
 [
   {
     "program_id": "uuid",
+    "lottery_result_id": "uuid",
     "registration_id": "uuid",
     "employee_id": "uuid",
     "dormitory_id": "uuid",
@@ -29,6 +30,8 @@ Emitted once per draw for **winners only**:
   }
 ]
 ```
+
+`lottery_result_id` is `lottery_results.id` (A2 CLOSED Option A — `.dormSys/open-decisions.md`).
 
 ## Rules
 

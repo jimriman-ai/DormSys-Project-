@@ -48,6 +48,7 @@ it('denies missing principal with UnauthorizedMutationException across in-scope 
     'consumer' => [fn () => app(ProposedAllocationConsumer::class)->emitProposedAllocations([
         [
             'program_id' => UuidGenerator::uuid7(),
+            'lottery_result_id' => UuidGenerator::uuid7(),
             'registration_id' => UuidGenerator::uuid7(),
             'employee_id' => UuidGenerator::uuid7(),
             'dormitory_id' => UuidGenerator::uuid7(),

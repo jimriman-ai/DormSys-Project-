@@ -1,0 +1,6 @@
+prompt_id: ARCH-FAILURE-TRIAGE-01
+recorded_at: 2026-07-23T12:20:00Z
+work_item: arch-failure-triage
+stage: decision-gate
+tags: [OWNER_DECISION_NEEDED, AMBIGUITY]
+summary: "Clustered 45 Architecture failures into C1–C5; C1 (38) partially under CLOSED DP-XMOD Option C next-wave; C2–C5 need new Lead Architecture decisions. No Fix."

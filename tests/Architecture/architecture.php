@@ -47,6 +47,7 @@ function architectureIntegrationPortClasses(): array
         'App\\Modules\\Allocation\\Application\\Contracts\\Ports\\ApprovedRequestReadPort',
         'App\\Modules\\Allocation\\Application\\Contracts\\Ports\\DormitoryReadPort',
         'App\\Modules\\Allocation\\Application\\Contracts\\Ports\\PhysicalStateSignalPort',
+        'App\\Modules\\Allocation\\Application\\Contracts\\RequestLifecycleCommandPort',
         'App\\Modules\\CheckIn\\Application\\Contracts\\AllocationAssignmentReadPort',
         'App\\Modules\\Request\\Application\\Contracts\\Internal\\RequestEligibilityGatewayContract',
         'App\\Modules\\Request\\Application\\Contracts\\DormitoryReadContract',
@@ -92,6 +93,21 @@ function architectureSharedNamespaces(): array
         'App\Support',
         'App\Shared',
     ];
+}
+
+/**
+ * DP-XMOD-BELONGS Option C (CLOSED): Persistence Models may import foreign Persistence Models
+ * for read-side `belongsTo` on soft UUID refs. Pest `arch()->ignoring(...)` excludes those
+ * FQCN prefixes from dependency edges — not a production-code change.
+ *
+ * @return list<string>
+ */
+function architectureOptionCForeignPersistenceModelAllowlist(): array
+{
+    return array_values(array_map(
+        static fn (string $name): string => "App\\Modules\\{$name}\\Infrastructure\\Persistence\\Models",
+        architectureModuleNames()
+    ));
 }
 
 /**

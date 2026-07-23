@@ -43,8 +43,10 @@ uses()
     ->in(
         'Feature/Modules/Request',
         'Feature/Modules/Allocation',
+        'Feature/Modules/Lottery',
         'Feature/Modules/CheckIn',
         'Feature/Mutation',
+        'Feature/Production',
     );
 
 pest()->extend(TestCase::class)->in('Architecture');

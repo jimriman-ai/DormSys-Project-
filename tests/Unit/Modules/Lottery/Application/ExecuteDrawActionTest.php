@@ -166,6 +166,9 @@ class ExecuteDrawActionTest extends TestCase
         $allocations = MockeryTest::mock(ProposedAllocationPort::class);
         MockeryTest::expectOnce($allocations, 'emitProposedAllocations')->with(Mockery::on(
             static fn (array $payload): bool => count($payload) === 1
+                && isset($payload[0]['lottery_result_id'])
+                && is_string($payload[0]['lottery_result_id'])
+                && $payload[0]['lottery_result_id'] !== ''
                 && in_array($payload[0]['registration_id'], [$registrationId, $registrationIdTwo], true)
                 && $payload[0]['rank'] === 1,
         ));

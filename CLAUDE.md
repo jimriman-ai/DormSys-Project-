@@ -72,7 +72,7 @@ app/Modules/{Module}/
 
 1. **Layer dependency direction:** Domain ← Application ← Infrastructure/Presentation. The Domain layer must never import from outer layers.
 2. **Eloquent models belong in Infrastructure**, not Domain. Domain entities are pure PHP classes.
-3. **No cross-module Eloquent queries.** Cross-module reads go through Application Services. Cross-module foreign keys are prohibited (store UUIDs as value references without FK constraints).
+3. **Cross-module Eloquent (DP-XMOD-BELONGS Option C — CLOSED):** Persistence-level **read** `belongsTo` across modules is allowed for soft UUID value-refs (AP-04). Cross-module Eloquent is **forbidden** for **workflow**, **authorization**, and **mutation** (write) paths — those remain Application contracts/ports only. **Allowlist boundary** (from `.dormSys/open-decisions.md` DP-XMOD-BELONGS): permitted = Persistence `belongsTo` used only for read-side navigation of soft UUID refs (e.g. `RequestModel::employee()`, `AllocationItemModel::bed()`); forbidden = using those relations (or new cross-module Eloquent) inside workflow orchestration, authorization/gates, or write/mutation paths. Cross-module foreign keys remain prohibited (store UUIDs as value references without FK constraints).
 4. **State machines** (`spatie/laravel-model-states`) own all entity lifecycle transitions — never scatter transition logic in Livewire components or controllers.
 5. **Audit log is append-only.** Never UPDATE or DELETE from `audit_logs`. All state transitions must emit audit entries via `AuditService`.
 6. **Alpine.js** is for dropdown toggles, modals, and micro-interactions only. All primary interactivity goes through Livewire.

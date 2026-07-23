@@ -51,6 +51,7 @@ it('fails closed when proposed allocation consumer is invoked without caller pri
     expect(fn () => app(ProposedAllocationConsumer::class)->emitProposedAllocations([
         [
             'program_id' => UuidGenerator::uuid7(),
+            'lottery_result_id' => UuidGenerator::uuid7(),
             'registration_id' => UuidGenerator::uuid7(),
             'employee_id' => UuidGenerator::uuid7(),
             'dormitory_id' => UuidGenerator::uuid7(),
@@ -67,6 +68,7 @@ it('delegates lottery runtime allocation creation through inherited system princ
         app(ProposedAllocationConsumer::class)->emitProposedAllocations([
             [
                 'program_id' => UuidGenerator::uuid7(),
+                'lottery_result_id' => UuidGenerator::uuid7(),
                 'registration_id' => UuidGenerator::uuid7(),
                 'employee_id' => $personId,
                 'dormitory_id' => $dormitoryId,

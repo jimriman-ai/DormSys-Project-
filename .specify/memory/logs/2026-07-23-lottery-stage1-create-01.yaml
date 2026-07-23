@@ -1,0 +1,6 @@
+prompt_id: LOTTERY-STAGE1-CREATE-01
+recorded_at: 2026-07-23T11:18:00Z
+work_item: lottery-stage1-create
+stage: fix-validation
+tags: [SAFE_PROGRESS, DEFERRED]
+summary: "Mirroring AssignStage1ApproverSnapshotAction onto CreateLotteryRegistrationRequestAction greened enrollment/HTTP/draw (10 Pest). Lottery Feature tests also needed Pest Stage-1 fixture bind; Architecture Guard pre-existing failures left untouched."

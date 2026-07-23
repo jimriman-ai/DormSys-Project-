@@ -68,7 +68,7 @@ function createApprovedRequestForLifecycleHandoffTest(): array
     return [$employee, $request, $bedId];
 }
 
-it('wires RequestLifecycleCommandAdapter to persist allocated status from approved', function (): void {
+it('wires RequestLifecycleCommandBridge to persist allocated status from approved', function (): void {
     [, $request, $bedId] = createApprovedRequestForLifecycleHandoffTest();
 
     expect($request->status)->toBe(ApprovedState::$name);

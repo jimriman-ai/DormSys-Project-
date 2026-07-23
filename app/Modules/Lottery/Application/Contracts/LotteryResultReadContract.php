@@ -11,10 +11,12 @@ interface LotteryResultReadContract
     /**
      * @return array{
      *     program_id: string,
-     *     winners: list<array{registration_id: string, rank: int}>,
-     *     reserves: list<array{registration_id: string, rank: int}>,
-     *     ranks: list<array{rank: int, registration_id: string, outcome: string}>
+     *     winners: list<array{lottery_result_id: string, registration_id: string, rank: int}>,
+     *     reserves: list<array{lottery_result_id: string, registration_id: string, rank: int}>,
+     *     ranks: list<array{rank: int, lottery_result_id: string, registration_id: string, outcome: string}>
      * }
+     *
+     * `lottery_result_id` is `lottery_results.id` (A2 CLOSED Option A).
      */
     public function resultsForProgram(LotteryProgramId $programId): array;
 }
