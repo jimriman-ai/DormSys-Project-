@@ -46,7 +46,8 @@ class AllocationItemModel extends BaseModel
     }
 
     /**
-     * bed_id → dormitory_beds.id (physical FK present; Eloquent relation).
+     * Value-ref (AP-04): bed_id → dormitory_beds.id —
+     * Eloquent only; no physical FK (map: allocation_items.bed_id; create mig FK only on allocation_id).
      *
      * @return BelongsTo<BedModel, $this>
      */

@@ -45,6 +45,16 @@ class LotteryRegistrationModel extends BaseModel
     }
 
     /**
+     * program_id → lottery_programs.id (physical FK present; Eloquent relation).
+     *
+     * @return BelongsTo<LotteryProgramModel, $this>
+     */
+    public function program(): BelongsTo
+    {
+        return $this->belongsTo(LotteryProgramModel::class, 'program_id');
+    }
+
+    /**
      * Value-ref (AP-04): employee_id → employee_employees.id — Eloquent only, no physical FK.
      *
      * @return BelongsTo<EmployeeModel, $this>

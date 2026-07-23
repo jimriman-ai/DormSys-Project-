@@ -3,7 +3,8 @@
 > **Source of truth:** `.dormSys/progress-log.md` only.  
 > **Rule:** Rows require an explicit log status of `COMPLETE` | `OPEN` | `SKIPPED` | `CLOSED` | `DONE` | `OMIT`. No inferred statuses.  
 > **Generated:** 1405/04/31 | 2026-07-22 (wave `AUDIT-MATRIX-INIT`)  
-> **Extended:** 1405/04/31 | 2026-07-22 (wave `AUDIT-MATRIX-EXTEND`)
+> **Extended:** 1405/04/31 | 2026-07-22 (wave `AUDIT-MATRIX-EXTEND`)  
+> **Synced:** 1405/05/01 | 2026-07-23 (wave `AUDIT-MATRIX-SYNC`)
 
 | Task | Status | Note |
 |------|--------|------|
@@ -16,7 +17,12 @@
 | DOM-GAP-RESTORE-08-10 (A2/A3) | SKIPPED | Log L35: `restore 26/26 …; A2/A3 skipped.` |
 | DOM-GAP-02-FIX | DONE | Log L15: `status DONE`. |
 | DOM-GAP-06-AUDIT | CLOSED | Log L20: `CLOSED: UUID-only policy ratified…`. Log L21–23: duplicate `CLOSED` block. |
-| DOM-GAP-09B-CLOSE (A3) | OMIT | Log L30: `Lead decision: OMIT bed() on Allocation header…`. |
+| DOM-GAP-09B-CLOSE (A3) | OMIT | Log L30: `Lead decision: OMIT bed() on Allocation header…`. A3=OMIT confirmed; not an OPEN decision in `.dormSys/open-decisions.md`. |
+| D4-CLOSE | CLOSED | Log L42: `D4 CLOSED in open-decisions…`. open-decisions Closed row: D4 Status=CLOSED (wave D4-CLOSE). |
+| DOMAIN-COMPLETENESS-SWEEP | COMPLETE | Log L49: Found/Fixed/drift/blocked summary; Log L50: `DOMAIN-COMPLETENESS-SWEEP COMPLETE (matrix backfill)`. |
+| ALLOC-DOC-ALIGN-01 | COMPLETE | Log L50: `COMPLETE: AllocationItemModel::bed() PHPDoc aligned (Eloquent-only; no physical FK per map+mig)`. |
+| DOMAIN-GAP-DISCOVERY-02 | COMPLETE | Log: `COMPLETE: found 5 gaps (0 fixable, 5 decision-gated)`; report `.dormSys/domain-gap-report-02.md`. |
+| DECISION-PACKAGE-01 | COMPLETE | Log: `COMPLETE: 5 decisions packaged`; package `.dormSys/decision-package-01.md`; open-decisions +3 OPEN (DP-ALLOC-ITEM-BED-FK, DP-BED-SIGNAL-OWNERSHIP, DP-XMOD-BELONGS); A2 unchanged OPEN; A3 not reopened. |
 
 ## Excluded (no COMPLETE / OPEN / SKIPPED / CLOSED / DONE / OMIT token)
 

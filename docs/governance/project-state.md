@@ -3,9 +3,9 @@
 > **NON-AUTHORITY.** Session navigation index only. Not a decision ledger. Does not supersede `docs/governance/open-decisions.md`.
 
 <!-- AUTO-UPDATED by Cursor after each prompt. Lead commits. -->
-_Last updated: 1405/04/31 | 2026-07-22 | D4-CLOSE Option A: D4 CLOSED appended to open-decisions_
+_Last updated: 1405/05/01 | 2026-07-23 | WAVE-REL-RESTORE-SWEEP: 8/8 BelongsTo restored_
 
-**Authority note:** Lead D4-CLOSE Option A confirmed. Append-only CLOSED row (D4 was never in DECISION_REQUIRED table). pending Lead commit.
+**Authority note:** Lead WAVE-REL-RESTORE-SWEEP. Restored 8 BelongsTo on 7 Persistence models. PHPStan 0 on touched files. A2 untouched. pending Lead commit.
 
 ---
 
@@ -13,14 +13,14 @@ _Last updated: 1405/04/31 | 2026-07-22 | D4-CLOSE Option A: D4 CLOSED appended t
 
 | Change | Target | Old → New | Evidence |
 |--------|--------|-----------|----------|
-| Append D4 CLOSED | `.dormSys/open-decisions.md` | absent → CLOSED (Closed decisions table) | D4-CLOSE Option A |
-| Progress log | `.dormSys/progress-log.md` | +[D4-CLOSE] | progress-log |
+| Restore BelongsTo ×8 | 7 Lottery/Request Persistence models | methods absent → present | WAVE-REL-RESTORE-SWEEP |
+| Progress log | `.dormSys/progress-log.md` | +WAVE-REL-RESTORE-SWEEP | progress-log |
 
 ---
 
 ## 0.1 Current Work Level (سطح کاری فعلی)
 
-🧑‍⚖️ **Human Decision** — D4 CLOSED (ledger append); remaining OPEN: DR-REG-03/04/05, A2
+🔗 **Relations** — WAVE-REL-RESTORE-SWEEP DONE (8/8); remaining domain decision: A2 OPEN
 
 ---
 
@@ -28,9 +28,9 @@ _Last updated: 1405/04/31 | 2026-07-22 | D4-CLOSE Option A: D4 CLOSED appended t
 
 | ID | Summary |
 |----|---------|
-| D4 | **CLOSED** (append; resolution DB-MAP-RESTORE) |
-| DR-REG-03 / 04 / 05 | OPEN |
 | A2 | OPEN |
+| DR-REG-03 / 04 / 05 | OPEN |
+| D4 | CLOSED |
 
 ---
 
@@ -38,21 +38,22 @@ _Last updated: 1405/04/31 | 2026-07-22 | D4-CLOSE Option A: D4 CLOSED appended t
 
 | Item | Status |
 |------|--------|
-| DB-MAP-RESTORE | DONE |
-| D4-CLOSE | DONE |
+| DOMAIN-GAP-SWEEP | DONE |
+| WAVE-REL-RESTORE-SWEEP | DONE |
+| A2 | OPEN |
 
 ---
 
 ## 7. Next Step
 
-**Action:** Lead commit D4-CLOSE + prior DB-MAP-RESTORE artifacts.  
+**Action:** Lead commit restored BelongsTo + progress-log; optionally re-run DOMAIN-GAP-SWEEP or address A2.  
 **Owner:** Lead  
-**Gate:** none  
-**Target files:** `.dormSys/open-decisions.md`, `.dormSys/progress-log.md`, `.dormSys/database-map.md`  
+**Gate:** none for restore  
+**Target files:** 7 Persistence models; `.dormSys/progress-log.md`  
 **Done when:** Lead commit  
-**Blocker:** none  
+**Blocker:** A2 separate  
 **Suggested user prompt:**
-> Commit DB-MAP-RESTORE + D4-CLOSE ledger/progress-log changes
+> Commit WAVE-REL-RESTORE-SWEEP; decide A2 or re-sweep domain
 
 ---
 
@@ -60,5 +61,6 @@ _Last updated: 1405/04/31 | 2026-07-22 | D4-CLOSE Option A: D4 CLOSED appended t
 
 | Gap ID | Status | Notes |
 |--------|--------|-------|
-| D4 | CLOSED | append Closed row; DB-MAP-RESTORE |
+| SWEEP-REL-01..07 | DONE | 8/8 BelongsTo |
 | A2 | OPEN | |
+| D4 | CLOSED | |

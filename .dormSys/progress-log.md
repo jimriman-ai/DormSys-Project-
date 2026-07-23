@@ -40,3 +40,13 @@ DOM-FIX-03 trait claim superseded by disk state (disk is authoritative).
 [1405/04/31] [DORM-ASSIGN-RATIFY] - Option A (model confirm-no-op) affirmed by discovery; D4 NOT fixed: .dormSys/database-map.md absent on release (exists on main WITH dormitory_assignments already); restore map file requires separate auth.
 [1405/04/31] [DB-MAP-RESTORE] - restored .dormSys/database-map.md from main; dormitory_assignments present; D4 closed; 0 blocking mig incompatibilities (50/50 mig count aligned).
 [1405/04/31] [D4-CLOSE] - D4 CLOSED in open-decisions (append Closed row); resolution=DB-MAP-RESTORE; dormitory_assignments documented in database-map.md.
+[1405/04/31] [WAVE-REL-RESTORE-SWEEP] — restored 8/8 BelongsTo relations across 7 Lottery/Request models.
+[1405/05/01] [AUDIT-MATRIX-SYNC] — matrix synced from progress-log + open-decisions: +1 row D4-CLOSE=CLOSED; WAVE-REL-RESTORE-SWEEP / DOMAIN-GAP-SWEEP / 6 Excluded left without definitive token; OPEN remains DOM-GAP-10-CLOSE (A2).
+[1405/05/01] [PROGRESS-LOG-TOKEN-FILL-EXEC] — append-only explicit tokens for HIGH-confidence lines that already contain `complete` in-file.
+[WAVE-A] — TOKEN: COMPLETE
+[WAVE-MAP-B.1] — TOKEN: COMPLETE
+[WAVE-DOM-DISC-01] — TOKEN: COMPLETE
+[1405/05/01] [DOMAIN-COMPLETENESS-SWEEP] — Found: 4 gaps | Fixed: 1 gaps | Reported drift: 2 | Blocked decisions: 1 | Files touched: 1
+[1405/05/01] [ALLOC-DOC-ALIGN-01] — COMPLETE: AllocationItemModel::bed() PHPDoc aligned (Eloquent-only; no physical FK per map+mig); DOMAIN-COMPLETENESS-SWEEP COMPLETE (matrix backfill).
+[1405/05/01] [DOMAIN-GAP-DISCOVERY-02] — COMPLETE: found 5 gaps (0 fixable, 5 decision-gated)
+[1405/05/01] [DECISION-PACKAGE-01] — COMPLETE: 5 decisions packaged

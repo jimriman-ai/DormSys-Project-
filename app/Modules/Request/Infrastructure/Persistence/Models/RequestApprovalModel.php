@@ -71,6 +71,16 @@ class RequestApprovalModel extends Model
     }
 
     /**
+     * request_id → requests.id (physical FK present; Eloquent relation).
+     *
+     * @return BelongsTo<RequestModel, $this>
+     */
+    public function request(): BelongsTo
+    {
+        return $this->belongsTo(RequestModel::class, 'request_id');
+    }
+
+    /**
      * Value-ref (AP-04): approver_id → identity_users.id — Eloquent only, no physical FK.
      *
      * @return BelongsTo<UserModel, $this>

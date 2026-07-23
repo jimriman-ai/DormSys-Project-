@@ -6,6 +6,7 @@ namespace App\Modules\Lottery\Infrastructure\Persistence\Models;
 
 use App\Modules\Lottery\Domain\Exceptions\LotteryValidationException;
 use App\Support\Models\BaseModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property string $id
@@ -50,5 +51,15 @@ class LotteryEligibleSnapshotModel extends BaseModel
         static::deleting(static function (): void {
             throw new LotteryValidationException('Eligible snapshot is immutable after capture.');
         });
+    }
+
+    /**
+     * program_id → lottery_programs.id (physical FK present; Eloquent relation).
+     *
+     * @return BelongsTo<LotteryProgramModel, $this>
+     */
+    public function program(): BelongsTo
+    {
+        return $this->belongsTo(LotteryProgramModel::class, 'program_id');
     }
 }

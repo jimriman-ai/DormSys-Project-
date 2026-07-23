@@ -6,6 +6,7 @@ namespace App\Modules\Lottery\Infrastructure\Persistence\Models;
 
 use App\Modules\Lottery\Domain\Enums\LotteryResultOutcome;
 use App\Support\Models\BaseModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property string $id
@@ -36,5 +37,25 @@ class LotteryResultModel extends BaseModel
         return array_merge(parent::casts(), [
             'outcome' => LotteryResultOutcome::class,
         ]);
+    }
+
+    /**
+     * program_id → lottery_programs.id (physical FK present; Eloquent relation).
+     *
+     * @return BelongsTo<LotteryProgramModel, $this>
+     */
+    public function program(): BelongsTo
+    {
+        return $this->belongsTo(LotteryProgramModel::class, 'program_id');
+    }
+
+    /**
+     * registration_id → lottery_registrations.id (physical FK present; Eloquent relation).
+     *
+     * @return BelongsTo<LotteryRegistrationModel, $this>
+     */
+    public function registration(): BelongsTo
+    {
+        return $this->belongsTo(LotteryRegistrationModel::class, 'registration_id');
     }
 }

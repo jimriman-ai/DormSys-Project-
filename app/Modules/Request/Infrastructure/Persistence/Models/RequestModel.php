@@ -87,7 +87,8 @@ class RequestModel extends BaseModel
     }
 
     /**
-     * assigned_stage1_approver_identity_id → identity_users.id (physical FK present; Eloquent relation).
+     * Value-ref (AP-04): assigned_stage1_approver_identity_id → identity_users.id —
+     * Eloquent only; physical FK added then dropped (map: requests [EVOLVED] 2026_07_20 drop).
      *
      * @return BelongsTo<UserModel, $this>
      */

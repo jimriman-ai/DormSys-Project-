@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Request\Infrastructure\Persistence\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
@@ -43,5 +44,15 @@ class RequestMissionDetailsModel extends Model
         return [
             'created_at' => 'datetime',
         ];
+    }
+
+    /**
+     * request_id → requests.id (physical FK present; Eloquent relation). PK = request_id.
+     *
+     * @return BelongsTo<RequestModel, $this>
+     */
+    public function request(): BelongsTo
+    {
+        return $this->belongsTo(RequestModel::class, 'request_id');
     }
 }

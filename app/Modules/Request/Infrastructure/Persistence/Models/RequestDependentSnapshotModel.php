@@ -71,6 +71,16 @@ class RequestDependentSnapshotModel extends Model
     }
 
     /**
+     * request_id → requests.id (physical FK present; Eloquent relation).
+     *
+     * @return BelongsTo<RequestModel, $this>
+     */
+    public function request(): BelongsTo
+    {
+        return $this->belongsTo(RequestModel::class, 'request_id');
+    }
+
+    /**
      * Value-ref (AP-04): source_dependent_id → employee_dependents.id — Eloquent only, no physical FK.
      *
      * @return BelongsTo<DependentModel, $this>
