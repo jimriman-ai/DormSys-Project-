@@ -1,0 +1,6 @@
+prompt_id: ARCH-MUTATION-REGISTRY-01
+recorded_at: 2026-07-23T16:50:00Z
+work_item: arch-mutation-registry-c5
+stage: fix-validation
+tags: [SAFE_PROGRESS, CLOSED]
+summary: "Registered three Workflow *Action classes in PendingMutationAuthorizationRegistry. MutationAuthorizationBoundaryTest green; suite 5→3 (C2 only). Classification Pending (not Exempt/MPEP) per registry scope."

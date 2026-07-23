@@ -63,3 +63,5 @@ DOM-FIX-03 trait claim superseded by disk state (disk is authoritative).
 [1405/05/01] [ARCH-FAILURE-TRIAGE-01] — Architecture 45 clustered (C1–C5); report .dormSys/arch-triage-01.md; no Fix
 [1405/05/01] [ARCH-GUARD-ALLOWLIST-01] — Option C Persistence Models allowlist in Pest arch; suite 45?8 fail; C1 Persistence closed; residual Allocation?Request Infra = C3 adapter (out of Option C)
 [1405/05/01] [ARCH-ADAPTER-PROVIDER-01] — C3 bridge?Integrations + C4 Event::listen in register(); suite 8?5 stable Arch (C2+C5); UNREGISTERED adapter cleared; PHPStan OK
+[1405/05/01] [ARCH-MUTATION-REGISTRY-01] — C5: 3 Workflow *Action ? PendingMutationAuthorizationRegistry; suite 5?3 (C2 only); PHPStan OK; C1/C3/C4 not regressed
+[1405/05/01] [ARCH-MODULE-BOUNDARY-C2-01] — Workflow Application exceptions + Decide translate; Request no longer imports Workflow Domain; suite 3?0 Arch fail; PHPStan OK; arch:scan passed

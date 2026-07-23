@@ -16,6 +16,9 @@ use App\Modules\Voucher\Application\Services\IssueVoucherAction;
 use App\Modules\Voucher\Application\Services\ProcessExternalLotteryWinnerAction;
 use App\Modules\Voucher\Application\Services\ProcessReservePromotionAction;
 use App\Modules\Voucher\Application\Services\VoucherLifecycleAction;
+use App\Modules\Workflow\Application\Services\ApplyRequestApprovalAutoApprovalsAction;
+use App\Modules\Workflow\Application\Services\DecideRequestApprovalStageAction;
+use App\Modules\Workflow\Application\Services\StartRequestApprovalWorkflowAction;
 
 final class PendingMutationAuthorizationRegistry
 {
@@ -26,16 +29,19 @@ final class PendingMutationAuthorizationRegistry
      */
     private const PENDING = [
         AcceptTriggerFactsAction::class,
+        ApplyRequestApprovalAutoApprovalsAction::class,
         CreateFamilyDirectRequestAction::class,
         CreateLotteryRegistrationRequestAction::class,
         CreateMissionRequestAction::class,
         CreatePersonalRequestAction::class,
+        DecideRequestApprovalStageAction::class,
         DeliverNotificationAction::class,
         EvaluateVoucherEligibilityAction::class,
         IssueVoucherAction::class,
         MarkNotificationReadAction::class,
         ProcessExternalLotteryWinnerAction::class,
         ProcessReservePromotionAction::class,
+        StartRequestApprovalWorkflowAction::class,
         VoucherLifecycleAction::class,
     ];
 

@@ -9,6 +9,9 @@ use App\Modules\Workflow\Application\Contracts\RequestApprovalWorkflowRepository
 use App\Modules\Workflow\Application\Contracts\StageRoleAuthorizationPort;
 use App\Modules\Workflow\Application\DTOs\DecideRequestApprovalStageCommand;
 use App\Modules\Workflow\Application\DTOs\WorkflowInstanceResult;
+use App\Modules\Workflow\Application\Exceptions\InvalidWorkflowTransitionException as ApplicationInvalidWorkflowTransitionException;
+use App\Modules\Workflow\Application\Exceptions\UnauthorizedWorkflowStageActorException as ApplicationUnauthorizedWorkflowStageActorException;
+use App\Modules\Workflow\Application\Exceptions\WorkflowInstanceNotFoundException as ApplicationWorkflowInstanceNotFoundException;
 use App\Modules\Workflow\Application\Support\WorkflowInstanceResultFactory;
 use App\Modules\Workflow\Domain\Enums\StageDecision;
 use App\Modules\Workflow\Domain\Enums\WorkflowInstanceStatus;
@@ -18,6 +21,7 @@ use App\Modules\Workflow\Domain\Events\WorkflowInstanceRejected;
 use App\Modules\Workflow\Domain\Events\WorkflowStepActivated;
 use App\Modules\Workflow\Domain\Events\WorkflowStepCompleted;
 use App\Modules\Workflow\Domain\Exceptions\InvalidWorkflowTransitionException;
+use App\Modules\Workflow\Domain\Exceptions\UnauthorizedWorkflowStageActorException;
 use App\Modules\Workflow\Domain\Exceptions\WorkflowInstanceNotFoundException;
 use App\Modules\Workflow\Domain\Services\FixedRequestApprovalStageRolePolicy;
 use App\Modules\Workflow\Domain\ValueObjects\IdentityUserId;
@@ -29,6 +33,8 @@ use Illuminate\Support\Facades\Event;
 /**
  * Records a human stage decision; delegates canonical RequestApproval write via port (OD-3).
  * Chains auto-approvals when configured. No dual-run / Request cutover (OD-4 / WP-WF-04).
+ *
+ * Cross-module callers receive Application exceptions only (not Domain types).
  */
 final class DecideRequestApprovalStageAction
 {
@@ -41,6 +47,19 @@ final class DecideRequestApprovalStageAction
     ) {}
 
     public function execute(DecideRequestApprovalStageCommand $command): WorkflowInstanceResult
+    {
+        try {
+            return $this->executeDecision($command);
+        } catch (UnauthorizedWorkflowStageActorException $exception) {
+            throw new ApplicationUnauthorizedWorkflowStageActorException($exception->getMessage(), previous: $exception);
+        } catch (WorkflowInstanceNotFoundException $exception) {
+            throw new ApplicationWorkflowInstanceNotFoundException($exception->getMessage(), previous: $exception);
+        } catch (InvalidWorkflowTransitionException $exception) {
+            throw new ApplicationInvalidWorkflowTransitionException($exception->getMessage(), previous: $exception);
+        }
+    }
+
+    private function executeDecision(DecideRequestApprovalStageCommand $command): WorkflowInstanceResult
     {
         $decision = StageDecision::tryFrom($command->decision)
             ?? throw new InvalidWorkflowTransitionException('Decision must be approved or rejected.');

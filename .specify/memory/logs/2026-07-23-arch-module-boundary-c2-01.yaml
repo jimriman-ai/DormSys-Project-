@@ -1,0 +1,6 @@
+prompt_id: ARCH-MODULE-BOUNDARY-C2-01
+recorded_at: 2026-07-23T17:20:00Z
+work_item: arch-module-boundary-c2
+stage: fix-validation
+tags: [SAFE_PROGRESS, CLOSED]
+summary: "Introduced Workflow Application exceptions; DecideRequestApprovalStageAction translates Domain→Application. Request Approve/Reject no longer import Workflow Domain. Arch suite 3→0; arch:scan passed; PHPStan OK."

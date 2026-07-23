@@ -15,10 +15,10 @@ use App\Modules\Request\Domain\Services\ApprovalStageResolver;
 use App\Modules\Request\Domain\ValueObjects\ApproverReferenceId;
 use App\Modules\Request\Domain\ValueObjects\RequestId;
 use App\Modules\Workflow\Application\DTOs\DecideRequestApprovalStageCommand;
+use App\Modules\Workflow\Application\Exceptions\InvalidWorkflowTransitionException;
+use App\Modules\Workflow\Application\Exceptions\UnauthorizedWorkflowStageActorException;
+use App\Modules\Workflow\Application\Exceptions\WorkflowInstanceNotFoundException;
 use App\Modules\Workflow\Application\Services\DecideRequestApprovalStageAction;
-use App\Modules\Workflow\Domain\Exceptions\InvalidWorkflowTransitionException;
-use App\Modules\Workflow\Domain\Exceptions\UnauthorizedWorkflowStageActorException;
-use App\Modules\Workflow\Domain\Exceptions\WorkflowInstanceNotFoundException;
 use Illuminate\Support\Facades\DB;
 
 /**
